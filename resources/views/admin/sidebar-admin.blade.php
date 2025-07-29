@@ -41,15 +41,7 @@
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'users.admin') active @endif">
                             <a href="{{ route('admin.accounts.index', ['role' => 'admin']) }}">{{ __('Administrator accounts') }}</a>
-                        </li>
-
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'invitations') active @endif">
-                            <a href="{{ route('admin.accounts.invitations') }}">{{ __('Invitations') }}</a>
-                        </li>
-
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'permissions') active @endif">
-                            <a href="{{ route('admin.accounts.permissions') }}">{{ __('Internal permissions') }}</a>
-                        </li>
+                        </li>                      
                     </ul>
                 </li>
 
@@ -61,25 +53,6 @@
                         </a>
                     </li>
                 @endforeach
-               
-
-                <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'extend') active @endif">
-                    <a href="#" class='sidebar-link'>
-                        <i class="bi bi-bounding-box"></i>
-                        <span>{{ __('Plugins and Themes') }}</span>
-                    </a>
-                    <ul class="submenu @if (($active_menu ?? null) == 'extend') active @endif">
-
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'plugins') active @endif">
-                            <a href="{{ route('admin.plugins') }}">{{ __('Plugins') }}</a>
-                        </li>
-
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'themes') active @endif">
-                            <a href="{{ route('admin.templates.index') }}">{{ __('Themes') }}</a>
-                        </li>
-
-                    </ul>
-                </li>
 
                 <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'config') active @endif">
                     <a href="#" class='sidebar-link'>

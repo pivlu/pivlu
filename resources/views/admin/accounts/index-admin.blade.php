@@ -32,17 +32,15 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="min-width: 200px;">
                             <li><a class="dropdown-item" href="{{ route('admin.config', ['tab' => 'registration']) }}">{{ __('Registration') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('admin.accounts.permissions') }}">{{ __('Internal permissions') }}</a></li>
                             <li><a class="dropdown-item" href="{{ route('admin.accounts.deleted') }}">{{ __('Deleted accounts') }}</a></li>
                         </ul>
                     </div>
 
                     <div class="float-end ms-3">
-                        <a class="btn btn-primary" href="#" id="dropdownMenuButton" data-bs-toggle="modal" data-bs-target="#create-admin">
-                            <i class="bi bi-plus-circle"></i> {{ __('Add administrator account') }}
+                        <a class="btn btn-primary" href="#" id="createAccount" data-bs-toggle="modal" data-bs-target="#create-account">
+                            <i class="bi bi-plus-circle"></i> {{ __('Create account') }}
                         </a>
-                        @include('admin.accounts.modals.create-admin')
-
+                        @include('admin.accounts.modals.create-account')
                     </div>
 
                 </div>

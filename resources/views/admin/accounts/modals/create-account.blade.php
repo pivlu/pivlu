@@ -14,9 +14,9 @@
 
                     <div class="row bg-light mb-3 pt-3">
                         <div class="fw-bold mb-2">
-                            {!! __('<b class="text-danger"><u>Internal</u></b> accounts are staff accounts (for your employees) who have access to some modules') !!}. <a href="{{ route('admin.accounts.permissions') }}">{{ __('Manage internall accounts permissions') }}</a>.
+                            {!! __('<b class="text-danger"><u>Internal</u></b> accounts are staff accounts (for your employees) who have access to some apps and plugins.') !!}..
                             <div class="mb-1"></div>
-                            {!! __('<b class="text-danger"><u>Registered users / clients</u></b> can login into own accounts and have access to modules activated (Example: support tickets, projects assigned, orders, invoices...)') !!}. <a href="{{ route('admin.config', ['module' => 'general']) }}">{{ __('Manage website modules') }}</a>.
+                            {!! __('<b class="text-danger"><u>Registered users</u></b> can login into own accounts and have access to some public apps') !!}. <a href="{{ route('admin.config', ['tab' => 'apps']) }}">{{ __('Manage website modules') }}</a>.
                             <div class="mb-1"></div>
                             {!! __('<b class="text-danger"><u>Administrators</u></b> have full access to all modules and configurations. Be careful to add only trusted persons as administrators') !!}.
                         </div>

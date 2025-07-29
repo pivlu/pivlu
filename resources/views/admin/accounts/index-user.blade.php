@@ -45,7 +45,6 @@
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="min-width: 200px;">
                             @if (Auth::user()->role == 'admin')
                                 <li><a class="dropdown-item" href="{{ route('admin.config', ['tab' => 'registration']) }}">{{ __('Registration') }}</a></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.accounts.permissions') }}">{{ __('Internal permissions') }}</a></li>
                                 <li><a class="dropdown-item" href="{{ route('admin.recycle_bin.module', ['module' => 'accounts']) }}">{{ __('Deleted accounts') }}</a></li>
                             @endif
                         </ul>

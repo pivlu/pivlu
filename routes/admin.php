@@ -59,15 +59,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     // Accounts
     Route::get('accounts/deleted', [AccountController::class, 'deleted'])->name('accounts.deleted');
     Route::get('accounts/deleted/action/{action}/{id}', [AccountController::class, 'deleted_action'])->name('accounts.deleted.action')->where(['action' => '[a-z0-9_-]+'])->where('id', '[0-9]+');
-
-    Route::get('accounts/invitations', [AccountInvitationController::class, 'index'])->name('accounts.invitations');
-    Route::post('accounts/send-invitation', [AccountInvitationController::class, 'send'])->name('accounts.send_invitation');
-    Route::post('accounts/resend-invitation', [AccountInvitationController::class, 'resend'])->name('accounts.resend_invitation');
-    Route::delete('accounts/delete-invitation', [AccountInvitationController::class, 'destroy'])->name('accounts.delete_invitation');
-
-    Route::get('accounts/permissions', [AccountController::class, 'permissions'])->name('accounts.permissions');
-    Route::post('accounts/permissions', [AccountController::class, 'update_permissions']);
-
+   
     Route::resource('accounts', AccountController::class)->parameters(['accounts' => 'id']);
 
     Route::get('account/{id}/internal-notes', [AccountController::class, 'internal_notes'])->where('id', '[0-9]+')->name('account.internal_notes');
@@ -84,17 +76,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::resource('post-types', PostTypeController::class)->parameters(['post-types' => 'id']);
     Route::resource('taxonomies', TaxonomyController::class)->parameters(['taxonomies' => 'id']);
     Route::resource('post-type-taxonomies', PostTypeTaxonomiesController::class)->parameters(['post-type-taxonomies' => 'id']);
-
-    Route::get('posts/comments', [PostController::class, 'comments'])->name('posts.comments');
-    Route::put('posts/comments/{id}', [PostController::class, 'update_comment'])->name('posts.comments.update')->where('id', '[0-9]+');
-    Route::delete('posts/comments/{id}', [PostController::class, 'destroy_comment'])->name('posts.comments.destroy')->where('id', '[0-9]+');
-
-    Route::get('posts/reactions', [PostController::class, 'reactions'])->name('posts.reactions');
-    Route::delete('posts/reactions/delete', [PostController::class, 'destroy_reaction'])->name('posts.reactions.destroy');
-
-    Route::get('posts/config', [PostController::class, 'config'])->name('posts.config');
-    Route::post('posts/config', [PostController::class, 'update_config']);
-
+    
     Route::resource('posts', PostController::class)->parameters(['posts' => 'id']);
     Route::post('posts/{id}/sortable', [PostController::class, 'sortable'])->name('posts.sortable')->where('id', '[0-9]+');
     Route::get('posts/{id}/content', [PostController::class, 'content'])->name('posts.content')->where('id', '[0-9]+');
@@ -103,75 +85,8 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     Route::get('posts/{id}/delete-main-image', [PostController::class, 'delete_main_image'])->name('posts.delete_main_image')->where('id', '[0-9]+');
     Route::get('posts/{id}/custom-fieldsf', [PostController::class, 'custom_fields'])->name('post.cf');
+    
 
-    // Plugins
-    Route::get('plugins',  [PluginController::class, 'index'])->name('plugins');
-    Route::get('plugins/install/{plugin}', [PluginController::class, 'install'])->name('plugins.install')->where('plugin', '[0-9a-zA-Z-/]+');
-
-
-    // Themes
-    Route::get('themes/set-default',  [ThemeController::class, 'set_default'])->name('themes.set_default');
-    Route::resource('themes', ThemeController::class)->parameters(['themes' => 'slug']);
-
-    // Templates
-    Route::resource('templates', TemplateController::class)->parameters(['templates' => 'slug']);
-
-    Route::get('template/logo', [TemplateController::class, 'logo'])->name('template.logo');
-    Route::post('template/logo', [TemplateController::class, 'update_logo']);
-
-    Route::get('template/custom-code', [TemplateController::class, 'custom_code'])->name('template.custom_code');
-    Route::post('template/custom-code',  [TemplateController::class, 'update_custom_code']);
-    Route::get('template/custom-code/delete',  [TemplateController::class, 'custom_code_delete_file'])->name('template.custom_code.delete_file');
-
-    Route::get('template/menu/dropdown', [TemplateMenuController::class, 'index_dropdowns'])->name('template.menu.dropdown');
-    Route::post('template/menu/dropdown', [TemplateMenuController::class, 'store_dropdown']);
-    Route::put('template/menu/dropdown', [TemplateMenuController::class, 'update_dropdown']);
-    Route::delete('template/menu/dropdown', [TemplateMenuController::class, 'destroy_dropdown']);
-    Route::post('template/menu/sortable-dropdowns/{parent_link_id}', [TemplateMenuController::class, 'sortable_dropdowns'])->name('template.menu.sortable_dropdowns')->where('parent_link_id', '[0-9]+');
-    Route::resource('template/menu', TemplateMenuController::class)->names(['index' => 'template.menu', 'create' => 'template.menu.create', 'show' => 'template.menu.show'])->parameters(['menu' => 'id']);
-    Route::post('template/menu/sortable', [TemplateMenuController::class, 'sortable'])->name('template.menu.sortable');
-
-
-    // Template Builder
-    Route::prefix('template-builder')->name('template-builder.')->group(function () {
-        Route::get('/', [TemplateBuilderController::class, 'index'])->name('index')->where(['id' => '[0-9]+']);
-
-        // Template Builder - Layouts
-        Route::resource('template-builder/layouts', TemplateLayoutController::class)->names(['index' => 'layouts', 'create' => 'layouts.create', 'show' => 'layouts.show'])->parameters(['layouts' => 'id']);
-        Route::post('template-builder/layouts/{id}/sortable', [TemplateLayoutController::class, 'sortable'])->name('layouts.sortable')->where('id', '[0-9]+');
-        Route::post('template-builder/layouts/{id}/update', [TemplateLayoutController::class, 'update'])->name('layouts.update')->where('id', '[0-9]+');
-        //Route::delete('template-builder/layouts/delete/{block_id}', [TemplateLayoutController::class, 'delete_content'])->name('layouts.content.delete')->where('block_id', '[0-9]+');
-        Route::get('template-builder/layouts/{id}/content', [TemplateLayoutController::class, 'content'])->name('layouts.content')->where(['id' => '[0-9]+']);
-        Route::post('template-builder/layouts/{id}/content', [TemplateLayoutController::class, 'update_content'])->name('layouts.content.new')->where('id', '[0-9]+');
-        Route::delete('template-builder/layouts/{id}/content/delete/{block_id}', [TemplateLayoutController::class, 'delete_content'])->name('layouts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
-        Route::get('template-builder/layouts/block/{id}', [TemplateLayoutController::class, 'block'])->name('layouts.block')->where('id', '[0-9]+');
-        Route::put('template-builder/layouts/block/{id}', [TemplateLayoutController::class, 'block_update'])->where('id', '[0-9]+');
-
-        // Template Builder - Styles
-        Route::get('template-builder/styles', [TemplateStyleController::class, 'index'])->name('styles');
-        Route::post('template-builder/styles', [TemplateStyleController::class, 'store_custom']);
-        Route::get('template-builder/styles/{style}', [TemplateStyleController::class, 'show'])->name('template.styles.show')->where('style', '[0-9a-zA-Z_-]+');
-        Route::put('template-builder/styles/{style}', [TemplateStyleController::class, 'update'])->where('style', '[0-9a-zA-Z_-]+');
-        Route::get('template-builder/custom-styles/{id}', [TemplateStyleController::class, 'show_custom'])->name('custom_styles.show')->where('id', '[0-9]+');
-        Route::put('template-builder/custom-styles/{id}', [TemplateStyleController::class, 'update_custom'])->where('id', '[0-9a-zA-Z_-]+');
-        Route::delete('template-builder/custom-styles/{id}', [TemplateStyleController::class, 'destroy_custom'])->where('id', '[0-9]+');
-
-        // Template Builder - Buttons
-        Route::resource('template/buttons', TemplateButtonController::class)->names(['index' => 'template.buttons', 'create' => 'template.buttons.create', 'show' => 'template.buttons.show'])->parameters(['buttons' => 'id']);
-    });
-
-    // Template footer content routes
-    Route::get('template/footer', [TemplateFooterController::class, 'index'])->name('template.footer');
-    Route::put('template/footer', [TemplateFooterController::class, 'update']);
-
-    Route::get('template/footer/{footer}/content', [TemplateFooterController::class, 'content'])->name('template.footer.content')->where(['footer' => '[a-z0-9_-]+']);
-
-    Route::post('template/footer/{footer}/content', [TemplateFooterController::class, 'update_content'])->where(['footer' => '[a-z0-9_-]+']);
-
-    Route::post('template/footer/{footer}/{col}/sortable', [TemplateFooterController::class, 'sortable'])->name('template.footer.sortable')->where('footer', '[a-z0-9_-]+')->where('col', '[0-9]+');
-    Route::delete('template/footer/delete/{block_id}', [TemplateFooterController::class, 'delete_content'])->name('template.footer.content.delete')->where('block_id', '[0-9]+');
-    Route::get('template/footer/block/{id}', [TemplateFooterController::class, 'block'])->name('template.footer.block')->where('id', '[0-9]+');
-    Route::put('template/footer/block/{id}', [TemplateFooterController::class, 'block_update'])->where('id', '[0-9]+');
 
     //  admin role only
     Route::middleware(LoggedIsAdminMiddleware::class)->group(function () {
