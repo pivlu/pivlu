@@ -23,12 +23,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-
 use App\Models\Config;
-use App\Models\UserInvitation;
-use App\Models\User;
 
 class ToolsController extends Controller
 {
@@ -43,72 +38,4 @@ class ToolsController extends Controller
         return view('web.builder.maintenance', []);
     }
 
-
-    /**
-     * New account invitation  
-     */
-    public function account_invitation(Request $request)
-    {
-        // check website status
-        if ((Config::config()->website_maintenance_enabled ?? null)) return view('web.builder.maintenance');
-
-        if (!($request->token)) return redirect(route('home'));
-
-        $invitation = UserInvitation::where('code', $request->token)->first();
-        if (!($invitation)) return redirect(route('home')); // invalid invitation code
-        if ($invitation->user_id) return redirect(route('home')); // invitation already accepted
-
-        if ($invitation->methid == 'email') {
-            if ($invitation->email != $request->email) return redirect(route('home'));
-        }
-
-        UserInvitation::where('code', $request->token)->update([
-            'open_at' => now()
-        ]);
-
-        return view('auth.new-account-invitation', [
-            'invitation' => $invitation,
-        ]);
-    }
-
-
-    /**
-     * Create new user from invitation  
-     */
-    public function account_invitation_submit(Request $request)
-    {
-        // check website status
-        if ((Config::config()->website_maintenance_enabled ?? null)) return view('web.builder.maintenance');
-
-        if (!($request->token && $request->email)) return redirect(route('home'));
-
-        $invitation = UserInvitation::where('code', $request->token)->first();
-
-        if (!($invitation)) return redirect(route('home'));
-        if ($invitation->user_id) return redirect(route('home'));
-
-        if (!$request->name) return back()->with('error', 'no_name');
-        if ((strlen($request->password) < 8) || $request->password != $request->password_repeat) return back()->with('error', 'error_password');
-
-        // username
-        $username = strtolower(Str::slug($request->username, '.'));
-        if (User::where('username', $username)->exists()) return back()->with('error', 'error_username');
-
-        if (User::where('email', $invitation->email)->exists()) return redirect(route('home'));
-
-        $new_user =  User::create([
-            'name' => $request->name,
-            'username' => $username,
-            'code' => strtoupper(Str::random(16)),
-            'email' => $invitation->email,
-            'role' => $invitation->role,
-            'slug' => Str::slug($request->name, '-'),
-            'password' => Hash::make($request->password),
-            'email_verified_at' => now(),            
-        ]);
-
-        UserInvitation::where('code', $request->token)->update(['user_id' => $new_user->id]);
-
-        return redirect(route('login'))->with('success', 'Account created successfully. Please login.');
-    }
 }

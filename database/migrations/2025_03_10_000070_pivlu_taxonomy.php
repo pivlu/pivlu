@@ -34,7 +34,6 @@ return new class extends Migration
             $table->id();
             $table->string('taxonomy', 50)->nullable();
             $table->integer('parent_id')->nullable();
-            $table->string('plugin', 50)->nullable();
             $table->string('tree_ids', 250)->nullable();
             $table->boolean('active')->default(false);
             $table->smallInteger('position')->nullable();

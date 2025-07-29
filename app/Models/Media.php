@@ -30,7 +30,7 @@ use Auth;
 
 class Media extends Model
 {
-    protected $fillable = ['code', 'filename', 'original_name', 'folder', 'disk', 'plugin', 'post_id', 'user_id', 'mime_type', 'extension', 'size_mb', 'custom_properties'];
+    protected $fillable = ['code', 'filename', 'original_name', 'folder', 'disk', 'post_id', 'user_id', 'mime_type', 'extension', 'size_mb', 'custom_properties'];
 
     protected $table = 'pivlu_media';
 
@@ -227,18 +227,6 @@ class Media extends Model
         }
 
         return $db_path . $newFilename;
-    }
-
-
-    public static function delete_plugin_media($plugin)
-    {
-        $items = Media::where('plugin', $plugin)->get();
-
-        foreach ($items as $item) {
-            Media::delete_media($item->id);
-        }
-
-        return;
     }
 
 

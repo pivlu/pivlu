@@ -26,7 +26,6 @@ use App\Pivlu\Locale;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\TemplateMenu;
 use Illuminate\Support\Facades\Validator;
 
 class LangController extends Controller

@@ -30,7 +30,6 @@ class TaxonomyTerm extends Model
         'taxonomy',
         'hierarchical',
         'post_type',
-        'plugin',
         'name',    
         'active',
         'position',

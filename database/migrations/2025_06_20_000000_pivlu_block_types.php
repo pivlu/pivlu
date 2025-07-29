@@ -36,7 +36,6 @@ return new class extends Migration
             $table->string('label', 200)->nullable();
             $table->text('description')->nullable();
             $table->string('icon', 100)->nullable();
-            $table->string('plugin', 50)->nullable();
             $table->integer('position')->default(0);
             $table->boolean('core')->default(false);
             $table->timestamps();            

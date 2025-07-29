@@ -26,8 +26,6 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserMeta;
 use App\Models\Post;
-use App\Models\ForumTopic;
-use App\Models\ForumPost;
 use App\Models\Config;
 
 class ProfileController extends Controller
@@ -38,24 +36,17 @@ class ProfileController extends Controller
      */
     public function index(Request $request)
     {
-        $id = $request->id;
-        $slug = $request->slug;
+        $username = $request->username;        
 
-        $user = User::where('id', $id)->where('slug', $slug)->whereNull('deleted_at')->first();
+        $user = User::where('username', $username)->first();
         if (!$user) return redirect(route('home'));
 
         $posts = Post::where('user_id', $id)->where('status', 'published')->orderByDesc('id')->paginate(Config::config()->posts_per_page ?? 12);
-
-        $forum_topics = ForumTopic::where('user_id', $id)->whereNull('deleted_at')->orderByDesc('id')->paginate(Config::config()->posts_per_page ?? 12);
-
-        $forum_posts = ForumPost::with('topic')->where('user_id', $id)->whereNull('deleted_at')->orderByDesc('id')->paginate(Config::config()->posts_per_page ?? 12);
 
         return view('web.builder.profile', [
             'user' => $user,
             'bio' => UserMeta::get_meta($user->id, 'bio'),
             'posts' => $posts,
-            'forum_topics' => $forum_topics,
-            'forum_posts' => $forum_posts,
         ]);
     }
 }

@@ -30,7 +30,6 @@ class BlockType extends Model
         'type',
         'label',
         'description',
-        'plugin',
         'position',
         'icon',
         'core'

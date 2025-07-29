@@ -29,7 +29,6 @@ class Taxonomy extends Model
     protected $fillable = [
         'taxonomy',
         'parent_id',
-        'plugin',
         'tree_ids',
         'active',
         'position',

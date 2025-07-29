@@ -39,7 +39,6 @@ return new class extends Migration
             $table->string('disk', 50)->nullable();
             $table->unsignedBigInteger('post_id')->nullable();            
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('plugin', 50)->nullable();
             $table->char('mime_type', 30)->nullable();
             $table->char('extension', 25)->nullable();
             $table->decimal('size_mb', 10, 4)->nullable();

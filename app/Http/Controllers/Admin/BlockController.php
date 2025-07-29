@@ -25,8 +25,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
 use App\Models\Block;
-use App\Models\Template;
-use App\Models\TemplateButton;
 use App\Models\Language;
 
 class BlockController extends Controller

@@ -36,7 +36,6 @@ return new class extends Migration
             $table->text('settings')->nullable();
             $table->unsignedBigInteger('post_id')->nullable();
             $table->string('label', 100)->nullable();            
-            $table->string('plugin', 50)->nullable();            
             $table->integer('position')->default(0);
             $table->boolean('hidden')->default(false);
             $table->unsignedBigInteger('user_id')->nullable();

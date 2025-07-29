@@ -32,7 +32,6 @@ class Block extends Model
         'label',
         'settings',
         'post_id',
-        'plugin',
         'position',
         'hidden',
         'user_id',

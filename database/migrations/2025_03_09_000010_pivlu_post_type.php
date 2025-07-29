@@ -34,7 +34,6 @@ return new class extends Migration
             $table->id();
             $table->string('type', 25);            
             $table->string('name', 25);
-            $table->string('plugin', 50)->nullable();
             $table->boolean('show_in_admin_menu')->default(true);
             $table->boolean('internal_only')->default(false);
             $table->string('admin_menu_icon', 200)->nullable();            

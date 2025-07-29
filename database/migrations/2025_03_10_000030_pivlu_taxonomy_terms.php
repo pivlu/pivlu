@@ -34,8 +34,7 @@ return new class extends Migration
             $table->id();
             $table->string('taxonomy', 25);            
             $table->boolean('hierarchical')->default(false);
-            $table->string('post_type', 50)->nullable();
-            $table->string('plugin', 50)->nullable();
+            $table->string('post_type', 50)->nullable();            
             $table->string('name', 100);
             $table->boolean('active')->default(false);
             $table->smallInteger('position')->nullable();
