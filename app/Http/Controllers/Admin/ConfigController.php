@@ -54,10 +54,7 @@ class ConfigController extends Controller
      * Update config
      */
     public function update(Request $request)
-    {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
+    {        
         $tab = $request->tab ?? 'plugins';
 
         $inputs = $request->except('_token');
@@ -75,9 +72,7 @@ class ConfigController extends Controller
      */
     public function update_config_website(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
+        
         $inputs = $request->except('_token', 'section');
 
         if ($request->section == 'general') Config::update_config($inputs);

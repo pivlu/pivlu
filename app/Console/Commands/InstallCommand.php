@@ -25,6 +25,7 @@ use Illuminate\Console\Command;
 use Artisan;
 use App\Models\Config;
 use App\Models\User;
+use App\Pivlu\Helpers;
 use App\Pivlu\Setup;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -74,7 +75,7 @@ class InstallCommand extends Command
         $admin_name = $this->askValid('Input administrator full name: ', 'admin_name', ['required', 'min:3']);
         $admin_email = $this->askValid('Input administrator email: ', 'admin_email', ['required', 'email']);
         $admin_pass = $this->askValid('Input administrator password: ', 'admin_pass', ['required', 'min:5']);
-        $admin_code = generateRandomInteger(12);
+        $admin_code = Helpers::generateRandomInteger(12);
         $admin_user = User::updateOrInsert(['email' => $admin_email], [
             'name' => $admin_name ?? 'Admin',
             'email' => $admin_email,

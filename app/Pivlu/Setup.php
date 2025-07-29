@@ -22,6 +22,7 @@
 namespace App\Pivlu;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Models\PostType;
 use App\Models\PostTypeContent;
 use App\Models\TaxonomyTerm;

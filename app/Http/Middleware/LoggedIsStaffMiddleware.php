@@ -27,7 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades;
 use Illuminate\View\View;
 use App\Models\PostType;
-use App\Models\Plugin;
 use Auth;
 
 class LoggedIsStaffMiddleware
@@ -49,18 +48,6 @@ class LoggedIsStaffMiddleware
             // get custom posts types (used in sidebar menu for admins and internals accounts)
             $post_types = PostType::where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderBy('name')->get();            
             $view->with('posts_types', $post_types ?? []);
-
-            // get custom menu items from active plugins
-            $active_plugins = Plugin::where('active', 1)->orderBy('name')->get();      
-            $root_admin_menu_plugins = [];
-            foreach($active_plugins as $active_plugin) {
-                $plugin_config_file = config_path($active_plugin->plugin . '.php');                
-                if(file_exists($plugin_config_file)) {
-                    $config_file_format = str_replace('/', '.', $active_plugin->plugin);
-                    $plugin_admin_menu = config($config_file_format.'.admin_menu');
-                    $root_admin_menu_plugins[] = $plugin_admin_menu;
-                }
-            }      
             
             //dd($root_admin_menu_plugins);
             $view->with('root_admin_menu_plugins', $root_admin_menu_plugins ?? []);

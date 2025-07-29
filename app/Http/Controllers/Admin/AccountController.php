@@ -42,8 +42,7 @@ class AccountController extends Controller
      * Show all resources
      */
     public function index(Request $request)
-    {
-        if (!(check_access('accounts', 'manager') || check_access('accounts', 'operator'))) return redirect(route('admin'));
+    {        
 
         $search_terms = $request->search_terms;
         $search_blocked = $request->search_blocked;
@@ -88,7 +87,6 @@ class AccountController extends Controller
      */
     public function show(Request $request)
     {
-        if (!(check_access('accounts', 'manager') || check_access('accounts', 'operator'))) return redirect(route('admin'));
 
         $account = User::find($request->id);
         if (!$account) return redirect(route('admin.accounts.index'));
@@ -164,10 +162,6 @@ class AccountController extends Controller
      */
     public function update(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
-        if (!(check_access('accounts', 'manager'))) return redirect(route('admin'));
 
         // only admins can set admin role
         if ($request->role == 'admin' && Auth::user()->role != 'admin') return redirect(route('admin.accounts.index'));
@@ -234,10 +228,6 @@ class AccountController extends Controller
      */
     public function destroy(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
-        if (!(check_access('accounts', 'manager'))) return redirect(route('admin'));
 
         // mark as deleted
         User::where('id', $request->id)->update([
@@ -254,7 +244,6 @@ class AccountController extends Controller
      */
     public function internal_notes(Request $request)
     {
-        if (!(check_access('accounts'))) return redirect(route('admin'));
 
         $account = User::find($request->id);
         if (!$account) redirect(route('admin.accounts.index'));
@@ -280,11 +269,6 @@ class AccountController extends Controller
      */
     public function store_internal_note(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
-        if (!(check_access('accounts'))) return redirect(route('admin'));
-
         if ($request->input('sticky') == 'on') $sticky = 1;
 
         $note = UserInternalNote::create([
@@ -309,10 +293,6 @@ class AccountController extends Controller
      */
     public function destroy_internal_note(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
-        if (!(check_access('accounts'))) return redirect(route('admin'));
 
         $note = UserInternalNote::find($request->note_id);
         if (!$note) return redirect(route('admin.account.internal_notes', ['id' => $request->id]));
@@ -369,9 +349,6 @@ class AccountController extends Controller
     public function update_permissions(Request $request)
     {
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
-
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
         $search_user_id = $request->search_user_id;
         $search_terms = $request->search_terms;

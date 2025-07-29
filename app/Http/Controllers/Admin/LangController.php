@@ -56,8 +56,6 @@ class LangController extends Controller
      */
     public function store(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:25',
@@ -98,8 +96,6 @@ class LangController extends Controller
      */
     public function update(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
         $lang = Language::find($request->id);
         if (!$lang) return redirect(route('admin.languages.index'));
@@ -144,8 +140,6 @@ class LangController extends Controller
      */
     public function destroy(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
         $lang = Language::find($request->id);
         if (!$lang) return redirect(route('admin.languages.index'));

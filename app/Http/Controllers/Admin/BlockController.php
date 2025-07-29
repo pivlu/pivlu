@@ -107,7 +107,6 @@ class BlockController extends Controller
      */
     public function destroy(Request $request)
     {
-        if (!(check_team('developer') || check_access('cms'))) return redirect(route('admin'));
 
         $block = Block::find($request->id);
 
