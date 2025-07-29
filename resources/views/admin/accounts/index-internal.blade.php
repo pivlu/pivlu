@@ -62,19 +62,6 @@
                         </div>
                     @endif
 
-                    @if (check_access('accounts', 'manager'))
-                        <div class="dropdown float-end ms-3">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-plus-circle"></i> {{ __('Add internal user') }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="min-width: 200px;">
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#invite-internal-user-by-email">{{ __('Invite user by email') }}</a></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#invite-internal-user-by-link">{{ __('Invite user by link') }}</a></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#invite-internal-user-bulk">{{ __('Bulk invitation') }}</a></li>
-                            </ul>
-                        </div>
-                    @endif
-
                     @include('admin.accounts.modals.invite-internal-user-by-email')
                     @include('admin.accounts.modals.invite-internal-user-by-link')
                     @include('admin.accounts.modals.invite-internal-user-bulk')

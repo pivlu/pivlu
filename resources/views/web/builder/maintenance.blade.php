@@ -27,11 +27,9 @@
                     <div class="mt-3">
                         <a class="fw-bold" href="{{ route('admin') }}">{{ __('Go to my account') }}</a>
 
-                        @if (check_access('developer'))
-                            <span class="ms-3">
-                                <a class="fw-bold" href="{{ route('home') }}">{{ __('Preview website') }}</a>
-                            </span>
-                        @endif
+                        <span class="ms-3">
+                            <a class="fw-bold" href="{{ route('home') }}">{{ __('Preview website') }}</a>
+                        </span>
                     </div>
                 @else
                     <a class="fw-bold" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>

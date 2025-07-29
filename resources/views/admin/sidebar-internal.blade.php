@@ -30,7 +30,7 @@
                         <i class="bi bi-person-workspace"></i>
                         <span>{{ __('Workspaces') }}</span>
                     </a>
-                    <ul class="submenu @if (($active_menu ?? null) == 'spaces') active @endif">                      
+                    <ul class="submenu @if (($active_menu ?? null) == 'spaces') active @endif">
                         <li class="submenu-item @if (($active_submenu ?? null) == 'public') active @endif">
                             <a href="{{ route('admin.workspaces.show', ['code' => $publicSpace->code]) }}">
                                 <i class="bi bi-eye me-1"></i> {{ __('Public workspace') }}
@@ -56,96 +56,25 @@
                     </ul>
                 </li>
 
-                @if (check_access('accounts'))
-                    <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'users') active @endif">
-                        <a href="#" class='sidebar-link'>
-                            <i class="bi bi-people"></i>
-                            <span>{{ __('Accounts and Users') }}</span>
-                        </a>
-                        <ul class="submenu @if (($active_menu ?? null) == 'users') active @endif">
-                            <li class="submenu-item @if (($active_submenu ?? null) == 'users.internal') active @endif">
-                                <a href="{{ route('admin.accounts.index', ['role' => 'internal']) }}">{{ __('Internal accounts') }}</a>
-                            </li>
-
-                            <li class="submenu-item @if (($active_submenu ?? null) == 'users.user') active @endif">
-                                <a href="{{ route('admin.accounts.index', ['role' => 'user']) }}">{{ __('Registered users') }}</a>
-                            </li>
-
-                            <li class="submenu-item @if (($active_submenu ?? null) == 'invitations') active @endif">
-                                <a href="{{ route('admin.accounts.invitations') }}">{{ __('Invitations') }}</a>
-                            </li>
-                        </ul>
-                    </li>
-                @endif
-
-
-                @if (check_access('pages') || check_access('posts') || check_access('forum') || check_access('docs') || check_access('glossary') || check_access('developer'))
-                    <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'website') active @endif">
-                        <a href="#" class='sidebar-link'>
-                            <i class="bi bi-globe"></i>
-                            <span>{{ __('Website') }}</span>
-                        </a>
-                        <ul class="submenu @if (($active_menu ?? null) == 'website') active @endif">
-                            @if (check_access('pages'))
-                                <li class="submenu-item @if (($active_submenu ?? null) == 'pages') active @endif">
-                                    <a href="{{ route('admin.pages.index') }}">{{ __('Pages') }}</a>
-                                </li>
-                            @endif
-
-                            @if (check_access('posts'))
-                                <li class="submenu-item @if (($active_submenu ?? null) == 'posts') active @endif">
-                                    <a href="{{ route('admin.posts.index') }}">{{ __('Posts') }}</a>
-                                </li>
-                            @endif
-
-                            @if (check_access('forum'))
-                                <li class="submenu-item @if (($active_submenu ?? null) == 'forum') active @endif">
-                                    <a href="{{ route('admin.forum.topics') }}">{{ __('Community Forum') }}</a>
-                                </li>
-                            @endif
-
-                            @if (check_access('docs'))
-                                <li class="submenu-item @if (($active_submenu ?? null) == 'docs') active @endif">
-                                    <a href="{{ route('admin.docs.index') }}">{{ __('Knowledge Base') }}</a>
-                                </li>
-                            @endif
-
-                            @if (check_access('developer'))
-                                <li class="submenu-item @if (($active_submenu ?? null) == 'template') active @endif">
-                                    <a href="{{ route('admin.template') }}">{{ __('Website Template') }}</a>
-                                </li>
-                            @endif
-                        </ul>
-                    </li>
-                @endif
-
-
-                @if (check_access('tickets'))
-                    <li class="sidebar-item @if (($active_menu ?? null) == 'tickets') active @endif">
-                        <a href="{{ route('admin.tickets') }}" class='sidebar-link'>
-                            <i class="bi bi-ticket"></i>
-                            <span>{{ __('Support tickets') }}</span>
-                        </a>
-                    </li>
-                @endif
-
-
-                <li class="sidebar-item @if (($active_menu ?? null) == 'vault') active @endif">
-                    <a href="{{ route('admin.vault') }}" class='sidebar-link'>
-                        <i class="bi bi-shield-lock"></i>
-                        <span>{{ __('Vault') }}</span>
+                <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'users') active @endif">
+                    <a href="#" class='sidebar-link'>
+                        <i class="bi bi-people"></i>
+                        <span>{{ __('Accounts and Users') }}</span>
                     </a>
-                </li>
+                    <ul class="submenu @if (($active_menu ?? null) == 'users') active @endif">
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'users.internal') active @endif">
+                            <a href="{{ route('admin.accounts.index', ['role' => 'internal']) }}">{{ __('Internal accounts') }}</a>
+                        </li>
 
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'users.user') active @endif">
+                            <a href="{{ route('admin.accounts.index', ['role' => 'user']) }}">{{ __('Registered users') }}</a>
+                        </li>
 
-                @if (check_access('contact'))
-                    <li class="sidebar-item @if (($active_menu ?? null) == 'contact') active @endif">
-                        <a href="{{ route('admin.contact') }}" class='sidebar-link'>
-                            <i class="bi bi-textarea-resize"></i>
-                            <span>{{ __('Contact messages') }}</span>
-                        </a>
-                    </li>
-                @endif
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'invitations') active @endif">
+                            <a href="{{ route('admin.accounts.invitations') }}">{{ __('Invitations') }}</a>
+                        </li>
+                    </ul>
+                </li>                
 
             </ul>
         </div>

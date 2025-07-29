@@ -32,11 +32,7 @@
                     @endif
                     @if ($config->registration_verify_email_disabled ?? null)
                         {{ __('Email verification for registration is disabled') }}.
-                    @endif
-
-                    @if (check_access('accounts'))
-                        <a href="{{ route('admin.config.registration') }}">{{ __('Change') }}</a>
-                    @endif
+                    @endif                    
                 </div>
             @endif
 

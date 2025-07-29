@@ -202,7 +202,7 @@
 
                                     <a class="btn btn-primary btn-sm" href="{{ route('admin.accounts.show', ['id' => $account->id]) }}">{{ __('Update') }}</a>
 
-                                    @if (check_access('accounts', 'manager') && Auth::user()->id != $account->id)
+                                    @if (Auth::user()->role == 'admin' && Auth::user()->id != $account->id)
                                         <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $account->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                                         <div class="modal fade confirm-{{ $account->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                             <div class="modal-dialog">
