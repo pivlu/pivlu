@@ -30,4 +30,3 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
-composer.phar
