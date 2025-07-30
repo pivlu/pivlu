@@ -18,7 +18,7 @@ class LoginResponse implements LoginResponseContract
         }
 
         if ($role == 'internal') {
-            return redirect(route('internal'));
+            return redirect(route('admin'));
         }
 
         if ($role == 'user') {

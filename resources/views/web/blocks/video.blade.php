@@ -1,14 +1,9 @@
-@php
-$block_data = block($block['id']);
-@endphp
-
 @if ($block_data->content ?? null)
     @php
         $block_item = unserialize($block_data->content);
-        $block_header = unserialize($block_data->header ?? null);
     @endphp
 
-    <div class="@if(($module ?? null) == 'docs') @else container-xxl @endif">
+    <div class="container-xxl">
 
         <div class="block text-center">
 
@@ -29,7 +24,7 @@ $block_data = block($block['id']);
             @endif
 
             @if ($block_item['embed'] ?? null)
-                <div @if($block_extra['full_width_responsive'] ?? null) class="ratio ratio-16x9" @endif>
+                <div @if($block_settings['full_width_responsive'] ?? null) class="ratio ratio-16x9" @endif>
                     {!! $block_item['embed'] !!}
                 </div>
                 @if ($block_item['caption'] ?? null)<div class="caption">{{ $block_item['caption'] }}</div>@endif

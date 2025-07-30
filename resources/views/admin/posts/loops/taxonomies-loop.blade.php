@@ -15,7 +15,8 @@
             <div class="listing">
                 @for ($i = 1; $i < $loop->depth; $i++)
                     ---
-                @endfor {!! $item->icon ?? null !!} <a target="_blank" href="{{ route('home') }}/{{ $post_type->slug }}/{{ $taxonomy_term->slug }}/{{ $item->default_language_content->slug }}">{{ $item->default_language_content->name }}</a>
+                @endfor {!! $item->icon ?? null !!} <a target="_blank"
+                    href="{{ route('home') }}/{{ $post_type->slug }}/{{ $taxonomy_term->slug }}/{{ $item->default_language_content->slug }}">{{ $item->default_language_content->name }}</a>
             </div>
         @endif
         <div class="text-muted small">
@@ -36,17 +37,15 @@
 
     </td>
 
-    <td>        
+    <td>
         <a href="{{ route('admin.posts.index', ['search_item_id' => $item->id]) }}">{{ $item->count_posts ?? 0 }} </a>
     </td>
 
     <td>
         <div class="d-grid gap-2">
-            @can('view', App\Models\TaxonomyTerm::class)
-                <a href="{{ route('admin.taxonomies.show', ['id' => $item->id])}}" class="btn btn-primary btn-sm mb-2">{{ __('Manage category') }}</button>                
-            @endcan
 
-            @can('delete', App\Models\TaxonomyTerm::class)
+            <a href="{{ route('admin.taxonomies.show', ['id' => $item->id]) }}" class="btn btn-primary btn-sm mb-2">{{ __('Manage category') }}</button>
+
                 <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $item->id }}" class="btn btn-danger btn-sm">{{ __('Delete category') }}</a>
                 <div class="modal fade confirm-{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -69,7 +68,6 @@
                         </div>
                     </div>
                 </div>
-            @endcan
         </div>
     </td>
 </tr>

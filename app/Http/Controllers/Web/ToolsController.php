@@ -35,11 +35,25 @@ class ToolsController extends Controller
     {
         if (!(Config::config()->website_maintenance_enabled ?? null)) return redirect(route('home'));
 
-        return view('web.builder.maintenance', []);
+        return view('web.maintenance', []);
     }
 
 
-     /**
+    /**
+     * User blocked
+     */
+    public function user_blocked(Request $request)
+    {
+        if (Auth::user()->blocked_at) {
+            $block_reason = UserMeta::get_meta(Auth::user()->id, 'block_reason');
+        }
+
+        return view('web.usre-blocked', ['block_reason' => $block_reason]);
+    }
+
+
+
+    /**
      * Theme fake post
      */
     public function theme_fake_post(Request $request)
@@ -47,7 +61,6 @@ class ToolsController extends Controller
         $active_theme = Config::config()->active_theme ?? null;
         $sample_file = $request->file;
 
-        return view('themes.'.$active_theme.'.includes.samples.'.$sample_file, []);
+        return view('themes.' . $active_theme . '.includes.samples.' . $sample_file, []);
     }
-
 }

@@ -145,8 +145,6 @@
     </div>
 </div>
 
-</div>
-
 <h5 class="mb-3">{{ __('Block content') }}:</h5>
 
 @foreach ($content_langs as $lang)
@@ -187,19 +185,7 @@
                 <input type="text" class="form-control" name="btn1_url_{{ $lang->id }}" value="{{ $content_array['btn1_url'] ?? null }}">
             </div>
         </div>
-
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 1 style') }} [<a target="_blank" href="{{ route('admin.template.buttons') }}">{{ __('Manage buttons') }}</a>]</label>
-                <select class="form-select" name="btn1_id_{{ $lang->id }}">
-                    @foreach ($buttons as $button)
-                        <option @if (($content_array['btn1_id'] ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
-                    @endforeach
-                </select>
-
-                <div class="form-text">{{ __("If you don't select a button, the default button will be used") }}</div>
-            </div>
-        </div>
+       
 
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
@@ -224,18 +210,7 @@
                 <input type="text" class="form-control" name="btn2_url_{{ $lang->id }}" value="{{ $content_array['btn2_url'] ?? null }}">
             </div>
         </div>
-
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 2 style') }} [<a target="_blank" href="{{ route('admin.template.buttons') }}">{{ __('Manage buttons') }}</a>]</label>
-                <select class="form-select" name="btn2_id_{{ $lang->id }}">
-                    @foreach ($buttons as $button)
-                        <option @if (($content_array['btn2_id'] ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
-                    @endforeach
-                </select>
-                <div class="form-text">{{ __("If you don't select a button, the default button will be used") }}</div>
-            </div>
-        </div>
+      
 
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">

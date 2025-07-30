@@ -1,12 +1,6 @@
-@php
-    $block_data = block($block['id']);
-@endphp
-
-
 @if ($block_data->content ?? null)
     @php
-        $block_item = unserialize($block_data->content);
-        $block_header = unserialize($block_data->header ?? null);
+        $block_item = unserialize($block_data->content);        
     @endphp
 
     <div class="block text-center">
@@ -30,10 +24,10 @@
         @if ($block_item['media_id'] ?? null)
             @if ($block_item['url'])
                 <a title="{{ $block_item['title'] ?? __('image') }}" href="{{ $block_item['url'] }}"><img src="{{ image($block_item['media_id']) }}"
-                        class="block-image-img img-fluid @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['rounded'] ?? null) rounded @endif" alt="{{ $block_item['title'] ?? __('image') }}"></a>
+                        class="block-image-img img-fluid @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['rounded'] ?? null) rounded @endif" alt="{{ $block_item['title'] ?? __('image') }}"></a>
             @else
                 <a data-fancybox="image" href="{{ image($block_item['media_id']) }}"><img src="{{ image($block_item['media_id']) }}"
-                        class="block-image-img img-fluid @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['rounded'] ?? null) rounded @endif" alt="{{ $block_item['title'] ?? __('image') }}"
+                        class="block-image-img img-fluid @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['rounded'] ?? null) rounded @endif" alt="{{ $block_item['title'] ?? __('image') }}"
                         title="{{ $block_item['title'] ?? __('image') }}"></a>
             @endif
 

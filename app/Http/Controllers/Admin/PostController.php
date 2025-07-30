@@ -43,14 +43,11 @@ class PostController extends Controller
      * Display all posts
      */
     public function index(Request $request)
-    {
-        // check if user can view items
-        if ($request->user()->cannot('view', Post::class)) return redirect(route('admin'))->withErrors('Forbidden');
-
+    {        
         $type = $request->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
         $taxonomy_terms = TaxonomyTerm::with('taxonomies')->where(['post_type' => $type, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
-        $post_type = PostType::where(['type' => $type, 'active' => 1])->first();
+        $post_type = PostType::with('default_language_content')->where(['type' => $type, 'active' => 1])->first();
 
         $search_terms = $request->search_terms;
         $search_status = $request->search_status;
@@ -59,10 +56,7 @@ class PostController extends Controller
         $search_sticky = $request->search_sticky;
 
         $posts = Post::with('user', 'taxonomies')->where('type', $type)->whereNull('deleted_at');
-
-        // check if user can view own items only
-        if (!$request->user()->can('viewAny', Post::class)) $posts = $posts->where('user_id', $request->user()->id);
-
+        
         if ($search_status)
             $posts = $posts->where('posts.status', 'like', $search_status);
 
@@ -109,7 +103,6 @@ class PostController extends Controller
      */
     public function create(Request $request)
     {
-        if ($request->user()->cannot('create', Post::class)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
         $type = $request->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
@@ -132,7 +125,6 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->user()->cannot('create', Post::class)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
         $type = $request->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
@@ -142,8 +134,6 @@ class PostController extends Controller
             'user_id' => Auth::user()->id,
             'status' => 'draft',
             'sticky' => $request->has('sticky') ? 1 : 0,
-            'disable_comments' => $request->has('disable_comments') ? 1 : 0,
-            'disable_likes' => $request->has('disable_likes') ? 1 : 0,
             'parent_id' => $request->parent_id ?? null, // for "pages" only
         ]);
 
@@ -202,16 +192,11 @@ class PostController extends Controller
      */
     public function show(Request $request)
     {
-        $post = Post::with('user')->where('id', $request->id);
-
-        // check if user can view own posts only
-        if (!$request->user()->can('viewAny', Post::class)) $post = $post->where('user_id', $request->user()->id);
-
+        $post = Post::with('user', 'default_language_content')->where('id', $request->id);
+        
         $post = $post->first();
-
+        
         if (!$post) return redirect(route('admin.posts.index'));
-
-        if ($request->user()->cannot('view', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
         $type = $post->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
@@ -265,16 +250,12 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts'));
 
-        if ($request->user()->cannot('update', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
-
         $this->check_post_type_exists($post->type);
 
         Post::where('id', $request->id)->update([
             'status' => $request->status,
             'sticky' => $request->has('sticky') ? 1 : 0,
             'disable_comments' => $request->has('disable_comments') ? 1 : 0,
-            'disable_likes' => $request->has('disable_likes') ? 1 : 0,
-            'parent_id' => $request->parent_id ?? null, // for "pages" only
         ]);
 
         foreach (admin_languages() as $lang) {
@@ -378,8 +359,6 @@ class PostController extends Controller
         
         if (!$post) return redirect(route('admin.posts.index'));
 
-        if ($request->user()->cannot('delete', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
-
         $type = $request->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
 
@@ -397,8 +376,6 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        if ($request->user()->cannot('update', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
-
         if ($post->media_id) Media::delete_media($post->media_id);
 
         $post->update(['media_id' => null]);
@@ -412,14 +389,12 @@ class PostController extends Controller
      */
     public function content(Request $request)
     {
-        $post = Post::with('user')->find($request->id);
+        $post = Post::with('user', 'default_language_content')->find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
-
-        if ($request->user()->cannot('view', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
         $type = $post->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
-        $post_type = PostType::where(['type' => $type, 'active' => 1])->first();
+        $post_type = PostType::with('default_language_content')->where(['type' => $type, 'active' => 1])->first();
 
         return view('admin.index', [
             'view_file' => 'admin.posts.content',            
@@ -442,8 +417,6 @@ class PostController extends Controller
     {
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
-
-        if ($request->user()->cannot('update', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
         $type = $request->type ?? 'post'; // post type
         $this->check_post_type_exists($type);
@@ -473,8 +446,6 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        if ($request->user()->cannot('update', $post)) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
-
         Block::where('id', $request->block_id)->delete();
 
         Block::regenerate_post_blocks($request->id);
@@ -488,8 +459,6 @@ class PostController extends Controller
      */
     public function sortable(Request $request)
     {
-        if ($request->user()->cannot('update', Post::class)) return;
-
         $i = 0;
         $records = $request->all();
 

@@ -11,7 +11,7 @@
 
 <body>
 
-    @include("{$theme_path}.includes.navigation")
+    @include(theme_menu())
 
     <!-- Main Content -->
     <div class="main">
@@ -35,25 +35,20 @@
                             {{ date_locale($post->created_at) }}
                         @endif
 
-
-                        <img src="{{ avatar($post->user_id) }}" alt="{{ $post->author_name }}" class="avatar rounded-circle ms-2">
+                        <img src="{{ avatar($post->author_avatar) }}" alt="{{ $post->author_name }}" class="avatar rounded-circle ms-2">
 
                         <a href="{{ route('profile', ['username' => $post->user->username]) }}">{{ $post->author_name }}</a>
 
                         @if ($post->hits)
                             <i class="bi bi-eye ms-2"></i> {{ $post->hits }} {{ __('visits') }}
-                        @endif
-
-                        @if ($post->minutes_to_read > 0)
-                            <i class="bi bi-clock ms-2"></i> {{ $post->minutes_to_read }} {{ __('minutes read') }}
-                        @endif
+                        @endif                        
                     </div>
 
-
-                    <div class="main-image mb-4 post-main-img-full-width">
-                        <img class="img-fluid rounded" src="{{ $post->image }}" alt="{{ $post->title }}" title="{{ $post->title }}">
-                    </div>
-
+                    @if ($post->media_id)
+                        <div class="main-image mb-4 post-main-img-full-width">
+                            <img class="img-fluid rounded" src="{{ $post->image }}" alt="{{ $post->title }}" title="{{ $post->title }}">
+                        </div>
+                    @endif
                 </div>
 
 
@@ -74,7 +69,7 @@
 
     </div>
 
-    @include("{$theme_path}.includes.footer")
+    @include(theme_footer())
 
 </body>
 

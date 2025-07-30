@@ -34,9 +34,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('lang_id')->nullable();
-            $table->char('hash', 32)->unique();
             $table->string('title', 250);
-            $table->string('slug', 250);
+            $table->string('slug', 250)->index();
             $table->text('url')->nullable();
             $table->text('search_terms')->nullable();
             $table->text('meta_title')->nullable();

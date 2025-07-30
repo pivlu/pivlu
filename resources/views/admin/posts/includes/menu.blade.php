@@ -1,8 +1,7 @@
 <nav class="nav nav-tabs" id="myTab" role="tablist">
-    @can('view', App\Models\Post\Post::class)
-        <a class="nav-item nav-link @if (($menu_section ?? null) == 'posts') active @endif" href="{{ route('admin.posts.index', ['type' => $type]) }}">{!! $post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
-            {{ $post_type->name ?? __('Posts') }}</a>
-    @endcan
+    <a class="nav-item nav-link @if (($menu_section ?? null) == 'posts') active @endif" href="{{ route('admin.posts.index', ['type' => $type]) }}">{!! $post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
+        {{ $post_type->name ?? __('Posts') }}</a>
+
 
     @foreach ($taxonomy_terms as $nav_taxonomy_term)
         <a class="nav-item nav-link @if (($menu_section ?? null) == $nav_taxonomy_term->taxonomy) active @endif" href="{{ route('admin.taxonomies.index', ['taxonomy' => $nav_taxonomy_term->taxonomy, 'type' => $nav_taxonomy_term->post_type]) }}">

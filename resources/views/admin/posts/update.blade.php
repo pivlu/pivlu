@@ -19,7 +19,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['type' => $type]) }}">
                             {{ $post_type->name ?? __('Posts') }}
                         </a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ $post->title }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>
                 </ol>
             </nav>
         </div>
@@ -46,7 +46,7 @@
                     <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {{ __('Preview') }}
                     </button>
-                    <ul class="dropdown-menu">                       
+                    <ul class="dropdown-menu">
                         @foreach ($preview_urls as $lang_name => $preview_url)
                             @if ($preview_url)
                                 <li><a class="dropdown-item" target="_blank" href="{{ route('home') }}/{{ $preview_url }}">{{ $lang_name }}</a></li>
@@ -120,7 +120,7 @@
 
                             <div class="form-group">
                                 <label>
-                                    {{ __(json_decode($post_type->labels)->singular ?? $post_type->name) }} {{ __('title') }}
+                                    {{ __(json_decode($post_type->default_language_content->labels)->singular ?? $post_type->name) }} {{ __('title') }}
                                 </label>
                                 <input type="text" class="form-control" name="title_{{ $lang->id }}" value="{{ $lang->post_content['title'] ?? null }}" @if ($lang->is_default == 1) required @endif />
                             </div>
@@ -197,9 +197,7 @@
                                 <a target="_blank" href="{{ image($post->media_id, 'small') }}">{{ __('Small') }}</a> |
                                 <a target="_blank" href="{{ image($post->media_id, 'thumb') }}">{{ __('Thumb') }}</a> |
                                 <a target="_blank" href="{{ image($post->media_id, 'thumb_square') }}">{{ __('Thumb square') }}</a>
-                                @can('update', $post)
-                                    | <a class="text-danger" href="{{ route('admin.posts.delete_main_image', ['id' => $post->id]) }}">{{ __('Delete image') }}</a>
-                                @endcan
+                                | <a class="text-danger" href="{{ route('admin.posts.delete_main_image', ['id' => $post->id]) }}">{{ __('Delete image') }}</a>
                             @endif
                         </div>
                     </div>
@@ -354,11 +352,9 @@
 
                         <div class="clearfix"></div>
 
-                        @can('update', $post)
-                            <button type="submit" class="btn btn-primary mt-3">
-                                {{ __(json_decode($post_type->labels)->update ?? __('Update')) }}
-                            </button>
-                        @endcan
+                        <button type="submit" class="btn btn-primary mt-3">
+                            {{ __(json_decode($post_type->default_language_content->labels)->update ?? __('Update')) }}
+                        </button>
                     </div>
 
                 </div>

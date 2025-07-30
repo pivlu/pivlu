@@ -30,7 +30,6 @@ class PostContent extends Model
     protected $fillable = [
         'post_id',
         'lang_id',
-        'hash',
         'title',
         'summary',
         'slug',

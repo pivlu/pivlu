@@ -74,10 +74,10 @@
                 </div>
 
                 <div class="col-12">
-                    <select class="form-select me-2 mb-2 @if ($search_categ_id) is-valid @endif" name="search_categ_id">
-                        <option selected="selected" value="">- {{ __('All categories') }} -</option>
-                        @foreach ($posts_categories as $categ)
-                            @include('admin.posts.loops.posts-filter-categories-loop', $categ)
+                    <select class="form-select me-2 mb-2 @if ($search_post_type) is-valid @endif" name="search_post_type">
+                        <option selected="selected" value="">- {{ __('All post types') }} -</option>
+                        @foreach ($post_types as $post_type)
+                            <option @if($post_type->type == $search_post_type )selected @endif value="{{ $post_type->type }}">{{ $post_type->name }}</option>                            
                         @endforeach
                     </select>
                 </div>

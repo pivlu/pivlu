@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Contact;
 use App\Models\User;
 use App\Models\Block;
 use App\Models\BlockContent;
 use App\Models\Post;
+use App\Models\PostType;
 use Auth;
 
 class RecycleBinController extends Controller
@@ -35,7 +35,7 @@ class RecycleBinController extends Controller
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
 
         $module = $request->module;
-        if (!($module == 'accounts' || $module == 'pages')) return redirect(route('admin.recycle_bin'));
+        if (!($module == 'accounts' || $module == 'posts')) return redirect(route('admin.recycle_bin'));
 
         // DELETED ACCOUNTS
         if ($module == 'accounts') {
@@ -60,7 +60,7 @@ class RecycleBinController extends Controller
             $deletedItemsCount = Post::onlyTrashed()->count();
 
             $search_terms = $request->search_terms;
-            $search_categ_id = $request->search_categ_id;
+            $search_post_type = $request->search_post_type;
 
             $items = Post::with('author', 'category', 'language')->onlyTrashed();
 
@@ -75,6 +75,8 @@ class RecycleBinController extends Controller
             }
 
             $items = $items->orderByDesc('id')->paginate(25);
+
+            $post_types = PostType::orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->get();
         }
 
 
@@ -88,11 +90,9 @@ class RecycleBinController extends Controller
 
             // Search (for all modules):
             'search_terms' => $search_terms ?? null, //posts / pages
-            'search_status' => $search_status ?? null,
-            'search_replied' => $search_replied ?? null,
-            'search_important' => $search_important ?? null,
-            'search_categ_id' => $search_categ_id ?? null, // posts / forum
-            'posts_categories' => $posts_categories ?? null, // posts
+            'search_status' => $search_status ?? null,            
+            'search_post_type' => $search_post_type ?? null,            
+            'post_types' => $post_types ?? null, // posts
         ]);
     }
 
@@ -145,10 +145,7 @@ class RecycleBinController extends Controller
     public function multiple_action(Request $request)
     {
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
-
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
+        
         $module = $request->module;
         if (!($module == 'accounts' || $module == 'posts')) return redirect(route('admin.recycle_bin'));
 

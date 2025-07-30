@@ -39,16 +39,14 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    @can('create', App\Models\Post\TaxonomyTerm::class)
-                        <span class="float-end"><button data-bs-toggle="modal" data-bs-target="#create-taxonomy" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
-                                @if ($post_type == 'post')
-                                    {{ __('Create category') }}
-                                @else
-                                    {{ __(json_decode($taxonomy_term->labels)->create ?? __('Create') . ' ' . $taxonomy_term->name) }}
-                                @endif
-                            </button></span>
-                        @include('admin.posts.includes.modal-create-taxonomy')
-                    @endcan
+                    <span class="float-end"><button data-bs-toggle="modal" data-bs-target="#create-taxonomy" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
+                            @if ($post_type == 'post')
+                                {{ __('Create category') }}
+                            @else
+                                {{ __(json_decode($taxonomy_term->labels)->create ?? __('Create') . ' ' . $taxonomy_term->name) }}
+                            @endif
+                        </button></span>
+                    @include('admin.posts.includes.modal-create-taxonomy')
                 </div>
             </div>
 

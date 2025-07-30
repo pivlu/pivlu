@@ -1,3 +1,8 @@
+@php
+    $block_data = block($block['id']);
+    $block_header = unserialize($block_data->header ?? null);
+@endphp
+
 @switch($block['type'])
     @case('alert')
         @include('web.blocks.alert')
@@ -14,13 +19,13 @@
     @case('card')
         @include('web.blocks.card')
     @break
-        
+
     @case('editor')
         <div class="container-xxl">
             @include('web.blocks.editor')
         </div>
     @break
-    
+
     @case('gallery')
         <div class="container-xxl">
             @include('web.blocks.gallery')
@@ -38,23 +43,24 @@
     @break
 
     @case('include')
-        @if ($block_extra['file'] ?? null)
+        @if ($block_settings['file'] ?? null)
             @php
-                $include_file = str_replace('.blade.php', '', $block_extra['file']);
+                $include_file = str_replace('.blade.php', '', $block_settings['file']);
             @endphp
             @include("custom-files.{$include_file}")
         @endif
-    @break    
+    @break
 
     @case('map')
         @include('web.blocks.map')
     @break
-    
+
     @case('slider')
         @include('web.blocks.slider')
     @break
-    
+
     @case('video')
         @include('web.blocks.video')
     @break
+
 @endswitch

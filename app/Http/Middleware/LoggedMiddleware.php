@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\UserMeta;
 use App\Models\Language;
 use App\Models\Config;
 use Auth;
@@ -47,9 +48,15 @@ class LoggedMiddleware
 
             // Check if account is blocked
             if (Auth::user()->blocked_at) {
-                echo '<b>You are blocked</b>';
+                echo '<b>THIS ACCOUNT IS BLOCKED</b>';
                 $block_reason = UserMeta::get_meta(Auth::user()->id, 'block_reason');
-                if ($block_reason) echo "<br>" . nl2br($block_reason);
+                if ($block_reason) echo "<br>" . nl2br($block_reason) . "<hr>";
+
+                echo '<a href="'.route('home').'">HOME</a>';
+
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
                 exit;
             }
 
@@ -64,7 +71,7 @@ class LoggedMiddleware
 
                 // general config
                 $config = Config::config();
-                $view->with('config', $config);               
+                $view->with('config', $config);
             });
         }
 

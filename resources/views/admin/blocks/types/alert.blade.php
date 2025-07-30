@@ -1,11 +1,11 @@
 <div class="form-group col-xl-2 col-lg-3 col-md-4">
     <label>{{ __('Alert type') }}</label>
     <select class="form-select" name="alert_type">
-        <option @if (($block_extra['type'] ?? null) == 'primary') selected @endif value="primary">{{ __('Note (info)') }}</option>
-        <option @if (($block_extra['type'] ?? null) == 'success') selected @endif value="success">{{ __('Success') }}</option>
-        <option @if (($block_extra['type'] ?? null) == 'danger') selected @endif value="danger">{{ __('Danger') }}</option>
-        <option @if (($block_extra['type'] ?? null) == 'warning') selected @endif value="warning">{{ __('Warning') }}</option>
-        <option @if (($block_extra['type'] ?? null) == 'light') selected @endif value="light">{{ __('Light') }}</option>
+        <option @if (($block_settings['type'] ?? null) == 'primary') selected @endif value="primary">{{ __('Note (info)') }}</option>
+        <option @if (($block_settings['type'] ?? null) == 'success') selected @endif value="success">{{ __('Success') }}</option>
+        <option @if (($block_settings['type'] ?? null) == 'danger') selected @endif value="danger">{{ __('Danger') }}</option>
+        <option @if (($block_settings['type'] ?? null) == 'warning') selected @endif value="warning">{{ __('Warning') }}</option>
+        <option @if (($block_settings['type'] ?? null) == 'light') selected @endif value="light">{{ __('Light') }}</option>
     </select>
 </div>
 

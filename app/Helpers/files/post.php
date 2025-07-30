@@ -87,11 +87,9 @@ if (!function_exists('block')) {
 	function block($id)
 	{
 
-		$data = array('content' => null, 'content_extra' => null);
-
+		$data = ['content' => null];
 		$block = Block::find($id);
 		if (!$block) return (object)$data;
-
 		if ($block->hidden == 1) return (object)$data;
 
 		$block_content = BlockContent::where('block_id', $id)->where('lang_id', Language::get_active_language()->id ?? null)->first();

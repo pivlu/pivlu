@@ -49,4 +49,9 @@ class PostType extends Model
     {
         return $this->hasMany(TaxonomyTerm::class, 'taxonomy', 'type');
     }
+
+     public function default_language_content()
+    {
+        return $this->hasOne(PostTypeContent::class, 'post_type_id')->where('lang_id', Language::get_default_language()->id);
+    }
 }

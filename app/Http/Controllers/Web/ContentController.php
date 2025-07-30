@@ -31,18 +31,11 @@ use App\Models\PostContent;
 use App\Models\Taxonomy;
 use App\Models\TaxonomyTerm;
 use App\Models\Config;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Cookie;
-use Auth;
 
 class ContentController extends Controller
 {
 
-    public function __construct()
-    {
-        //$this->theme_views_path = 'web.' . Config::config()->active_theme ?? 'default';
-        $this->theme_views_path = 'web.builder';
-    }
+    public static function get_theme_path() {}
 
 
     /*
@@ -79,12 +72,11 @@ class ContentController extends Controller
             ]);
         } else {
             // 2. Check for posts taxonomy (category)
-            $posts_category = Taxonomy::where('taxonomy', $slug)->where('taxonomy', 'category')->where('active', 1)->first();
-            if ($posts_category) {
-                // POSTS CATEGORY
-                return view($this->theme_views_path . '.post-taxonomy', [
-                    'portal_section' => $post_type->type ?? null,
-                    'posts_category' => $posts_category,
+            $taxonomy = Taxonomy::where('taxonomy', $slug)->where('taxonomy', 'category')->where('active', 1)->first();
+            if ($taxonomy) {
+                // POSTS TAXONOMY
+                return view($this->get_active_theme_view() . ($custom_tpl_file ?? 'taxonomy'), [
+                    'taxonomy' => $taxonomy,
 
                 ]);
             }
@@ -95,11 +87,18 @@ class ContentController extends Controller
         if ($post_content) {
             $post = Post::find($post_content->post_id);
             if ($post && $post->status == 'published' && $post->type == 'page') {
+
+                $post->title = $post->active_language_content->title;
+                $post->summary = $post->active_language_content->summary;
+                $post->image = image($post->media_id);
+                $post->author_name = $post->user->name;
+                $post->author_avatar = $post->user->avatar_media_id;
                 if ($post->blocks) $content_blocks = unserialize($post->blocks);
+
                 // check for custom tpl file
                 $custom_tpl_file = PostMeta::get_meta($post->id, 'custom_tpl_file') ?? null;
 
-                return view($this->theme_views_path . '.' . ($custom_tpl_file ?? 'page'), [
+                return view($this->get_active_theme_view() . ($custom_tpl_file ?? 'post'), [
                     'post' => $post,
                     'content_blocks' => $content_blocks ?? array(),
                 ]);
@@ -159,9 +158,9 @@ class ContentController extends Controller
                     $post->summary = $post->active_language_content->summary;
                     $post->image = image($post->media_id);
                     $post->author_name = $post->user->name;
-                    $post->author_avatar = $post->user->avatar;
+                    $post->author_avatar = $post->user->avatar_media_id;
 
-                    if ($post->blocks) $content_blocks = unserialize($post->blocks);                    
+                    if ($post->blocks) $content_blocks = unserialize($post->blocks);
 
                     // Get post type taxonomies (userin nav menu)
                     $post_type_nav_items = TaxonomyTerm::get_hierarchical_taxonomies($post_type->type);
@@ -175,7 +174,7 @@ class ContentController extends Controller
                     // update hits
                     Post::where('id', $post->id)->increment('hits');
 
-                    return view('themes.' . $this->get_active_theme() . '.post', [
+                    return view($this->get_active_theme_path() . '.post', [
                         'taxonomy_section' => $post_main_hierarchical_taxonomy->slug ?? null,
                         'post_type' => $post_type,
                         'post_main_hierarchical_taxonomy' => $post_main_hierarchical_taxonomy,
@@ -279,7 +278,7 @@ class ContentController extends Controller
         abort(404);
     }
 
-    
+
 
     /**
      *  Show post
@@ -430,8 +429,13 @@ class ContentController extends Controller
     }
 
 
-    public static function get_active_theme()
+    public static function get_active_theme_view()
     {
-        return Config::get_config('active_theme') ?? 'builder';
+        $active_theme = Config::get_config('active_theme') ?? 'builder';
+
+        if ($active_theme != 'builder')
+            return 'themes.' . $active_theme . '.';
+        else
+            return 'web.builder.';
     }
 }

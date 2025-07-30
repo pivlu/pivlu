@@ -7,7 +7,7 @@
                 <div class="row">
 
                     <div class="col-12">
-                       
+
                         <h4 class="card-title">{{ __('Dashboard') }}</h4>
                     </div>
 
@@ -17,14 +17,6 @@
 
 
             <div class="card-body">
-                @if ($message = Session::get('error'))
-                    <div class="alert alert-danger">
-                        @if ($message == 'demo')
-                            {{ __('Error. This action is disabled in demo mode') }}
-                        @endif
-                    </div>
-                @endif               
-
                 <div class="row">
 
                     <div class="col-12 col-md-6 col-lg-4">
@@ -44,7 +36,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>                                       
+                    </div>
                 </div>
                 <!-- end row -->
 
@@ -109,25 +101,17 @@
         <div class="card">
 
             <div class="card-header">
-                <h4 class="card-title mb-0">{{ __('XXX') }}</h4>
+                <h4 class="card-title mb-0">{{ __('Files') }}</h4>
             </div>
 
             <div class="card-body">
                 <div class="mb-2">
-                    
+                    <i class="bi bi-folder"></i> {{ __('Number of files') }}: <b>{{ $media_count_files ?? 0 }}</b>
+                    <div class="mb-1"></div>
+                    <i class="bi bi-hdd"></i> {{ __('Size of files') }}: <b>{{ $media_size_total ?? 0 }}MB</b>
                 </div>
 
-            </div>
-        </div>
 
-
-        <div class="card">
-
-            <div class="card-header">
-                <h4 class="card-title mb-0">{{ __('Website status') }}</h4>
-            </div>
-
-            <div class="card-body">
                 @if ($config->website_disabled ?? null)
                     <div class="fw-bold text-danger mb-2">
                         <i class="bi bi-info-circle"></i> {{ __('Public website is disabled.') }}
@@ -139,90 +123,16 @@
                         <i class="bi bi-info-circle"></i> {{ __('Website is in maintenance mode.') }}
                     </div>
                 @endif
-
-                @if (!($config->website_disabled ?? null) && !($config->website_maintenance_enabled ?? null))
-                    <div class="fw-bold text-success mb-2">
-                        <i class="bi bi-info-circle"></i> {{ __('Public website is active.') }}
-                    </div>
-                @endif
-
-                @if ($config->registration_disabled ?? null)
-                    <div class="fw-bold text-danger mb-2">
-                        <i class="bi bi-info-circle"></i> {{ __('Warning! Users registration is disabled.') }}
-                    </div>
-                @endif
-
+                
                 <div class="mt-2">
                     <a class="fw-bold" href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Change website status') }}</a>
                 </div>
-            </div>
-
-
-            <div class="card-header">
-                <h4 class="card-title mb-0">{{ __('Modules') }}</h4>
-            </div>
-
-            <div class="card-body">
-                <i class="bi bi-dot"></i> {{ __('Posts (articles, news, announcements, blog...)') }}:
-                @if (($config->module_posts ?? null) == 'active')
-                    <span class="fw-bold text-success"> {{ __('active') }}</span>
-                @elseif (($config->module_posts ?? null) == 'inactive')
-                    <span class="fw-bold text-warning"> {{ __('inactive') }}</span>
-                @else
-                    <span class="fw-bold text-danger"> {{ __('disabled') }}</span>
-                @endif
-
-                <div class="mb-2"></div>
-
-                <i class="bi bi-dot"></i> {{ __('Contact Page') }}:
-                @if (($config->module_contact ?? null) == 'active')
-                    <span class="fw-bold text-success"> {{ __('active') }}</span>
-                @elseif (($config->module_contact ?? null) == 'inactive')
-                    <span class="fw-bold text-warning"> {{ __('inactive') }}</span>
-                @else
-                    <span class="fw-bold text-danger"> {{ __('disabled') }}</span>
-                @endif
-
-                <div class="mb-2"></div>
-
-                <i class="bi bi-dot"></i> {{ __('Community Forum') }}:
-                @if (($config->module_forum ?? null) == 'active')
-                    <span class="fw-bold text-success"> {{ __('active') }}</span>
-                @elseif (($config->module_forum ?? null) == 'inactive')
-                    <span class="fw-bold text-warning"> {{ __('inactive') }}</span>
-                @else
-                    <span class="fw-bold text-danger"> {{ __('disabled') }}</span>
-                @endif
-
-                <div class="mb-2"></div>
-
-                <i class="bi bi-dot"></i> {{ __('Knowledge Base') }}:
-                @if (($config->module_docs ?? null) == 'active')
-                    <span class="fw-bold text-success"> {{ __('active') }}</span>
-                @elseif (($config->module_docs ?? null) == 'inactive')
-                    <span class="fw-bold text-warning"> {{ __('inactive') }}</span>
-                @else
-                    <span class="fw-bold text-danger"> {{ __('disabled') }}</span>
-                @endif
-
-                <div class="mb-2"></div>
-
-                <i class="bi bi-dot"></i> {{ __('Support Tickets') }}:
-                @if (($config->module_tickets ?? null) == 'active')
-                    <span class="fw-bold text-success"> {{ __('active') }}</span>
-                @elseif (($config->module_tickets ?? null) == 'inactive')
-                    <span class="fw-bold text-warning"> {{ __('inactive') }}</span>
-                @else
-                    <span class="fw-bold text-danger"> {{ __('disabled') }}</span>
-                @endif
-
-                <div class="mt-2">
-                    <a class="fw-bold" href="{{ route('admin.config', ['tab' => 'general']) }}">{{ __('Go to modules settings') }}</a>
-                </div>
 
             </div>
-
         </div>
+
+
+        
     </div>
 
 </div>

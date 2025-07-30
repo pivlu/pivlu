@@ -119,7 +119,7 @@ class Block extends Model
                 }
             }
 
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
 
@@ -128,7 +128,7 @@ class Block extends Model
         if ($block_type->type == 'alert') {
             $block_settings = array('type' => null);
             if ($request->alert_type) $block_settings['type'] = $request->alert_type;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
 
@@ -136,7 +136,7 @@ class Block extends Model
         if ($block_type->type == 'video') {
             $block_settings = array('full_width_responsive' => null);
             if ($request->full_width_responsive) $block_settings['full_width_responsive'] = $request->full_width_responsive;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
         // Extra content IMAGE      
@@ -144,7 +144,7 @@ class Block extends Model
             $block_settings = array('shadow' => null, 'rounded' => null);
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
             if ($request->rounded) $block_settings['rounded'] = $request->rounded;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
         // Extra content GALLERY        
@@ -156,7 +156,7 @@ class Block extends Model
             if ($request->masonry_layout) $block_settings['masonry_layout'] = $request->masonry_layout;
             if ($request->masonry_cols) $block_settings['masonry_cols'] = $request->masonry_cols ?? 4;
             if ($request->masonry_gutter) $block_settings['masonry_gutter'] = $request->masonry_gutter ?? 0;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
         // Extra content CARDS        
@@ -176,14 +176,14 @@ class Block extends Model
             if ($request->link_btn_id) $block_settings['link_btn_id'] = $request->link_btn_id;
             if ($request->link_btn_size) $block_settings['link_btn_size'] = $request->link_btn_size;
             if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
 
         // Extra content MAPS       
         if ($block_type->type == 'map') {
             $block_settings = array('height' => $request->height ?? 400, 'zoom' => $request->zoom ?? 16, 'address' => $request->address);
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
         // Extra content BLOCKQUOTE       
@@ -201,21 +201,21 @@ class Block extends Model
             }
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
             if ($request->use_avatar) $block_settings['use_avatar'] = $request->use_avatar;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
         // CUSTOM
         if ($block_type->type == 'custom') {
             $block_settings = array('bg_color' => null);
             if ($request->use_custom_bg) $block_settings['bg_color'] = $request->bg_color;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
         // INCLUDE
         if ($block_type->type == 'include') {
             $block_settings = array('bg_color' => null);
             if ($request->use_custom_bg) $block_settings['bg_color'] = $request->bg_color;
-            $block->update(['extra' => serialize($block_settings)]);
+            $block->update(['settings' => serialize($block_settings)]);
         }
 
 

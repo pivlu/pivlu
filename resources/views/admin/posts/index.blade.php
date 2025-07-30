@@ -24,27 +24,16 @@
             @endif
 
             <div class="col-12 col-sm-12 col-md-6 order-md-1 order-first">
-                @if (($config->module_posts ?? null) == 'inactive')
-                    <div class="alert alert-danger">
-                        {{ __('Warning. Posts module is not active. You can manege content, but module is not available on the website') }}. <a
-                            href="{{ route('admin.config', ['module' => 'general']) }}">{{ __('Manage modules') }}</a>
-                    </div>
-                @endif
-
-
                 <div class="card-title fw-bold">
-                    {{ __(json_decode($post_type->labels)->plural ?? $post_type->name) }} ({{ $posts->total() ?? 0 }})
+                    {{ __(json_decode($post_type->default_language_content->labels)->all ?? $post_type->name) }} ({{ $posts->total() ?? 0 }})
                 </div>
             </div>
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    @can('create', App\Models\Post\Post::class)
-                        <a href="{{ route('admin.posts.create', ['type' => $type]) }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
-                            {{ __(json_decode($post_type->labels)->create ?? __('Add new post')) }}
-                        </a>
-                    @endcan
-
+                    <a href="{{ route('admin.posts.create', ['type' => $type]) }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
+                        {{ __(json_decode($post_type->default_language_content->labels)->create ?? __('Add new item')) }}
+                    </a>
                 </div>
             </div>
 
@@ -179,9 +168,15 @@
 
                                 <div class="fw-bold">
                                     @if ($post->status == 'published')
-                                        <a target="_blank" href="{{ route('home') }}/{{ $post_type->slug }}/{{ $post->slug }}">{{ $post->title }}</a>
+                                        @if ($post->type == 'page')
+                                            <a target="_blank"
+                                                href="{{ route('home') }}/{{ $post->default_language_content->slug ?? '-' }}">{{ $post->default_language_content->title ?? '-' }}</a>
+                                        @else
+                                            <a target="_blank"
+                                                href="{{ route('home') }}/{{ $post_type->default_language_content->slug ?? '-' }}/{{ $post->default_language_content->slug ?? '-' }}">{{ $post->default_language_content->title ?? '-' }}</a>
+                                        @endif
                                     @else
-                                        {{ $post->title }}
+                                        {{ $post->default_language_content->title ?? '-' }}
                                     @endif
                                 </div>
 
@@ -221,40 +216,36 @@
 
                             <td>
                                 <div class="d-grid gap-2">
-                                    @can('view', $post)
-                                        <a href="{{ route('admin.posts.show', ['id' => $post->id, 'type' => $type]) }}" class="btn btn-primary btn-sm mb-2">
-                                            {{ __(json_decode($post_type->labels)->update ?? __('Update')) }}
-                                        </a>
-                                    @endcan
+                                    <a href="{{ route('admin.posts.show', ['id' => $post->id, 'type' => $type]) }}" class="btn btn-primary btn-sm mb-2">
+                                        {{ __(json_decode($post_type->labels)->update ?? __('Update')) }}
+                                    </a>
 
-                                    @can('delete', $post)
-                                        <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
-                                        <div class="modal fade confirm-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="ConfirmDeleteLabel">{{ __('Confirm delete') }}</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        {{ __('Are you sure you want to move this item to trash?') }}
+                                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
+                                    <div class="modal fade confirm-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="ConfirmDeleteLabel">{{ __('Confirm delete') }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ __('Are you sure you want to move this item to trash?') }}
 
-                                                        <div class="mt-2 fw-bold">
-                                                            <i class="bi bi-info-circle"></i> {{ __('This item will be moved to trash. You can recover it or permanently delete from recycle bin.') }}
-                                                        </div>
+                                                    <div class="mt-2 fw-bold">
+                                                        <i class="bi bi-info-circle"></i> {{ __('This item will be moved to trash. You can recover it or permanently delete from recycle bin.') }}
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <form method="POST" action="{{ route('admin.posts.show', ['id' => $post->id, 'type' => $type]) }}">
-                                                            {{ csrf_field() }}
-                                                            {{ method_field('DELETE') }}
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
-                                                            <button type="submit" class="btn btn-danger">{{ __('Yes. Move to trash') }}</button>
-                                                        </form>
-                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form method="POST" action="{{ route('admin.posts.show', ['id' => $post->id, 'type' => $type]) }}">
+                                                        {{ csrf_field() }}
+                                                        {{ method_field('DELETE') }}
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                                                        <button type="submit" class="btn btn-danger">{{ __('Yes. Move to trash') }}</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    @endcan
+                                    </div>
                                 </div>
                             </td>
                         </tr>

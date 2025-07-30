@@ -1,11 +1,8 @@
 <nav class="nav nav-tabs" id="myTab" role="tablist">
     <a class="nav-item nav-link @if (($post_menu_tab ?? null) == 'details') active @endif" href="{{ route('admin.posts.show', ['id' => $post->id]) }}"><i class="bi bi-pencil-square"></i>
-        {{ __(json_decode($post_type->labels)->singular ?? $post_type->name) }} {{ __('details') }}
+        {{ __(json_decode($post_type->default_language_content->labels)->singular ?? $post_type->name) }} {{ __('details') }}
     </a>
     <a class="nav-item nav-link @if (($post_menu_tab ?? null) == 'content') active @endif" href="{{ route('admin.posts.content', ['id' => $post->id]) }}"><i class="bi bi-card-text"></i>
-        {{ __(json_decode($post_type->labels)->singular ?? $post_type->name) }} {{ __('content') }}
+        {{ __(json_decode($post_type->default_language_content->labels)->singular ?? $post_type->name) }} {{ __('content') }}
     </a>
-    <a class="nav-item nav-link @if (($post_menu_tab ?? null) == 'cf') active @endif" href="{{ route('admin.post.cf', ['id' => $post->id]) }}"><i class="bi bi-check2-circle"></i>
-        {{ __('Custom fields') }}</a>
-
 </nav>

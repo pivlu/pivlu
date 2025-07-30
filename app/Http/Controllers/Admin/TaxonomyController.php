@@ -284,8 +284,6 @@ class TaxonomyController extends Controller
         $taxonomy = $request->taxonomy;
         $this->check_taxonomy_term_exists($taxonomy);
 
-        if ($request->user()->cannot('update', TaxonomyTerm::class)) return;
-
         $i = 1;
 
         $items = $request->all();

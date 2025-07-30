@@ -27,6 +27,7 @@ use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\ContentController;
 use App\Http\Controllers\Web\ToolsController;
 use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\LogoutController;
 
 Route::get('/account', function () {
     if (Auth::user()) {

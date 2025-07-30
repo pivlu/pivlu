@@ -24,7 +24,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
-use App\Models\ActivityLog;
+use App\Models\Media;
 use App\Models\User;
 
 class DashboardController extends Controller
@@ -38,6 +38,8 @@ class DashboardController extends Controller
         $count_accounts = User::count();        
         $last_accounts = User::orderByDesc('id')->limit(10)->get();
         
+        $media_count_files = Media::count();
+        $media_size_total = Media::sum('size_mb');
 
         if (Auth::user()->role == 'admin') $view = 'admin.dashboard.dashboard';
         if (Auth::user()->role == 'internal') $view = 'admin.dashboard.dashboard-internal';
@@ -49,38 +51,9 @@ class DashboardController extends Controller
             'active_tab' => 'summary',
             'count_accounts' => $count_accounts,
             'last_accounts' => $last_accounts,            
+            'media_count_files' => $media_count_files,      
+            'media_size_total' => round($media_size_total, 2),      
         ]);
     }
-
-
-    /**
-     * Activity log page
-     */
-    public function activity(Request $request)
-    {
-        $logs = ActivityLog::with('user')->orderByDesc('id')->paginate(25);
-
-        return view('admin.index', [
-            'view_file' => 'admin.dashboard.activity',
-            'active_menu' => 'dashboard',
-            'active_submenu' => 'activity',
-            'active_tab' => 'activity',
-            'logs' => $logs,
-        ]);
-    }
-
-
-    /**
-     * Show the wizard page.
-     */
-    public function wizard()
-    {
-
-        return view('admin.index', [
-            'view_file' => 'admin.dashboard.wizard',
-            'active_menu' => 'dashboard',
-            'active_submenu' => 'wizard',
-            'active_tab' => 'wizard',
-        ]);
-    }
+    
 }

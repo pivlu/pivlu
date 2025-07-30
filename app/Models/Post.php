@@ -41,8 +41,6 @@ class Post extends Model
         'search_terms',
         'blocks',
         'is_homepage',
-        'cf_array',
-        'cf_array_display',
     ];
 
     protected $table = 'pivlu_posts';
@@ -160,28 +158,5 @@ class Post extends Model
     {
         return $this->hasMany(BlockContent::class, 'post_id');
     }
-    public function likes()
-    {
-        return $this->hasMany(PostLike::class, 'post_id');
-    }
-
-
-    public static function recount_likes($post_id)
-    {
-        $counter = PostLike::where('post_id', $post_id)->count();
-
-        Post::where('id', $post_id)->update(['likes' => $counter]);
-
-        return;
-    }
-
-
-    public static function recount_comments($post_id)
-    {
-        $counter = PostComment::where('post_id', $post_id)->count();
-
-        Post::where('id', $post_id)->update(['comments' => $counter]);
-
-        return;
-    }
+    
 }

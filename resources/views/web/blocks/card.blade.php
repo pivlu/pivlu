@@ -1,21 +1,11 @@
-@php
-    if (($is_layout ?? null) == 1) {
-        $block_data = layout_block($block['id']);
-    } else {
-        $block_data = block($block['id']);
-    }
-@endphp
-
-
 @if ($block_data->content ?? null)
     @php
         $block_items = unserialize($block_data->content);
-        $block_header = unserialize($block_data->header ?? null);
 
-        if (!($block_extra['cols'] ?? null)) {
+        if (!($block_settings['cols'] ?? null)) {
             $cols = 4;
         } else {
-            $cols = $block_extra['cols'];
+            $cols = $block_settings['cols'];
         }
 
         if ($cols == 1) {
@@ -61,21 +51,21 @@
             <div class="container-xxl">
                 <div class="row {{ $class }} g-4">
                     @foreach ($block_items as $item)
-                        @if ($block_extra['horizontal'] ?? null)
+                        @if ($block_settings['horizontal'] ?? null)
                             <div class="col">
-                                <div class="card card_{{ $block['id'] }} mb-4 @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['same_height'] ?? null) h-100 @endif @if (!($block_extra['border_color'] ?? null)) border-0 @endif"
-                                    style="@if ($block_extra['bg_color'] ?? null) background-color: {{ $block_extra['bg_color'] }}; @endif @if ($block_extra['border_color'] ?? null) border-color: {{ $block_extra['border_color'] }}; @endif @if ($block_extra['no_border_radius'] ?? null) border-radius: 0; @endif">
+                                <div class="card card_{{ $block['id'] }} mb-4 @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['same_height'] ?? null) h-100 @endif @if (!($block_settings['border_color'] ?? null)) border-0 @endif"
+                                    style="@if ($block_settings['bg_color'] ?? null) background-color: {{ $block_settings['bg_color'] }}; @endif @if ($block_settings['border_color'] ?? null) border-color: {{ $block_settings['border_color'] }}; @endif @if ($block_settings['no_border_radius'] ?? null) border-radius: 0; @endif">
 
                                     <div class="row g-0">
 
                                         @if ($item['icon'] ?? null)
                                             <div class="card-body p-0">
-                                                <div class="icon px-2 py-1 float-start me-2" style="font-size: {{ $block_extra['icon_size'] ?? '2em' }}">{!! $item['icon'] !!}</div>
+                                                <div class="icon px-2 py-1 float-start me-2" style="font-size: {{ $block_settings['icon_size'] ?? '2em' }}">{!! $item['icon'] !!}</div>
 
                                                 <div class="p-2">
                                                     @if ($item['title'])
                                                         <div class="title mb-1">
-                                                            @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'title')
+                                                            @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'title')
                                                                 <a href="https://{{ $item['url'] }}">{{ $item['title'] }}</a>
                                                             @else
                                                                 {{ $item['title'] }}
@@ -84,9 +74,9 @@
                                                     @endif
                                                     <p>{{ $item['content'] }}</p>
 
-                                                    @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'button')
-                                                        <div class="mt-3 @if (($block_extra['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
-                                                            <a class="mt-3 btn btn_{{ $block_extra['link_btn_id'] ?? 'primary' }} {{ $block_extra['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
+                                                    @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'button')
+                                                        <div class="mt-3 @if (($block_settings['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
+                                                            <a class="mt-3 btn btn-{{ $block_settings['link_btn_id'] ?? 'primary' }} {{ $block_settings['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
                                                                 title="{{ $item['title'] }}">{{ $item['title'] }}</a>
                                                         </div>
                                                     @endif
@@ -94,7 +84,7 @@
                                             </div>
                                         @elseif ($item['image'] ?? null)
                                             <div class="col-md-4">
-                                                <img src="{{ thumb_square($item['image']) }}" class="img-fluid @if ($block_extra['img_full_width'] ?? null) w-100 @endif @if (!$block_extra['no_border_radius'] ?? null) rounded-start @endif"
+                                                <img src="{{ thumb_square($item['image']) }}" class="img-fluid @if ($block_settings['img_full_width'] ?? null) w-100 @endif @if (!$block_settings['no_border_radius'] ?? null) rounded-start @endif"
                                                     alt="{{ $item['title'] ?? $item['image'] }}">
                                             </div>
 
@@ -102,7 +92,7 @@
                                                 <div class="card-body">
                                                     @if ($item['title'])
                                                         <div class="title mb-3">
-                                                            @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'title')
+                                                            @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'title')
                                                                 <a href="https://{{ $item['url'] }}">{{ $item['title'] }}</a>
                                                             @else
                                                                 {{ $item['title'] }}
@@ -111,9 +101,9 @@
                                                     @endif
                                                     <p>{!! nl2br($item['content']) !!}</p>
 
-                                                    @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'button')
-                                                        <div class="mt-3 @if (($block_extra['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
-                                                            <a class="mt-3 btn btn_{{ $block_extra['link_btn_id'] ?? 'primary' }} {{ $block_extra['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
+                                                    @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'button')
+                                                        <div class="mt-3 @if (($block_settings['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
+                                                            <a class="mt-3 btn btn_{{ $block_settings['link_btn_id'] ?? 'primary' }} {{ $block_settings['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
                                                                 title="{{ $item['title'] }}">{{ $item['title'] }}</a>
                                                         </div>
                                                     @endif
@@ -123,7 +113,7 @@
                                             <div class="card-body">
                                                 @if ($item['title'])
                                                     <div class="title mb-3">
-                                                        @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'title')
+                                                        @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'title')
                                                             <a href="https://{{ $item['url'] }}">{{ $item['title'] }}</a>
                                                         @else
                                                             {{ $item['title'] }}
@@ -132,9 +122,9 @@
                                                 @endif
                                                 <p>{!! nl2br($item['content']) !!}</p>
 
-                                                @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'button')
-                                                    <div class="mt-3 @if (($block_extra['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
-                                                        <a class="mt-3 btn btn_{{ $block_extra['link_btn_id'] ?? 'primary' }} {{ $block_extra['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
+                                                @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'button')
+                                                    <div class="mt-3 @if (($block_settings['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
+                                                        <a class="mt-3 btn btn_{{ $block_settings['link_btn_id'] ?? 'primary' }} {{ $block_settings['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
                                                             title="{{ $item['title'] }}">{{ $item['title'] }}</a>
                                                     </div>
                                                 @endif
@@ -145,20 +135,20 @@
                             </div>
                         @else
                             <div class="col">
-                                <div class="card card_{{ $block['id'] }} mb-4 @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['same_height'] ?? null) h-100 @endif @if (!($block_extra['border_color'] ?? null)) border-0 @endif"
-                                    style="@if ($block_extra['bg_color'] ?? null) background-color: {{ $block_extra['bg_color'] }}; @endif @if ($block_extra['border_color'] ?? null) border-color: {{ $block_extra['border_color'] }}; @endif @if ($block_extra['no_border_radius'] ?? null) border-radius: 0; @endif">
+                                <div class="card card_{{ $block['id'] }} mb-4 @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['same_height'] ?? null) h-100 @endif @if (!($block_settings['border_color'] ?? null)) border-0 @endif"
+                                    style="@if ($block_settings['bg_color'] ?? null) background-color: {{ $block_settings['bg_color'] }}; @endif @if ($block_settings['border_color'] ?? null) border-color: {{ $block_settings['border_color'] }}; @endif @if ($block_settings['no_border_radius'] ?? null) border-radius: 0; @endif">
 
                                     @if ($item['icon'] ?? null)
-                                        <div class="icon px-2 py-1 text-center" style="font-size: {{ $block_extra['icon_size'] ?? '2em' }}">{!! $item['icon'] !!}</div>
+                                        <div class="icon px-2 py-1 text-center" style="font-size: {{ $block_settings['icon_size'] ?? '2em' }}">{!! $item['icon'] !!}</div>
                                     @elseif ($item['image'] ?? null)
-                                        <img class="card-img-top @if ($block_extra['img_full_width'] ?? null) w-100 @endif" alt="{{ $item['title'] ?? $item['image'] }}" title="{{ $item['title'] ?? $item['image'] }}"
-                                            src="{{ thumb($item['image']) }}" @if ($block_extra['no_border_radius'] ?? null) style="border-radius: 0;" @endif>
+                                        <img class="card-img-top @if ($block_settings['img_full_width'] ?? null) w-100 @endif" alt="{{ $item['title'] ?? $item['image'] }}" title="{{ $item['title'] ?? $item['image'] }}"
+                                            src="{{ thumb($item['image']) }}" @if ($block_settings['no_border_radius'] ?? null) style="border-radius: 0;" @endif>
                                     @endif
 
                                     <div class="card-body">
                                         @if ($item['title'])
                                             <div class="title mb-2">
-                                                @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'title')
+                                                @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'title')
                                                     <a href="https://{{ $item['url'] }}">{{ $item['title'] }}</a>
                                                 @else
                                                     {{ $item['title'] }}
@@ -168,9 +158,9 @@
 
                                         <p>{!! nl2br($item['content']) !!}</p>
 
-                                        @if (($item['url'] ?? null) && ($block_extra['link_location'] ?? null) == 'button')
-                                            <div class="mt-3 @if (($block_extra['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
-                                                <a class="mt-3 btn btn_{{ $block_extra['link_btn_id'] ?? 'primary' }} {{ $block_extra['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
+                                        @if (($item['url'] ?? null) && ($block_settings['link_location'] ?? null) == 'button')
+                                            <div class="mt-3 @if (($block_settings['link_btn_width'] ?? null) == 'block') d-grid gap-2 @endif">
+                                                <a class="mt-3 btn btn-{{ $block_settings['link_btn_id'] ?? 'primary' }} {{ $block_settings['link_btn_size'] ?? null }}" href="https://{{ $item['url'] }}"
                                                     title="{{ $item['title'] }}">{{ $item['title'] }}</a>
                                             </div>
                                         @endif
@@ -190,10 +180,10 @@
 @endif
 
 
-@if ($block_extra['bg_color_hover'] ?? null)
+@if ($block_settings['bg_color_hover'] ?? null)
     <style>
         .card_{{ $block['id'] }}:hover {
-            background-color: {{ $block_extra['bg_color_hover'] }} !important;
+            background-color: {{ $block_settings['bg_color_hover'] }} !important;
         }
     </style>
 @endif

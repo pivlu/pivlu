@@ -26,6 +26,7 @@ use App\Http\Controllers\Controller;
 use DB;
 use App\Models\Block;
 use App\Models\Language;
+use App\Pivlu\Theme;
 
 class BlockController extends Controller
 {
@@ -67,13 +68,8 @@ class BlockController extends Controller
             'block' => $block,
             'content_langs' => $content_langs,
             'langs' => Language::get_languages(),
-            'block_module' => $block->module,
             'referer' => $referer,
-            'font_sizes' => Template::template_font_sizes(),
-            'buttons' => TemplateButton::orderByDesc('is_default')->orderBy('label')->get(),
-            //'styles' => TemplateStyle::orderBy('label')->get(),
-
-            //'forms' => $forms ?? null, // forms (used in form block)
+            'font_sizes' => Theme::font_sizes(),
         ]);
     }
 
