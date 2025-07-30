@@ -114,6 +114,36 @@ class Block extends Model
         }
 
 
+        // Extra content SLIDER
+        if ($block_type->type == 'slider') {
+            $block_settings = array('bg_style' => $request->bg_style, 'bg_media_id' => $request->existing_bg_media_id ?? null, 'cover_fixed' => null, 'cover_dark' => null, 'delay_seconds' => $request->delay_seconds);
+            if ($request->cover_fixed ?? null) $block_settings['cover_fixed'] = $request->cover_fixed;
+            if ($request->cover_dark ?? null) $block_settings['cover_dark'] = $request->cover_dark;
+            if ($request->shadow_title ?? null) $block_settings['shadow_title'] = $request->shadow_title;
+            if ($request->shadow_content ?? null) $block_settings['shadow_content'] = $request->shadow_content;
+            if ($request->link_btn_id ?? null) $block_settings['link_btn_id'] = $request->link_btn_id;
+
+            $image = null;
+            $media = null;
+
+            // delete image (if checkbox is checked)
+            if ($request->has('delete_bg_image')) {
+                $media_id_to_delete = $request->delete_bg_media_id;
+                Media::delete_media($media_id_to_delete);
+                $block_settings['bg_media_id'] = null;
+            }
+
+            if ($request->hasFile('bg_image')) {
+                $media = Media::store_image($request->file('bg_image'), $old_media_id = $request->existing_bg_media_id);
+                if ($media) {
+                    $block_settings['bg_media_id'] = $media->id;
+                    $media->update(['post_id' => $block->post_id ?? null]);
+                }
+            }            
+
+            $block->update(['settings' => serialize($block_settings)]);
+        }
+
 
         // Extra content ALERT            
         if ($block_type->type == 'alert') {
@@ -313,33 +343,32 @@ class Block extends Model
 
 
                 $image = null;
+                $media = null;
 
                 for ($i = 0; $i < $counter_key; $i++) {
                     $image = null;
+                    $media = null;
 
                     // delete image (if checkbox is checked)
                     if ($request->has($post_key_delete_image . '_' . $i)) {
-                        $file_code_to_delete = $inputs['delete_image_file_code_' . $lang->id . '_' . $i];
-                        DriveFile::delete_image($file_code_to_delete);
-                    } elseif ($request->hasFile($post_key_image)) {
+                        $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
+                        Media::delete_media($file_media_id_to_delete);
+                        $inputs["$post_key_existing_image"][$i] = null;
+                    }
 
+                    if ($request->hasFile($post_key_image)) {
                         if ($file = $request->file($post_key_image)[$i] ?? null) {
-                            $validator = Validator::make($request->all(), [$post_key_image . '.' . $i => 'file|image|max:2560']); // image mime, max 2.5 MB    
-                            if (!$validator->fails()) {
-                                $img = Upload::storeImage($file, $oldImageCode = $inputs["$post_key_existing_image"][$i] ?? null, $data = array('module' => $block_module, 'item_id' => null, 'extra_item_id' => null));
-                                $image[$i] = $img->code;
-                            }
+                            $media = Media::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
+                            if ($media) $media->update(['post_id' => $block->post_id]);
                         }
                     }
 
-                    if (!$request->has($post_key_delete_image . '_' . $i)) {
-                        $images_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'image' => $image[$i] ?? $inputs["$post_key_existing_image"][$i] ?? null, 'caption' => $inputs["$post_key_caption"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0, 'url' => $inputs["$post_key_url"][$i] ?? null);
+                    $images_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null,  'caption' => $inputs["$post_key_caption"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0, 'url' => $inputs["$post_key_url"][$i] ?? null);
 
-                        // regenerate array and sort by position (asc)
-                        if (count($images_array_key) > 1) {
-                            $position = array_column($images_array_key, 'position');
-                            array_multisort($position, SORT_ASC, $images_array_key);
-                        }
+                    // regenerate array and sort by position (asc)
+                    if (count($images_array_key) > 1) {
+                        $position = array_column($images_array_key, 'position');
+                        array_multisort($position, SORT_ASC, $images_array_key);
                     }
                 }
 
@@ -352,6 +381,55 @@ class Block extends Model
                 $header_content = serialize($header_array);
                 BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
+
+
+            // SLIDER
+            if ($block_type->type == 'slider') {
+                $post_key_title = 'title_' . $lang->id;
+                $post_key_content = 'content_' . $lang->id;
+                $post_key_image = 'image_' . $lang->id;
+                $post_key_existing_image = 'existing_image_' . $lang->id;
+                $post_key_url = 'url_' . $lang->id;
+                $post_key_position = 'position_' . $lang->id;
+                $post_key_delete_image = 'delete_image_' . $lang->id;
+                $slides_array_key = array();
+                $counter_key = count(array_filter($_POST[$post_key_title]));
+
+                $image = null;
+                $media = null;
+
+                for ($i = 0; $i < $counter_key; $i++) {
+
+                    $image = null;
+                    $media = null;
+
+                    // delete image (if checkbox is checked)
+                    if ($request->has($post_key_delete_image . '_' . $i)) {
+                        $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
+                        Media::delete_media($file_media_id_to_delete);
+                        $inputs["$post_key_existing_image"][$i] = null;
+                    }
+
+                    if ($request->hasFile($post_key_image)) {
+                        if ($file = $request->file($post_key_image)[$i] ?? null) {
+                            $media = Media::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
+                            if ($media) $media->update(['post_id' => $block->post_id]);
+                        }
+                    }
+
+                    $slides_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'content' => $inputs["$post_key_content"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null, 'url' => $inputs["$post_key_url"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0);
+
+                    // regenerate array and sort by position (asc)
+                    if (count($slides_array_key) > 1) {
+                        $position = array_column($slides_array_key, 'position');
+                        array_multisort($position, SORT_ASC, $slides_array_key);
+                    }
+                }
+
+                $content = serialize($slides_array_key);
+                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
+            }
+
 
 
             // CARDS           
@@ -381,28 +459,12 @@ class Block extends Model
                         $inputs["$post_key_existing_image"][$i] = null;
                     }
 
-
-
                     if ($request->hasFile($post_key_image)) {
                         if ($file = $request->file($post_key_image)[$i] ?? null) {
                             $media = Media::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
                             if ($media) $media->update(['post_id' => $block->post_id]);
                         }
                     }
-
-
-                    /*
-                    if ($request->hasFile($post_key_image)) {
-
-                        if ($file = $request->file($post_key_image)[$i] ?? null) {
-                            $validator = Validator::make($request->all(), [$post_key_image . '.' . $i => 'file|image|max:2560']); // image mime, max 2.5 MB    
-                            if (!$validator->fails()) {
-                                $img = Upload::storeImage($file, $oldImageCode = $inputs["$post_key_existing_image"][$i] ?? null, $data = array('module' => $block_module, 'item_id' => null, 'extra_item_id' => null));
-                                $image = $img->code;
-                            }
-                        }
-                    }
-                    */
 
                     $cards_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'url' => $inputs["$post_key_url"][$i], 'icon' => $inputs["$post_key_icon"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null, 'content' => $inputs["$post_key_content"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0);
 

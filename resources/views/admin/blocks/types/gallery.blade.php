@@ -129,8 +129,15 @@
                         @if ($content_array[$i]['image'] ?? null)
                             <a target="_blank" href="{{ image($content_array[$i]['image']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($content_array[$i]['image']) }}"
                                     class="img-fluid mt-2"></a>
-                            <input type="hidden" name="existing_image_{{ $lang->id }}[]" value="{{ $content_array[$i]['image'] ?? null }}">
-                            <div class="text-muted small">{{ __('Image file. Maximum 2.5 MB.') }}</div>
+                            <input type="hidden" name="existing_image_{{ $lang->id }}[{{ $i }}]" value="{{ $content_array[$i]['image'] ?? null }}">
+
+                            <div class="form-group mb-0">
+                                <div class="form-check form-switch">
+                                    <input type="hidden" name="delete_image_file_code_{{ $lang->id }}_{{ $i }}" value="{{ $content_array[$i]['image'] ?? null }}">
+                                    <input class="form-check-input" type="checkbox" id="delete_image_{{ $lang->id }}_{{ $i }}" name="delete_image_{{ $lang->id }}_{{ $i }}">
+                                    <label class="form-check-label" for="delete_image_{{ $lang->id }}_{{ $i }}">{{ __('Delete image') }}</label>
+                                </div>
+                            </div>
                         @endif
                     </div>
 
@@ -235,7 +242,7 @@
     </script>
 
     <div class="mb-4"></div>
-    
+
     @if (count($languages) > 1 && !$loop->last)
         <hr>
     @endif

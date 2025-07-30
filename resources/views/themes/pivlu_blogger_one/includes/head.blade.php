@@ -12,3 +12,10 @@
 
 <!-- Template Main CSS File -->
 <link rel="stylesheet" href="{{ theme_asset('assets/css/style.css') }}" />
+<link rel="stylesheet" href="{{ theme_asset('assets/css/blocks.css') }}" />
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+<!-- Fancybox Image gallery -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" />

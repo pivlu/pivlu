@@ -344,12 +344,14 @@ class Media extends Model
 
     public static function delete_media($id)
     {
-        $item = Media::find($id);
+        $item = Media::find($id);        
         if (! $item) return false;
 
         $disk = $item->disk ?? null;
         $filename = $item->filename ?? null;
         if ($item->folder) $filename = $item->folder . '/' . $filename;
+
+        $item->delete();
 
         Storage::disk($disk)->delete($filename); // delete main file
 
@@ -364,9 +366,7 @@ class Media extends Model
         Storage::disk($disk)->delete($pathSquare);
         Storage::disk($disk)->delete($pathThumb);
         Storage::disk($disk)->delete($pathThumbSquare);
-
-        $item->delete();
-
+        
         return true;
     }
 }

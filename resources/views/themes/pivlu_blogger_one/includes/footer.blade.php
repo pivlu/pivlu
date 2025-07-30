@@ -80,3 +80,4 @@
 <!-- ========================= JS here ========================= -->
 <script src="{{ theme_asset('assets/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
 <script src="{{ theme_asset('assets/js/main.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js"></script>

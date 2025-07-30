@@ -235,7 +235,7 @@
                         <div class="text-muted small">{{ __('Note: image is displayed only if icon code is not set.') }}</div>
 
                         @if ($content_array[$i]['media_id'] ?? null)
-                            <a target="_blank" href="{{ image($content_array[$i]['media_id']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($content_array[$i]['media_id']) }}"
+                            <a target="_blank" href="{{ image($content_array[$i]['media_id']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($content_array[$i]['media_id'], 'small') }}"
                                     class="img-fluid mt-2"></a>
                             <input type="hidden" name="existing_image_{{ $lang->id }}[{{ $i }}]" value="{{ $content_array[$i]['media_id'] ?? null }}">
 
@@ -357,7 +357,7 @@
     </script>
 
     <div class="mb-4"></div>
-    
+
     @if (count($languages) > 1 && !$loop->last)
         <hr>
     @endif

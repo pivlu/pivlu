@@ -1,16 +1,11 @@
-@php
-    $block_data = block($block['id']);
-@endphp
-
 @if ($block_data->content ?? null)
     @php
         $block_items = unserialize($block_data->content);
-        $block_header = unserialize($block_data->header ?? null);
 
-        if (!($block_extra['cols'] ?? null)) {
+        if (!($block_settings['cols'] ?? null)) {
             $cols = 4;
         } else {
-            $cols = $block_extra['cols'];
+            $cols = $block_settings['cols'];
         }
 
         if ($cols == 2) {
@@ -48,18 +43,16 @@
 
             @if (count($block_items) > 0)
 
-                @if ($block_extra['masonry_layout'] ?? null)
-
-
+                @if ($block_settings['masonry_layout'] ?? null)
                     <div class="row g-0">
                         <div id="masonry">
                             <div class="grid-sizer"></div>
 
                             @foreach ($block_items as $item)
                                 <div class="grid-item g-0">
-                                    <a data-fancybox="gallery-{{ $block['id'] }}" class="gallery" href="{{ image($item['image']) }}"><img
-                                            class="img-fluid @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['rounded'] ?? null) rounded @endif" alt="{{ $item['title'] ?? $item['image'] }}"
-                                            title="{{ $item['title'] ?? $item['image'] }}" src="{{ image($item['image']) }}"></a>
+                                    <a data-fancybox="gallery-{{ $block['id'] }}" class="gallery" href="{{ image($item['media_id']) }}"><img
+                                            class="img-fluid @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['rounded'] ?? null) rounded @endif" alt="{{ $item['title'] ?? $item['media_id'] }}"
+                                            title="{{ $item['title'] ?? $item['media_id'] }}" src="{{ image($item['media_id']) }}"></a>
                                 </div>
                             @endforeach
 
@@ -67,17 +60,17 @@
                     </div>
                 @else
                     @foreach ($block_items as $item)
-                        @if ($item['image'])
+                        @if ($item['media_id'])
                             <div class="{{ $class }} mb-5">
                                 <div class="block-gallery-image-box">
 
                                     @if ($item['url'])
-                                        <a href="{{ $item['url'] }}"><img class="img-fluid @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['rounded'] ?? null) rounded @endif"
-                                                alt="{{ $item['title'] ?? $item['image'] }}" title="{{ $item['title'] ?? $item['image'] }}" src="{{ thumb($item['image']) }}"></a>
+                                        <a href="{{ $item['url'] }}"><img class="img-fluid @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['rounded'] ?? null) rounded @endif"
+                                                alt="{{ $item['title'] ?? $item['media_id'] }}" title="{{ $item['title'] ?? $item['media_id'] }}" src="{{ image($item['media_id'], 'small') }}"></a>
                                     @else
-                                        <a data-fancybox="gallery-{{ $block['id'] }}" class="gallery" href="{{ image($item['image']) }}"><img
-                                                class="img-fluid @if ($block_extra['rounded'] ?? null) rounded @endif @if ($block_extra['shadow'] ?? null) shadow @endif @if ($block_extra['rounded'] ?? null) rounded @endif"
-                                                alt="{{ $item['title'] ?? $item['image'] }}" title="{{ $item['title'] ?? $item['image'] }}" src="{{ thumb($item['image']) }}"></a>
+                                        <a data-fancybox="gallery-{{ $block['id'] }}" class="gallery" href="{{ image($item['media_id']) }}"><img
+                                                class="img-fluid @if ($block_settings['rounded'] ?? null) rounded @endif @if ($block_settings['shadow'] ?? null) shadow @endif @if ($block_settings['rounded'] ?? null) rounded @endif"
+                                                alt="{{ $item['title'] ?? $item['media_id'] }}" title="{{ $item['title'] ?? $item['media_id'] }}" src="{{ image($item['media_id'], 'small') }}"></a>
                                     @endif
                                 </div>
 
@@ -98,14 +91,14 @@
 @endif
 
 
-@if ($block_extra['masonry_layout'] ?? null)
+@if ($block_settings['masonry_layout'] ?? null)
     @php
-        if (!($block_extra['masonry_cols'] ?? null)) {
+        if (!($block_settings['masonry_cols'] ?? null)) {
             $grid_item_width = '25'; // 4 cols (25%)
         } else {
-            $grid_item_width = round(100 / $block_extra['masonry_cols'], 2);
+            $grid_item_width = round(100 / $block_settings['masonry_cols'], 2);
         }
-        $calc = $grid_item_width . '% - ' . ($block_extra['masonry_gutter'] ?? 0) . 'px';
+        $calc = $grid_item_width . '% - ' . ($block_settings['masonry_gutter'] ?? 0) . 'px';
     @endphp
 
     <style>
@@ -115,7 +108,7 @@
         }
 
         .grid-item {
-            margin-bottom: {{ $block_extra['masonry_gutter'] ?? 0 }}px;
+            margin-bottom: {{ $block_settings['masonry_gutter'] ?? 0 }}px;
         }
 
         .grid {
@@ -134,7 +127,7 @@
                 itemSelector: '.grid-item',
                 columnWidth: '.grid-sizer',
                 percentPosition: true,
-                gutter: {{ $block_extra['masonry_gutter'] ?? 0 }}
+                gutter: {{ $block_settings['masonry_gutter'] ?? 0 }}
             });
         });
     </script>
