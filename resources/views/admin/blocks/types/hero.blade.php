@@ -36,9 +36,9 @@
         <input class="form-control" type="file" id="formFile" name="image">
         <div class="text-muted small">{{ __('Image file. Maximum 5 MB.') }}</div>
     </div>
-    @if ($block_settings['image'] ?? null)
-        <a target="_blank" href="{{ image($block_settings['image']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings['image']) }}" class="img-fluid"></a>
-        <input type="hidden" name="existing_image" value="{{ $block_settings['image'] ?? null }}">
+    @if ($block_settings['media_id'] ?? null)
+        <a target="_blank" href="{{ image($block_settings['media_id']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings['media_id']) }}" class="img-fluid"></a>
+        <input type="hidden" name="existing_image" value="{{ $block_settings['media_id'] ?? null }}">
     @endif
 
     <script>
@@ -138,7 +138,7 @@
     </div>
 </div>
 
-<div class="form-group mb-0">
+<div class="form-group mb-3">
     <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" id="shadow_content" name="shadow_content" @if ($block_settings['shadow_content'] ?? null) checked @endif>
         <label class="form-check-label" for="shadow_content">{{ __('Add shadow to content text') }}</label>
@@ -185,7 +185,7 @@
                 <input type="text" class="form-control" name="btn1_url_{{ $lang->id }}" value="{{ $content_array['btn1_url'] ?? null }}">
             </div>
         </div>
-       
+
 
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
@@ -210,7 +210,7 @@
                 <input type="text" class="form-control" name="btn2_url_{{ $lang->id }}" value="{{ $content_array['btn2_url'] ?? null }}">
             </div>
         </div>
-      
+
 
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
@@ -221,7 +221,7 @@
     </div>
 
     <div class="mb-4"></div>
-    
+
     @if (count($languages) > 1 && !$loop->last)
         <hr>
     @endif

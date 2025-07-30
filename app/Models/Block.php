@@ -101,7 +101,7 @@ class Block extends Model
 
         // Extra content HERO            
         if ($block_type->type == 'hero') {
-            $block_settings = array('image_position' => $request->image_position, 'image' => $request->existing_image, 'cover_fixed' => null, 'cover_dark' => null, 'img_container_width' => $request->img_container_width, 'img_col' => $request->img_col, 'img_click' => null, 'text_align' => $request->text_align ?? 'left', 'padding_y' => $request->padding_y ?? null);
+            $block_settings = array('image_position' => $request->image_position, 'media_id' => $request->existing_image, 'cover_fixed' => null, 'cover_dark' => null, 'img_container_width' => $request->img_container_width, 'img_col' => $request->img_col, 'img_click' => null, 'text_align' => $request->text_align ?? 'left', 'padding_y' => $request->padding_y ?? null);
 
             if ($request->use_image) $block_settings['use_image'] = $request->use_image;
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
@@ -112,10 +112,10 @@ class Block extends Model
             if ($request->img_click) $block_settings['img_click'] = $request->img_click;
 
             if ($request->hasFile('image')) {
-                $validator = Validator::make($request->all(), ['image' => 'file|image|max:5120']); // image mime, max 5 MB
-                if (!$validator->fails()) {
-                    $image = Upload::storeImage($request->file('image'), $oldImageCode = $inputs["existing_image"] ?? null, $data = array('module' => $block_module, 'item_id' => null, 'extra_item_id' => null));
-                    $block_settings['image'] = $image->code;
+                $media = Media::store_image($request->file('image'), $old_media_id = $request->existing_image);
+                if ($media) {
+                    $block_settings['media_id'] = $media->id;
+                    $media->update(['post_id' => $block->post_id ?? null]);
                 }
             }
 
@@ -260,7 +260,7 @@ class Block extends Model
 
             // HERO
             if ($block_type->type == 'hero') {
-                $content = array('title' => $request->$key_header_title, 'content' => $request->$key_content, 'btn1_label' => $request->$key_btn1_label, 'btn1_url' => $request->$key_btn1_url, 'btn1_id' => $request->$key_btn1_id, 'btn1_icon' => $request->$key_btn1_icon, 'btn2_label' => $request->$key_btn2_label, 'btn2_id' => $request->$key_btn2_id, 'btn2_url' => $request->$key_btn2_url, 'btn2_icon' => $request->$key_btn2_icon);
+                $content = array('title' => $request->$key_title, 'content' => $request->$key_content, 'btn1_label' => $request->$key_btn1_label, 'btn1_url' => $request->$key_btn1_url, 'btn1_id' => $request->$key_btn1_id, 'btn1_icon' => $request->$key_btn1_icon, 'btn2_label' => $request->$key_btn2_label, 'btn2_id' => $request->$key_btn2_id, 'btn2_url' => $request->$key_btn2_url, 'btn2_icon' => $request->$key_btn2_icon);
                 $content = serialize($content);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
@@ -301,8 +301,6 @@ class Block extends Model
                 $header_array = array('add_header' => $request->$key_add_header, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
                 $header_content = serialize($header_array);
                 BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
-
-                //dd($content);
             }
 
 
@@ -420,7 +418,6 @@ class Block extends Model
                 BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
-
             // ALERT
             if ($block_type->type == 'alert') {
                 $post_key_title = 'title_' . $lang->id;
@@ -438,7 +435,6 @@ class Block extends Model
                 $content = serialize($content_array);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
-            // DOWNLOAD
 
             // MAP
             if ($block_type->type == 'map') {

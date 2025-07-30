@@ -231,6 +231,8 @@ class ContentController extends Controller
         $slug2 = $request->slug2; // taxonomy term
         $slug3 = $request->slug3; // taxonomy
 
+        if($slug1 == 'storage') abort(404);;
+
         $post_type = PostType::where('slug', $slug1)->where('active', 1)->first();
         if ($post_type) {
             $taxonomy_term = TaxonomyTerm::where('slug', $slug2)->where('post_type', $post_type->type)->where('active', 1)->first();
