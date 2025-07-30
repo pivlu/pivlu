@@ -29,10 +29,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\UserInternalNote;
 use App\Models\UserPermission;
-use App\Models\Upload;
+use App\Models\Media;
 use App\Models\User;
 use App\Models\UserMeta;
-use DB;
+use App\Pivlu\Helpers;
 use Auth;
 
 class AccountController extends Controller
@@ -42,7 +42,7 @@ class AccountController extends Controller
      * Show all resources
      */
     public function index(Request $request)
-    {        
+    {
 
         $search_terms = $request->search_terms;
         $search_blocked = $request->search_blocked;
@@ -53,7 +53,7 @@ class AccountController extends Controller
         if (!($role == 'admin' || $role == 'internal' || $role == 'user')) $role = 'internal';
         if ($role == 'admin' && Auth::user()->role != 'admin') return redirect(route('admin.accounts.index')); // only admins can see admins
 
-        $accounts = User::whereNull('deleted_at');
+        $accounts = User::orderByDesc('id');
 
         if (isset($search_blocked)) $accounts = $accounts->whereNotNull('blocked_at');
         if ($search_email_verified == '1') $accounts = $accounts->whereNotNull('email_verified_at');
@@ -66,7 +66,7 @@ class AccountController extends Controller
                 ->orWhere('users.username', 'like', "%$search_terms%");
         });
 
-        $accounts = $accounts->orderByDesc('users.id')->paginate(20);
+        $accounts = $accounts->paginate(20);
 
         return view('admin.index', [
             'view_file' => 'admin.accounts.index-' . $role,
@@ -92,7 +92,7 @@ class AccountController extends Controller
         if (!$account) return redirect(route('admin.accounts.index'));
 
         $block_reason = UserMeta::get_meta($account->id, 'block_reason');
-
+        
         return view('admin.index', [
             'view_file' => 'admin.accounts.show',
             'active_menu' => 'users',
@@ -108,7 +108,7 @@ class AccountController extends Controller
      * Create resource
      */
     public function store(Request $request)
-    {             
+    {
         // only admins can set admin role
         if ($request->role == 'admin' && Auth::user()->role != 'admin') return redirect(route('admin.accounts.index'));
 
@@ -122,28 +122,19 @@ class AccountController extends Controller
                 'email',
                 'max:255',
                 Rule::unique(User::class),
-            ],
-            'username' => [
-                'required',
-                'string',
-                'min:3',
-                'max:50',
-                Rule::unique(User::class),
-            ],
-            //'name' => 'required',
-            //'email' => 'required|email|unique:App\Models\User,email',
-            //'username' => 'required|unique:App\Models\User,username',
-            //'password' => 'required|min:8',
+            ],            
+            'password' => 'required|min:8',
             'role' => 'required|in:admin,internal,user',
         ]);
 
         if ($validator->fails()) return redirect(route('admin.accounts.index'))->withErrors($validator)->withInput();
 
+        $code = Helpers::generateRandomInteger(12);
+
         $user = User::create([
-            'code' => Str::random(25),
+            'code' => $code,
             'name' => $request->name,
-            'username' => Str::slug($request->username, '.'),
-            'slug' => Str::slug($request->name, '-'),
+            'username' => $code,
             'email' => $request->email,
             'role' => $request->role,
             'password' => Hash::make($request->password),
@@ -151,7 +142,7 @@ class AccountController extends Controller
         ]);
 
         // process avatar     
-        if ($request->hasFile('avatar')) Upload::createAvatar($request->file('avatar'), $user->id);
+        if ($request->hasFile('avatar')) Media::store_user_avatar($request->file('avatar'), $user->id);
 
         return redirect(route('admin.accounts.index', ['search_role' => $search_role]))->with('success', 'created');
     }
@@ -179,7 +170,7 @@ class AccountController extends Controller
             ],
             'username' => [
                 'required',
-                'min:3',
+                'min:5',
                 'max:30',
                 Rule::unique('users')->ignore($user),
             ],
@@ -201,6 +192,11 @@ class AccountController extends Controller
             'email_verified_at' => $email_verified_at,
         ]);
 
+        // process avatar     
+        if ($request->hasFile('avatar')) Media::store_user_avatar($request->file('avatar'), $user->id, $user->avatar_media_id);
+
+        if ($request->has('blocked_at')) UserMeta::add_meta($request->id, 'block_reason', $request->block_reason);
+
         // change password
         if ($request->password) {
             $validator = Validator::make($request->all(), [
@@ -214,10 +210,6 @@ class AccountController extends Controller
             ]);
         }
 
-        // process avatar        
-        if ($request->hasFile('avatar')) Upload::createAvatar($request->file('avatar'), $request->id);
-
-        if ($request->has('blocked_at')) UserMeta::add_meta($request->id, 'block_reason', $request->block_reason);
 
         return redirect(route('admin.accounts.show', ['id' => $request->id]))->with('success', 'updated');
     }
@@ -228,13 +220,12 @@ class AccountController extends Controller
      */
     public function destroy(Request $request)
     {
+        $user = User::find($request->id);
+        if(! $user) return redirect(route('admin.accounts.index'));
 
-        // mark as deleted
-        User::where('id', $request->id)->update([
-            'deleted_at' => now(),
-        ]);
+        User::find($request->id)->delete(); // soft delete
 
-        return redirect(route('admin.accounts.index', ['search_role' => $request->search_role]))->with('success', 'deleted');
+        return redirect(route('admin.accounts.index', ['role' => $request->role]))->with('success', 'deleted');
     }
 
 

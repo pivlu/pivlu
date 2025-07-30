@@ -195,7 +195,7 @@
 
                                     <a class="btn btn-primary btn-sm" href="{{ route('admin.accounts.show', ['id' => $account->id]) }}">{{ __('Update') }}</a>
 
-                                    @if (check_access('accounts', 'manager') && Auth::user()->id != $account->id)
+                                    @if (Auth::user()->id != $account->id)
                                         <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $account->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                                         <div class="modal fade confirm-{{ $account->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                             <div class="modal-dialog">
@@ -212,9 +212,10 @@
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <form method="POST" action="{{ route('admin.accounts.show', ['id' => $account->id, 'role' => $role]) }}">
+                                                        <form method="POST" action="{{ route('admin.accounts.show', ['id' => $account->id]) }}">
                                                             {{ csrf_field() }}
                                                             {{ method_field('DELETE') }}
+                                                            <input type="hidden" name="role" value="{{ $role }}">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
                                                             <button type="submit" class="btn btn-danger">{{ __('Yes. Delete') }}</button>
                                                         </form>

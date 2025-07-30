@@ -34,16 +34,16 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->char('code', 12)->unique();
-            $table->string('username', 50)->nullable();
+            $table->string('username', 50)->unique();
             $table->string('email')->unique();
             $table->string('role', 25)->default('user');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->text('avatar')->nullable();
+            $table->timestamp('email_verified_at')->nullable();            
+            $table->unsignedBigInteger('avatar_media_id')->nullable();            
             $table->timestamp('last_activity_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->timestamps();
             $table->timestamp('blocked_at')->nullable();
+            $table->timestamps();            
             $table->softDeletes();            
         });
 

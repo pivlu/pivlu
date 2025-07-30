@@ -35,25 +35,7 @@
                     <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'accounts']) }}">{{ __('View deleted accounts') }}</a>
                 </div>
             </div>
-
-            <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-                <div class="card-box noradius noborder bg-light">
-                    <i class="bi bi-textarea-resize float-end"></i>
-                    <h6 class="text-uppercase fw-bold mb-4">{{ __('Contact messages') }}</h6>
-                    <div class="mb-3 fs-6 @if($rbFormsCount > 0) fw-bold text-danger @endif">{{ $rbFormsCount ?? 0 }} {{ __('messages deleted') }}</div>
-                    <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'contact']) }}">{{ __('View deleted messages') }}</a>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-                <div class="card-box noradius noborder bg-light">
-                    <i class="bi bi-ticket float-end"></i>
-                    <h6 class="text-uppercase fw-bold mb-4">{{ __('Support Tickets') }}</h6>
-                    <div class="mb-3 fs-6 @if($rbTicketsCount > 0) fw-bold text-danger @endif">{{ $rbTicketsCount ?? 0 }} {{ __('tickets deleted') }}</div>
-                    <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'tickets']) }}">{{ __('View deleted tickets') }}</a>
-                </div>
-            </div>
-
+           
             <div class="col-12 col-md-6 col-lg-6 col-xl-3">
                 <div class="card-box noradius noborder bg-light">
                     <i class="bi bi-file-text float-end"></i>
@@ -62,34 +44,7 @@
                     <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'posts']) }}">{{ __('View deleted posts') }}</a>
                 </div>
             </div>
-
-            <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-                <div class="card-box noradius noborder bg-light">
-                    <i class="bi bi-file-text float-end"></i>
-                    <h6 class="text-uppercase fw-bold mb-4">{{ __('Pages') }}</h6>
-                    <div class="mb-3 fs-6 @if($rbPagesCount > 0) fw-bold text-danger @endif">{{ $rbPagesCount ?? 0 }} {{ __('pages deleted') }}</div>
-                    <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'pages']) }}">{{ __('View deleted pages') }}</a>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-                <div class="card-box noradius noborder bg-light">
-                    <i class="bi bi-chat-left-dots float-end"></i>
-                    <h6 class="text-uppercase fw-bold mb-4">{{ __('Forum Topics') }}</h6>
-                    <div class="mb-3 fs-6 @if($rbFormsCount > 0) fw-bold text-danger @endif">{{ $rbFormsCount ?? 0 }} {{ __('forum topics deleted') }}</div>
-                    <a class="btn btn-gear" href="#">{{ __('View deleted topics') }}</a>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-6 col-xl-3">
-                <div class="card-box noradius noborder bg-light">
-                    <i class="bi bi-chat-left-dots float-end"></i>
-                    <h6 class="text-uppercase fw-bold mb-4">{{ __('Forum Posts') }}</h6>
-                    <div class="mb-3 fs-6 @if($rbFormsCount > 0) fw-bold text-danger @endif">{{ $rbFormsCount ?? 0 }} {{ __('forum posts deleted') }}</div>
-                    <a class="btn btn-gear" href="#">{{ __('View deleted posts') }}</a>
-                </div>
-            </div>
-
+         
         </div>
         <!-- end row -->
 

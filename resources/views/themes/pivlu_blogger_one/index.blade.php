@@ -3,7 +3,7 @@
 <html lang="{{ theme_meta('locale') }}" dir="{{ theme_meta('dir') }}">
 
 <head>
-    <title>Clean Blog | Free Bootstrap 5 blog template</title>
+    <title>Pivlu Clean Blog</title>
     <meta name="description" content="Site meta description">
 
     @include("{$theme_path}.includes.head")
@@ -11,23 +11,16 @@
 
 <body>
 
-    @include("{$theme_path}.includes.navigation")
+    @include(theme_menu())
 
-    <!-- Page Header -->
-    <div class="head" style="background: url('{{ theme_asset('assets/img/top.jpg') }}') top center; background-size: cover;">
-        <div class="container">
-
-            <div class="site-heading">
-                <div class="title">Bootstrap24 Clean Blog</div>
-                <div class="subheading">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu mattis eros. Donec urna nulla, tristique et suscipit lacinia, dignissim sit amet lectus. Pellentesque quam arcu,
-                    feugiat at tellus in, venenatis fermentum lectus</div>
-            </div>
-
-        </div>
-    </div>
+    @include(theme_section('hero'))
 
     <!-- Main Content -->
     <div class="container">
+
+        @if (posts()->total() == 0)
+            @include(theme_section('samples.homepage-posts'))
+        @endif
 
         @foreach (posts() as $post)
             <!-- Blog Post Item Start-->
@@ -51,7 +44,8 @@
                         </div>
 
                         <div class="meta">
-                            <img class="avatar-small rounded-circle" src="{{ $post->author_avatar }}" alt="{{ $post->author_name }}"> <a href="#"> {{ $post->author_name }}</a> <i class="far fa-calendar ms-3"></i> December 21,
+                            <img class="avatar-small rounded-circle" src="{{ $post->author_avatar }}" alt="{{ $post->author_name }}"> <a href="#"> {{ $post->author_name }}</a> <i class="far fa-calendar ms-3"></i>
+                            December 21,
                             2020, 18:45
                         </div>
 
@@ -64,29 +58,15 @@
         @endforeach
 
 
-
-
-
-
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="text-center">
+            {{ posts()->links() }}
+        </div>
 
 
     </div>
     <!-- End container -->
 
-    @include("{$theme_path}.includes.footer")
+    @include(theme_footer())
 
 </body>
 

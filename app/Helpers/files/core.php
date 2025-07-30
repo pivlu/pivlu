@@ -20,8 +20,6 @@
  */
 
 use App\Models\Config;
-use App\Models\PostTaxonomy;
-use App\Models\Taxonomy;
 
 
 // format date
@@ -57,5 +55,15 @@ if (!function_exists('date_locale')) {
 		}
 
 		return;
+	}
+}
+
+
+if (!function_exists('get_active_theme')) {
+	function get_active_theme()
+	{
+
+		$active_theme = Config::config()->active_theme ?? null;
+		return $active_theme;
 	}
 }

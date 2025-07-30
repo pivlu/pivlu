@@ -29,7 +29,7 @@ class UserMeta extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_meta';
+    protected $table = 'pivlu_user_meta';
 
     protected $fillable = ['user_id', 'name', 'value'];
 

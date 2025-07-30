@@ -79,8 +79,8 @@
 
         <div class="row mb-3">
             <div class="col-12">
-                @if ($account->avatar)
-                    <span class="float-start me-2"><img style="max-height:120px; width:auto;" src="{{ asset('uploads/avatars/' . $account->avatar) }}" /></span>
+                @if ($account->avatar_media_id)
+                    <span class="float-start me-2"><img style="max-height:120px; width:auto;" src="{{ avatar($account->avatar_media_id) }}" /></span>
                 @endif
                 {{ __('ID') }}: {{ strtoupper($account->id) }} | {{ __('Code') }}: {{ $account->code }} <br>
                 {{ __('Registered') }}: {{ date_locale($account->created_at, 'datetime') }} <br>

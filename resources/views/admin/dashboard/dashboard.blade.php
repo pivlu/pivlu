@@ -53,8 +53,6 @@
 
                     <div class="col-12 col-md-6 mt-4">
 
-                        <span class="float-end ms-2 mb-2"><a href="{{ route('admin.accounts.index', ['role' => 'user']) }}" class="btn btn-light">{{ __('View all accounts') }}</a></span>
-
                         <h5 class="mt-2">{{ __('Last accounts created') }}:</h5>
 
                         <div class="table-responsive-md">

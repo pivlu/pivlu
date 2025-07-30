@@ -33,6 +33,10 @@ return new class extends Migration
         Schema::table('pivlu_media', function (Blueprint $table) {
             $table->foreign('post_id')->references('id')->on('pivlu_posts')->cascadeOnDelete();
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('avatar_media_id')->references('id')->on('pivlu_media')->nullOnDelete();
+        });
     }
 
     /**

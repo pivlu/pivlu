@@ -23,14 +23,17 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Artisan;
 use App\Models\Config;
+use App\Models\User;
 use App\Pivlu\Setup;
+use App\Pivlu\Helpers;
 
 
 class UpdateCommand extends Command
 {
-
 
     /**
      * The name and signature of the console command.
@@ -81,10 +84,59 @@ class UpdateCommand extends Command
         $this->line('Check default block types');
         Setup::check_default_block_types();
 
+        $this->line('Check default theme');
+        Setup::check_default_theme();
+        
         // Create the symbolic link 
         Artisan::call('storage:link');
 
+        // Check if at least one admin account exists
+        if (User::where('role', 'admin')->doesntExist()) {
+            $this->line('Adding administrator account');
+            $admin_name = $this->askValid('Input administrator full name: ', 'admin_name', ['required', 'min:3']);
+            $admin_email = $this->askValid('Input administrator email: ', 'admin_email', ['required', 'email']);
+            $admin_pass = $this->askValid('Input administrator password: ', 'admin_pass', ['required', 'min:5']);
+            $admin_code = Helpers::generateRandomInteger(12);
+            User::updateOrInsert(['email' => $admin_email], [
+                'name' => $admin_name ?? 'Admin',
+                'email' => $admin_email,
+                'role' => 'admin',
+                'code' => $admin_code,
+                'username' => $admin_code,
+                'password' => Hash::make($admin_pass),
+                'email_verified_at' => now(),
+                'created_at' => now(),
+            ]);
+        }
+
         Config::update_config('updated_at', now());
         $this->info('The update was successful!');
+    }
+
+    protected function askValid($question, $field, $rules)
+    {
+        $value = $this->ask($question);
+
+        if ($message = $this->validateInput($rules, $field, $value)) {
+            $this->error($message);
+
+            return $this->askValid($question, $field, $rules);
+        }
+
+        return $value;
+    }
+
+
+    protected function validateInput($rules, $fieldName, $value)
+    {
+        $validator = Validator::make([
+            $fieldName => $value
+        ], [
+            $fieldName => $rules
+        ]);
+
+        return $validator->fails()
+            ? $validator->errors()->first($fieldName)
+            : null;
     }
 }

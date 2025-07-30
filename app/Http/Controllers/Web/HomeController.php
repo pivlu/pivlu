@@ -24,9 +24,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Config;
-use App\Models\Post;
-use App\Models\PostContent;
-use App\Models\Language;
 
 class HomeController extends Controller
 {
@@ -43,44 +40,5 @@ class HomeController extends Controller
             return view('themes.' . $active_theme . '.index', []);
         }
 
-
-        // Homepage source: STATIC PAGE                 
-        $homepage = Post::where(['status' => 'published', 'is_homepage' => 1, 'type' => 'page'])->first();
-        if ($homepage) {
-
-            // if page language is not created, get page from default lang
-            if (PostContent::where('post_id', $homepage->id)->where('lang_id', Language::get_active_language()->id)->doesntExist()) $content_lang_id = Language::get_default_language()->id;
-
-            $page = Post::with('active_lang_content')->where('id', $homepage->id)->first();
-
-            // Meta title
-            if ($page->active_lang_content->meta_title ?? null) $page->meta_title = $page->active_lang_content->meta_title ?? null;
-            else $page->meta_title = $page->active_lang_content->title ?? null;
-
-            // Meta description
-            if ($page->active_lang_content->meta_description ?? null) $page->meta_description = $page->active_lang_content->meta_description ?? null;
-            else $page->meta_description = $page->meta_title ?? null;
-
-            if ($page->layout_id) $layout = Layout::where('id', $page->layout_id)->first();
-
-            // update hits
-            Page::where('id', $page->id)->increment('hits');
-
-            if ($active_theme == 'builder') $viwe_page = 'web.builder.page';
-            else $viwe_page = $active_theme . '.index';
-
-            return view($viwe_page, [
-                'page' => $page,
-                'module' => 'pages',
-                'content_id' => $page->id,
-
-                'layout' => $layout ?? null,
-                'layout_top' => $layout->top ?? null,
-                'layout_bottom' => $layout->bottom ?? null,
-                'layout_sidebar' => $layout->sidebar ?? null,
-            ]);
-        }
-
-        return view('web.builder.index', []);
     }
 };

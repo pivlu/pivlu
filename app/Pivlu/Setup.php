@@ -29,7 +29,7 @@ use App\Models\TaxonomyTerm;
 use App\Models\TaxonomyTermContent;
 use App\Models\Language;
 use App\Models\BlockType;
-
+use App\Models\Config;
 
 class Setup
 {
@@ -140,12 +140,11 @@ class Setup
             $admin_user_id = User::where(['role' => 'admin'])->orderByDesc('id')->value('id');
             $homepage_post = Post::create([
                 'type' => 'page',
-                'is_homepage' => 1, 
-                'status' => 'published',         
+                'is_homepage' => 1,
+                'status' => 'published',
                 'user_id' => $admin_user_id
             ]);
         }
-        
     }
 
 
@@ -215,7 +214,7 @@ class Setup
                 'position' => 6,
                 'icon' => '<i class="bi bi-collection"></i>'
             ]);
-        }        
+        }
 
         if (BlockType::where(['type' => 'video', 'core' => 1])->doesntExist()) {
             BlockType::create([
@@ -282,5 +281,13 @@ class Setup
                 'icon' => '<i class="bi bi-code"></i>'
             ]);
         }
+    }
+
+
+    // Add default theme, if not exists        
+    public static function check_default_theme()
+    {
+        $active_theme = Config::get_config('active_theme');
+        if(!$active_theme || (($active_theme ?? null) == '')) Config::update_config('active_theme', 'pivlu_blogger_one');
     }
 }

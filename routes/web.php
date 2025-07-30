@@ -52,6 +52,9 @@ Route::get('profile' . '/{username}', [ProfileController::class, 'index'])->name
 // Search
 Route::get('s', [ContentController::class, 'search'])->name('search');
 
+// Theke fake post (used in demo themes)
+Route::get('theme-fake-post' . '/{file}', [ToolsController::class, 'theme_fake_post'])->name('theme-fake-post')->where(['file' => '[a-zA-Z0-9_-]+']);
+
 // Web Posts           
 Route::get('{slug}', [ContentController::class, 'level1'])->name('level1')->where(['slug' => '[a-z0-9_-]{3,}+']);
 Route::get('{slug1}/{slug2}', [ContentController::class, 'level2'])->name('level2')->where(['slug1' => '[a-z0-9_-]{3,}+'], ['slug2' => '[a-z0-9_-]+']);

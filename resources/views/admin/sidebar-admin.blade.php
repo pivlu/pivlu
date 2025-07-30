@@ -71,6 +71,19 @@
                     </ul>
                 </li>               
 
+                <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'tools') active @endif">
+                    <a href="#" class='sidebar-link'>
+                        <i class="bi bi-tools"></i>
+                        <span>{{ __('Tools') }}</span>
+                    </a>
+                    <ul class="submenu @if (($active_menu ?? null) == 'tools') active @endif">
+
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'recycle_bin') active @endif">
+                            <a href="{{ route('admin.recycle_bin') }}">{{ __('Recycle Bin') }}</a>
+                        </li>
+
+                    </ul>
+                </li>       
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

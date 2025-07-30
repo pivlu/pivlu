@@ -38,4 +38,16 @@ class ToolsController extends Controller
         return view('web.builder.maintenance', []);
     }
 
+
+     /**
+     * Theme fake post
+     */
+    public function theme_fake_post(Request $request)
+    {
+        $active_theme = Config::config()->active_theme ?? null;
+        $sample_file = $request->file;
+
+        return view('themes.'.$active_theme.'.includes.samples.'.$sample_file, []);
+    }
+
 }

@@ -27,7 +27,6 @@ use Illuminate\Support\Facades;
 use Illuminate\View\View;
 use App\Models\Config;
 use App\Models\ConfigLang;
-use App\Models\ThemeConfig;
 use App\Models\Language;
 
 class ThemeMiddleware
@@ -51,34 +50,19 @@ class ThemeMiddleware
         }       
 
         Facades\View::composer('*', function (View $view) {
-            $view->with('languages', Language::get_languages()); // active and inactive
-            $view->with('active_languages', Language::get_active_languages()); // active languages
-            $view->with('active_language', Language::get_active_language()); // active language
-            $view->with('site_text_dir', Language::get_active_language()->dir ?? 'ltr');
             $view->with('theme_path', 'themes/'.Config::get_config('active_theme') ?? 'builder');
 
             // general config
             $config = Config::config();
             $view->with('config', $config);
-
-            // theme config
-            $theme_config = ThemeConfig::config();
-            $view->with('theme_config', $theme_config);
-
+            
             // config depending on language
             $config_lang = ConfigLang::config();
             $view->with('config_lang', $config_lang);
 
             // Locale
             $view->with('locale', config('app.locale'));
-
-            // Website Menu links            
-            $menu_links = ConfigLang::get_config(Language::get_active_language()->id, 'menu_links');
-            if ($menu_links) {
-                $menu_links = unserialize($menu_links);
-                $menu_links = json_decode(json_encode($menu_links)); // array to object
-            }
-            $view->with('menu_links', $menu_links ?? array());            
+               
         });
 
         return $next($request);

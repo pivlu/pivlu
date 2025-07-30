@@ -60,3 +60,48 @@ if (!function_exists('theme_meta')) {
 	}
 }
 
+
+if (!function_exists('theme_include')) {
+	function theme_include($destination, $filename = null)
+	{
+		$active_theme = Config::config()->active_theme ?? null;
+
+		$active_lang_code = Language::get_active_language()->code;
+		$default_lang_code = Language::get_default_language()->code;
+
+		if ($destination == 'menu')
+			$what_to_include = 'menu';
+		elseif ($destination == 'footer')
+			$what_to_include = 'footer';
+		elseif ($destination == 'section')
+			$what_to_include = $filename ?? null;
+		else return;
+
+		if ($active_lang_code == $default_lang_code)
+			return ('themes/' . $active_theme . '/includes/' . $what_to_include);
+		else
+			return ('themes/' . $active_theme . '/includes/' . $what_to_include . '-' . $active_lang_code);
+	}
+}
+
+
+if (!function_exists('theme_menu')) {
+	function theme_menu()
+	{
+		return theme_include('menu');
+	}
+}
+
+if (!function_exists('theme_footer')) {
+	function theme_footer()
+	{
+		return theme_include('footer');
+	}
+}
+
+if (!function_exists('theme_section')) {
+	function theme_section($filename)
+	{
+		return theme_include('section', $filename);
+	}
+}

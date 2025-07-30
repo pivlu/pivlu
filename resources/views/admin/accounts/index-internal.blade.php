@@ -150,7 +150,6 @@
                     <tr>
                         <th>{{ __('Details') }}</th>
                         <th width="250">{{ __('Activity') }}</th>
-                        <th width="180">{{ __('Role / permissions') }}</th>
                         <th width="140">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -221,38 +220,14 @@
                                     </div>
                                 @endif
                             </td>
-
-                            <td>
-                                <b>
-                                    @switch($account->role)
-                                        @case('admin')
-                                            {{ __('Administrator') }}
-                                        @break
-
-                                        @case('user')
-                                            {{ __('Registered user') }}
-                                        @break
-
-                                        @case('internal')
-                                            {{ __('Internal') }}
-                                        @break
-
-                                        @default
-                                            {{ $account->role }}
-                                    @endswitch
-                                </b>
-                            </td>
+                           
 
                             <td>
                                 <div class="d-grid gap-2">
 
-                                    <a class="btn btn-primary btn-sm" href="{{ route('admin.accounts.show', ['id' => $account->id]) }}">{{ __('Update') }}</a>
+                                    <a class="btn btn-primary btn-sm" href="{{ route('admin.accounts.show', ['id' => $account->id]) }}">{{ __('Update') }}</a>                                    
 
-                                    @if (Auth::user()->role == 'admin')
-                                        <a class="btn btn-primary btn-sm" href="{{ route('admin.accounts.permissions', ['search_user_id' => $account->id]) }}">{{ __('Permissions') }}</a>
-                                    @endif
-
-                                    @if (check_access('accounts', 'manager') && Auth::user()->id != $account->id)
+                                    @if (Auth::user()->id != $account->id)
                                         <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $account->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                                         <div class="modal fade confirm-{{ $account->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                             <div class="modal-dialog">

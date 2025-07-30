@@ -23,7 +23,7 @@ use App\Models\Media;
 use App\Models\Language;
 use Illuminate\Support\Facades\Storage;
 
-
+// Return image url
 if (!function_exists('image')) {
 	function image($media_id, $format = null)
 	{
@@ -43,8 +43,8 @@ if (!function_exists('image')) {
 			$filename_format = '/thumb_square_' . $media->filename;
 		else
 			$filename_format = $media->filename;
-		
-		if($media->folder) $filename_format = $media->folder.'/'.$filename_format;
+
+		if ($media->folder) $filename_format = $media->folder . '/' . $filename_format;
 
 		$url = Storage::disk($media->disk)->url($filename_format);
 
@@ -52,52 +52,30 @@ if (!function_exists('image')) {
 	}
 }
 
-if (!function_exists('no_avatar')) {
-	function no_avatar($size = null)
-	{
-		if ($size == 'icon')
-			return asset('assets/img/no-avatar-icon.png');
-		else
-			return asset('assets/img/no-avatar.png');
-	}
-}
-
+// Return avatar url
 if (!function_exists('avatar')) {
-	function avatar($avatar)
+	function avatar($avatar_media_id, $format = null)
 	{
-		if (!$avatar) return no_avatar();
-
-		$data = json_decode($avatar, true);
-		$disk_url = $data['disk_url'] ?? null;
-		$folder = $data['folder'] ?? null;
-		$filename = $data['filename'] ?? null;
-		if (!($disk_url && $folder && $filename)) return no_avatar();
-		$avatarURL = $disk_url . '/' . $folder . '/' . $filename;
-
-		return $avatarURL;
-	}
-}
-
-
-if (!function_exists('avatar_icon')) {
-	function avatar_icon($avatar)
-	{
-
-		if (!$avatar) return no_avatar('icon');
-
-		$data = json_decode($avatar, true);
-		$disk_url = $data['disk_url'] ?? null;
-		$folder = $data['folder'] ?? null;
-		$filename = $data['filename'] ?? null;
-		if (!($disk_url && $folder && $filename)) return no_avatar('icon');
-
-		$pos = strrpos($filename, '/');
-		if ($pos !== false) {
-			$filename = substr_replace($filename, 'thumb_', $pos, 1);
+		$media = Media::find($avatar_media_id);
+		if (!$media) {
+			if ($format == 'thumb')
+				return asset('assets/img/no-avatar-icon.png');
+			else
+				return asset('assets/img/no-avatar.png');
 		}
-		$avatarURL = $disk_url . '/' . $folder . '/' . $filename;
 
-		return $avatarURL;
+		if (! $format)
+			$filename_format = $media->filename;
+		elseif ($format == 'thumb')
+			$filename_format = '/thumb_' . $media->filename;
+		else
+			$filename_format = $media->filename;
+
+		if ($media->folder) $filename_format = $media->folder . '/' . $filename_format;
+
+		$url = Storage::disk($media->disk)->url($filename_format);
+
+		return $url;
 	}
 }
 
@@ -121,4 +99,3 @@ if (!function_exists('flag')) {
 		return '<img alt="' . $lang->name . '" title="' . $lang->name . '" class="img-flag" src=" ' . $flag_url . '">';
 	}
 }
-

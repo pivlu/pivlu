@@ -86,7 +86,9 @@
 
                         <thead>
                             <tr>
-                                <th width="20"></th>
+                                <th width="20">
+                                    <input type="checkbox" name="select-all" id="select-all" />
+                                </th>
                                 <th>{{ __('Details') }}</th>
                                 <th width="320">{{ __('Role') }}</th>
                                 <th width="200">{{ __('Action') }}</th>
@@ -98,7 +100,7 @@
                             @foreach ($items as $item)
                                 <tr>
                                     <td>
-                                        <input name='item_checkbox[]' type='checkbox' id='item_checkbox_{{ $item->id }}[]' value='{{ $item->id }}'>
+                                        <input name='items_checkbox[]' type='checkbox' id='items_checkbox_{{ $item->id }}[]' value='{{ $item->id }}'>
                                     </td>
                                     <td>
                                         <span class="float-start me-3"><img style="max-width:110px; height:auto;" src="{{ avatar($item->id) }}" /></span>

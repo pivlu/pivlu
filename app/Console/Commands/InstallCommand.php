@@ -100,6 +100,9 @@ class InstallCommand extends Command
         $this->line('Check default block types');
         Setup::check_default_block_types();
 
+        $this->line('Check default theme');
+        Setup::check_default_theme();
+
         // Create the symbolic link 
         Artisan::call('storage:link');
 

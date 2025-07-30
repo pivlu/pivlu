@@ -17,10 +17,10 @@
                                 <a href="javascript:void(0)"> <i class="bi bi-twitter"></i> </a>
                             </li>
                             <li>
-                                <a href="javascript:void(0)"> <i class="fab fa-instagram"></i> </a>
+                                <a href="javascript:void(0)"> <i class="bi bi-instagram"></i> </a>
                             </li>
                             <li>
-                                <a href="javascript:void(0)"> <i class="fab fa-linkedin"></i> </a>
+                                <a href="javascript:void(0)"> <i class="bi bi-linkedin"></i> </a>
                             </li>
                         </ul>
                     </div>
@@ -42,7 +42,7 @@
                     <div class="footer-widget">
                         <h3>Company</h3>
                         <ul class="links">
-                            <li> <a href="index.php">Home</a> </li>
+                            <li> <a href="{{ route('home') }}">Home</a> </li>
                             <li> <a href="#">Team</a></li>
                             <li> <a href="#">Our History</a></li>
                             <li> <a href="#">Our Clients</a></li>
@@ -57,7 +57,7 @@
                             <li><a href="#">Documentation</a></li>
                             <li><a href="#">Privacy Policy</a></li>
                             <li><a href="#">Terms of Service</a></li>
-                            <li> <a href="#contact">Contact Us</a></li>
+                            <li> <a href="#">Contact Us</a></li>
                         </ul>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="copyright-wrapper">
-            Designed by <a title="Pivlu website builder" target="_blank" href="https://pivlu.com">Pivlu Website Builder</a>
+            Designed by <a title="Pivlu CMS" target="_blank" href="https://pivlu.com"><b>Pivlu</b>: The #1 Open Source CMS</a>
         </div>
     </div>
 

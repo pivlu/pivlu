@@ -110,7 +110,7 @@ class Media extends Model
         $contents = @file_get_contents($temp_pathSmall);
         Storage::disk($disk)->put($disk_pathSmall, $contents);
         @unlink($temp_pathSmall); // delete temp file
-        
+
         // Save a square version of the image        
         Image::read($requestFile)->contain(1000, 1000, background: 'transparent', position: 'center')->toWebp($image_quality)->save($temp_pathSquare);
         $contents = @file_get_contents($temp_pathSquare);
@@ -228,6 +228,118 @@ class Media extends Model
 
         return $db_path . $newFilename;
     }
+
+
+
+
+
+    /**
+     * Upload an avatar image to the server. If the upload is successful, add avatar to user.
+     * 
+     * @return true|false 
+     */
+    public static function store_user_avatar($requestFile, $user_id, $old_media_id = null)
+    {
+        if (!$requestFile) return false;
+        if (!$user_id) return false;
+
+        $user = User::find($user_id);
+        if (!$user) return false;
+
+        $uploadSuccessful = false;
+        $temp_path = 'temp-uploads';
+        $disk = config('pivlu.uploads_disk');
+        $image_quality = config('pivlu.uploads_image_quality') ?? 75;
+        $image_quality = (int)$image_quality;
+
+        $disk_path = now()->format('Ymd');
+
+        $extension = strtolower($requestFile->getClientOriginalExtension());
+        $original_name = $requestFile->getClientOriginalName();
+
+        // chech file size
+        $filesize = $requestFile->getSize(); // in bytes
+        $filesize_kb = round($filesize / 1024, 2); // in kB with 2 digits        
+        $filesize_mb = round($filesize / 1024 / 1024, 2); // in kB with 2 digits        
+        $image_max_size = config('pivlu.uploads_image_max_size') ?? 5120; // in kB
+        if ($filesize_kb > $image_max_size) return null;
+
+        // Check file extensions       
+        $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif', 'bmp'];
+        if (!in_array($extension, $validExtensions))  return null;
+
+        $originalNameRaw = $requestFile->getClientOriginalName();
+        $originalName =  str_replace(' ', '_', $originalNameRaw);
+
+        $newFilename = Str::random(12) . '-' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.webp';
+
+        if (!File::isDirectory($temp_path)) {
+            File::makeDirectory($temp_path, 0777, true, true);
+        }
+
+        // Save thumbnail and large file
+        $temp_pathLarge = "$temp_path/$newFilename";
+        $temp_pathThumb = "$temp_path/thumb_$newFilename";
+
+        $disk_pathLarge = "$disk_path/$newFilename";
+        $disk_pathThumb = "$disk_path/thumb_$newFilename";
+
+
+        // Save a square version of the image        
+        Image::read($requestFile)->cover(300, 300)->toWebp($image_quality)->save($temp_pathLarge);
+        $contents = @file_get_contents($temp_pathLarge);
+        Storage::disk($disk)->put($disk_pathLarge, $contents);
+        @unlink($temp_pathLarge); // delete temp file
+
+        // Save a thumbnail version of the image
+        Image::read($requestFile)->coverDown(50, 50)->toWebp($image_quality)->save($temp_pathThumb);
+        $contents = @file_get_contents($temp_pathThumb);
+        Storage::disk($disk)->put($disk_pathThumb, $contents);
+        @unlink($temp_pathThumb); // delete temp file
+
+        $media = Media::create([
+            'code' => strtoupper(Str::random(16)),
+            'filename' => $newFilename,
+            'original_name' => $original_name,
+            'folder' => $disk_path,
+            'disk' => $disk,
+            'user_id' => Auth::user()->id ?? null,
+            'mime_type' => 'image/webp',
+            'extension' => 'webp',
+            'size_mb' => $filesize_mb ?? null
+
+        ]);
+
+        $uploadSuccessful = true;
+
+
+        // DELETE OLD IMAGE
+        if ($uploadSuccessful) {
+            if ($old_media_id) {
+                $old_media = Media::find($old_media_id);
+                if ($old_media) {
+                    $old_image_disk = $old_media->disk ?? null;
+                    $old_image_filename = $old_media->filename ?? null;
+                    if ($old_media->folder) $old_image_filename = $old_media->folder . '/' . $old_image_filename;
+
+                    Storage::disk($old_image_disk)->delete($old_image_filename); // delete large file
+
+                    // Additionally delete all images created
+                    $pathInfo = pathinfo($old_image_filename);
+                    $pathThumb = "{$pathInfo['dirname']}/thumb_{$pathInfo['basename']}";
+                    Storage::disk($old_image_disk)->delete($pathThumb);
+
+                    $old_media->delete();
+                }
+            }
+
+            $user->update(['avatar_media_id' => $media->id]);
+        }
+
+        return true;
+    }
+
+
 
 
     public static function delete_media($id)
