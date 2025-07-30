@@ -232,16 +232,16 @@
                     <div class="form-group col-md-4 col-sm-6">
                         <label for="formFile" class="form-label">{{ __('Image') }} ({{ __('optional') }})</label>
                         <input class="form-control" type="file" id="formFile" name="image_{{ $lang->id }}[]" multiple>
-                        <div class="text-muted small">{{ __('Image file. Maximum 2.5 MB.') }}</div>
+                        <div class="text-muted small">{{ __('Note: image is displayed only if icon code is not set.') }}</div>
 
-                        @if ($content_array[$i]['image'] ?? null)
-                            <a target="_blank" href="{{ image($content_array[$i]['image']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($content_array[$i]['image']) }}"
+                        @if ($content_array[$i]['media_id'] ?? null)
+                            <a target="_blank" href="{{ image($content_array[$i]['media_id']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($content_array[$i]['media_id']) }}"
                                     class="img-fluid mt-2"></a>
-                            <input type="hidden" name="existing_image_{{ $lang->id }}[{{ $i }}]" value="{{ $content_array[$i]['image'] ?? null }}">
+                            <input type="hidden" name="existing_image_{{ $lang->id }}[{{ $i }}]" value="{{ $content_array[$i]['media_id'] ?? null }}">
 
                             <div class="form-group mb-0">
                                 <div class="form-check form-switch">
-                                    <input type="hidden" name="delete_image_file_code_{{ $lang->id }}_{{ $i }}" value="{{ $content_array[$i]['image'] ?? null }}">
+                                    <input type="hidden" name="delete_image_media_id_{{ $lang->id }}_{{ $i }}" value="{{ $content_array[$i]['media_id'] ?? null }}">
                                     <input class="form-check-input" type="checkbox" id="delete_image_{{ $lang->id }}_{{ $i }}" name="delete_image_{{ $lang->id }}_{{ $i }}">
                                     <label class="form-check-label" for="delete_image_{{ $lang->id }}_{{ $i }}">{{ __('Delete image') }}</label>
                                 </div>

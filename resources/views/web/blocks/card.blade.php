@@ -140,9 +140,9 @@
 
                                     @if ($item['icon'] ?? null)
                                         <div class="icon px-2 py-1 text-center" style="font-size: {{ $block_settings['icon_size'] ?? '2em' }}">{!! $item['icon'] !!}</div>
-                                    @elseif ($item['image'] ?? null)
-                                        <img class="card-img-top @if ($block_settings['img_full_width'] ?? null) w-100 @endif" alt="{{ $item['title'] ?? $item['image'] }}" title="{{ $item['title'] ?? $item['image'] }}"
-                                            src="{{ thumb($item['image']) }}" @if ($block_settings['no_border_radius'] ?? null) style="border-radius: 0;" @endif>
+                                    @elseif ($item['media_id'] ?? null)
+                                        <img class="card-img-top @if ($block_settings['img_full_width'] ?? null) w-100 @endif" alt="{{ $item['title'] ?? $item['media_id'] }}" title="{{ $item['title'] ?? $item['media_id'] }}"
+                                            src="{{ image($item['media_id'], 'small') }}" @if ($block_settings['no_border_radius'] ?? null) style="border-radius: 0;" @endif>
                                     @endif
 
                                     <div class="card-body">

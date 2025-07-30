@@ -64,14 +64,6 @@ class Block extends Model
         $post = Post::find($post_id);
         if (!$post) return null;
 
-        /*
-        $blocks = Block::where('post_id', $post_id)
-            ->where('hidden', 0)
-            ->orderBy('position')
-            ->select('id', 'type_id', 'settings')
-            ->get()->toArray();
-        */
-
         $blocks = Block::with('block_type')->where('post_id', $post_id)
             ->where('hidden', 0)
             ->orderBy('position')
@@ -81,7 +73,6 @@ class Block extends Model
         foreach ($blocks as $block) {
             $blocks_array[] = ['id' => $block->id, 'type_id' => $block->type_id, 'type' => $block->block_type->type, 'settings' => $block->settings];
         }
-
 
         $post->update(['blocks' => serialize($blocks_array)]);
 
@@ -377,17 +368,30 @@ class Block extends Model
                 $counter_key = count(array_filter($_POST[$post_key_title]));
 
                 $image = null;
+                $media = null;
 
                 for ($i = 0; $i < $counter_key; $i++) {
                     $image = null;
+                    $media = null;
 
                     // delete image (if checkbox is checked)
                     if ($request->has($post_key_delete_image . '_' . $i)) {
-                        $file_code_to_delete = $inputs['delete_image_file_code_' . $lang->id . '_' . $i];
-                        DriveFile::delete_image($file_code_to_delete);
+                        $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
+                        Media::delete_media($file_media_id_to_delete);
                         $inputs["$post_key_existing_image"][$i] = null;
                     }
 
+
+
+                    if ($request->hasFile($post_key_image)) {
+                        if ($file = $request->file($post_key_image)[$i] ?? null) {
+                            $media = Media::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
+                            if ($media) $media->update(['post_id' => $block->post_id]);
+                        }
+                    }
+
+
+                    /*
                     if ($request->hasFile($post_key_image)) {
 
                         if ($file = $request->file($post_key_image)[$i] ?? null) {
@@ -398,8 +402,9 @@ class Block extends Model
                             }
                         }
                     }
+                    */
 
-                    $cards_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'url' => $inputs["$post_key_url"][$i], 'icon' => $inputs["$post_key_icon"][$i], 'image' => $image ?? $inputs["$post_key_existing_image"][$i] ?? null, 'content' => $inputs["$post_key_content"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0);
+                    $cards_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'url' => $inputs["$post_key_url"][$i], 'icon' => $inputs["$post_key_icon"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null, 'content' => $inputs["$post_key_content"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0);
 
                     // regenerate array and sort by position (asc)
                     if (count($cards_array_key) > 1) {
