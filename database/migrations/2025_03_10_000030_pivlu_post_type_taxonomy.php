@@ -30,15 +30,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_post_taxonomy', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('post_id');
-            $table->unsignedBigInteger('taxonomy_id');           
-            $table->unsignedBigInteger('taxonomy_term_id')->nullable();        
+        Schema::create('pivlu_post_type_taxonomies', function (Blueprint $table) {
+            $table->id();            
+            $table->unsignedBigInteger('post_type_id')->nullable();
+            $table->boolean('hierarchical')->default(false);
+            $table->boolean('active')->default(false);
+            $table->smallInteger('position')->nullable();
+            $table->boolean('admin_filter')->default(true);
+            $table->integer('count_posts')->default(0);
+            $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('pivlu_posts')->onDelete('cascade');
-            $table->foreign('taxonomy_id')->references('id')->on('pivlu_taxonomy')->onDelete('cascade');
-            $table->foreign('taxonomy_term_id')->references('id')->on('pivlu_taxonomy_terms')->nullonDelete();
+            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->cascadeOnDelete();
         });
     }
 
@@ -47,6 +49,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_post_taxonomy');
+        Schema::dropIfExists('pivlu_post_type_taxonomies');
     }
 };

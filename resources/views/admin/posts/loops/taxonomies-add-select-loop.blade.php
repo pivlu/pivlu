@@ -1,10 +1,10 @@
-<option value="{{ $taxonomy_item->id }}">@for ($i = 1; $i < $loop->depth; $i++)---@endfor {{ $taxonomy_item->default_language_content->name }}</option>
+<option value="{{ $post_taxonomy->id }}">@for ($i = 1; $i < $loop->depth; $i++)---@endfor {{ $post_type_taxonomy->default_language_content->name }}</option>
 
 
-@if (count($taxonomy_item->children) > 0)
+@if (count($post_taxonomy->children) > 0)
 
-	@foreach($taxonomy_item->children as $taxonomy_item)	
-	@include('admin.posts.loops.taxonomies-add-select-loop', $taxonomy_item)
+	@foreach($post_taxonomy->children as $post_taxonomy)	
+	@include('admin.posts.loops.taxonomies-add-select-loop', $post_taxonomy)
 	@endforeach
 
 @endif

@@ -22,11 +22,12 @@
 namespace App\Pivlu;
 
 use App\Models\Post;
+use App\Models\PostContent;
 use App\Models\User;
 use App\Models\PostType;
 use App\Models\PostTypeContent;
-use App\Models\TaxonomyTerm;
-use App\Models\TaxonomyTermContent;
+use App\Models\PostTypeTaxonomy;
+use App\Models\PostTypeTaxonomyContent;
 use App\Models\Language;
 use App\Models\BlockType;
 use App\Models\Config;
@@ -43,7 +44,6 @@ class Setup
         if (PostType::where('type', 'page')->doesntExist()) {
             $post_type_page = PostType::create([
                 'type' => 'page',
-                'name' => 'Pages',
                 'show_in_admin_menu' => 1,
                 'admin_menu_icon' => '<i class="bi-files"></i>',
                 'core' => 1,
@@ -53,13 +53,14 @@ class Setup
             PostTypeContent::create([
                 'lang_id' => $default_language->id,
                 'post_type_id' => $post_type_page->id,
-                'labels' => '{"singular":"Page","plural":"Pages","create":"Create new page","update":"Update page","delete":"Delete page","all":"All pages"}',
+                'name' => 'Page',
+                'labels' => '{"singular":"Page","plural":"Pages","create":"Create new page","update":"Update page","delete":"Delete page","all":"All pages","search":"Search in pages"}',
             ]);
         }
+
         if (PostType::where('type', 'post')->doesntExist()) {
             $post_type_post = PostType::create([
                 'type' => 'post',
-                'name' => 'Posts',
                 'show_in_admin_menu' => 1,
                 'admin_menu_icon' => '<i class="bi-file-text"></i>',
                 'core' => 1,
@@ -69,44 +70,41 @@ class Setup
             PostTypeContent::create([
                 'lang_id' => $default_language->id,
                 'post_type_id' => $post_type_post->id,
+                'name' => 'Post',
                 'slug' => 'posts',
-                'labels' => '{"singular":"Post","plural":"Posts","create":"Create new post","update":"Update post","delete":"Delete post","all":"All posts"}',
+                'labels' => '{"singular":"Post","plural":"Posts","create":"Create new post","update":"Update post","delete":"Delete post","all":"All posts","search":"Search in posts"}',
             ]);
-        }
 
-        if (TaxonomyTerm::where('taxonomy', 'post-category')->doesntExist()) {
-            $taxonomy_term_categ = TaxonomyTerm::create([
-                'taxonomy' => 'post-category',
+
+            $post_type_taxonomy_categ = PostTypeTaxonomy::create([
                 'hierarchical' => 1,
-                'post_type' => 'post',
-                'name' => 'Categories',
+                'post_type_id' => $post_type_post->id,
                 'active' => 1,
                 'position' => 1,
                 'admin_filter' => 1,
             ]);
 
-            TaxonomyTermContent::create([
+            PostTypeTaxonomyContent::create([
                 'lang_id' => $default_language->id,
-                'taxonomy_term_id' => $taxonomy_term_categ->id,
+                'post_type_taxonomy_id' => $post_type_taxonomy_categ->id,
+                'name' => 'Categories',
                 'slug' => 'category',
                 'labels' => '{"singular":"Category","plural":"Categories","create":"Create category","update":"Update category","delete":"Delete category","all":"All categories","search":"Search category"}',
             ]);
-        }
 
-        if (TaxonomyTerm::where('taxonomy', 'post-tag')->doesntExist()) {
-            $taxonomy_term_tag = TaxonomyTerm::create([
-                'taxonomy' => 'post-tag',
+
+            $post_type_taxonomy_tag = PostTypeTaxonomy::create([
                 'hierarchical' => 0,
-                'post_type' => 'post',
-                'name' => 'Tags',
+                'post_type_id' => $post_type_post->id,
                 'active' => 1,
                 'position' => 2,
                 'admin_filter' => 1,
             ]);
 
-            TaxonomyTermContent::create([
+            PostTypeTaxonomyContent::create([
                 'lang_id' => $default_language->id,
-                'taxonomy_term_id' => $taxonomy_term_tag->id,
+                'post_type_taxonomy_id' => $post_type_taxonomy_tag->id,
+                'name' => 'Tags',
                 'slug' => 'tag',
                 'labels' => '{"singular":"Tag","plural":"Tags","create":"Create tag","update":"Update tag","delete":"Delete tag","all":"All tags","search":"Search tag"}',
             ]);
@@ -134,15 +132,25 @@ class Setup
     public static function check_default_website_settings()
     {
         // Add homepage, if not exists
-        if (Post::where(['type' => 'page', 'is_homepage' => 1])->doesntExist()) {
+        if (Post::where(['is_homepage' => 1])->doesntExist()) {
 
             // first admin user_id
             $admin_user_id = User::where(['role' => 'admin'])->orderByDesc('id')->value('id');
+
+            // id for page type
+            $page_post_type_id = PostType::where(['type' => 'page'])->value('id');
+
             $homepage_post = Post::create([
-                'type' => 'page',
+                'poat_type_id' => $page_post_type_id,
                 'is_homepage' => 1,
                 'status' => 'published',
                 'user_id' => $admin_user_id
+            ]);
+
+            PostContent::create([
+                'lang_id' => Language::get_default_language()->id,
+                'post_id' => $homepage_post->id,
+                'title' => 'Homepage'
             ]);
         }
     }
@@ -288,6 +296,6 @@ class Setup
     public static function check_default_theme()
     {
         $active_theme = Config::get_config('active_theme');
-        if(!$active_theme || (($active_theme ?? null) == '')) Config::update_config('active_theme', 'pivlu_blogger_one');
+        if (!$active_theme || (($active_theme ?? null) == '')) Config::update_config('active_theme', 'pivlu_default_one');
     }
 }

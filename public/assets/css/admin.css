@@ -444,7 +444,8 @@ a {
 }
 
 .card .card-title {
-    font-size: 1.2rem
+    font-size: 1.3rem;
+    font-weight: bold;
 }
 
 .card .card-body {
@@ -529,27 +530,30 @@ a {
     min-width: 16rem
 }
 
-.dropdown-menu {
-    box-shadow: 0;
-    background-color: #f8fbff;
+.navbar .dropdown-menu {
+    box-shadow: none;
+    background-color: #51627d;
+    border-radius: 0;
+    color:#e9ecec
 }
 
-.dropdown-item {
+.navbar .dropdown-item {
     transition: all .5s;
     font-weight: 400;
     font-size: 1em;
     line-height: 2em;
+    color: #e9ecec;
 }
 
-.dropdown-item i {
+.navbar .dropdown-item i {
     font-size: 1.4em;
     margin-right: 5px;
 }
 
 
-.dropdown-menu-end.show {
+.navbar .dropdown-menu-end.show {
     right: 0;
-    top: 100%
+    top: 35px;
 }
 
 .form-group {
@@ -936,6 +940,7 @@ label,
     /*font-size: 2rem; */
     /* font-weight: 700; */
     padding: 0.4rem 1.6rem 0.4rem;
+    height: 50px;
 }
 
 .sidebar-wrapper .sidebar-header img {
@@ -1104,9 +1109,10 @@ label,
 }
 
 .navbar {
-    height: 40px;
-    padding: 1rem;
-    background-color: #fff;
+    height: 50px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background-color: #3d4f6b;
 }
 
 .navbar .navbar-brand img {
@@ -1114,8 +1120,31 @@ label,
 }
 
 .navbar .user-menu img {
-    height: 24px;
-    width: 24px
+    height: 26px;
+    width: 26px
+}
+
+.navbar,
+.navbar i {
+    color: #e4eff5
+}
+
+.navbar i {
+    font-size: 1.5em;
+    display: inline-flex;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.navbar .dropdown, .navbar .dropdown i, .navbar .dropdown-header {
+    color: #e9ecec;
+    font-size: 1.4em;
+}
+
+.navbar .dropdown-item:focus, .dropdown-item:hover {
+    color: #e9ecec;
+    background-color: #43536b;
 }
 
 .navbar.navbar-header li {
@@ -1392,7 +1421,7 @@ label,
 
 .burger-btn {
     display: none;
-    color: #1d2d35;
+    color: #e4eff5;
 }
 
 #main {

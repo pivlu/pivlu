@@ -14,7 +14,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['type' => $type]) }}">{{ $custom_post_type->name ?? __('Posts') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type_id]) }}">{{ $post_type->default_language_content->name ?? __('Posts') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
                         {{ __(json_decode($post_type->labels)->create ?? __('Create')) }}
                     </li>
@@ -67,7 +67,7 @@
                             <textarea rows="3" class="form-control" name="summary_{{ $lang->id }}"></textarea>
                         </div>
 
-                        @if ($type != 'page')
+                        @if ($post_type->type != 'page')
                             <div class="form-group">
                                 <label>{{ __('Search terms') }} ({{ __('separated by comma') }})</label>
                                 <input type="text" class="form-control" name="search_terms_{{ $lang->id }}" aria-describedby="searchHelp">
@@ -122,7 +122,7 @@
 
         <div class="form-group col-xl-4 col-md-5 col-sm-12">
             <div class="p-3 bg-light mb-3">
-                @if ($type == 'page')
+                @if ($post_type->type == 'page')
                     <div class="form-group col-md-6 col-12 mb-4">
                         <label>{{ __('Parent page') }}</label>
                         <select name="parent_id" class="form-select">
@@ -204,7 +204,7 @@
 
                 <div class="collapse" id="collapseSettings">
 
-                    @if ($type != 'page')
+                    @if ($post_type->type != 'page')
                         <div class="form-group">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="customSwitchComments" name="disable_comments">
@@ -246,7 +246,7 @@
 
                 <div class="clearfix"></div>
 
-                <input type="hidden" name="type" value="{{ $type }}">
+                <input type="hidden" name="post_type_id" value="{{ $post_type_id }}">
 
                 <button type="submit" class="btn btn-gear">{{ __('Save and add content') }}</button>
 

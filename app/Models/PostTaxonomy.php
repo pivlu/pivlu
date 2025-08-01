@@ -25,20 +25,107 @@ use Illuminate\Database\Eloquent\Model;
 
 class PostTaxonomy extends Model
 {
-    
-    protected $table = 'pivlu_post_taxonomy';
 
-    protected $fillable = ['post_id', 'taxonomy_id', 'taxonomy_term_id'];
+    protected $fillable = [
+        'post_type_taxonomy_id',
+        'parent_id',
+        'tree_ids',
+        'active',
+        'position',
+        'media_id',
+        'icon',
+        'count_posts',
+        'count_tree_posts',
+    ];
 
-    public $timestamps = false;
+    protected $table = 'pivlu_post_taxonomies';
 
-    public function post()
+    protected $appends = ['all_languages_contents'];
+
+
+    public function getAllLanguagesContentsAttribute()
     {
-        return $this->belongsTo(Post::class, 'post_id', 'id');
+        $all_language_contents = [];
+        $langs = Language::get_languages();
+        foreach ($langs as $lang) {
+            $content = PostTaxonomyContent::where('lang_id', $lang->id)->where('post_taxonomy_id', $this->id)->first();
+            $all_language_contents[] = [
+                'lang_id' => $lang->id,
+                'lang_name' => $lang->name,
+                'lang_code' => $lang->code,
+                'name' => $content->name ?? null,
+                'slug' => $content->slug ?? null,
+                'description' => $content->description ?? null,
+                'meta_title' => $content->meta_title ?? null,
+                'meta_description' => $content->meta_description ?? null
+            ];
+        }
+        return json_decode(json_encode($all_language_contents));
     }
 
-    public function taxonomy()
+
+
+    public function term()
     {
-        return $this->belongsTo(Taxonomy::class, 'taxonomy_id', 'id')->with('term');
-    }   
+        return $this->belongsTo(PostTypeTaxonomy::class, 'post_type_taxonomy_id')->with('content_post_type');
+    }
+
+    public function contents()
+    {
+        return $this->hasMany(PostTaxonomyContent::class, 'post_taxonomy_id');
+    }
+
+    public function default_language_content()
+    {
+        return $this->hasOne(PostTaxonomyContent::class, 'post_taxonomy_id')->where('lang_id', Language::get_default_language()->id ?? null);
+    }
+
+    public function active_language_content()
+    {
+        return $this->hasOne(PostTaxonomyContent::class, 'post_taxonomy_id')->where('lang_id', Language::get_active_language()->id ?? null);
+    }
+
+
+    public function children()
+    {
+        return $this->hasMany(PostTaxonomy::class, 'parent_id')->orderBy('position');
+    }
+
+
+    public function childCategories()
+    {
+        return $this->hasMany(PostTaxonomy::class, 'parent_id')->with('children')->orderBy('position');
+    }
+
+
+    public function active_children()
+    {
+        return $this->hasMany(PostTaxonomy::class, 'parent_id')->where('active', 1)->orderBy('position');
+    }
+
+
+    public function active_childCategories()
+    {
+        return $this->hasMany(TaPostTaxonomyxonomy::class, 'parent_id')->where('active', 1)->orderBy('position')->orderBy('name')->with('active_children');
+    }
+
+
+    public static function recount_posts($post_type_id)
+    {
+        $post_type_taxonomies = PostTypeTaxonomy::where('post_type_id', $post_type_id)->where('active', 1)->get();
+        foreach ($post_type_taxonomies as $post_type_taxonomy) {
+            //$taxonomy_name = $post_type_taxonomy->taxonomy;            
+
+            $taxonomies = Taxonomy::where('post_type_taxonomy_id', $post_type_taxonomy->id)->get();
+            foreach ($taxonomies as $taxonomy) {
+                $count_posts = PostTaxonomy::where('taxonomy_id', $taxonomy->id)->whereHas('post', function ($query) {
+                    $query->where('status', 'like', 'published');
+                })->count();
+
+                Taxonomy::where('id', $taxonomy->id)->update(
+                    ['count_posts' => $count_posts]
+                );
+            }
+        }
+    }
 }

@@ -30,20 +30,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_taxonomy', function (Blueprint $table) {
+        Schema::create('pivlu_post_taxonomy_content', function (Blueprint $table) {
             $table->id();
-            $table->string('taxonomy', 50)->nullable();
-            $table->integer('parent_id')->nullable();
-            $table->string('tree_ids', 250)->nullable();
-            $table->boolean('active')->default(false);
-            $table->smallInteger('position')->nullable();
-            $table->unsignedBigInteger('media_id')->nullable();
-            $table->string('icon', 250)->nullable();
-            $table->integer('count_posts')->nullable();
-            $table->integer('count_tree_posts')->nullable();
-            $table->timestamps();
+            $table->unsignedBigInteger('post_taxonomy_id')->nullable();
+            $table->unsignedBigInteger('lang_id')->nullable();
+            $table->string('name', 200)->nullable();
+            $table->string('slug', 200)->nullable();
+            $table->text('description')->nullable();
+            $table->text('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
 
-            $table->foreign('media_id')->references('id')->on('pivlu_media')->cascadeOnDelete();            
+            $table->foreign('post_taxonomy_id')->references('id')->on('pivlu_post_taxonomies')->cascadeOnDelete();
+            $table->foreign('lang_id')->references('id')->on('pivlu_languages')->cascadeOnDelete();
         });
     }
 
@@ -52,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_taxonomy');
+        Schema::dropIfExists('pivlu_post_taxonomy_content');
     }
 };

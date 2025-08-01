@@ -34,11 +34,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_type_id')->nullable();
             $table->unsignedBigInteger('lang_id')->nullable();
-            $table->text('labels')->nullable();
-            $table->text('description')->nullable();
-            $table->string('slug', 200)->nullable();
+            $table->string('name', 100)->nullable();
+            $table->string('slug', 100)->nullable();
+            $table->text('labels')->nullable();                        
 
-            $table->foreign('post_type_id')->references('id')->on('pivlu_post_type')->cascadeOnDelete();
+            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->cascadeOnDelete();
             $table->foreign('lang_id')->references('id')->on('pivlu_languages')->cascadeOnDelete();
         });
     }

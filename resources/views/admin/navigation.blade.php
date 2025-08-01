@@ -1,5 +1,5 @@
 <header class='mb-0'>
-    <nav class="navbar navbar-expand navbar-light ">
+    <nav class="navbar navbar-expand navbar-navigation ">
         <div class="container-fluid">
             <a href="#" class="burger-btn d-block">
                 <i class="bi bi-arrow-bar-left fs-4"></i>
@@ -13,7 +13,7 @@
                 <ul class="navbar-nav ms-auto mb-1 mb-lg-0">                                      
                     <li class="nav-item me-3">
                         <a class="nav-link" target="_blank" href="{{ route('home') }}" title="{{ __('View website') }}">
-                            <i class='bi bi-globe bi-sub fs-5 text-gray-600'></i>
+                            <i class='bi bi-box-arrow-up-right'></i>
                         </a>
                     </li>
                 </ul>
@@ -23,16 +23,16 @@
                         <div class="user-menu d-flex">
                             <div class="user-img d-flex align-items-center">
                                 <div class="avatar avatar-md">
-                                    <img src="{{ avatar(Auth::user()->id) }}" class="img-fluid" />
+                                    <img src="{{ avatar(Auth::user()->avatar_media_id) }}" class="img-fluid" />
                                 </div>
                             </div>
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                         <li>
-                            <h6 class="dropdown-header">{{ Auth::user()->name }}</h6>
+                            <div class="dropdown-header fw-bold fs-6 line-clamp-1">{{ Auth::user()->name }}</h6>
                         </li>
-                        <li><a class="dropdown-item" href="{{ route('admin.accounts.show', ['id' => Auth::user()->id]) }}"><i class="icon-mid bi bi-person fs-6 me-2"></i> {{ __('Profile') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.accounts.show', ['id' => Auth::user()->id]) }}"><i class="icon-mid bi bi-person me-2"></i> {{ __('Profile') }}</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

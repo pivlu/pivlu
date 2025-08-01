@@ -77,7 +77,7 @@
                     <select class="form-select me-2 mb-2 @if ($search_post_type) is-valid @endif" name="search_post_type">
                         <option selected="selected" value="">- {{ __('All post types') }} -</option>
                         @foreach ($post_types as $post_type)
-                            <option @if($post_type->type == $search_post_type )selected @endif value="{{ $post_type->type }}">{{ $post_type->name }}</option>                            
+                            <option @if ($post_type->type == $search_post_type) selected @endif value="{{ $post_type->type }}">{{ $post_type->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -122,7 +122,7 @@
                                     <td>
 
                                         <div class="fs-6 fw-bold">
-                                            <a href="{{ route('admin.posts.show', ['id' => $item->id]) }}">{{ $item->title }}</a>
+                                            <a href="{{ route('admin.posts.show', ['id' => $item->id]) }}">{{ $item->default_language_content->title }}</a>
                                         </div>
 
                                         <div class="text-muted small">
@@ -142,9 +142,9 @@
                                     </td>
 
                                     <td>
-                                        <span class="float-start me-2"><img style="max-width:50px; height:auto;" class="rounded-circle" src="{{ avatar($item->user_id) }}" /></span>
-                                        <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $item->user_id]) }}">{{ $item->author->name }}</a></b>
-                                        <br>{{ $item->author->email }}
+                                        <span class="float-start me-2"><img style="max-width:50px; height:auto;" class="rounded-circle" src="{{ avatar($item->user->avatar_media_id) }}" /></span>
+                                        <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $item->user_id]) }}">{{ $item->user->name }}</a></b>
+                                        <br>{{ $item->user->email }}
                                     </td>
 
 
@@ -186,7 +186,7 @@
                 </div>
             </form>
 
-            {{ $items->appends(['search_terms' => $search_terms, 'search_categ_id' => $search_categ_id])->links() }}
+            {{ $items->appends(['search_terms' => $search_terms, 'search_post_type' => $search_post_type])->links() }}
 
         @endif
 

@@ -1,14 +1,14 @@
-<option @if ($item->parent_id > 0) @if ($item->parent_id == $taxonomy_item->id) selected @endif @endif value="{{ $taxonomy_item->id }}" @if ($item->id == $taxonomy_item->id) disabled @endif>
+<option @if ($post_taxonomy->parent_id > 0) @if ($post_taxonomy->parent_id == $taxonomy_term->id) selected @endif @endif value="{{ $taxonomy_term->id }}" @if ($post_taxonomy->id == $taxonomy_term->id) disabled @endif>
     @for ($i = 1; $i < $loop->depth; $i++)
         ---
-    @endfor {{ $taxonomy_item->default_language_content->name }}
+    @endfor {{ $taxonomy_term->default_language_content->name }}
 </option>
 
 
-@if (count($taxonomy_item->children) > 0)
+@if (count($post_taxonomy->children) > 0)
 
-    @foreach ($taxonomy_item->children as $taxonomy_item)
-        @include('admin.posts.loops.taxonomies-edit-select-loop', $taxonomy_item)
+    @foreach ($post_taxonomy->children as $taxonomy_term)
+        @include('admin.posts.loops.taxonomies-edit-select-loop', $taxonomy_term)
     @endforeach
 
 @endif

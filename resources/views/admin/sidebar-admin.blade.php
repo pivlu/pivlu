@@ -9,7 +9,7 @@
                     <a href="{{ route('admin') }}"><img src="{{ asset('assets/img/logo-backend.png') }}" class="img-fluid" alt="{{ config('app.name') }}"></a>
                 </div>
                 <div class="toggler">
-                    <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                    <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle fs-3 text-white"></i></a>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@
                     <a href="{{ route('admin') }}" class='sidebar-link'>
                         <i class="bi bi-grid-fill"></i>
                         <span>{{ __('Dashboard') }}</span>
-                    </a>                    
+                    </a>
                 </li>
 
 
@@ -41,15 +41,19 @@
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'users.admin') active @endif">
                             <a href="{{ route('admin.accounts.index', ['role' => 'admin']) }}">{{ __('Administrator accounts') }}</a>
-                        </li>                      
+                        </li>
                     </ul>
                 </li>
 
-                @foreach ($posts_types as $sidebar_post_type)                    
-                    <li class="sidebar-item @if (($active_menu ?? null) == $sidebar_post_type->type) active @endif">
-                        <a href="{{ route('admin.posts.index', ['type' => $sidebar_post_type->type]) }}" class='sidebar-link'>
+                @foreach ($posts_types as $sidebar_post_type)
+                    <li class="sidebar-item @if (($active_menu ?? null) == 'post_type_'.$sidebar_post_type->id) active @endif">
+                        <a href="{{ route('admin.posts.index', ['post_type_id' => $sidebar_post_type->id]) }}" class='sidebar-link'>
                             {!! $sidebar_post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
-                            <span>{{ $sidebar_post_type->name }}</span>
+                            @if ($sidebar_post_type->type == 'page')
+                                <span>{{ __('Pages') }}</span>
+                            @else
+                                <span>{{ $sidebar_post_type->default_language_content->name }}</span>
+                            @endif
                         </a>
                     </li>
                 @endforeach
@@ -60,16 +64,15 @@
                         <span>{{ __('Configuration') }}</span>
                     </a>
                     <ul class="submenu @if (($active_menu ?? null) == 'config') active @endif">
-
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'config.plugins') active @endif">
-                            <a href="{{ route('admin.config', ['tab' => 'apps']) }}">{{ __('Apps') }}</a>
-                        </li>
-
                         <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
                             <a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Website') }}</a>
                         </li>
+
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
+                            <a href="{{ route('admin.post-types.index') }}">{{ __('Post Types') }}</a>
+                        </li>
                     </ul>
-                </li>               
+                </li>
 
                 <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'tools') active @endif">
                     <a href="#" class='sidebar-link'>
@@ -83,7 +86,7 @@
                         </li>
 
                     </ul>
-                </li>       
+                </li>
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

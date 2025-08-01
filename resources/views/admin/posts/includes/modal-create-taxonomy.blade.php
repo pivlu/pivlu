@@ -75,15 +75,15 @@ debug_backtrace() || die('Direct access not permitted');
                     @endif
 
                     <div class="row">
-                        @if ($taxonomy_term->hierarchical == 1)
+                        @if ($post_type_taxonomy->hierarchical == 1)
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ __('Select parent item') }}</label>
                                     <select class="form-select" name="parent_id">
                                         <option value="">{{ __('Root (no parent)') }}</option>
 
-                                        @foreach ($items as $taxonomy_item)
-                                            @include('admin.posts.loops.taxonomies-add-select-loop', $taxonomy_item)
+                                        @foreach ($post_taxonomies as $post_taxonomy)
+                                            @include('admin.posts.loops.taxonomies-add-select-loop', $post_taxonomy)
                                         @endforeach
                                     </select>
                                 </div>
@@ -127,9 +127,7 @@ debug_backtrace() || die('Direct access not permitted');
                 </div>
 
                 <div class="modal-footer">
-                    <input type="hidden" name="taxonomy" value="{{ $taxonomy }}">
-                    <input type="hidden" name="post_type" value="{{ $post_type }}">
-                    <input type="hidden" name="type" value="{{ $type ?? 'post' }}">
+                    <input type="hidden" name="post_type_taxonomy_id" value="{{ $post_type_taxonomy->id }}">
                     <button type="submit" class="btn btn-primary">{{ __('Create') }}</button>
                 </div>
 

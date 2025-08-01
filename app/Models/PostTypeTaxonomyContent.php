@@ -23,26 +23,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TaxonomyContent extends Model
+class PostTypeTaxonomyContent extends Model
 {
 
     protected $fillable = [
-        'taxonomy_id',
+        'post_type_taxonomy_id',
         'lang_id',
-        'taxonomy',
         'name',
         'slug',
-        'description',
-        'meta_title',
-        'meta_description',
+        'labels',
     ];
 
-    protected $table = 'pivlu_taxonomy_content';
+    protected $table = 'pivlu_post_type_taxonomy_content';
 
     public $timestamps = false;
 
-    public function taxonomy()
+    public function post_type_taxonomy()
     {
-        return $this->belongsTo(Taxonomy::class, 'taxonomy_id');
+        return $this->belongsTo(PostTypeTaxonomy::class, 'post_type_taxonomy_id');
     }
 }

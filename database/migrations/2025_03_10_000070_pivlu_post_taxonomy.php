@@ -30,18 +30,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_taxonomy_terms', function (Blueprint $table) {
+        Schema::create('pivlu_post_taxonomies', function (Blueprint $table) {
             $table->id();
-            $table->string('taxonomy', 25);            
-            $table->boolean('hierarchical')->default(false);
-            $table->string('post_type', 50)->nullable();            
-            $table->string('name', 100);
+            $table->unsignedBigInteger('post_type_taxonomy_id')->nullable();
+            $table->integer('parent_id')->nullable();
+            $table->string('tree_ids', 250)->nullable();
             $table->boolean('active')->default(false);
             $table->smallInteger('position')->nullable();
-            $table->boolean('admin_filter')->default(true);
-            $table->boolean('core')->default(false);
-            $table->integer('count_posts')->default(0);
-            $table->timestamps();            
+            $table->unsignedBigInteger('media_id')->nullable();
+            $table->string('icon', 250)->nullable();
+            $table->integer('count_posts')->nullable();
+            $table->integer('count_tree_posts')->nullable();
+            $table->timestamps();
+
+            $table->foreign('media_id')->references('id')->on('pivlu_media')->cascadeOnDelete();            
+            $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullOnDelete();   
         });
     }
 
@@ -50,6 +53,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_taxonomy_terms');
+        Schema::dropIfExists('pivlu_post_taxonomies');
     }
 };

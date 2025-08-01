@@ -32,7 +32,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="min-width: 200px;">
                             <li><a class="dropdown-item" href="{{ route('admin.config', ['tab' => 'registration']) }}">{{ __('Registration') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('admin.accounts.deleted') }}">{{ __('Deleted accounts') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.recycle_bin.module', ['module' => 'accounts']) }}">{{ __('Deleted accounts') }}</a></li>
                         </ul>
                     </div>
 
@@ -123,7 +123,6 @@
                 <thead>
                     <tr>
                         <th>{{ __('Details') }}</th>
-                        <th width="250">{{ __('Activity') }}</th>
                         <th width="140">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -169,32 +168,7 @@
 
                             </td>
 
-                            <td>
-                                @if ($account->role == 'user' || $account->role == 'contact')
-                                    <div class="small">
-                                        @if (($account->count_paid_invoices ?? null) > 0 || ($account->count_unpaid_invoices ?? null) > 0)
-                                            <h5 class="mb-0">{{ __('Invoices') }}</h5>
-                                            <a @if ($account->count_unpaid_invoices > 0) class="text-danger font-weight-bold" @endif
-                                                href="{{ route('admin.invoices', ['search_user' => $account->email]) }}">{{ $account->count_unpaid_invoices }}
-                                                {{ __('unpaid invoices') }}</a> |
-                                            <a href="{{ route('admin.invoices', ['search_user' => $account->email]) }}">{{ $account->count_paid_invoices }}
-                                                {{ __('paid invoices') }}</a>
-                                            <div class="mb-3"></div>
-                                        @endif
-                                    </div>
-
-                                    <div class="small">
-                                        @if (($account->count_open_tickets ?? null) > 0 || ($account->count_closed_tickets ?? null) > 0)
-                                            <h5 class="mb-0">{{ __('Support tickets') }}</h5>
-                                            <a @if ($account->count_open_tickets > 0) class="text-danger font-weight-bold" @endif
-                                                href="{{ route('admin.account.tickets', ['id' => $account->id]) }}">{{ $account->count_open_tickets }}
-                                                {{ __('open tickets') }}</a> |
-                                            <a href="{{ route('admin.account.tickets', ['id' => $account->id]) }}">{{ $account->count_closed_tickets }} {{ __('closed tickets') }}</a>
-                                        @endif
-                                    </div>
-                                @endif
-                            </td>
-
+                          
                             <td>
                                 <div class="d-grid gap-2">
 

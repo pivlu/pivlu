@@ -24,6 +24,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Post;
 use App\Models\PostContent;
 use App\Models\PostType;
+use App\Models\PostTypeTaxonomy;
 use App\Models\PostTaxonomy;
 use App\Models\TaxonomyTerm;
 use App\Models\Taxonomy;
@@ -43,11 +44,14 @@ class PostController extends Controller
      * Display all posts
      */
     public function index(Request $request)
-    {        
-        $type = $request->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
-        $taxonomy_terms = TaxonomyTerm::with('taxonomies')->where(['post_type' => $type, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
-        $post_type = PostType::with('default_language_content')->where(['type' => $type, 'active' => 1])->first();
+    {
+        $post_type_id = $request->post_type_id;
+        if (!$post_type_id) return redirect(route('admin'));
+        $this->check_post_type_exists($post_type_id);
+
+        $taxonomy_terms = PostTypeTaxonomy::with('default_language_content')->where(['post_type_id' => $post_type_id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();        
+
+        $post_type = PostType::with('default_language_content')->find($post_type_id);
 
         $search_terms = $request->search_terms;
         $search_status = $request->search_status;
@@ -55,8 +59,8 @@ class PostController extends Controller
         $search_tag_id = $request->search_tag_id;
         $search_sticky = $request->search_sticky;
 
-        $posts = Post::with('user', 'taxonomies')->where('type', $type)->whereNull('deleted_at');
-        
+        $posts = Post::with('user', 'taxonomies')->where('post_type_id', $post_type_id);
+
         if ($search_status)
             $posts = $posts->where('posts.status', 'like', $search_status);
 
@@ -65,25 +69,15 @@ class PostController extends Controller
                 $query->where('posts.title', 'like', "%$search_terms%")
                     ->orWhere('posts.search_terms', 'like', "%$search_terms%");
             });
-
-        if ($search_categ_id) {
-            $categ = PostCateg::find($search_categ_id);
-            $categ_tree_ids = $categ->tree_ids ?? null;
-            if ($categ_tree_ids)
-                $categ_tree_ids_array = explode(',', $categ_tree_ids);
-            else
-                $categ_tree_ids_array = array();
-            $posts = $posts->whereIn('posts.categ_id', $categ_tree_ids_array);
-        }
-
+       
         if ($search_sticky == 1)
             $posts = $posts->where('posts.sticky', 1);
 
         $posts = $posts->orderByDesc('id')->paginate(20);
 
         return view('admin.index', [
-            'view_file' => 'admin.posts.index',            
-            'active_menu' => $type ?? null,
+            'view_file' => 'admin.posts.index',
+            'active_menu' => 'post_type_' . $post_type_id ?? null,
             'menu_section' => 'posts',
             'search_terms' => $search_terms,
             'search_status' => $search_status,
@@ -91,9 +85,8 @@ class PostController extends Controller
             'search_categ_id' => $search_categ_id,
             'search_tag_id' => $search_tag_id,
             'posts' => $posts,
-            'type' => $type ?? null, // String (Post type)
-            'post_type' => $post_type ?? null, // Object  
-            'taxonomy_terms' => $taxonomy_terms ?? null, // Object
+            'post_type' => $post_type,  
+            'taxonomy_terms' => $taxonomy_terms ?? null,
         ]);
     }
 
@@ -104,18 +97,20 @@ class PostController extends Controller
     public function create(Request $request)
     {
 
-        $type = $request->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
-        $taxonomy_terms = TaxonomyTerm::with('taxonomies')->where(['post_type' => $type, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
-        $post_type = PostType::where(['type' => $type, 'active' => 1])->first();
+        $post_type_id = $request->post_type_id;
+        if (!$post_type_id) return redirect(route('admin'));
+        $this->check_post_type_exists($post_type_id);
+
+        $taxonomy_terms = PostTypeTaxonomy::with('taxonomies')->where(['post_type_id' => $post_type_id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
+        $post_type = PostType::find($post_type_id);
 
         return view('admin.index', [
             'view_file' => 'admin.posts.create',
-            'active_menu' => $type ?? null,
-            'type' => $type ?? null, // String (post type)
-            'post_type' => $post_type ?? null, // Object  
-            'taxonomy_terms' => $taxonomy_terms ?? null, // Object
-            'root_pages' => Post::where('type', 'page')->whereNull('parent_id')->get(), // for pages post_type only
+            'active_menu' => 'post_type_' . $post_type_id ?? null,
+            'post_type_id' => $post_type_id,
+            'post_type' => $post_type ?? null,
+            'taxonomy_terms' => $taxonomy_terms,
+            'root_pages' => PostType::get_root_pages(), // for pages type only
         ]);
     }
 
@@ -126,11 +121,12 @@ class PostController extends Controller
     public function store(Request $request)
     {
 
-        $type = $request->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
+        $post_type_id = $request->post_type_id;
+        if (!$post_type_id) return redirect(route('admin'));
+        $this->check_post_type_exists($post_type_id);
 
         $post = Post::create([
-            'type' => $type,
+            'post_type_id' => $post_type_id,
             'user_id' => Auth::user()->id,
             'status' => 'draft',
             'sticky' => $request->has('sticky') ? 1 : 0,
@@ -151,9 +147,8 @@ class PostController extends Controller
             // Check for duplicate (same post type, salug and language). If exists, add ID in the slug             
             $post_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->first();
             if ($post_same_lang_and_slug) {
-                if (Post::where(['id' => $post_same_lang_and_slug->id, 'type' => $post->type])->exists()) {
-                    if ($type == $post->type) $post_content_slug = $post_content_slug . '-' . $post->id;
-                }
+                if (Post::where(['id' => $post_same_lang_and_slug->id, 'post_type_id' => $post->post_type_id])->exists())
+                    $post_content_slug = $post_content_slug . '-' . $post->id;
             }
 
             $path = Post::generate_url($request->id, $lang->id);
@@ -181,9 +176,9 @@ class PostController extends Controller
                 $upload_fails = true;
         }
 
-        Taxonomy::recount_posts($type);
+        PostTaxonomy::recount_posts($post_type_id);
 
-        return redirect(route('admin.posts.content', ['id' => $post->id, 'type' => $type]))->with('success', 'post_created')->with('upload_fails', $upload_fails ?? null);
+        return redirect(route('admin.posts.content', ['id' => $post->id, 'post_type_id' => $post_type_id]))->with('success', 'post_created')->with('upload_fails', $upload_fails ?? null);
     }
 
 
@@ -193,23 +188,17 @@ class PostController extends Controller
     public function show(Request $request)
     {
         $post = Post::with('user', 'default_language_content')->where('id', $request->id);
-        
+
         $post = $post->first();
-        
+
         if (!$post) return redirect(route('admin.posts.index'));
-
-        $type = $post->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
-
-        $taxonomy_terms = TaxonomyTerm::with('taxonomies')->where(['post_type' => $type, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
-        $post_type = PostType::where(['type' => $type, 'active' => 1])->first();
+        
+        $taxonomy_terms = PostTypeTaxonomy::with('taxonomies')->where(['post_type_id' => $post->post_type_id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
+        $post_type = PostType::find($post->post_type_id);
 
         $author_count_published_posts = Post::where('user_id', $post->user_id)->where('status', 'active')->count();
         $author_count_pending_posts = Post::where('user_id', $post->user_id)->where('status', 'pending')->count();
-
-        // post taxonomies (array)
-        $post_taxonomies_array = PostTaxonomy::where('post_id', $post->id)->pluck('taxonomy_id')->toarray();
-
+        
         $post_id = $post->id;
         $content_langs = Language::where('status', '!=', 'disabled')->with(['post_content' => function ($query) use ($post_id) {
             $query->where('post_id', $post_id);
@@ -223,21 +212,18 @@ class PostController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.update',
-            'active_menu' => $type ?? null,
+            'active_menu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'details',
             'post' => $post,
-            'tags' => $tags_array ?? null,
-            'post_taxonomies_array' => $post_taxonomies_array,
             'author_count_published_posts' => $author_count_published_posts,
             'author_count_pending_posts' => $author_count_pending_posts,
             'content_langs' => $content_langs,
             'preview_urls' => $preview_urls,
-
-            'type' => $type ?? null, // String
-            'post_type' => $post_type ?? null, // Object  
+            
+            'post_type' => $post_type,
             'taxonomy_terms' => $taxonomy_terms ?? null, // Object
-            'root_pages' => Post::where('type', 'page')->whereNull('parent_id')->get(), // for pages post_type only
+            'root_pages' => PostType::get_root_pages(), // for pages type only
         ]);
     }
 
@@ -250,7 +236,7 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts'));
 
-        $this->check_post_type_exists($post->type);
+        $this->check_post_type_exists($post->post_type_id);
 
         Post::where('id', $request->id)->update([
             'status' => $request->status,
@@ -356,15 +342,14 @@ class PostController extends Controller
     public function destroy(Request $request)
     {
         $post = Post::find($request->id);
-        
+
         if (!$post) return redirect(route('admin.posts.index'));
 
-        $type = $request->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
+        $this->check_post_type_exists($post->post_type_id);
 
         Post::where('id', $request->id)->delete(); // soft delete
 
-        return redirect(route('admin.posts.index', ['type' => $type]))->with('success', 'deleted');
+        return redirect(route('admin.posts.index', ['post_type_id' => $post->post_type_id]))->with('success', 'deleted');
     }
 
 
@@ -397,8 +382,8 @@ class PostController extends Controller
         $post_type = PostType::with('default_language_content')->where(['type' => $type, 'active' => 1])->first();
 
         return view('admin.index', [
-            'view_file' => 'admin.posts.content',            
-            'active_menu' => $type ?? null,
+            'view_file' => 'admin.posts.content',
+            'active_menu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'content',
 
@@ -478,9 +463,9 @@ class PostController extends Controller
 
 
 
-    public function check_post_type_exists($type)
+    public function check_post_type_exists($post_type_id)
     {
-        if ((PostType::where('type', $type))->doesntExist()) return redirect(route('admin'));
+        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
         return;
     }
 }

@@ -1,19 +1,18 @@
 <nav class="nav nav-tabs mb-2" id="myTab" role="tablist">
     <a class="nav-item nav-link @if ($active_tab == 'website') active @endif" href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
     <a class="nav-item nav-link @if ($active_tab == 'langs') active @endif" href="{{ route('admin.languages.index') }}"><i class="bi bi-flag"></i> {{ __('Website languages') }}</a>
-    <a class="nav-item nav-link @if ($active_tab == 'cpt') active @endif" href="{{ route('admin.post-types.index') }}"><i class="bi bi-card-checklist"></i> {{ __('Posts types') }}</a>
     <a class="nav-item nav-link @if ($active_tab == 'registration') active @endif" href="{{ route('admin.config', ['tab' => 'registration']) }}"><i class="bi bi-person-plus-fill"></i> {{ __('Registration') }}</a>
     <a class="nav-item nav-link @if ($active_tab == 'integration') active @endif" href="{{ route('admin.config', ['tab' => 'integration']) }}"><i class="bi bi-arrow-right-square"></i> {{ __('Integration') }}</a>
 </nav>
 
 @if ($config->website_disabled ?? null)
-    <div class="fw-bold text-danger mb-3 mt-2">
+    <div class="fw-bold text-danger mb-2 mt-4">
         <i class="bi bi-info-circle"></i> {{ __('Public website is disabled.') }}
     </div>
 @endif
 
 @if ($config->website_maintenance_enabled ?? null)
-    <div class="fw-bold text-danger mb-3 mt-2">
+    <div class="fw-bold text-danger mb-2 mt-4">
         <i class="bi bi-info-circle"></i> {{ __('Website is in maintenance mode.') }}
     </div>
 @endif

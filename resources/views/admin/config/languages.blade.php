@@ -4,6 +4,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Configuration') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ __('Languages and locale') }}</li>
                 </ol>
             </nav>
@@ -39,25 +40,7 @@
     </div>
 
 
-    <div class="card-body">
-        @if ($config->website_disabled ?? null)
-            <div class="fw-bold text-danger mb-2 mt-2">
-                <i class="bi bi-info-circle"></i> {{ __('Public website is disabled.') }} <a href="{{ route('admin.website.config') }}">{{ __('Change') }}</a>
-            </div>
-        @endif
-
-        @if ($config->website_maintenance_enabled ?? null)
-            <div class="fw-bold text-danger mb-2 mt-2">
-                <i class="bi bi-info-circle"></i> {{ __('Website is in maintenance mode.') }} <a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Change') }}</a>
-            </div>
-        @endif
-
-        @if ($config->registration_disabled ?? null)
-            <div class="fw-bold text-danger mb-2 mt-2">
-                <i class="bi bi-info-circle"></i> {{ __('Warning! Users registration is disabled.') }} <a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Change') }}</a>
-            </div>
-        @endif
-
+    <div class="card-body">       
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -71,9 +54,7 @@
         @if ($message = Session::get('success'))
             <div class="alert alert-success">
                 @if ($message == 'created')
-                    <h5 class="alert-heading">{{ __('Created') }}</h5>
-                    <i class="bi bi-exclamation-circle"></i>
-                    {{ __('Important: Iou MUST create menu links for new created languages.') }} <a href="{{ route('admin.template.menu') }}">{{ __('Menu links') }}</a>
+                    <h5 class="alert-heading">{{ __('Created') }}</h5>                    
                 @endif
                 @if ($message == 'updated')
                     {{ __('Updated') }}

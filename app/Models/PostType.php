@@ -22,36 +22,54 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostType extends Model
 {
 
-    use SoftDeletes;
-
     protected $fillable = [
         'type',
-        'name',
-        'labels',
-        'description',
         'show_post_date',
         'show_in_admin_menu',
         'internal_only',
         'admin_menu_icon',
-        'slug',
         'active',
         'core'
     ];
 
-    protected $table = 'pivlu_post_type';
+    protected $appends = ['all_languages_contents'];
 
-    public function taxonomy_terms()
-    {
-        return $this->hasMany(TaxonomyTerm::class, 'taxonomy', 'type');
-    }
+    protected $table = 'pivlu_post_types';
 
-     public function default_language_content()
+
+    public function default_language_content()
     {
         return $this->hasOne(PostTypeContent::class, 'post_type_id')->where('lang_id', Language::get_default_language()->id);
     }
+
+    public function contents()
+    {
+        return $this->hasMany(PostTypeContent::class, 'post_type_id');
+    }
+
+    public function getAllLanguagesContentsAttribute()
+    {
+        $all_language_contents = [];
+        $langs = Language::get_languages();
+        foreach ($langs as $lang) {
+            $content = PostTypeContent::where('lang_id', $lang->id)->where('post_type_id', $this->id)->first();
+            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'name' => $content->name ?? null, 'slug' => $content->slug ?? null, 'labels' => $content->labels ?? null];
+        }
+        return json_decode(json_encode($all_language_contents));
+    }
+
+
+     public static function get_root_pages()
+    {
+        $page_post_type = PostType::where('type', 'page')->first();
+
+        $root_pages = Post::where('post_type_id', $page_post_type->id)->whereNull('parent_id')->get();
+
+        return $root_pages;
+    }
+
 }

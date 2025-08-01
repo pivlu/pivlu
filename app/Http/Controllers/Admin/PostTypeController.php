@@ -23,7 +23,9 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use App\Models\PostType;
+use App\Models\PostTypeContent;
 use Illuminate\Support\Str;
 
 class PostTypeController extends Controller
@@ -34,14 +36,30 @@ class PostTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $post_types = PostType::withCount('taxonomy_terms')->orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->paginate(25);
+        $post_types = PostType::orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->paginate(25);
 
         return view('admin.index', [
-            'view_file' => 'admin.config.post-types',
+            'view_file' => 'admin.post-types.index',
             'active_menu' => 'config',
-            'active_submenu' => 'config.website',            
-            'active_tab' => 'cpt',
+            'active_submenu' => 'post-types',
             'post_types' => $post_types,
+        ]);
+    }
+
+
+    /**
+     * Display resource
+     */
+    public function show(Request $request)
+    {
+        $post_type = PostType::find($request->id);
+        if (!$post_type) return redirect(route('admin.post-types.index'));
+
+        return view('admin.index', [
+            'view_file' => 'admin.post-types.show',
+            'active_menu' => 'config',
+            'active_submenu' => 'post-types',
+            'post_type' => $post_type,
         ]);
     }
 
@@ -51,34 +69,46 @@ class PostTypeController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$request->name) return redirect(route('admin.post-types.index'));
-
-        if (PostType::where('type', $request->type)->exists()) return redirect(route('admin.post-types.index'))->with('error', 'duplicate');
-
-        $labels = array(
-            'singular' => $request->label_singular ?? $request->name,
-            'plural' => $request->label_plural ?? $request->name,
-            'create' => $request->label_create ?? 'Create '.$request->name,
-            'update' => $request->label_update ?? 'Update '.$request->name,
-            'delete' => $request->label_delete ?? 'Delete '.$request->name,
-            'all' => $request->label_all ?? 'All '.$request->name,
-            'search' => $request->label_search ?? 'Search '.$request->name,
-        );
-
-        $slug = $request->slug ?? Str::slug($request->name, '-');
-        if (PostType::where('slug', $slug)->exists()) return redirect(route('admin.post-types.index'))->with('error', 'duplicate');
-
-        PostType::create([
-            'type' => Str::slug($request->name, '-'),
-            'name' => $request->name,
-            'slug' => $slug,
-            'description' => $request->description,
+        $post_type = PostType::create([
             'admin_menu_icon' => $request->admin_menu_icon,
             'active' => $request->has('active') ? 1 : 0,
             'show_in_admin_menu' => $request->has('show_in_admin_menu') ? 1 : 0,
             'internal_only' => $request->has('internal_only') ? 1 : 0,
-            'labels' => json_encode($labels),
         ]);
+
+        foreach (admin_languages() as $lang) {
+            $name_key = 'name_' . $lang->id;
+            $slug_key = 'slug_' . $lang->id;
+            $label_singular_key = 'label_singular_' . $lang->id;
+            $label_plural_key = 'label_plural_' . $lang->id;
+            $label_create_key = 'label_create_' . $lang->id;
+            $label_update_key = 'label_update_' . $lang->id;
+            $label_delete_key = 'label_delete_' . $lang->id;
+            $label_all_key = 'label_all_' . $lang->id;
+            $label_search_key = 'label_search_' . $lang->id;
+
+            $labels = array(
+                'singular' => $request->$label_singular_key ?? $request->$name_key ?? null,
+                'plural' => $request->$label_plural_key ?? $request->$name_key ?? null,
+                'create' => $request->$label_create_key ?? 'Create ' . $request->$name_key,
+                'update' => $request->$label_update_key ?? 'Update ' . $request->$name_key,
+                'delete' => $request->$label_delete_key ?? 'Delete ' . $request->$name_key,
+                'all' => $request->$label_all_key ?? 'All ' . $request->$name_key,
+                'search' => $request->$label_search_key ?? 'Search ' . $request->$name_key,
+            );
+
+            $slug = $request->$slug_key ?? Str::slug($request->$name_key, '-');
+            // Post type slug must be unique (for same language). If slug exists, then add the post type ID in the slug
+            if (PostTypeContent::where(['slug' => $slug, 'lang_id' => $lang->id])->exists()) $slug = $slug . '-' . $post_type->id;
+
+            PostTypeContent::create([
+                'post_type_id' => $post_type->id,
+                'lang_id' => $lang->id,
+                'name' => $request->$name_key,
+                'slug' => $slug,
+                'labels' => json_encode($labels),
+            ]);
+        }
 
         return redirect(route('admin.post-types.index'))->with('success', 'created');
     }
@@ -89,32 +119,50 @@ class PostTypeController extends Controller
      */
     public function update(Request $request)
     {
-        $type = PostType::find($request->id);
-        if (!$type) return redirect(route('admin.post-types.index'));
-
-        $labels = array(
-            'singular' => $request->label_singular ?? $request->name,
-            'plural' => $request->label_plural ?? $request->name,
-            'create' => $request->label_create ?? 'Create '.$request->name,
-            'update' => $request->label_update ?? 'Update '.$request->name,
-            'delete' => $request->label_delete ?? 'Delete '.$request->name,
-            'all' => $request->label_all ?? 'All '.$request->name,
-            'search' => $request->label_search ?? 'Search '.$request->name,
-        );
-        
-        $slug = $request->slug ?? Str::slug($request->name, '-');
-        if (PostType::where('slug', $slug)->where('id', '!=', $request->id)->exists()) return redirect(route('admin.post-types.index'))->with('error', 'duplicate');
+        $post_type = PostType::find($request->id);
+        if (!$post_type) return redirect(route('admin.post-types.index'));
 
         PostType::where('id', $request->id)->update([
-            'name' => $request->name,
-            'slug' => $slug,
-            'description' => $request->description,
             'admin_menu_icon' => $request->admin_menu_icon,
-            'active' => $request->has('active') ? 1 : 0,           
+            'active' => $request->has('active') ? 1 : 0,
             'show_in_admin_menu' => $request->has('show_in_admin_menu') ? 1 : 0,
             'internal_only' => $request->has('internal_only') ? 1 : 0,
-            'labels' => json_encode($labels),
         ]);
+
+        foreach (admin_languages() as $lang) {
+            $name_key = 'name_' . $lang->id;
+            $slug_key = 'slug_' . $lang->id;
+            $label_singular_key = 'label_singular_' . $lang->id;
+            $label_plural_key = 'label_plural_' . $lang->id;
+            $label_create_key = 'label_create_' . $lang->id;
+            $label_update_key = 'label_update_' . $lang->id;
+            $label_delete_key = 'label_delete_' . $lang->id;
+            $label_all_key = 'label_all_' . $lang->id;
+            $label_search_key = 'label_search_' . $lang->id;
+
+            $labels = array(
+                'singular' => $request->$label_singular_key ?? $request->$name_key ?? null,
+                'plural' => $request->$label_plural_key ?? $request->$name_key ?? null,
+                'create' => $request->$label_create_key ?? 'Create ' . $request->$name_key,
+                'update' => $request->$label_update_key ?? 'Update ' . $request->$name_key,
+                'delete' => $request->$label_delete_key ?? 'Delete ' . $request->$name_key,
+                'all' => $request->$label_all_key ?? 'All ' . $request->$name_key,
+                'search' => $request->$label_search_key ?? 'Search ' . $request->$name_key,
+            );
+
+            $slug = $request->$slug_key ?? Str::slug($request->$name_key, '-');
+            // Post type slug must be unique (for same language). If slug exists, then add the post type ID in the slug
+            if (PostTypeContent::where('slug', $slug)->where('lang_id', $lang->id)->where('post_type_id', '!=', $request->id)->exists()) $slug = $slug . '-' . $post_type->id;
+
+            PostTypeContent::updateOrInsert(
+                ['post_type_id' => $request->id, 'lang_id' => $lang->id],
+                [
+                    'name' => $request->$name_key,
+                    'slug' => $slug,
+                    'labels' => json_encode($labels),
+                ]
+            );           
+        }
 
         return redirect(route('admin.post-types.index'))->with('success', 'updated');
     }
@@ -126,12 +174,13 @@ class PostTypeController extends Controller
     public function destroy(Request $request)
     {
 
-        $type = PostType::find($request->id);
-        if (!$type) return redirect(route('admin.post-types.index'));
+        $post_type = PostType::find($request->id);
+        if (!$post_type) return redirect(route('admin.post-types.index'));
+        if ($post_type->core == 1) return redirect(route('admin.post-types.index'));
 
-        Post::where('type', $type)->delete(); // soft delete
-        $type->delete(); // soft delete
-        
+        Post::where('post_type_id', $post_type->id)->delete(); // soft delete
+        $type->delete();
+
         return redirect(route('admin.post-types.index'))->with('success', 'deleted');
     }
 }

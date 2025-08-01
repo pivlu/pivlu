@@ -30,19 +30,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_taxonomy_content', function (Blueprint $table) {
+        Schema::create('pivlu_post_taxonomy_relations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('taxonomy_id')->nullable();
-            $table->unsignedBigInteger('lang_id')->nullable();
-            $table->string('taxonomy', 50)->nullable();
-            $table->string('name', 200)->nullable();
-            $table->string('slug', 200)->nullable();
-            $table->text('description')->nullable();
-            $table->text('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
+            $table->unsignedBigInteger('post_id');
+            $table->unsignedBigInteger('post_taxonomy_id');           
+            $table->unsignedBigInteger('post_type_taxonomy_id')->nullable();        
 
-            $table->foreign('taxonomy_id')->references('id')->on('pivlu_taxonomy')->cascadeOnDelete();
-            $table->foreign('lang_id')->references('id')->on('pivlu_languages')->cascadeOnDelete();
+            $table->foreign('post_id')->references('id')->on('pivlu_posts')->onDelete('cascade');
+            $table->foreign('post_taxonomy_id')->references('id')->on('pivlu_post_taxonomies')->onDelete('cascade');
+            $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullonDelete();
         });
     }
 
@@ -51,6 +47,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_taxonomy_content');
+        Schema::dropIfExists('pivlu_post_taxonomy_relations');
     }
 };

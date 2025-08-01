@@ -16,7 +16,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['type' => $type]) }}">
+                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">
                             {{ $post_type->name ?? __('Posts') }}
                         </a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>
@@ -138,7 +138,7 @@
                                     <textarea rows="3" class="form-control" name="summary_{{ $lang->id }}">{{ $lang->post_content['summary'] ?? null }}</textarea>
                                 </div>
 
-                                @if ($type != 'page')
+                                @if ($post_type->type != 'page')
                                     <div class="form-group">
                                         <label>{{ __('Search terms') }} ({{ __('separated by comma') }})</label>
                                         <input type="text" class="form-control" name="search_terms_{{ $lang->id }}" aria-describedby="searchHelp" value="{{ $lang->post_content['search_terms'] ?? null }}">
@@ -225,7 +225,7 @@
                             </div>
                         </div>
 
-                        @if ($type == 'page')
+                        @if ($post_type->type == 'page')
                             <div class="form-group col-md-6 col-12 mb-4">
                                 <label>{{ __('Parent page') }}</label>
                                 <select name="parent_id" class="form-select">
@@ -308,7 +308,7 @@
 
                         <div class="collapse" id="collapseSettings">
 
-                            @if ($type != 'page')
+                            @if ($post_type->type != 'page')
                                 <div class="form-group">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="customSwitchComments" name="disable_comments" @if ($post->disable_comments) checked @endif

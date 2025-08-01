@@ -34,6 +34,13 @@ class Language extends Model
 
     public $timestamps = false; // Indicates that the model does not have timestamp fields
 
+    
+    public function post_type_content()
+    {
+        return $this->hasOne(PostTypeContent::class, 'lang_id');
+    }
+
+
     // Get active and inactive langs
     public static function get_languages()
     {
@@ -97,7 +104,7 @@ class Language extends Model
 
     public function taxonomy_content()
     {
-        return $this->hasOne(TaxonomyContent::class, 'lang_id');
+        return $this->hasOne(PostTaxonomyContent::class, 'lang_id');
     }
 
     public function post_content()

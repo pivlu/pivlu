@@ -4,9 +4,9 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['type' => $type]) }}">{{ $post_type->name ?? __('Posts') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">{{ $post_type->default_language_content->name ?? __('Posts') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        {{ __(json_decode($taxonomy_term->labels)->plural ?? $taxonomy_term->name) }}
+                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->plural ?? null) }}
                     </li>
                 </ol>
             </nav>
@@ -63,72 +63,75 @@
         @endif
 
 
-        <form action="{{ route('admin.taxonomies.show', ['id' => $item->id]) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('admin.post-taxonomies.show', ['id' => $post_taxonomy->id]) }}" method="post" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
-            @foreach ($content_langs as $lang)
-                @if (count($content_langs) > 1)
-                    <div class="fw-bold fs-5">{!! flag($lang->code, 'circle') !!} {{ $lang->name }}</div>
+            @foreach ($post_taxonomy->all_languages_contents as $content)
+                @if (count(admin_languages()) > 1)
+                    <div class="fw-bold fs-5">{!! flag($content->lang_code, 'circle') !!} {{ $content->lang_name }}</div>
                 @endif
+
+
                 <div class="row">
                     <div class="col-md-7">
                         <div class="form-group">
                             <label>{{ __('Name') }}</label>
-                            <input class="form-control" name="name_{{ $lang->id }}" type="text" value="{{ $lang->taxonomy_content['name'] ?? null }}" @if ($lang->is_default == 1) required @endif />
+                            <input class="form-control" name="name_{{ $content->lang_id }}" type="text" value="{{ $content->name }}" required />
                         </div>
                     </div>
 
                     <div class="col-md-5">
                         <div class="form-group">
                             <label>{{ __('Custom permalink') }} ({{ __('optional') }})</label>
-                            <input class="form-control" name="slug_{{ $lang->id }}" type="text" value="{{ $lang->taxonomy_content['slug'] ?? null }}" />
+                            <input class="form-control" name="slug_{{ $content->lang_id }}" type="text" value="{{ $content->slug }}" />
                         </div>
                     </div>
 
                     <div class="mb-1">
-                        <a class="btn btn-secondary btn-sm" data-bs-toggle="collapse" href="#collapseSettings_{{ $lang->id }}" role="button" aria-expanded="false"
-                            aria-controls="collapseControls_{{ $lang->id }}">
+                        <a class="btn btn-secondary btn-sm" data-bs-toggle="collapse" href="#collapseSettings_{{ $content->lang_id }}" role="button" aria-expanded="false"
+                            aria-controls="collapseControls_{{ $content->lang_id }}">
                             {{ __('More settings') }} <i class="bi bi-chevron-down"></i>
                         </a>
                     </div>
 
-                    <div class="collapse" id="collapseSettings_{{ $lang->id }}">
+                    <div class="collapse" id="collapseSettings_{{ $content->lang_id }}">
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>{{ __('Description') }} ({{ __('optional') }})</label>
-                                    <textarea class="form-control" name="description_{{ $lang->id }}" rows="1">{{ $lang->taxonomy_content['description'] ?? null }}</textarea>
+                                    <textarea class="form-control" name="description_{{ $content->lang_id }}" rows="1">{{ $content->description }}</textarea>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ __('Meta title') }} ({{ __('optional') }})</label>
-                                    <input class="form-control" name="meta_title_{{ $lang->id }}" type="text" value="{{ $lang->taxonomy_content['meta_title'] ?? null }}" />
+                                    <input class="form-control" name="meta_title_{{ $content->lang_id }}" type="text" value="{{ $content->meta_title }}" />
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ __('Meta description') }} ({{ __('optional') }})</label>
-                                    <input class="form-control" name="meta_description_{{ $lang->id }}" type="text" value="{{ $lang->taxonomy_content['meta_description'] ?? null }}" />
+                                    <input class="form-control" name="meta_description_{{ $content->lang_id }}" type="text" value="{{ $content->meta_description }}" />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <hr>
+
+                @if (count(languages()) > 1 && !$loop->last)
+                    <hr>
+                @endif
             @endforeach
 
-            @if (count($content_langs) > 1)
-                <hr>
-            @endif
+            <hr>
 
             <div class="row">
-                @if ($taxonomy_term->hierarchical == 1)
-                           
+                @if ($post_type_taxonomy->hierarchical == 1)
+
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -136,8 +139,8 @@
                             <select class="form-select" name="parent_id">
                                 <option value="">{{ __('Root (no parent)') }}</option>
 
-                                @foreach ($items as $taxonomy_item)
-                                    @include('admin.posts.loops.taxonomies-edit-select-loop', $taxonomy_item)
+                                @foreach ($taxonomy_terms as $taxonomy_term)
+                                    @include('admin.posts.loops.taxonomies-edit-select-loop', $taxonomy_term)
                                 @endforeach
                             </select>
                         </div>
@@ -147,7 +150,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>{{ __('Icon code') }} ({{ __('optional') }})</label>
-                        <input class="form-control" name="icon" type="text" value="{{ $item->icon }}" />
+                        <input class="form-control" name="icon" type="text" value="{{ $post_taxonomy->icon }}" />
                     </div>
                 </div>
 
@@ -162,7 +165,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>{{ __('Position') }}</label>
-                        <input class="form-control" name="position" type="number" min="0" step="1" value="{{ $item->position }}" />
+                        <input class="form-control" name="position" type="number" min="0" step="1" value="{{ $post_taxonomy->position }}" />
                         <div class="text-muted small">{{ __('Position in the parent item. Leave empty to use the last position.') }}</div>
                     </div>
                 </div>
@@ -179,12 +182,7 @@
             </div>
 
 
-            <div class="modal-footer">
-                <input type="hidden" name="taxonomy" value="{{ $taxonomy }}">
-                <input type="hidden" name="post_type" value="{{ $post_type }}">
-                <input type="hidden" name="type" value="{{ $type ?? 'post' }}">
-                <button type="submit" class="btn btn-primary">{{ __('Update category') }}</button>
-            </div>
+            <button type="submit" class="btn btn-primary mt-3">{{ __('Update') }}</button>
 
         </form>
 

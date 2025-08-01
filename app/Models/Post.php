@@ -30,13 +30,13 @@ class Post extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'type',
+        'post_type_id',
         'media_id',
         'user_id',
         'status',
         'sticky',
         'hits',
-        'reaction_count',
+        'like_count',
         'comment_count',
         'search_terms',
         'blocks',
@@ -49,6 +49,7 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+   
 
     public function media()
     {
@@ -57,12 +58,12 @@ class Post extends Model
 
     public function post_type()
     {
-        return $this->belongsTo(PostType::class, 'type', 'type');
+        return $this->belongsTo(PostType::class, 'post_type_id');
     }
 
     public function taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_id')->with('taxonomy');
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->with('term');
     }
 
     public function hierarchical_taxonomies()
@@ -149,14 +150,8 @@ class Post extends Model
     }
 
 
-    public function comments()
-    {
-        return $this->hasMany(PostComment::class, 'post_id');
-    }
-
     public function blocks()
     {
         return $this->hasMany(BlockContent::class, 'post_id');
     }
-    
 }

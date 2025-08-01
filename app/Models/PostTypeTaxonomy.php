@@ -23,41 +23,45 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TaxonomyTerm extends Model
+class PostTypeTaxonomy extends Model
 {
 
     protected $fillable = [
-        'taxonomy',
+        'post_type_id',
         'hierarchical',
-        'post_type',
-        'name',    
         'active',
         'position',
         'admin_filter',
-        'core',
         'count_posts'
     ];
 
-    protected $table = 'pivlu_taxonomy_terms';
+    protected $table = 'pivlu_post_type_taxonomies';
 
+    protected $appends = ['all_languages_contents'];
+    
     public function content_post_type()
     {
-        return $this->belongsTo(PostType::class, 'post_type', 'type');
+        return $this->belongsTo(PostType::class, 'post_type_id');
+    }
+
+     public function default_language_content()
+    {
+        return $this->hasOne(PostTypeTaxonomyContent::class, 'post_type_taxonomy_id')->where('lang_id', Language::get_default_language()->id);
     }
 
     public function taxonomies()
     {
-        return $this->hasMany(Taxonomy::class, 'taxonomy', 'taxonomy');
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id', 'post_type_id')->with('default_language_content');
     }
 
     public function active_taxonomies()
     {
-        return $this->hasMany(Taxonomy::class, 'taxonomy', 'taxonomy')->where('active', 1);
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id', 'post_type_id')->where('active', 1);
     }
 
     public function root_taxonomies()
     {
-        return $this->hasMany(Taxonomy::class, 'taxonomy', 'taxonomy')->whereNull('parent_id')->where('active', 1)->orderBy('position');
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id', 'post_type_id')->whereNull('parent_id')->where('active', 1)->orderBy('position');
     }
 
     public static function get_hierarchical_taxonomies($post_type)
@@ -71,5 +75,16 @@ class TaxonomyTerm extends Model
             ->get();
             
         return $items;
+    }
+
+    public function getAllLanguagesContentsAttribute()
+    {
+        $all_language_contents = [];
+        $langs = Language::get_languages();
+        foreach ($langs as $lang) {
+            $content = PostTypeTaxonomyContent::where('lang_id', $lang->id)->where('post_type_taxonomy_id', $this->id)->first();
+            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'name' => $content->name ?? null, 'slug' => $content->slug ?? null, 'labels' => $content->labels ?? null];
+        }
+        return json_decode(json_encode($all_language_contents));
     }
 }

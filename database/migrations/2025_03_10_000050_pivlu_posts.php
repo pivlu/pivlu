@@ -32,23 +32,23 @@ return new class extends Migration
     {
         Schema::create('pivlu_posts', function (Blueprint $table) {
             $table->id();
-            $table->char('type', 25);
+            $table->unsignedBigInteger('post_type_id')->nullable();
             $table->unsignedBigInteger('media_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->integer('parent_id')->nullable(); // used for 'page' type only
             $table->string('status', 20);
             $table->boolean('sticky')->default(false);
             $table->integer('hits')->default(0);            
-            $table->integer('reaction_count')->default(0);
+            $table->integer('like_count')->default(0);
             $table->integer('comment_count')->default(0);
-            $table->integer('minutes_to_read')->default(0)->nullable();
             $table->boolean('disable_comments')->default(false);
-            $table->boolean('disable_reactions')->default(false);            
+            $table->boolean('disable_likes')->default(false);            
             $table->boolean('is_homepage')->default(false);
             $table->mediumtext('blocks')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
+            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
             $table->foreign('media_id')->references('id')->on('pivlu_media')->nullOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });

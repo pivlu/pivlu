@@ -24,26 +24,16 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AccountController;
-use App\Http\Controllers\Admin\AccountInvitationController;
 use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\PostTypeController;
-use App\Http\Controllers\Admin\PostTypeTaxonomiesController;
+use App\Http\Controllers\Admin\PostTypeTaxonomyController;
 use App\Http\Controllers\Admin\PostController;
-use App\Http\Controllers\Admin\PluginController;
-use App\Http\Controllers\Admin\TaxonomyController;
+use App\Http\Controllers\Admin\PostTaxonomyController;
 use App\Http\Controllers\Admin\RecycleBinController;
-use App\Http\Controllers\Admin\TemplateController;
-use App\Http\Controllers\Admin\TemplateBuilderController;
-use App\Http\Controllers\Admin\TemplateButtonController;
-use App\Http\Controllers\Admin\TemplateFooterController;
-use App\Http\Controllers\Admin\TemplateLayoutController;
-use App\Http\Controllers\Admin\TemplateMenuController;
-use App\Http\Controllers\Admin\TemplateStyleController;
-use App\Http\Controllers\Admin\ThemeController;
 
 use App\Http\Middleware\LoggedIsAdminMiddleware;
 
@@ -74,9 +64,9 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     // Posts
     Route::resource('post-types', PostTypeController::class)->parameters(['post-types' => 'id']);
-    Route::resource('taxonomies', TaxonomyController::class)->parameters(['taxonomies' => 'id']);
-    Route::resource('post-type-taxonomies', PostTypeTaxonomiesController::class)->parameters(['post-type-taxonomies' => 'id']);
-    
+    Route::resource('post-type-taxonomies', PostTypeTaxonomyController::class)->parameters(['post-type-taxonomies' => 'id']);
+    Route::resource('post-taxonomies', PostTaxonomyController::class)->parameters(['post-taxonomies' => 'id']);
+        
     Route::resource('posts', PostController::class)->parameters(['posts' => 'id']);
     Route::post('posts/{id}/sortable', [PostController::class, 'sortable'])->name('posts.sortable')->where('id', '[0-9]+');
     Route::get('posts/{id}/content', [PostController::class, 'content'])->name('posts.content')->where('id', '[0-9]+');

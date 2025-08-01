@@ -4,9 +4,9 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['type' => $type]) }}">{{ $post_type->name ?? __('Posts') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">{{ $post_type->default_language_content->name ?? __('Posts') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        {{ __(json_decode($taxonomy_term->labels)->plural ?? $taxonomy_term->name) }}
+                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->plural ?? null) }}
                     </li>
                 </ol>
             </nav>
@@ -31,9 +31,9 @@
                     @if ($post_type == 'post')
                         {{ __('All categories') }}
                     @else
-                        {{ __(json_decode($taxonomy_term->labels)->all ?? $taxonomy_term->name) }}
+                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->all ?? null) }}
                     @endif
-                    ({{ $count_items ?? 0 }})
+                    ({{ $count_taxonomies ?? 0 }})
                 </div>
             </div>
 
@@ -43,7 +43,7 @@
                             @if ($post_type == 'post')
                                 {{ __('Create category') }}
                             @else
-                                {{ __(json_decode($taxonomy_term->labels)->create ?? __('Create') . ' ' . $taxonomy_term->name) }}
+                                {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->create ?? __('Create') ) }}
                             @endif
                         </button></span>
                     @include('admin.posts.includes.modal-create-taxonomy')
@@ -84,19 +84,16 @@
         @if ($message = Session::get('error'))
             <div class="alert alert-danger">
                 @if ($message == 'duplicate')
-                    {{ __('Error. This category with this URL structure exist') }}
+                    {{ __('Error. There is another item with this URL (slug)') }}
                 @endif
                 @if ($message == 'length')
                     {{ __('Error. Slug length must be minimum 3 characters') }}
-                @endif
-                @if ($message == 'create_post_no_categ')
-                    {{ __('Error. To create a new article, you must assign it to a category. Please create a category first.') }}
                 @endif
             </div>
         @endif
 
         <section>
-            <form action="{{ route('admin.taxonomies.index') }}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
+            <form action="{{ route('admin.post-taxonomies.index') }}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
 
                 <div class="col-12">
                     <input type="text" name="search_terms" placeholder="{{ __('Search') }}" class="form-control me-2 mb-2 @if ($search_terms) is-valid @endif" value="<?= $search_terms ?>" />
@@ -104,11 +101,10 @@
 
                 <div class="col-12">
                     <button class="btn btn-secondary me-2 mb-2" type="submit"><i class="bi bi-check2"></i> {{ __('Apply') }}</button>
-                    <a class="btn btn-light mb-2" href="{{ route('admin.taxonomies.index', ['taxonomy' => $taxonomy, 'type' => $type]) }}"><i class="bi bi-arrow-counterclockwise"></i></a>
+                    <a class="btn btn-light mb-2" href="{{ route('admin.post-taxonomies.index', ['id' => $post_type_taxonomy->id]) }}"><i class="bi bi-arrow-counterclockwise"></i></a>
                 </div>
 
-                <input type="hidden" name="taxonomy" value="{{ $taxonomy }}">
-                <input type="hidden" name="type" value="{{ $type }}">
+                <input type="hidden" name="post_type_taxonomy_id" value="{{ $post_type_taxonomy->id }}">                
             </form>
         </section>
 
@@ -126,14 +122,14 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($items as $item)
-                        @include('admin.posts.loops.taxonomies-loop', $item)
+                    @foreach ($post_taxonomies as $post_taxonomy)
+                        @include('admin.posts.loops.taxonomies-loop', $post_taxonomy)
                     @endforeach
                 </tbody>
             </table>
 
-            @if ($taxonomy_term->hierarchical == 0)
-                {{ $items->appends(['type' => $type, 'taxonomy' => $taxonomy, 'search_terms' => $search_terms])->links() }}
+            @if ($post_type_taxonomy->hierarchical == 0)
+                {{ $post_taxonomies->appends(['post_type_taxonomy_id' => $post_type_taxonomy->id, 'search_terms' => $search_terms])->links() }}
             @endif
         </div>
 

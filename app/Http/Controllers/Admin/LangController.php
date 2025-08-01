@@ -84,8 +84,6 @@ class LangController extends Controller
         ]);
 
         ConfigLang::update_config($lang->id, 'site_label', $request->site_label ?? config('app.name'));
-
-        TemplateMenu::generate_menu_links();
         
         return redirect(route('admin.languages.index'))->with('success', 'created');
     }
@@ -127,10 +125,7 @@ class LangController extends Controller
         ]);
 
         ConfigLang::update_config($lang->id, 'site_label', $request->site_label ?? config('app.name'));
-
-        // regenerate menu links for each language and store in cache config
-        TemplateMenu::generate_menu_links();
-
+        
         return redirect(route('admin.languages.index'))->with('success', 'updated');
     }
 

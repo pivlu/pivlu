@@ -62,12 +62,11 @@ class RecycleBinController extends Controller
             $search_terms = $request->search_terms;
             $search_post_type = $request->search_post_type;
 
-            $items = Post::with('author', 'category', 'language')->onlyTrashed();
+            $items = Post::with('user', 'default_language_content')->onlyTrashed();
 
             if ($search_terms)
-                $items = $items->where(function ($query) use ($search_terms) {
-                    $query->where('posts.title', 'like', "%$search_terms%")
-                        ->orWhere('posts.search_terms', 'like', "%$search_terms%");
+                $items = $items->whereHas('default_language_content', function ($query) use ($search_terms) {
+                    $query->where('title', 'like', "%$search_terms%")->orWhere('search_terms', 'like', "%$search_terms%");
                 });
 
             if ($search_post_type) {
@@ -90,8 +89,8 @@ class RecycleBinController extends Controller
 
             // Search (for all modules):
             'search_terms' => $search_terms ?? null, //posts / pages
-            'search_status' => $search_status ?? null,            
-            'search_post_type' => $search_post_type ?? null,            
+            'search_status' => $search_status ?? null,
+            'search_post_type' => $search_post_type ?? null,
             'post_types' => $post_types ?? null, // posts
         ]);
     }
@@ -145,7 +144,7 @@ class RecycleBinController extends Controller
     public function multiple_action(Request $request)
     {
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
-        
+
         $module = $request->module;
         if (!($module == 'accounts' || $module == 'posts')) return redirect(route('admin.recycle_bin'));
 

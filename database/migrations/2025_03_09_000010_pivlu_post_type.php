@@ -30,17 +30,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_post_type', function (Blueprint $table) {
+        Schema::create('pivlu_post_types', function (Blueprint $table) {
             $table->id();
-            $table->string('type', 25);            
-            $table->string('name', 25);
+            $table->string('type', 50);            
             $table->boolean('show_in_admin_menu')->default(true);
             $table->boolean('internal_only')->default(false);
             $table->string('admin_menu_icon', 200)->nullable();            
             $table->boolean('core')->default(false);
             $table->boolean('active')->default(false);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -49,7 +47,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_post_type');
-        Schema::dropSoftDeletes();
+        Schema::dropIfExists('pivlu_post_types');
     }
 };

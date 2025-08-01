@@ -4,7 +4,8 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.config', ['tab' => 'general']) }}">{{ __('Configuration') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Configuration') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ __('Website settings') }}</li>
                 </ol>
             </nav>
         </div>

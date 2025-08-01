@@ -4,7 +4,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.posts.index', ['type' => $type]) }}">{{ $post_type->name ?? __('Posts') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">{{ $post_type->name ?? __('Posts') }}</a></li>
                 </ol>
             </nav>
         </div>
@@ -17,7 +17,7 @@
 
         <div class="row">
 
-            @if ($type != 'page')
+            @if ($post_type->type != 'page')
                 <div class="col-12 col-sm-12 mb-3">
                     @include('admin.posts.includes.menu')
                 </div>
@@ -31,7 +31,7 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    <a href="{{ route('admin.posts.create', ['type' => $type]) }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
+                    <a href="{{ route('admin.posts.create', ['post_type_id' => $post_type->id]) }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
                         {{ __(json_decode($post_type->default_language_content->labels)->create ?? __('Add new item')) }}
                     </a>
                 </div>
@@ -121,7 +121,7 @@
                     <a class="btn btn-light mb-2" href="{{ route('admin.posts.index', ['post_type' => $post_type]) }}"><i class="bi bi-arrow-counterclockwise"></i></a>
                 </div>
 
-                <input type="hidden" name="type" value="{{ $type }}">
+                <input type="hidden" name="post_type_id" value="{{ $post_type->id }}">
             </form>
         </section>
 
@@ -201,11 +201,13 @@
                             </td>
 
                             <td>
+                                {{--
                                 @foreach ($post->taxonomies as $post_taxonomy)
                                     <a target="_blank"
                                         href="{{ route('home') }}/{{ $post_type->slug }}/{{ $post_taxonomy->taxonomy->term->slug }}/{{ $post_taxonomy->taxonomy->slug }}">{{ $post_taxonomy->taxonomy->name }}</a>
                                     <br>
                                 @endforeach
+                                --}}
                             </td>
 
                             <td>
@@ -216,7 +218,7 @@
 
                             <td>
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('admin.posts.show', ['id' => $post->id, 'type' => $type]) }}" class="btn btn-primary btn-sm mb-2">
+                                    <a href="{{ route('admin.posts.show', ['id' => $post->id]) }}" class="btn btn-primary btn-sm mb-2">
                                         {{ __(json_decode($post_type->labels)->update ?? __('Update')) }}
                                     </a>
 
@@ -236,7 +238,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form method="POST" action="{{ route('admin.posts.show', ['id' => $post->id, 'type' => $type]) }}">
+                                                    <form method="POST" action="{{ route('admin.posts.show', ['id' => $post->id]) }}">
                                                         {{ csrf_field() }}
                                                         {{ method_field('DELETE') }}
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
@@ -255,7 +257,7 @@
             </table>
         </div>
 
-        {{ $posts->appends(['search_terms' => $search_terms, 'search_status' => $search_status, 'search_categ_id' => $search_categ_id])->links() }}
+        {{ $posts->appends(['search_terms' => $search_terms, 'search_status' => $search_status, 'search_categ_id' => $search_categ_id,  'post_type_id' => $post_type->id])->links() }}
 
     </div>
     <!-- end card-body -->

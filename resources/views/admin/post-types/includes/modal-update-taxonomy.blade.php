@@ -1,16 +1,16 @@
 <?php
 debug_backtrace() || die('Direct access not permitted');
 ?>
-<div class="modal fade custom-modal" tabindex="-1" role="dialog" aria-labelledby="ModalCptLabelUpdateTaxonomy-{{ $taxonomy->id }}" aria-hidden="true" id="update-taxonomy-{{ $taxonomy->id }}">
+<div class="modal fade custom-modal" tabindex="-1" role="dialog" aria-labelledby="ModalUpdateTaxonomyLabel-{{ $post_type_taxonomy->id }}" aria-hidden="true" id="update-taxonomy-{{ $post_type_taxonomy->id }}">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
 
-            <form method="post" action="{{ route('admin.post-type-taxonomies.show', ['id' => $taxonomy->id, 'type' => $type]) }}">
+            <form method="post" action="{{ route('admin.post-type-taxonomies.show', ['id' => $post_type_taxonomy->id, 'post_type' => $type]) }}">
                 @csrf
                 @method('PUT')
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ModalLabel">{{ __('Update') }}</h5>
+                    <h5 class="modal-title" id="ModalUpdateTaxonomyLabel-{{ $post_type_taxonomy->id }}">{{ __('Update taxonomy') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 

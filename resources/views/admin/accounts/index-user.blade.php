@@ -130,7 +130,6 @@
                 <thead>
                     <tr>
                         <th>{{ __('Details') }}</th>
-                        <th width="250">{{ __('Activity') }}</th>
                         <th width="140">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -176,20 +175,7 @@
 
                             </td>
 
-                            <td>
-                                @if ($account->role == 'user' || $account->role == 'contact')
-                                    <div class="small">
-                                        @if (($account->count_open_tickets ?? null) > 0 || ($account->count_closed_tickets ?? null) > 0)
-                                            <h5 class="mb-0">{{ __('Support tickets') }}</h5>
-                                            <a @if ($account->count_open_tickets > 0) class="text-danger font-weight-bold" @endif
-                                                href="{{ route('admin.account.tickets', ['id' => $account->id]) }}">{{ $account->count_open_tickets }}
-                                                {{ __('open tickets') }}</a> |
-                                            <a href="{{ route('admin.account.tickets', ['id' => $account->id]) }}">{{ $account->count_closed_tickets }} {{ __('closed tickets') }}</a>
-                                        @endif
-                                    </div>
-                                @endif
-                            </td>
-
+                            
                             <td>
                                 <div class="d-grid gap-2">
 

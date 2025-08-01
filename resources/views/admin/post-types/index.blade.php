@@ -18,10 +18,6 @@
 
         <div class="row">
 
-            <div class="col-12 col-sm-12 mb-4">
-                @include('admin.config.includes.menu-config-website')
-            </div>
-
             <div class="col-12 col-sm-12 col-md-6 order-md-1 order-first">
                 <div class="card-title">
                     {{ __('Post types') }}
@@ -30,9 +26,9 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#create-cpt" class="btn btn-primary"><i class="bi bi-plus-circle"></i> {{ __('Add custom post type ') }}</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#create-post-type" class="btn btn-primary"><i class="bi bi-plus-circle"></i> {{ __('Create custom post type') }}</a>
 
-                    @include('admin.config.includes.modal-create-cpt')
+                    @include('admin.post-types.includes.modal-create-post-type')
 
                 </div>
             </div>
@@ -82,9 +78,8 @@
                 <thead>
                     <tr>
                         <th>{{ __('Details') }}</th>
-                        <th width="200">{{ __('URL') }}</th>
-                        <th width="300">{{ __('Labels') }}</th>
-                        <th width="180">{{ __('Actions') }}</th>
+                        <th width="300">{{ __('URL slug') }}</th>
+                        <th width="200">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
@@ -94,7 +89,7 @@
 
                             <td>
                                 @if ($post_type->core == 1)
-                                    <div class="float-end ms-2 badge bg-info fw-normal">{{ __('Protected type') }}</div>
+                                    <div class="float-end ms-2 badge bg-info fw-normal">{{ __('Core') }}</div>
                                 @endif
 
                                 @if ($post_type->internal_only == 1)
@@ -106,44 +101,60 @@
                                 @endif
 
                                 <div class="fw-bold">
-                                    {{ $post_type->name }}
+                                    @if ($post_type->type == 'page')
+                                        {{ __('Page') }}
+                                    @else
+                                        @foreach ($post_type->all_languages_contents as $lang_content)
+                                            @if (count(admin_languages()) > 1)
+                                                <span class="me-1">{!! flag($lang_content->lang_code) !!}</span>
+                                            @endif
+
+                                            @if ($lang_content->name)
+                                                {{ $lang_content->name }}</a>
+                                            @else
+                                                <span class="text-danger">{{ __('not set') }}</span>
+                                            @endif
+                                            <div class="mb-1"></div>
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 <span class="text-muted small">
-                                    @if ($post_type->description)
-                                        {{ $post_type->description }}<br>
-                                    @endif
                                     {{ __('Created') }}: {{ date_locale($post_type->created_at, 'datetime') }}
                                     @if ($post_type->updated_at)
-                                        | {{ __('Updated') }}: {{ date_locale($post_type->updated_at, 'datetime') }} |
+                                        | {{ __('Updated') }}: {{ date_locale($post_type->updated_at, 'datetime') }}
                                     @endif
                                 </span>
                             </td>
 
                             <td>
-                                @if ($post_type->slug)
-                                    <a target="_blank" href="{{ route('home') }}/{{ $post_type->slug }}">/{{ $post_type->slug }}</a>
-                                @endif
-                            </td>
+                                @if ($post_type->type != 'page')
+                                    @foreach ($post_type->all_languages_contents as $lang_content)
+                                        @if (count(admin_languages()) > 1)
+                                            <span class="me-1">{!! flag($lang_content->lang_code) !!}</span>
+                                        @endif
 
-                            <td>
-                                {{ __('Singular') }}: {{ json_decode($post_type->labels)->singular ?? null }}<br>
-                                {{ __('Plural') }}: {{ json_decode($post_type->labels)->plural ?? null }}<br>
-                                {{ __('Create') }}: {{ json_decode($post_type->labels)->create ?? null }}<br>
-                                {{ __('Update') }}: {{ json_decode($post_type->labels)->update ?? null }}<br>
-                                {{ __('Delete') }}: {{ json_decode($post_type->labels)->delete ?? null }}<br>
-                                {{ __('All') }}: {{ json_decode($post_type->labels)->all ?? null }}<br>
-                                {{ __('Search') }}: {{ json_decode($post_type->labels)->search ?? null }}<br>
+                                        @if ($lang_content->slug)
+                                            @if ($lang_content->lang_code == get_default_language()->code)
+                                                <a target="_blank" href="{{ route('home') }}/{{ $lang_content->slug }}">/{{ $lang_content->slug }}</a>
+                                            @else
+                                                <a target="_blank" href="{{ route('home') }}/{{ $lang_content->lang_code }}/{{ $lang_content->slug }}">/{{ $lang_content->lang_code }}/{{ $lang_content->slug }}</a>
+                                            @endif
+                                        @else
+                                            <span class="text-danger">{{ __('not set') }}</span>
+                                        @endif
+                                        <div class="mb-1"></div>
+                                    @endforeach
+                                @endif
                             </td>
 
                             <td>
                                 <div class="d-grid gap-2">
                                     @if ($post_type->type != 'page')
-                                        <a href="{{ route('admin.post-type-taxonomies.index', ['type' => $post_type->type]) }}" class="btn btn-primary btn-sm mb-2">{{ __('Manage taxonomies') }}</a>
+                                        <a href="{{ route('admin.post-type-taxonomies.index', ['post_type_id' => $post_type->id]) }}" class="btn btn-primary btn-sm mb-2">{{ __('Manage taxonomies') }}</a>
                                     @endif
 
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#update-cpt-{{ $post_type->id }}" class="btn btn-primary btn-sm mb-2">{{ __('Update') }}</a>
-                                    @include('admin.config.includes.modal-update-cpt')
+                                    <a href="{{ route('admin.post-types.show', ['id' => $post_type->id]) }}" class="btn btn-secondary btn-sm mb-2">{{ __('Update') }}</a>
 
                                     @if ($post_type->core == 0)
                                         <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post_type->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
