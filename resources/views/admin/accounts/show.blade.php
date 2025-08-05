@@ -36,7 +36,7 @@
 <div class="card">
 
     <div class="card-header">
-        <h4 class="card-title">{{ $account->name }} ({{ $account->username }})</h4>
+        <h4 class="card-title">{{ $account->name }} ({{ $account->email }})</h4>
     </div>
 
     <div class="card-body">

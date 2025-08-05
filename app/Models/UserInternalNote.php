@@ -22,31 +22,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Media extends Model
+class UserInternalNote extends Model
 {
-    protected $fillable = ['code', 'filename', 'original_name', 'folder', 'disk', 'post_id', 'user_id', 'mime_type', 'extension', 'size_mb', 'custom_properties'];
 
-    protected $table = 'pivlu_media';
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'user_id',
+        'created_by_user_id',
+        'note',
+        'sticky',
+        'media_id',
+    ];
 
-    protected $appends = ['url'];
+    protected $table = 'pivlu_user_internal_notes';
 
-    public function user()
+    public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'created_by_user_id');
     }
 
-
-    public function post()
+    public function media()
     {
-        return $this->belongsTo(Post::class, 'post_id');
+        return $this->belongsTo(Media::class, 'media_id');
     }
-
-    public function getUrlAttribute()
-    {
-        $url = Storage::disk($this->disk)->url($this->folder.'/'.$this->filename);
-        
-        return $url;
-    }
+  
 }

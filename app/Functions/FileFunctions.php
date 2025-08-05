@@ -31,7 +31,7 @@ use App\Models\Media;
 
 class FileFunctions
 {
-    
+
     /**
      * Upload an image to the server. If the upload is successful, it returns the object of the new file.
      * 
@@ -167,52 +167,71 @@ class FileFunctions
 
 
     /**
-     * Upload file to the server without resize.
+     * Upload file to the Storage
      * 
      * @return object|null The object of uploaded file or null if the upload fails
      */
 
-    public static function copy_file($requestFile, $oldImage = null)
+    public static function store_file($requestFile, $old_media_id = null)
     {
         if (!$requestFile) return false;
 
         $uploadSuccessful = false;
+        $temp_path = 'temp-uploads';
+        $disk = config('pivlu.uploads_disk');
+
+        $disk_path = now()->format('Ymd');
 
         $extension = strtolower($requestFile->getClientOriginalExtension());
+        $original_name = $requestFile->getClientOriginalName();
+        $mime = $requestFile->getMimeType();        
 
-        // List of allowed file extensions       
-        $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+        // chech file size
+        $filesize = $requestFile->getSize(); // in bytes
+        $filesize_kb = round($filesize / 1024, 2); // in kB with 2 digits        
+        $filesize_mb = round($filesize / 1024 / 1024, 2); // in kB with 2 digits        
+        $image_max_size = config('pivlu.uploads_image_max_size') ?? 5120; // in kB
+        if ($filesize_kb > $image_max_size) return null;
 
-        if (in_array($extension, $validExtensions)) {
-            $originalname = $requestFile->getClientOriginalName();
-            $originalname =  str_replace(' ', '_', $originalname);
-            $newFilename = Str::random(16) . '-' . $originalname;
+        $newFilename = Str::random(8).'-'.Str::random(8).'-'. Str::random(8). '.' . $extension;
 
-            // Create the directory if it does not exist
-            $temp_path = 'temp-uploads/';
-            $linode_path = 'posts/' . TLD . '/' . now()->format('Ymd');
-            $db_path = TLD . '/' . now()->format('Ymd') . '/';
-
-            if (!File::isDirectory($temp_path)) {
-                File::makeDirectory($temp_path, 0777, true, true);
-            }
-            $temp_path = "$temp_path/$newFilename";
-            $filePath = $linode_path . '/' . $newFilename;
-
-            Image::read($requestFile)->save($temp_path);
-            $contents = @file_get_contents($temp_path);
-            Storage::disk('linode')->put($filePath, $contents);
-            @unlink($temp_path); // delete temp file
-
-            $uploadSuccessful = true;
+        if (!File::isDirectory($temp_path)) {
+            File::makeDirectory($temp_path, 0777, true, true);
         }
+
+        $path = Storage::disk($disk)->putFileAs($disk_path, $requestFile, $newFilename);
+
+        $media = Media::create([
+            'code' => strtoupper(Str::random(16)),
+            'filename' => $newFilename,
+            'original_name' => $original_name,
+            'folder' => $disk_path,
+            'disk' => $disk,
+            'user_id' => Auth::user()->id ?? null,
+            'mime_type' => $mime,
+            'extension' => $extension,
+            'size_mb' => $filesize_mb ?? null
+
+        ]);
+
+        $uploadSuccessful = true;
 
         // DELETE OLD IMAGE
-        if ($uploadSuccessful && $oldImage) {
-            Storage::disk('linode')->delete('posts/' . $oldImage); // delete old file                  
+        if ($uploadSuccessful && $old_media_id) {
+
+            $old_media = Media::find($old_media_id);
+            if ($old_media) {
+                $old_image_disk = $old_media->disk ?? null;
+                $old_image_filename = $old_media->filename ?? null;
+                if ($old_media->folder) $old_image_filename = $old_media->folder . '/' . $old_image_filename;
+
+                Storage::disk($old_image_disk)->delete($old_image_filename); // delete file
+
+                $old_media->delete();
+            }
         }
 
-        return $db_path . $newFilename;
+        return $media ?? null;
     }
 
 
@@ -328,9 +347,9 @@ class FileFunctions
 
 
 
-    public static function delete_media($id)
+    public static function delete_file($id)
     {
-        $item = Media::find($id);        
+        $item = Media::find($id);
         if (! $item) return false;
 
         $disk = $item->disk ?? null;
@@ -348,11 +367,11 @@ class FileFunctions
         $pathThumb = "{$pathInfo['dirname']}/thumb_{$pathInfo['basename']}";
         $pathThumbSquare = "{$pathInfo['dirname']}/thumb_square_{$pathInfo['basename']}";
 
-        Storage::disk($disk)->delete($pathSmall);
-        Storage::disk($disk)->delete($pathSquare);
-        Storage::disk($disk)->delete($pathThumb);
-        Storage::disk($disk)->delete($pathThumbSquare);
-        
+        @Storage::disk($disk)->delete($pathSmall);
+        @Storage::disk($disk)->delete($pathSquare);
+        @Storage::disk($disk)->delete($pathThumb);
+        @Storage::disk($disk)->delete($pathThumbSquare);
+
         return true;
     }
 }

@@ -375,7 +375,7 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        if ($post->media_id) FileFunctions::delete_media($post->media_id);
+        if ($post->media_id) FileFunctions::delete_file($post->media_id);
 
         $post->update(['media_id' => null]);
 

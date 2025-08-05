@@ -106,7 +106,7 @@ class PostBlockFunctions
             // delete image (if checkbox is checked)
             if ($request->has('delete_bg_image')) {
                 $media_id_to_delete = $request->delete_bg_media_id;
-                FileFunctions::delete_media($media_id_to_delete);
+                FileFunctions::delete_file($media_id_to_delete);
                 $block_settings['bg_media_id'] = null;
             }
 
@@ -331,7 +331,7 @@ class PostBlockFunctions
                     // delete image (if checkbox is checked)
                     if ($request->has($post_key_delete_image . '_' . $i)) {
                         $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
-                        FileFunctions::delete_media($file_media_id_to_delete);
+                        FileFunctions::delete_file($file_media_id_to_delete);
                         $inputs["$post_key_existing_image"][$i] = null;
                     }
 
@@ -385,7 +385,7 @@ class PostBlockFunctions
                     // delete image (if checkbox is checked)
                     if ($request->has($post_key_delete_image . '_' . $i)) {
                         $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
-                        FileFunctions::delete_media($file_media_id_to_delete);
+                        FileFunctions::delete_file($file_media_id_to_delete);
                         $inputs["$post_key_existing_image"][$i] = null;
                     }
 
@@ -434,7 +434,7 @@ class PostBlockFunctions
                     // delete image (if checkbox is checked)
                     if ($request->has($post_key_delete_image . '_' . $i)) {
                         $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
-                        FileFunctions::delete_media($file_media_id_to_delete);
+                        FileFunctions::delete_file($file_media_id_to_delete);
                         $inputs["$post_key_existing_image"][$i] = null;
                     }
 

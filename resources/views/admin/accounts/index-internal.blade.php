@@ -65,7 +65,7 @@
                         <a class="btn btn-primary" href="#" id="createAccount" data-bs-toggle="modal" data-bs-target="#create-account">
                             <i class="bi bi-plus-circle"></i> {{ __('Create account') }}
                         </a>
-                        @include('admin.accounts.modals.create-account')
+                        @include('admin.accounts.includes.modal-create-account')
 
                     </div>
 

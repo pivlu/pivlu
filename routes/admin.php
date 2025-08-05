@@ -24,6 +24,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\AccountInternalNoteController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -50,6 +51,9 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     Route::get('account/{id}/reset-password', [AccountController::class, 'reset_password'])->where('id', '[0-9]+')->name('account.reset_password');
     Route::post('account/{id}/reset-password', [AccountController::class, 'reset_password_action'])->where('id', '[0-9]+');
+
+    Route::resource('accounts.internal-notes', AccountInternalNoteController::class)->parameters(['accounts' => 'account_id', 'internal-notes' => 'note_id'])->shallow();
+
 
     // Posts
     Route::resource('post-types', PostTypeController::class)->parameters(['post-types' => 'id']);

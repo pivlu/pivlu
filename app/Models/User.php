@@ -79,9 +79,13 @@ class User extends Authenticatable
         return $this->hasMany(UserMeta::class, 'user_id');
     }
 
-     public function avatar()
+    public function avatar()
     {
         return $this->belongsTo(Media::class, 'avatar_media_id');
     }
 
+    public function internal_notes()
+    {
+        return $this->hasMany(UserInternalNote::class);
+    }
 }
