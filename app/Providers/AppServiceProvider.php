@@ -24,11 +24,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Pagination\Paginator;
-use Opcodes\LogViewer\Facades\LogViewer;
 use Illuminate\Support\Facades\Schema;
 use Auth;
 use App;
-//use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,13 +53,5 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::useBootstrapFive();
 
-        //Carbon::setLocale(app()->getLocale());
-
-        LogViewer::auth(function ($request) {
-            // return true to allow viewing the Log Viewer.
-            if (Auth::user() ?? null) {
-                if (Auth::user()->role == 'admin') return true;
-            }
-        });
     }
 }

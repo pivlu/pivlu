@@ -26,7 +26,6 @@ use App\Models\BlockContent;
 use App\Models\BlockType;
 use App\Models\Post;
 use App\Models\Language;
-use App\Functions\TextTransformFunctions as TextTransform;
 
 class PostBlockFunctions
 {
@@ -247,16 +246,9 @@ class PostBlockFunctions
 
             // EDITOR 
             if ($block_type->type == 'editor') {
-                $content = $request->$key_content;
-
+                $content = $request->$key_content;                
+                $content = trim($content);
                 
-                if ($content ?? null) {
-                    $transformer = new TextTransform();
-                    $content = $transformer->keepTags()->keepNewLines()->toText($content);
-                    $content = trim($content);
-                }
-
-
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
 
                 // header data
