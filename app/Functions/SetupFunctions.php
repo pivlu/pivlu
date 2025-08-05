@@ -141,7 +141,7 @@ class SetupFunctions
             $page_post_type = PostType::where(['type' => 'page'])->first();
 
             $homepage_post = Post::create([
-                'poat_type_id' => $page_post_type->id,
+                'post_type_id' => $page_post_type->id,
                 'is_homepage' => 1,
                 'status' => 'published',
                 'user_id' => $admin_user_id

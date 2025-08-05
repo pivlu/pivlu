@@ -26,6 +26,7 @@ use Storage;
 use Image;
 use File;
 use Auth;
+use App\Models\User;
 use App\Models\Media;
 
 class FileFunctions

@@ -24,8 +24,10 @@
 
                 <div class="post">
 
+                    <h1 class="section-heading mb-4">Reaching for the Stars</h1>
+
                     <div class="meta">
-                        <img class="avatar-small rounded-circle" src="{{ theme_asset('assets/img/sample/person.jpg') }}" alt="Profile"> <a href="#"> John Doe</a> <i class="bi bi-calendar ms-3"></i> December 21,
+                        <img class="avatar rounded-circle" src="{{ theme_asset('assets/img/sample/person.jpg') }}" alt="Profile"> <a href="#"> John Doe</a> <i class="bi bi-calendar ms-3"></i> December 21,
                         2020, 18:45 <i class="bi bi-clock ms-3"></i> 4 min to read
                     </div>
 

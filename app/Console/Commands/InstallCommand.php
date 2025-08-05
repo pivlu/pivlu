@@ -86,19 +86,18 @@ class InstallCommand extends Command
             'email_verified_at' => now(),
             'created_at' => now(),
         ]);
-        $user_id = User::where('email', $admin_email)->value('id');
 
         $this->line('Setup default language');
         SetupFunctions::check_default_language();
-
-        $this->line('Setup website settings');
-        SetupFunctions::check_default_website_settings();
 
         $this->line('Setup website default post types');
         SetupFunctions::check_default_post_types();
 
         $this->line('Check default block types');
         SetupFunctions::check_default_block_types();
+
+        $this->line('Setup website settings');
+        SetupFunctions::check_default_website_settings();
 
         $this->line('Check default theme');
         SetupFunctions::check_default_theme();

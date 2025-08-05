@@ -21,7 +21,7 @@
             </div>
 
             <div class="meta">
-                <img class="avatar-small rounded-circle" src="{{ theme_asset('assets/img/sample/person.jpg') }}" alt="Profile"> <a href="#"> John Doe</a> <i class="far fa-calendar ms-3"></i> December 21, 2020, 18:45 <i
+                <img class="avatar rounded-circle" src="{{ theme_asset('assets/img/sample/person.jpg') }}" alt="Profile"> <a href="#"> John Doe</a> <i class="far fa-calendar ms-3"></i> December 21, 2020, 18:45 <i
                     class="far fa-clock ms-3"></i> 4 min to read
             </div>
 

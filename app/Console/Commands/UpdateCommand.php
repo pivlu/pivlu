@@ -74,18 +74,18 @@ class UpdateCommand extends Command
         $this->line('Check default language');
         SetupFunctions::check_default_language();
 
-        $this->line('Check website settings');
-        SetupFunctions::check_default_website_settings();
-
         $this->line('Check default post types');
         SetupFunctions::check_default_post_types();
 
         $this->line('Check default block types');
         SetupFunctions::check_default_block_types();
 
+        $this->line('Check website settings');
+        SetupFunctions::check_default_website_settings();
+
         $this->line('Check default theme');
         SetupFunctions::check_default_theme();
-        
+
         // Create the symbolic link 
         Artisan::call('storage:link');
 

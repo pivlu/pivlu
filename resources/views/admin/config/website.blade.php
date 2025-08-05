@@ -115,39 +115,7 @@
                 <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
             </div>
         </form>
-
-
-
-        <form method="post">
-            @csrf
-
-            <div class="fs-5 fw-bold mb-2 mt-4">{{ __('Website label') }}:</div>
-
-            @foreach ($languages as $lang)
-                <div class="form-group">
-                    <label>
-                        @if (count($languages) > 1)
-                            {!! flag($lang->code) !!}
-                            @endif{{ __('Website label') }} @if (count($languages) > 1)
-                                ({{ $lang->name }})
-                            @endif
-                    </label>
-                    <input type="text" class="form-control" name="site_label_{{ $lang->id }}" value="{{ $lang->site_label ?? null }}">
-                    <div class="text-muted small">{{ __('A short website title (1-3 words)') }}</div>
-                </div>
-
-                @if (count($languages) > 1 && !$loop->last)
-                    <div class="mb-4"></div>
-                @endif
-            @endforeach
-
-
-            <div class="form-group">
-                <input type="hidden" name="section" value="labels">
-                <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
-            </div>
-
-        </form>
+        
     </div>
     <!-- end card-body -->
 

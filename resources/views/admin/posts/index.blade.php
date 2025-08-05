@@ -161,9 +161,14 @@
 
                                     <span class="text-muted small">
                                         @foreach ($post->all_languages_contents as $page_content)
-                                            @if (count(admin_languages()) > 1)
-                                                <div class="fw-bold fs-5"><span class="me-1">{!! flag($page_content->lang_code) !!}</span> {{ __('Homepage') }}</div>
-                                            @endif
+                                            <div class="fw-bold fs-5">
+                                                @if (count(admin_languages()) > 1)
+                                                    <span class="me-1">
+                                                        {!! flag($page_content->lang_code) !!}
+                                                    </span>
+                                                @endif
+                                                {{ __('Homepage') }}
+                                            </div>
 
                                             <div>
                                                 <b>{{ __('URL') }}:</b> <a target="_blank" href="{{ $page_content->url }}">{{ $page_content->url }}</a>
