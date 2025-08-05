@@ -6,7 +6,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">{{ $post_type->default_language_content->name ?? __('Posts') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->plural ?? null) }}
+                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels ?? null)->plural ?? null) }}
                     </li>
                 </ol>
             </nav>
@@ -31,7 +31,7 @@
                     @if ($post_type == 'post')
                         {{ __('All categories') }}
                     @else
-                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->all ?? null) }}
+                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels ?? null)->all ?? null) }}
                     @endif
                     ({{ $count_taxonomies ?? 0 }})
                 </div>
@@ -43,7 +43,7 @@
                             @if ($post_type == 'post')
                                 {{ __('Create category') }}
                             @else
-                                {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->create ?? __('Create') ) }}
+                                {{ __(json_decode($post_type_taxonomy->default_language_content->labels ?? null)->create ?? __('Create') ) }}
                             @endif
                         </button></span>
                     @include('admin.posts.includes.modal-create-taxonomy')
@@ -104,7 +104,7 @@
                     <a class="btn btn-light mb-2" href="{{ route('admin.post-taxonomies.index', ['id' => $post_type_taxonomy->id]) }}"><i class="bi bi-arrow-counterclockwise"></i></a>
                 </div>
 
-                <input type="hidden" name="post_type_taxonomy_id" value="{{ $post_type_taxonomy->id }}">                
+                <input type="hidden" name="id" value="{{ $post_type_taxonomy->id }}">                
             </form>
         </section>
 
@@ -115,6 +115,7 @@
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
+                        <th width="60">{{ __('ID') }}</th>
                         <th>{{ __('Details') }}</th>
                         <th width="150">{{ __('Statistics') }}</th>
                         <th width="160">{{ __('Actions') }}</th>

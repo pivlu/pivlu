@@ -17,7 +17,6 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/trumbowyg/plugins/table/ui/trumbowyg.table.min.css') }}">
 <script src="{{ asset('assets/vendor/trumbowyg/plugins/table/trumbowyg.table.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/trumbowyg/plugins/upload/trumbowyg.upload.js') }}"></script>
-<script src="{{ asset('assets/vendor/trumbowyg/plugins/preformatted/trumbowyg.preformatted.min.js') }}"></script>
 
 <!-- Import prismjs stylesheet -->
 <link rel="stylesheet" href="{{ asset('assets/vendor/trumbowyg/plugins/highlight/ui/trumbowyg.highlight.min.css') }}">
@@ -36,7 +35,7 @@
         $('.trumbowyg').trumbowyg({
             btns: [
                 ['formatting', 'strong', 'em', 'link'],
-                ['foreColor', 'backColor', 'table', 'horizontalRule', 'preformatted', 'highlight'],
+                ['foreColor', 'backColor', 'table', 'horizontalRule', 'highlight'],
                 ['unorderedList', 'orderedList', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'undo', 'redo'],
                 ['removeformat', 'viewHTML', 'fullscreen']
             ],

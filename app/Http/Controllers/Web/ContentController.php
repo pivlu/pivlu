@@ -25,12 +25,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\PostType;
+use App\Models\PostTypeTaxonomy;
 use App\Models\PostMeta;
 use App\Models\PostTaxonomy;
-use App\Models\PostContent;
-use App\Models\Taxonomy;
-use App\Models\TaxonomyTerm;
-use App\Models\Config;
+use App\Models\PostTaxonomyContent;
+use App\Models\Language;
+use App\Functions\PostFunctions;
 
 class ContentController extends Controller
 {
@@ -40,10 +40,10 @@ class ContentController extends Controller
 
     /*
         /xxx-xxx
-        post type OR posts category
+        post type OR posts type taxonomy
         Ex:
         /devices
-        /lifestyle
+        /posts/categories
     */
     public function level1(Request $request)
     {
@@ -62,7 +62,7 @@ class ContentController extends Controller
             // Get posts
             $posts = Post::with('author', 'taxonomies')->where('type', $post_type->type)->where('status', 'published')->whereNull('deleted_at')->orderByDesc('id')->paginate(24);
 
-            return view($this->theme_views_path . '.' . ($post_type->custom_tpl_file ?? 'type'), [
+            return view(get_active_theme_view() . ($post_type->custom_tpl_file ?? 'type'), [
 
                 'post_type' => $post_type,
                 'post_type_nav_items' => $post_type_nav_items,
@@ -71,11 +71,18 @@ class ContentController extends Controller
 
             ]);
         } else {
-            // 2. Check for posts taxonomy (category)
-            $taxonomy = Taxonomy::where('taxonomy', $slug)->where('taxonomy', 'category')->where('active', 1)->first();
-            if ($taxonomy) {
+            // 2. Check for post type taxonomy            
+
+            $post_type_taxonomy = PostTaxonomy::with('active_language_content')
+                ->whereHas('active_language_content', function ($query) use ($slug) {
+                    $query->where(['slug' => $slug]);
+                })
+                ->where('active', 1)
+                ->first();
+
+            if ($post_type_taxonomy) {
                 // POSTS TAXONOMY
-                return view($this->get_active_theme_view() . ($custom_tpl_file ?? 'taxonomy'), [
+                return view(get_active_theme_view() . ($custom_tpl_file ?? 'taxonomy'), [
                     'taxonomy' => $taxonomy,
 
                 ]);
@@ -83,26 +90,31 @@ class ContentController extends Controller
         }
 
         // 3. Check if PAGE
-        $post_content = PostContent::where('slug', $slug)->first();
-        if ($post_content) {
-            $post = Post::find($post_content->post_id);
-            if ($post && $post->status == 'published' && $post->type == 'page') {
+        $page = Post::with('active_language_content', 'post_type')
+            ->whereHas('active_language_content', function ($query) use ($slug) {
+                $query->where(['slug' => $slug]);
+            })
+            ->whereHas('post_type', function ($query) {
+                $query->where(['type' => 'page']);
+            })
+            ->where('status', 'published')
+            ->first();
 
-                $post->title = $post->active_language_content->title;
-                $post->summary = $post->active_language_content->summary;
-                $post->image = image($post->media_id);
-                $post->author_name = $post->user->name;
-                $post->author_avatar = $post->user->avatar_media_id;
-                if ($post->blocks) $content_blocks = unserialize($post->blocks);
+        if ($page) {
+            $page->summary = $page->active_language_content->summary ?? null;
+            $page->meta_title = $page->active_language_content->meta_title ?? $page->active_language_content->title;
+            $page->meta_description = $page->active_language_content->meta_description ?? (substr($page->active_language_content->summary, 0, 200) ?? null);
+            $page->author_name = $page->user->name;
+            $page->author_avatar = $page->user->avatar_media_id;
+            if ($page->blocks) $content_blocks = unserialize($page->blocks);
 
-                // check for custom tpl file
-                $custom_tpl_file = PostMeta::get_meta($post->id, 'custom_tpl_file') ?? null;
+            // check for custom tpl file
+            $custom_tpl_file = PostMeta::get_meta($page->id, 'custom_tpl_file') ?? null;
 
-                return view($this->get_active_theme_view() . ($custom_tpl_file ?? 'post'), [
-                    'post' => $post,
-                    'content_blocks' => $content_blocks ?? array(),
-                ]);
-            }
+            return view(get_active_theme_view() . ($custom_tpl_file ?? 'page'), [
+                'page' => $page,
+                'content_blocks' => $content_blocks ?? array(),
+            ]);
         }
 
         // Nothing above
@@ -113,12 +125,12 @@ class ContentController extends Controller
 
     /*       
         /post-type-slug/xxx-xxx
-        post article OR taxonomy from post type OR page with parent
+        post OR taxonomy (from post type) OR page with parent
         Ex:
-        /posts/top-10-alimente (article)
-        /devices/iphone14-plus (article)
+        /posts/this-is-a-blog-post (post)
+        /devices/this-is-an-post-article-in-devices-post-type (post)
         /posts/category (taxonomy)
-        /about/company (page with parent)
+        /about/company (page with parent, where "about" is a page and "company" is another page (child of "about" page))
     */
     public function level2(Request $request)
     {
@@ -126,16 +138,23 @@ class ContentController extends Controller
         $slug1 = $request->slug1;
         $slug2 = $request->slug2;
 
-        // 1. Check for taxonomy from custom post type   
-        $post_type = PostType::where('type', $slug1)->where('active', 1)->first();
+        // 1. Check for taxonomy from post type               
+        $post_type = PostType::with('active_language_content')
+            ->whereHas('active_language_content', function ($query) use ($slug1) {
+                $query->where(['slug' => $slug1]);
+            })
+            ->where('active', 1)
+            ->first();
+
         if ($post_type) {
-            $type_taxonomy = Taxonomy::with('active_language_content')
+            $post_type_taxonomy = PostTaxonomy::with('active_language_content')
                 ->whereHas('active_language_content', function ($query) use ($slug2) {
                     $query->where(['slug' => $slug2]);
                 })
                 ->where('active', 1)
                 ->first();
-            if ($type_taxonomy) {
+
+            if ($post_type_taxonomy) {
                 // taxonomy
                 return view($this->theme_views_path . '.type-taxonomy', [
                     'portal_section' => $post_type->type ?? null,
@@ -149,9 +168,10 @@ class ContentController extends Controller
                     ->whereHas('active_language_content', function ($query) use ($slug2) {
                         $query->where(['slug' => $slug2]);
                     })
-                    ->where('type', $post_type->type)
+                    ->where('post_type_id', $post_type->id)
                     ->where('status', 'published')
                     ->first();
+
                 if ($post) {
 
                     $post->title = $post->active_language_content->title;
@@ -163,25 +183,25 @@ class ContentController extends Controller
                     if ($post->blocks) $content_blocks = unserialize($post->blocks);
 
                     // Get post type taxonomies (userin nav menu)
-                    $post_type_nav_items = TaxonomyTerm::get_hierarchical_taxonomies($post_type->type);
+                    $post_type_nav_items = PostTypeTaxonomy::get_hierarchical_taxonomies($post_type->id);
 
                     // Get post main hierarchical taxonomy (userin nav menu active)
                     $post_main_hierarchical_taxonomy = Post::get_main_hierarchical_taxonomy($post) ?? null;
 
                     // related
-                    $related_posts = Post::with('post_type', 'taxonomies')->where('type', $post_type->type)->where('status', 'published')->where('id', '!=', $post->id ?? null)->orderByDesc('id')->limit(5)->get();
+                    $related_posts = Post::with('post_type', 'taxonomies')->where('post_type_id', $post_type->id)->where('status', 'published')->where('id', '!=', $post->id ?? null)->orderByDesc('id')->limit(5)->get();
 
                     // update hits
                     Post::where('id', $post->id)->increment('hits');
 
-                    return view($this->get_active_theme_path() . '.post', [
+                    return view(get_active_theme_view() . ($custom_tpl_file ?? 'post'), [
                         'taxonomy_section' => $post_main_hierarchical_taxonomy->slug ?? null,
                         'post_type' => $post_type,
                         'post_main_hierarchical_taxonomy' => $post_main_hierarchical_taxonomy,
                         'post' => $post,
                         'related_posts' => $related_posts,
                         'post_type_nav_items' => $post_type_nav_items,
-                        'content_blocks' => $content_blocks ?? array(),
+                        'content_blocks' => $content_blocks ?? [],
                     ]);
                 }
             }
@@ -203,7 +223,14 @@ class ContentController extends Controller
 
 
         // 3. Check if PAGE with parent
-        $parent_page = Post::where('type', 'page')->where('slug', $slug1)->where('status', 'published')->first();
+        $parent_page = Post::with('post_type', 'active_language_content')
+            ->whereHas('post_type', function ($query) {
+                $query->where('type', 'page');
+            })
+            ->whereHas('active_language_content', function ($query) use ($slug1) {
+                $query->where('slug', $slug1);
+            })
+            ->where('status', 'published')->first();
         if ($parent_page) {
             $page = Post::where('type', 'page')->where('slug', $slug2)->where('parent_id', $parent_page->id)->where('status', 'published')->first();
             if ($page) {
@@ -228,56 +255,45 @@ class ContentController extends Controller
     {
 
         $slug1 = $request->slug1; // post type
-        $slug2 = $request->slug2; // taxonomy term
+        $slug2 = $request->slug2; // post type taxonomy
         $slug3 = $request->slug3; // taxonomy
 
-        if($slug1 == 'storage') abort(404);;
+        if ($slug1 == 'storage') abort(404);
 
-        $post_type = PostType::where('slug', $slug1)->where('active', 1)->first();
-        if ($post_type) {
-            $taxonomy_term = TaxonomyTerm::where('slug', $slug2)->where('post_type', $post_type->type)->where('active', 1)->first();
-            if (! $taxonomy_term) abort(404);
+        $url_path = $slug1 . '/' . $slug2 . '/' . $slug3;
 
-            //dd($taxonomy_term);
+        $post_taxonomy_content = PostTaxonomyContent::where(['url_path' => $url_path, 'lang_id' => $this->get_active_language_id()])->first();
+        if (! $post_taxonomy_content) abort(404);
 
-            $taxonomy = Taxonomy::where('slug', $slug3)->where('taxonomy', $taxonomy_term->taxonomy)->where('active', 1)->first();
-            if (! $taxonomy) abort(404);
+        $post_taxonomy = PostTaxonomy::where('id', $post_taxonomy_content->post_taxonomy_id)->where('active', 1)->first();
+        if (! $post_taxonomy) abort(404);
 
-            // Get posts
-            $posts = Post::with('author', 'taxonomies')->where([
-                'type' => $post_type->type,
-                'status' => 'published',
-            ])->whereHas('taxonomies', function ($query) use ($taxonomy) {
-                $query->where('taxonomy_id', $taxonomy->id);
-            })
-                ->whereNull('deleted_at')->orderByDesc('id')->paginate(24);
+        $post_type = PostType::where('id', $post_taxonomy->post_type_id)->where('active', 1)->first();
+        if (! $post_taxonomy) abort(404);
 
-            $top_posts = Post::with('author', 'taxonomies')->where([
-                'type' => $post_type->type,
-                'status' => 'published',
-            ])->whereHas('taxonomies', function ($query) use ($taxonomy) {
-                $query->where('taxonomy_id', $taxonomy->id);
-            })
-                ->whereNull('deleted_at')->orderByDesc('hits')->orderByDesc('id')->limit(10)->get();
+        // Get posts
+        $posts = Post::with('user', 'active_language_content', 'taxonomies')->where([
+            'post_type_id' => $post_type->id,
+            'status' => 'published',
+        ])->whereHas('taxonomies', function ($query) use ($post_taxonomy) {
+            $query->where('post_taxonomy_id', $post_taxonomy->id);
+        })
+            ->orderByDesc('id')->paginate(24);
 
-            // Get post type taxonomies (used in nav menu)
-            $post_type_nav_items = TaxonomyTerm::get_hierarchical_taxonomies($post_type->type);
-
-            if ($taxonomy) {
-                return view($this->theme_views_path . '.taxonomy', [
-                    'portal_section' => $post_type->type ?? null,
-                    'taxonomy_section' => $taxonomy->slug ?? null,
-                    'post_type_nav_items' => $post_type_nav_items,
-                    'post_type' => $post_type,
-                    'taxonomy_term' => $taxonomy_term,
-                    'taxonomy' => $taxonomy,
-                    'posts' => $posts,
-                    'top_posts' => $top_posts,
-                ]);
-            }
+        foreach ($posts as $post) {
+            $post->title = $post->active_language_content->title;
+            $post->summary = $post->active_language_content->summary;
+            $post->image = image($post->media_id, 'thumb');
+            $post->author_name = $post->user->name;
+            $post->author_avatar = $post->user->avatar;
+            $post->url = PostFunctions::get_post_url($post->id, Language::get_active_language()->id);
         }
 
-        abort(404);
+        return view(get_active_theme_view() . ($custom_tpl_file ?? 'taxonomy'), [
+            'posts' => $posts,
+            'post_type' => $post_type,
+            'post_taxonomy' => $post_taxonomy,
+        ]);
     }
 
 
@@ -404,40 +420,9 @@ class ContentController extends Controller
     }
 
 
-    /**
-     * Al posts from a tag slug
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function tag(Request $request)
+
+    public static function get_active_language_id()
     {
-
-        $slug = $request->slug;
-
-        $tag = PostTag::where('slug', $slug)->first();
-        if (!$tag) return redirect(route('home'));
-
-        $posts = PostTagItem::with('post')
-            ->whereHas('post', function ($query) {
-                $query->where('status', 'published')->whereNull('deleted_at');
-            })
-            ->where('tag_id', $tag->id)
-            ->paginate(Config::config()->posts_per_page ?? 12);
-
-        return view('tag', [
-            'tag' => $tag,
-            'posts' => $posts,
-        ]);
-    }
-
-
-    public static function get_active_theme_view()
-    {
-        $active_theme = Config::get_config('active_theme') ?? 'builder';
-
-        if ($active_theme != 'builder')
-            return 'themes.' . $active_theme . '.';
-        else
-            return 'web.builder.';
+        return Language::get_active_language()->id;
     }
 }

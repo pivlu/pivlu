@@ -28,9 +28,8 @@ use Illuminate\Support\Facades\Validator;
 use Artisan;
 use App\Models\Config;
 use App\Models\User;
-use App\Pivlu\Setup;
-use App\Pivlu\Helpers;
-
+use App\Functions\SetupFunctions;
+use App\Functions\HelperFunctions;
 
 class UpdateCommand extends Command
 {
@@ -73,19 +72,19 @@ class UpdateCommand extends Command
         Artisan::call('migrate');
 
         $this->line('Check default language');
-        Setup::check_default_language();
+        SetupFunctions::check_default_language();
 
         $this->line('Check website settings');
-        Setup::check_default_website_settings();
+        SetupFunctions::check_default_website_settings();
 
         $this->line('Check default post types');
-        Setup::check_default_post_types();
+        SetupFunctions::check_default_post_types();
 
         $this->line('Check default block types');
-        Setup::check_default_block_types();
+        SetupFunctions::check_default_block_types();
 
         $this->line('Check default theme');
-        Setup::check_default_theme();
+        SetupFunctions::check_default_theme();
         
         // Create the symbolic link 
         Artisan::call('storage:link');
@@ -96,7 +95,7 @@ class UpdateCommand extends Command
             $admin_name = $this->askValid('Input administrator full name: ', 'admin_name', ['required', 'min:3']);
             $admin_email = $this->askValid('Input administrator email: ', 'admin_email', ['required', 'email']);
             $admin_pass = $this->askValid('Input administrator password: ', 'admin_pass', ['required', 'min:5']);
-            $admin_code = Helpers::generateRandomInteger(12);
+            $admin_code = HelperFunctions::generateRandomInteger(12);
             User::updateOrInsert(['email' => $admin_email], [
                 'name' => $admin_name ?? 'Admin',
                 'email' => $admin_email,

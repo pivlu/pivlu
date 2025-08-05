@@ -22,8 +22,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
+use App\Functions\PostFunctions;
 
 class Post extends Model
 {
@@ -45,11 +46,13 @@ class Post extends Model
 
     protected $table = 'pivlu_posts';
 
+    protected $appends = ['all_languages_contents'];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-   
+
 
     public function media()
     {
@@ -63,12 +66,7 @@ class Post extends Model
 
     public function taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->with('term');
-    }
-
-    public function hierarchical_taxonomies()
-    {
-        return $this->hasMany(PostTaxonomy::class, 'post_id')->with('hierarchical_taxonomy');
+        return $this->hasMany(PostTaxonomyRelation::class, 'post_id')->with('taxonomy', 'post_type_taxonomy');
     }
 
 
@@ -96,62 +94,32 @@ class Post extends Model
         return;
     }
 
-    public static function generate_url($post_id, $lang_id)
-    {
-        $post = Post::find($post_id);
-        if (!$post) return null;
-
-        $post_content = PostContent::where(['post_id' => $post_id, 'lang_id' => $lang_id])->first();
-
-        // PAGE TYPE
-        if ($post->type == 'page') {
-            // check if page is child of another page
-            $parent_id = Post::where('id', $post_id)->value('parent_id');
-
-            if ($parent_id) {
-                $parent_slug = PostContent::where(['post_id' => $parent_id, 'lang_id' => $lang_id])->value('slug');
-                $url = $parent_slug . '/' . $post_content->slug;
-            } else {
-                $slug = PostContent::where(['post_id' => $post_id, 'lang_id' => $lang_id])->value('slug');
-                $url = $slug;
-            }
-        } else {
-            if ($post->type == 'post') {
-                // POST TYPE
-                $taxonomy = PostTaxonomy::where('post_id', $post_id)->orderBy('id')->first();
-                // if post has no taxonomy, get the post type slug
-                if (!$taxonomy) {
-                    $type_slug = PostType::where('type', $post->type)->value('type');
-                    $url = $type_slug . '/' . $post_content->slug;
-                } else {
-                    $taxonomy_slug = TaxonomyContent::where(['taxonomy' => $taxonomy->id, 'lang_id' => $lang_id])->value('slug');
-                    $url = $taxonomy_slug . '/' . $post_content->slug;
-                }
-            } else {
-                // CUSTOM POST TYPE
-                $type_slug = PostType::where('type', $post->type)->value('slug');
-                $taxonomy = PostTaxonomy::where('post_id', $post_id)->orderBy('id')->first();
-
-                // if post has no taxonomy, get the post type slug
-                if (!$taxonomy) {
-                    $type_slug = PostType::where('type', $post->type)->value('type');
-                    $url = $type_slug . '/' . $post_content->slug;
-                } else {
-                    $taxonomy_slug = Taxonomy::where('id', $taxonomy->taxonomy_id)->value('slug');
-                    $url = $type_slug . '/' . $taxonomy_slug . '/' . $post_content->slug;
-                }
-            }
-        }
-
-        $lang = Language::find($lang_id);
-        if ($lang->is_default == 0) $url = $lang->code . '/' . $url;
-
-        return $url ?? null;
-    }
-
 
     public function blocks()
     {
         return $this->hasMany(BlockContent::class, 'post_id');
+    }
+
+
+    public function getAllLanguagesContentsAttribute()
+    {
+        $all_language_contents = [];
+        $langs = Language::get_languages();
+        foreach ($langs as $lang) {
+            $content = PostContent::where('lang_id', $lang->id)->where('post_id', $this->id)->first();
+            $all_language_contents[] = [
+                'lang_id' => $lang->id,
+                'lang_name' => $lang->name,
+                'lang_code' => $lang->code,
+                'title' => $content->title ?? null,
+                'slug' => $content->slug ?? null,
+                'search_terms' => $content->search_terms ?? null,
+                'summary' => $content->summary ?? null,
+                'meta_title' => $content->meta_title ?? null,
+                'meta_description' => $content->meta_description ?? null,
+                'url' => PostFunctions::get_post_url($this->id, $lang->id)
+            ];
+        }
+        return json_decode(json_encode($all_language_contents));
     }
 }

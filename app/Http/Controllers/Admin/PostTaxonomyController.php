@@ -21,16 +21,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use App\Models\PostType;
 use App\Models\PostTaxonomy;
 use App\Models\PostTaxonomyContent;
 use App\Models\PostTaxonomyRelation;
 use App\Models\PostTypeTaxonomy;
-use App\Models\Language;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use App\Functions\PostFunctions;
+use App\Functions\FileFunctions;
 use Auth;
 
 class PostTaxonomyController extends Controller
@@ -51,11 +51,16 @@ class PostTaxonomyController extends Controller
         $search_terms = $request->search_terms;
         $count_taxonomies = PostTaxonomy::where('post_type_taxonomy_id', $post_type_taxonomy->id)->count();
 
-        if ($search_terms) $post_taxonomies = $post_taxonomies->where('name', 'like', "%$search_terms%");
-        if ($post_type_taxonomy->hierarchical == 1) $post_taxonomies = $post_taxonomies->paginate(50);
+        if ($search_terms)
+            $post_taxonomies = $post_taxonomies->whereHas('default_language_content', function ($query) use ($search_terms) {
+                $query->where('name', 'like', "%$search_terms%");
+            });
+
+        if ($post_type_taxonomy->hierarchical == 1) $post_taxonomies = $post_taxonomies->paginate(100);
         else $post_taxonomies = $post_taxonomies->paginate(10);
 
-        $taxonomy_terms = PostTypeTaxonomy::with('default_language_content')->where(['post_type_id' => $post_type->id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
+
+        $all_post_taxonomies = PostTaxonomy::with('default_language_content')->where('post_type_taxonomy_id', $post_type_taxonomy->id)->whereNull('parent_id')->orderByDesc('active')->orderBy('position')->get();
 
         return view('admin.index', [
             'view_file' => 'admin.posts.taxonomies',
@@ -64,8 +69,9 @@ class PostTaxonomyController extends Controller
             'count_taxonomies' => $count_taxonomies,
             'search_terms' => $search_terms,
             'post_type' => $post_type ?? null,
-            'taxonomy_terms' => $taxonomy_terms ?? null,
+            'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type->id),
             'post_taxonomies' => $post_taxonomies ?? null,
+            'all_post_taxonomies' => $all_post_taxonomies ?? null,
             'post_type_taxonomy' => $post_type_taxonomy ?? null,
         ]);
     }
@@ -77,24 +83,26 @@ class PostTaxonomyController extends Controller
     public function show(Request $request)
     {
         $post_taxonomy_id = $request->id;
+
         $post_taxonomy = PostTaxonomy::with('default_language_content')->find($post_taxonomy_id);
         if (!$post_taxonomy) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
         $post_type_taxonomy = PostTypeTaxonomy::where(['id' => $post_taxonomy->post_type_taxonomy_id])->first();
 
-        $post_type = PostType::where(['id' => $post_type_taxonomy->post_type_id, 'active' => 1])->first();
+        $post_type = PostType::where(['id' => $post_type_taxonomy->post_type_id])->first();
 
-        $taxonomy_terms = PostTypeTaxonomy::with('default_language_content')->where(['post_type_id' => $post_type->id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
+        $all_post_taxonomies = PostTaxonomy::with('default_language_content')->where('post_type_taxonomy_id', $post_type_taxonomy->id)->whereNull('parent_id')->orderByDesc('active')->orderBy('position')->get();
 
         return view('admin.index', [
             'view_file' => 'admin.posts.show-taxonomy',
             'active_menu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => $post_type_taxonomy->id ?? null,
-            'taxonomy_terms' => $taxonomy_terms ?? null,
+            'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type->id),
 
             'post_type_taxonomy' => $post_type_taxonomy,
             'post_taxonomy' => $post_taxonomy,
             'post_type' => $post_type,
+            'all_post_taxonomies' => $all_post_taxonomies ?? null,
         ]);
     }
 
@@ -107,6 +115,8 @@ class PostTaxonomyController extends Controller
         $post_type_taxonomy = PostTypeTaxonomy::with('default_language_content')->find($request->id);
         if (!$post_type_taxonomy) return redirect(route('admin.posts.index'));
 
+        $post_type = PostType::find($post_type_taxonomy->post_type_id);
+
         // position
         if (!($request->position ?? null)) {
             if (!$request->parent_id) $last_item = PostTaxonomy::where('post_type_taxonomy_id', $post_type_taxonomy->id)->whereNull('parent_id')->orderByDesc('position')->first();
@@ -117,6 +127,7 @@ class PostTaxonomyController extends Controller
 
         $post_taxonomy = PostTaxonomy::create([
             'post_type_taxonomy_id' => $post_type_taxonomy->id,
+            'post_type_id' => $post_type->id,
             'parent_id' => $request->parent_id ?? null,
             'active' => $request->has('active') ? 1 : 0,
             'position' => $next_pos,
@@ -140,7 +151,7 @@ class PostTaxonomyController extends Controller
             // Check for duplicate slug (same taxonomy and language).
             if (PostTaxonomyContent::where(['post_taxonomy_id' => $post_taxonomy->id, 'lang_id' => $lang->id, 'slug' => $taxonomy_lang_slug])->exists()) $taxonomy_lang_slug = $taxonomy_lang_slug . '-' . $item->id;
 
-            PostTaxonomyContent::create([
+            $post_taxonomy_content = PostTaxonomyContent::create([
                 'post_taxonomy_id' => $post_taxonomy->id,
                 'lang_id' => $lang->id,
                 'name' => $request->$name_key,
@@ -149,11 +160,14 @@ class PostTaxonomyController extends Controller
                 'meta_title' => $request->$meta_title_key,
                 'meta_description' => $request->$meta_description_key,
             ]);
+
+            $post_taxonomy_content_url_path = PostFunctions::get_post_taxonomy_url_path($post_taxonomy->id, $lang->id) ?? null;
+            $post_taxonomy_content->update(['url_path' => $post_taxonomy_content_url_path]);
         }
 
         // process image        
         if ($request->hasFile('image')) {
-            $media = Media::store_image($request->file('image'));
+            $media = FileFunctions::store_image($request->file('image'));
             if ($media) {
                 $post_taxonomy->update(['media_id' => $media->id]);
             } else
@@ -172,7 +186,6 @@ class PostTaxonomyController extends Controller
         $post_taxonomy = PostTaxonomy::with('default_language_content')->find($request->id);
         if (!$post_taxonomy) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
 
-
         // position
         if (!($request->position ?? null)) {
             if (!$request->parent_id) $last_item = Taxonomy::where('taxonomy', $taxonomy)->whereNull('parent_id')->where('id', '!=', $request->id)->orderByDesc('position')->first();
@@ -186,7 +199,7 @@ class PostTaxonomyController extends Controller
             'active' => $request->has('active') ? 1 : 0,
             'position' => $next_pos,
             'icon' => $request->icon,
-        ]);        
+        ]);
 
         foreach (admin_languages() as $lang) {
             $name_key = 'name_' . $lang->id;
@@ -201,7 +214,7 @@ class PostTaxonomyController extends Controller
             // Check for duplicate slug (same taxonomy and language). If exists, add ID in the slug 
             if (PostTaxonomyContent::where('post_taxonomy_id', '!=', $request->id)->where('lang_id', $lang->id)->where('slug', $taxonomy_lang_slug)->exists()) $taxonomy_lang_slug = $taxonomy_lang_slug . '-' . $request->id;
 
-            PostTaxonomyContent::updateOrInsert(
+            $post_taxonomy_content = PostTaxonomyContent::updateOrInsert(
                 ['post_taxonomy_id' => $request->id, 'lang_id' => $lang->id],
                 [
                     'name' => $request->$name_key,
@@ -211,11 +224,14 @@ class PostTaxonomyController extends Controller
                     'meta_description' => $request->$meta_description_key,
                 ]
             );
+
+            $post_taxonomy_content_url_path = PostFunctions::get_post_taxonomy_url_path($request->id, $lang->id) ?? null;
+            $post_taxonomy_content->update(['url_path' => $post_taxonomy_content_url_path]);
         }
 
         // process image        
         if ($request->hasFile('image')) {
-            $media = Media::store_image($request->file('image'), $post_taxonomy->media_id);
+            $media = FileFunctions::store_image($request->file('image'), $post_taxonomy->media_id);
             if ($media) {
                 $post_taxonomy->update(['media_id' => $media->id]);
             } else

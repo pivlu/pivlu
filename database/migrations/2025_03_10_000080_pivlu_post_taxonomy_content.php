@@ -34,8 +34,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_taxonomy_id')->nullable();
             $table->unsignedBigInteger('lang_id')->nullable();
-            $table->string('name', 200)->nullable();
-            $table->string('slug', 200)->nullable();
+            $table->string('name', 250)->nullable();
+            $table->string('slug', 250)->nullable();
+            $table->string('url_path', 250)->nullable()->index();
             $table->text('description')->nullable();
             $table->text('meta_title')->nullable();
             $table->text('meta_description')->nullable();

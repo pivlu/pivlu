@@ -6,7 +6,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">{{ $post_type->default_language_content->name ?? __('Posts') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels)->plural ?? null) }}
+                        {{ __(json_decode($post_type_taxonomy->default_language_content->labels ?? null)->plural ?? null) }}
                     </li>
                 </ol>
             </nav>
@@ -62,7 +62,6 @@
             </div>
         @endif
 
-
         <form action="{{ route('admin.post-taxonomies.show', ['id' => $post_taxonomy->id]) }}" method="post" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -71,7 +70,6 @@
                 @if (count(admin_languages()) > 1)
                     <div class="fw-bold fs-5">{!! flag($content->lang_code, 'circle') !!} {{ $content->lang_name }}</div>
                 @endif
-
 
                 <div class="row">
                     <div class="col-md-7">
@@ -139,8 +137,8 @@
                             <select class="form-select" name="parent_id">
                                 <option value="">{{ __('Root (no parent)') }}</option>
 
-                                @foreach ($taxonomy_terms as $taxonomy_term)
-                                    @include('admin.posts.loops.taxonomies-edit-select-loop', $taxonomy_term)
+                                @foreach ($all_post_taxonomies as $select_taxonomy)
+                                    @include('admin.posts.loops.taxonomies-edit-select-loop', $select_taxonomy)
                                 @endforeach
                             </select>
                         </div>
@@ -175,7 +173,7 @@
             <div class="col-12">
                 <div class="form-group mb-0">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="customSwitch" name="active" checked>
+                        <input class="form-check-input" type="checkbox" id="customSwitch" name="active" @if ($post_taxonomy->active == 1) checked @endif>
                         <label class="form-check-label" for="customSwitch">{{ __('Active') }}</label>
                     </div>
                 </div>

@@ -104,13 +104,13 @@
                                     @if ($post_type->type == 'page')
                                         {{ __('Page') }}
                                     @else
-                                        @foreach ($post_type->all_languages_contents as $lang_content)
+                                        @foreach ($post_type->all_languages_contents as $post_type_content)
                                             @if (count(admin_languages()) > 1)
-                                                <span class="me-1">{!! flag($lang_content->lang_code) !!}</span>
+                                                <span class="me-1">{!! flag($post_type_content->lang_code) !!}</span>
                                             @endif
 
-                                            @if ($lang_content->name)
-                                                {{ $lang_content->name }}</a>
+                                            @if ($post_type_content->name)
+                                                {{ $post_type_content->name }}</a>
                                             @else
                                                 <span class="text-danger">{{ __('not set') }}</span>
                                             @endif
@@ -129,16 +129,16 @@
 
                             <td>
                                 @if ($post_type->type != 'page')
-                                    @foreach ($post_type->all_languages_contents as $lang_content)
+                                    @foreach ($post_type->all_languages_contents as $post_type_content)
                                         @if (count(admin_languages()) > 1)
-                                            <span class="me-1">{!! flag($lang_content->lang_code) !!}</span>
+                                            <span class="me-1">{!! flag($post_type_content->lang_code) !!}</span>
                                         @endif
 
-                                        @if ($lang_content->slug)
-                                            @if ($lang_content->lang_code == get_default_language()->code)
-                                                <a target="_blank" href="{{ route('home') }}/{{ $lang_content->slug }}">/{{ $lang_content->slug }}</a>
+                                        @if ($post_type_content->slug)
+                                            @if ($post_type_content->lang_code == get_default_language()->code)
+                                                <a target="_blank" href="{{ route('home') }}/{{ $post_type_content->slug }}">/{{ $post_type_content->slug }}</a>
                                             @else
-                                                <a target="_blank" href="{{ route('home') }}/{{ $lang_content->lang_code }}/{{ $lang_content->slug }}">/{{ $lang_content->lang_code }}/{{ $lang_content->slug }}</a>
+                                                <a target="_blank" href="{{ route('home') }}/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}">/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}</a>
                                             @endif
                                         @else
                                             <span class="text-danger">{{ __('not set') }}</span>

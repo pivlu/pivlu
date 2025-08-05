@@ -3,8 +3,8 @@
 <html lang="{{ theme_meta('locale') }}" dir="{{ theme_meta('dir') }}">
 
 <head>
-    <title>{{ $post->title }}</title>
-    <meta name="description" content="Site meta description">
+    <title>{{ $page->meta_title }}</title>
+    <meta name="description" content="{{ $page->meta_description}}">
 
     @include("{$theme_path}.includes.head")
 </head>
@@ -22,31 +22,27 @@
 
                 <div class="post_head text-center col-md-10 offset-md-1">
 
-                    <div class="title mb-3">{{ $post->title }}</div>
+                    <div class="title mb-3">{{ $page->title }}</div>
 
-                    @if ($post->summary)
+                    @if ($page->summary)
                         <div class="summary mb-3">
-                            {{ $post->summary }}
+                            {{ $page->summary }}
                         </div>
                     @endif
 
                     <div class="meta mb-3">
-                        @if ($post->created_at)
-                            {{ date_locale($post->created_at) }}
+                        @if ($page->created_at)
+                            {{ date_locale($page->created_at) }}
                         @endif
 
-                        <img src="{{ avatar($post->author_avatar) }}" alt="{{ $post->author_name }}" class="avatar rounded-circle ms-2">
+                        <img src="{{ avatar($page->author_avatar) }}" alt="{{ $page->author_name }}" class="avatar rounded-circle ms-2">
 
-                        <a href="{{ route('profile', ['username' => $post->user->username]) }}">{{ $post->author_name }}</a>
-
-                        @if ($post->hits)
-                            <i class="bi bi-eye ms-2"></i> {{ $post->hits }} {{ __('visits') }}
-                        @endif                        
+                        <a href="{{ route('profile', ['username' => $page->user->username]) }}">{{ $page->author_name }}</a>                                          
                     </div>
 
-                    @if ($post->media_id)
+                    @if ($page->media_id)
                         <div class="main-image mb-4 post-main-img-full-width">
-                            <img class="img-fluid rounded" src="{{ $post->image }}" alt="{{ $post->title }}" title="{{ $post->title }}">
+                            <img class="img-fluid rounded" src="{{ $page->image }}" alt="{{ $page->title }}" title="{{ $page->title }}">
                         </div>
                     @endif
                 </div>

@@ -39,14 +39,11 @@ class UserController extends Controller
      */
     public function profile(Request $request)
     {
-        $exclude_my_visits = UserMeta::my('exclude_my_visits');
         $last_pw_change_at = UserMeta::my('last_pw_change_at');
 
         return view('account.index', [
             'view_file' => 'account.profile',
             'active_menu' => 'profile',
-
-            'exclude_my_visits' => $exclude_my_visits ?? null,
             'last_pw_change_at' => $last_pw_change_at ?? null,
         ]);
     }
@@ -59,8 +56,6 @@ class UserController extends Controller
         $section = $request->section;
 
         if (! ($section == 'profile' || $section == 'pw')) return redirect(route('user.profile'));
-
-        $inputs = $request->all(); // retrieve all of the input data as an array 
 
         if ($section == "profile") {
             $validator = Validator::make($request->all(), [
@@ -81,16 +76,7 @@ class UserController extends Controller
                 ->update([
                     'name' => $request->name,
                     'email' => $request->email,
-                ]);
-
-            UserMeta::add_meta(Auth::user()->id, 'exclude_my_visits', $request->has('exclude_my_visits') ? 1 : 0);
-
-            if ($request->has('exclude_my_visits')) {
-                $cookie = Cookie::queue('nurastats_exclude_me', 1, 100);
-            } else {
-                Cookie::forget('nurastats_exclude_me');
-                Cookie::queue('nurastats_exclude_me', 1, -1);
-            }
+                ]);           
         }
 
         if ($section == 'pw') {

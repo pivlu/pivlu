@@ -21,20 +21,22 @@
 
 use App\Models\Post;
 use App\Models\PostTaxonomy;
-use App\Models\Taxonomy;
+use App\Models\PostTaxonomyRelation;
+use App\Models\PostType;
 use App\Models\Block;
 use App\Models\BlockContent;
 use App\Models\Language;
+use App\Functions\PostFunctions;
 
 if (!function_exists('get_existing_taxonomies_list')) {
 	function get_existing_taxonomies_list($post_id, $taxonomy_term_id)
 	{
 		$data = [];
-		$items_array = PostTaxonomy::with('taxonomy')->where('post_id', $post_id)->where('taxonomy_term_id', $taxonomy_term_id)->get()->toarray();
+		$items_array = PostTaxonomyRelation::with('taxonomy')->where('post_id', $post_id)->where('post_type_taxonomy_id', $taxonomy_term_id)->get()->toarray();
 		if (count($items_array) == 0) return null;
 
 		foreach ($items_array as $item) {
-			$data[] = array('id' => $item['taxonomy_id'], 'value' => $item['taxonomy']['name']);
+			$data[] = array('id' => $item['post_taxonomy_id'], 'value' => $item['taxonomy']['name']);
 		}
 
 		return json_encode($data);
@@ -43,10 +45,10 @@ if (!function_exists('get_existing_taxonomies_list')) {
 
 
 if (!function_exists('get_taxonomies_list')) {
-	function get_taxonomies_list($taxonomy)
+	function get_taxonomies_list($post_type_taxonomy_id)
 	{
 		//$items = Taxonomy::with('default_language')->where('taxonomy', $taxonomy)->where('active', 1)->orderBy('name')->pluck('name', 'id')->toArray();
-		$items = Taxonomy::with('default_language')->where('taxonomy', $taxonomy)->where('active', 1)->get();
+		$items = PostTaxonomy::with('default_language_content')->where('post_type_taxonomy_id', $post_type_taxonomy_id)->where('active', 1)->get();
 
 		$items_array = [];
 		foreach ($items as $item) {
@@ -145,15 +147,18 @@ if (!function_exists('posts')) {
 	{
 		if(!$type) $type = 'post';
 
-		$items = Post::with('active_language_content', 'user')->where('type', $type)->where('status', 'published')->paginate(25);
+		$post_type = PostType::where('type', $type)->first();
+		if(! $post_type) return null;
+
+		$items = Post::with('active_language_content', 'user')->where('post_type_id', $post_type->id)->where('status', 'published')->paginate(25);
 
 		foreach($items as $item) {
 			$item->title = $item->active_language_content->title;
 			$item->summary = $item->active_language_content->summary;
 			$item->image = image($item->media_id, 'thumb');
 			$item->author_name = $item->user->name;
-			$item->author_avatar = $item->user->avatar;
-			$item->url = Post::generate_url($item->id, Language::get_active_language()->id);
+			$item->author_avatar = $item->user->avatar_media_id;
+			$item->url = PostFunctions::get_post_url($item->id, Language::get_active_language()->id);
 		}
 		
 		return $items;

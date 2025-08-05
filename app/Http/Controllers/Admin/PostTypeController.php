@@ -23,10 +23,11 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use App\Models\Post;
 use App\Models\PostType;
 use App\Models\PostTypeContent;
-use Illuminate\Support\Str;
+use App\Functions\PostFunctions;
 
 class PostTypeController extends Controller
 {
@@ -130,6 +131,8 @@ class PostTypeController extends Controller
         ]);
 
         foreach (admin_languages() as $lang) {
+            $original_slug = PostTypeContent::where(['post_type_id' => $request->id, 'lang_id' => $lang->id])->value('slug');
+
             $name_key = 'name_' . $lang->id;
             $slug_key = 'slug_' . $lang->id;
             $label_singular_key = 'label_singular_' . $lang->id;
@@ -161,7 +164,9 @@ class PostTypeController extends Controller
                     'slug' => $slug,
                     'labels' => json_encode($labels),
                 ]
-            );           
+            );     
+            
+            if ($original_slug != $slug) PostFunctions::regenerate_post_taxonomies_url_path_for_this_type($post_type_id = $request->id);
         }
 
         return redirect(route('admin.post-types.index'))->with('success', 'updated');

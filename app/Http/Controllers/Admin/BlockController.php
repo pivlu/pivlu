@@ -26,7 +26,8 @@ use App\Http\Controllers\Controller;
 use DB;
 use App\Models\Block;
 use App\Models\Language;
-use App\Pivlu\Theme;
+use App\Functions\ThemeFunctions;
+use App\Functions\PostBlockFunctions;
 
 class BlockController extends Controller
 {
@@ -69,7 +70,7 @@ class BlockController extends Controller
             'content_langs' => $content_langs,
             'langs' => Language::get_languages(),
             'referer' => $referer,
-            'font_sizes' => Theme::font_sizes(),
+            'font_sizes' => ThemeFunctions::font_sizes(),
         ]);
     }
 
@@ -88,9 +89,9 @@ class BlockController extends Controller
 
         $block->update(['label' =>  $request->label ?? null, 'hidden' => $request->has('hidden') ? 1 : 0]);
 
-        Block::update_block($id, $block->type_id, $request);
+        PostBlockFunctions::update_block($id, $block->type_id, $request);
 
-        Block::regenerate_post_blocks($block->post_id);
+        PostBlockFunctions::regenerate_post_blocks($block->post_id);
 
         if (($request->submit_return_to_block ?? null) == 'block') return redirect(route('admin.blocks.show', ['id' => $id, 'referer' => $referer ?? null]))->with('success', 'updated');
         elseif ($referer) return redirect($referer)->with('success', 'updated');
@@ -108,7 +109,7 @@ class BlockController extends Controller
 
         $block->delete();
 
-        Block::regenerate_post_blocks($block->post_id);
+        PostBlockFunctions::regenerate_post_blocks($block->post_id);
 
         return redirect(route('admin.blocks'))->with('success', 'deleted');
     }

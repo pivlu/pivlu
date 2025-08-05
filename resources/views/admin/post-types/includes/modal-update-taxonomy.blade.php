@@ -43,49 +43,49 @@ debug_backtrace() || die('Direct access not permitted');
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label singular') }}</label>
-                                <input class="form-control" name="label_singular" type="text" value="{{ json_decode($taxonomy->labels)->singular ?? null }}" />
+                                <input class="form-control" name="label_singular" type="text" value="{{ json_decode($taxonomy->labels ?? null)->singular ?? null }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label plural') }}</label>
-                                <input class="form-control" name="label_plural" type="text" value="{{ json_decode($taxonomy->labels)->plural ?? null }}" />
+                                <input class="form-control" name="label_plural" type="text" value="{{ json_decode($taxonomy->labels ?? null)->plural ?? null }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label create') }}</label>
-                                <input class="form-control" name="label_create" type="text" value="{{ json_decode($taxonomy->labels)->create ?? null }}" />
+                                <input class="form-control" name="label_create" type="text" value="{{ json_decode($taxonomy->labels ?? null)->create ?? null }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label update') }}</label>
-                                <input class="form-control" name="label_update" type="text" value="{{ json_decode($taxonomy->labels)->update ?? null }}" />
+                                <input class="form-control" name="label_update" type="text" value="{{ json_decode($taxonomy->labels ?? null)->update ?? null }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label delete') }}</label>
-                                <input class="form-control" name="label_delete" type="text" value="{{ json_decode($taxonomy->labels)->delete ?? null }}" />
+                                <input class="form-control" name="label_delete" type="text" value="{{ json_decode($taxonomy->labels ?? null)->delete ?? null }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label all') }}</label>
-                                <input class="form-control" name="label_all" type="text" value="{{ json_decode($taxonomy->labels)->all ?? null }}" />
+                                <input class="form-control" name="label_all" type="text" value="{{ json_decode($taxonomy->labels ?? null)->all ?? null }}" />
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Label search') }}</label>
-                                <input class="form-control" name="label_search" type="text" value="{{ json_decode($taxonomy->labels)->search ?? null }}" />
+                                <input class="form-control" name="label_search" type="text" value="{{ json_decode($taxonomy->labels ?? null)->search ?? null }}" />
                             </div>
                         </div>
                     </div>

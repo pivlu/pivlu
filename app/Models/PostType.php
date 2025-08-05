@@ -46,6 +46,11 @@ class PostType extends Model
         return $this->hasOne(PostTypeContent::class, 'post_type_id')->where('lang_id', Language::get_default_language()->id);
     }
 
+    public function active_language_content()
+    {
+        return $this->hasOne(PostTypeContent::class, 'post_type_id')->where('lang_id', Language::get_active_language()->id);
+    }
+
     public function contents()
     {
         return $this->hasMany(PostTypeContent::class, 'post_type_id');

@@ -111,10 +111,7 @@
 
 
                                 <span class="text-muted small">
-                                    {{ __('Created') }}: {{ date_locale($post_type_taxonomy->created_at, 'datetime') }}
-                                    @if ($post_type_taxonomy->updated_at)
-                                        | {{ __('Updated') }}: {{ date_locale($post_type_taxonomy->updated_at, 'datetime') }} |
-                                    @endif
+                                    {{ __('Updated') }}: {{ date_locale($post_type_taxonomy->updated_at, 'datetime') }}
                                 </span>
                             </td>
 

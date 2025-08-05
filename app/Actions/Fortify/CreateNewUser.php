@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
-use App\Pivlu\Helpers;
+use App\Functions\HelperFunctions;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -35,7 +35,7 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        $code = Helpers::generateRandomInteger(12);
+        $code = HelperFunctions::generateRandomInteger(12);
 
         $user = User::create([
             'code' => $code,

@@ -21,12 +21,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\ConfigLang;
-use App\Pivlu\Locale;
-use App\Models\Language;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Models\ConfigLang;
+use App\Functions\LocaleFunctions;
+use App\Models\Language;
 
 class LangController extends Controller
 {
@@ -44,9 +44,9 @@ class LangController extends Controller
             'active_submenu' => 'config.website',
             'active_tab' => 'langs',
             'langs' => $langs,
-            'locales_array' => Locale::locales_array(),
-            'lang_codes_array' => Locale::lang_codes_array(),
-            'timezones_array' => Locale::generate_timezone_list(),
+            'locales_array' => LocaleFunctions::locales_array(),
+            'lang_codes_array' => LocaleFunctions::lang_codes_array(),
+            'timezones_array' => LocaleFunctions::generate_timezone_list(),
         ]);
     }
 
@@ -62,6 +62,7 @@ class LangController extends Controller
             'code' => 'required',
             'locale' => 'required',
             'timezone' => 'required',
+            'status' => 'in:active,inactive,disabled',
             'dir' => 'required|in:ltr,rtl'
         ]);
 
@@ -73,18 +74,22 @@ class LangController extends Controller
         // only one language can be default
         if ($request->has('is_default')) Language::where('is_default', 1)->update(['is_default' => 0]);
 
+        // default language must be active
+        if ($request->has('is_default')) $status = 'active';
+        else $status = $request->status;
+
         $lang = Language::create([
             'name' => $request->name,
             'code' => $request->code,
             'locale' => $request->locale,
             'is_default' => $request->has('is_default') ? 1 : 0,
-            'status' => $request->status,
+            'status' => $status,
             'timezone' => $request->timezone ?? 'Europe/London',
             'dir' => $request->dir ?? 'ltr',
         ]);
 
         ConfigLang::update_config($lang->id, 'site_label', $request->site_label ?? config('app.name'));
-        
+
         return redirect(route('admin.languages.index'))->with('success', 'created');
     }
 
@@ -103,29 +108,34 @@ class LangController extends Controller
             'code' => 'required',
             'locale' => 'required',
             'timezone' => 'required',
-            'dir' => 'required|in:ltr,rtl'
+            'dir' => 'required|in:ltr,rtl',
+            'status' => 'in:active,inactive,disabled',
         ]);
 
         if ($validator->fails()) return redirect(route('admin.languages.index'))->withErrors($validator)->withInput();
 
         if (Language::where('name', $request->name)->where('id', '!=', $request->id)->exists()) return redirect(route('admin.languages.index'))->with('error', 'duplicate');
-        if (Language::where('code', $request->code)->where('id', '!=', $request->id)->exists()) return redirect(route('admin.languages.index'))->with('error', 'duplicate');
+        if (Language::where('code', $request->code)->where('id', '!=', $request->id)->exists()) return redirect(route('admin.languages.index'))->with('error', 'duplicate');        
 
         // only one language can be default
         if ($request->has('is_default')) Language::where('is_default', 1)->update(['is_default' => 0]);
 
+        // default language must be active
+        if ($request->has('is_default')) $status = 'active';
+        else $status = $request->status;
+        
         Language::where('id', $request->id)->update([
             'name' => $request->name,
             'code' => $request->code,
             'locale' => $request->locale,
             'is_default' => $request->has('is_default') ? 1 : 0,
-            'status' => $request->status,
+            'status' => $status,
             'timezone' => $request->timezone ?? 'Europe/London',
             'dir' => $request->dir ?? 'ltr',
         ]);
 
         ConfigLang::update_config($lang->id, 'site_label', $request->site_label ?? config('app.name'));
-        
+
         return redirect(route('admin.languages.index'))->with('success', 'updated');
     }
 

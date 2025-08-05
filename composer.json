@@ -20,8 +20,8 @@
         "laravel/tinker": "^2.10",
         "league/flysystem-aws-s3-v3": "^3.0",
         "nesbot/carbon": "^3.8",
-        "opcodesio/log-viewer": "^3.17",
-        "pivlu/theme-blogger-one": "^1.0"
+        "opcodesio/log-viewer": "^3.17",       
+        "stevebauman/hypertext": "^1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
@@ -84,9 +84,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": {        
-	"pivlu/theme-blogger-one": {
-            "type": "path",
-            "url": "../themes/blogger-one"
-        }
+	
     }
 }

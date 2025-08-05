@@ -16,7 +16,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type_id]) }}">{{ $post_type->default_language_content->name ?? __('Posts') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        {{ __(json_decode($post_type->labels)->create ?? __('Create')) }}
+                        {{ __(json_decode($post_type->default_language_content->labels ?? null)->create ?? __('Create')) }}
                     </li>
                 </ol>
             </nav>
@@ -40,7 +40,7 @@
     <div class="row">
 
         <div class="form-group col-xl-8 col-md-7 col-sm-12">
-            <div class="p-3 bg-light">
+            <div class="p-3 bg-white">
 
                 @foreach (admin_languages() as $lang)
                     @if (count(admin_languages()) > 1)
@@ -49,7 +49,7 @@
 
                     <div class="form-group">
                         <label>
-                            {{ __(json_decode($post_type->labels)->singular ?? $post_type->name) }} {{ __('title') }}
+                            {{ __(json_decode($post_type->default_language_content->labels ?? null)->singular ?? null) }} {{ __('title') }}
                         </label>
                         <input type="text" class="form-control" name="title_{{ $lang->id }}" maxlength="225" @if ($lang->is_default == 1) required @endif />
                     </div>
@@ -105,7 +105,7 @@
 
                     </div>
 
-                    @if (count(languages()) > 1)
+                    @if (count(languages()) > 1 && !$loop->last)
                         <hr>
                     @endif
                 @endforeach
@@ -121,28 +121,26 @@
         </div>
 
         <div class="form-group col-xl-4 col-md-5 col-sm-12">
-            <div class="p-3 bg-light mb-3">
+            <div class="p-3 bg-white mb-3">
                 @if ($post_type->type == 'page')
-                    <div class="form-group col-md-6 col-12 mb-4">
+                    <div class="form-group col-12 mb-4">
                         <label>{{ __('Parent page') }}</label>
                         <select name="parent_id" class="form-select">
                             <option value="">- {{ __('No parent') }} -</option>
                             @foreach ($root_pages as $root_page)
-                                @if ($post->id != $root_page->id)
-                                    <option @if ($post->parent_id == $root_page->id) selected @endif value="{{ $root_page->id }}">
-                                        {{ $root_page->title }}
-                                    </option>
-                                @endif
+                                <option value="{{ $root_page->id }}">
+                                    {{ $root_page->default_language_content->title }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                 @endif
 
-                @foreach ($taxonomy_terms as $taxonomy_term)
+                @foreach ($post_type_taxonomy_terms as $taxonomy_term)
                     <div class="col-12">
                         <div class="form-group">
                             @if ($taxonomy_term->hierarchical == 1)
-                                <label> {{ __(json_decode($taxonomy_term->labels)->plural ?? $taxonomy_term->name) }}</label>
+                                <label> {{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->plural ?? __('Select')) }}</label>
 
                                 @foreach ($taxonomy_term->taxonomies as $taxonomy_item)
                                     @php
@@ -150,16 +148,16 @@
                                             continue;
                                         }
                                     @endphp
-                                    @include('admin.posts.loops.posts-filter-taxonomies-loop-checkboxes', $taxonomy_item)
+                                    @include('admin.posts.loops.create-post-taxonomies-loop-checkboxes', $taxonomy_item)
                                 @endforeach
 
                                 @if (count($taxonomy_term->taxonomies) == 0)
                                     <div class="form-text">{{ __('No item') }}</div>
                                 @endif
                             @else
-                                <label> {{ __(json_decode($taxonomy_term->labels)->plural ?? $taxonomy_term->name) }}</label>
+                                <label> {{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->plural ?? __('Select')) }}</label>
                                 <input type="text" class="form-control tagsinput" name="non-hierarchical-taxonomies[]" id="tags-{{ $taxonomy_term->id }}"
-                                    placeholder='{{ __(json_decode($taxonomy_term->labels)->search ?? 'Add ' . $taxonomy_term->name) }}'>
+                                    placeholder='{{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->search ?? 'Add ' . $taxonomy_term->name) }}'>
 
                                 @php
                                     $tax_list_array = get_taxonomies_list($taxonomy_term->taxonomy);
@@ -207,26 +205,6 @@
                     @if ($post_type->type != 'page')
                         <div class="form-group">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="customSwitchComments" name="disable_comments">
-                                <label class="form-check-label" for="customSwitchComments">{{ __('Disable comments for this item') }}</label>
-                            </div>
-                            @if ($config->posts_comments_disabled ?? null)
-                                <div class="text-danger">{{ __('The commenting system is disabled globally.') }} <a target="_blank" href="{{ route('admin.posts.config') }}">{{ __('Change') }}</a></div>
-                            @endif
-                        </div>
-
-                        <div class="form-group">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="customSwitchLike" name="disable_likes">
-                                <label class="form-check-label" for="customSwitchLike">{{ __('Disable likes for this item') }}</label>
-                            </div>
-                            @if ($config->posts_likes_disabled ?? null)
-                                <div class="text-danger">{{ __('The like system is disabled globally.') }} <a target="_blank" href="{{ route('admin.posts.config') }}">{{ __('Change') }}</a></div>
-                            @endif
-                        </div>
-
-                        <div class="form-group">
-                            <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="customSwitchSticky" name="sticky">
                                 <label class="form-check-label" for="customSwitchSticky">{{ __('Sticky') }}</label>
                                 <span class="form-text text-muted small">({{ __('Sticky items are displayed first') }})</span>
@@ -246,8 +224,7 @@
 
                 <div class="clearfix"></div>
 
-                <input type="hidden" name="post_type_id" value="{{ $post_type_id }}">
-
+                <input type="hidden" name="post_type_id" value="{{ $post_type->id }}">
                 <button type="submit" class="btn btn-gear">{{ __('Save and add content') }}</button>
 
                 <div class="text-muted mt-3 small"><i class="bi bi-info-circle"></i> {{ __('This item will be saved as draft. After you add content blocks, you can publish it.') }}</div>

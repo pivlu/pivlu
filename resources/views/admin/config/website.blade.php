@@ -69,10 +69,9 @@
                 </div>
             </div>
 
-            <div class="text-muted mb-3">
-                <i class="bi bi-info-circle"></i>
+            <div class="text-muted mb-4">                
                 {{ __('Disable public website and redirect to login page.') }}
-                <b>{{ __('Use this settings if you only need internal modules (internal collaboration, tasks, projects, vault, files, manage teams...).') }}</b>
+                <b>{{ __('Use this settings if you only need to use internal apps (internal collaboration, tasks, projects, workspaces...).') }}</b>
             </div>
 
             <div class="form-group mt-1 mb-0">
@@ -83,8 +82,7 @@
                 </div>
             </div>
 
-            <div class="text-muted small mb-3">
-                <i class="bi bi-info-circle"></i>
+            <div class="text-muted small mb-3">                
                 {{ __('If enabled, public website can not be accessible by visitors and registered users can not use their accounts. Administrators and internal users can use their accounts.') }}
             </div>
 
@@ -105,32 +103,7 @@
                     <div class="text-muted small">{{ __('Tip: you can use HTML code.') }}</div>
                 </div>
             </div>
-
-            <div class="mb-1 mt-4 fw-bold fs-5">{{ __('Website settings') }}:</div>
-
-            <div class="row">
-                <div class="col-12 col-xxl-4 col-xl-5 col-lg-6 col-md-6 mb-2">
-                    <div class="form-group">
-                        <label>{{ __('Homepage content') }}</label>
-                        <select class="form-select" name="homepage_source">
-                            <option @if (($config->homepage_source ?? null) == 'page') selected @endif value="page">{{ __('Manually build homepage content (in "Pages" section)') }}</option>
-                            <option @if (($config->homepage_source ?? null) == 'docs') selected @endif value="docs">{{ __('Redirect to Knowledge Base module') }}</option>
-                            <option @if (($config->homepage_source ?? null) == 'forum') selected @endif value="forum">{{ __('Redirect to Forum module') }}</option>
-                            <option @if (($config->homepage_source ?? null) == 'posts') selected @endif value="posts">{{ __('Redirect to Posts module') }}</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="form-group mb-3">
-                <div class="form-check form-switch">
-                    <input type="hidden" value="" name="registration_disabled">
-                    <input class="form-check-input" type="checkbox" id="SwitchRegDisabled" name="registration_disabled" @if ($config->registration_disabled ?? null) checked @endif>
-                    <label class="form-check-label" for="SwitchRegDisabled">{{ __('Disable registration') }}</label>
-                </div>
-                <div class="form-text">{{ __('If you disable registration, visitors can not register accounts. Administrators can manually create accounts from accounts area.') }}</div>
-            </div>
+                        
 
             <div class="form-group">
                 <label>{{ __('Website author') }}</label>
@@ -139,7 +112,6 @@
             </div>
 
             <div class="form-group">
-                <input type="hidden" name="section" value="general">
                 <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
             </div>
         </form>

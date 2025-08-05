@@ -82,8 +82,8 @@ debug_backtrace() || die('Direct access not permitted');
                                     <select class="form-select" name="parent_id">
                                         <option value="">{{ __('Root (no parent)') }}</option>
 
-                                        @foreach ($post_taxonomies as $post_taxonomy)
-                                            @include('admin.posts.loops.taxonomies-add-select-loop', $post_taxonomy)
+                                        @foreach ($all_post_taxonomies as $post_taxonomy_item)
+                                            @include('admin.posts.loops.taxonomies-add-select-loop', $post_taxonomy_item)
                                         @endforeach
                                     </select>
                                 </div>

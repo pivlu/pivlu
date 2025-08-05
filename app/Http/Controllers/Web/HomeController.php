@@ -23,7 +23,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Config;
+use App\Models\Post;
+use App\Models\Language;
+use App\Functions\PostFunctions;
 
 class HomeController extends Controller
 {
@@ -33,12 +35,20 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        $posts = Post::with('active_language_content', 'user')->where('status', 'published')->where('is_homepage', 0)->paginate(25);
 
-        $active_theme = Config::get_config('active_theme') ?? 'builder';
-
-        if ($active_theme != 'builder') {
-            return view('themes.' . $active_theme . '.index', []);
+        foreach ($posts as $post) {
+            $post->title = $post->active_language_content->title;
+            $post->summary = $post->active_language_content->summary;
+            $post->image = image($post->media_id, 'thumb');
+            $post->author_name = $post->user->name;
+            $post->author_avatar = $post->user->avatar_media_id;
+            $post->url = PostFunctions::get_post_url($post->id, Language::get_active_language()->id);
         }
 
+
+        return view(get_active_theme_view() . ($custom_tpl_file ?? 'index'), [
+            'posts' => $posts,
+        ]);
     }
 };

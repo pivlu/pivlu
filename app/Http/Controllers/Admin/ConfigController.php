@@ -55,36 +55,13 @@ class ConfigController extends Controller
      */
     public function update(Request $request)
     {        
-        $tab = $request->tab ?? 'plugins';
-
+        $tab = $request->tab ?? 'website';
+        
         $inputs = $request->except('_token');
         
         Config::update_config($inputs);
 
         return redirect(route('admin.config', ['tab' => $tab]))->with('success', 'updated');
     }
-
-
-
-   
-    /**
-     * Process config settings
-     */
-    public function update_config_website(Request $request)
-    {
-        
-        $inputs = $request->except('_token', 'section');
-
-        if ($request->section == 'general') Config::update_config($inputs);
-
-        if ($request->section == 'labels') {
-            foreach (Language::get_languages() as $lang) {
-                ConfigLang::update_config($lang->id, 'site_label', $request['site_label_' . $lang->id] ?? config('app.name'));
-            }
-        }
-
-        return redirect(route('admin.website.config'))->with('success', 'updated');
-    }
-
 
 }

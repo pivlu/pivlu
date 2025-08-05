@@ -38,42 +38,42 @@ class PostTypeTaxonomy extends Model
     protected $table = 'pivlu_post_type_taxonomies';
 
     protected $appends = ['all_languages_contents'];
-    
+
     public function content_post_type()
     {
         return $this->belongsTo(PostType::class, 'post_type_id');
     }
 
-     public function default_language_content()
+    public function default_language_content()
     {
         return $this->hasOne(PostTypeTaxonomyContent::class, 'post_type_taxonomy_id')->where('lang_id', Language::get_default_language()->id);
     }
 
     public function taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id', 'post_type_id')->with('default_language_content');
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->with('default_language_content');
     }
 
     public function active_taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id', 'post_type_id')->where('active', 1);
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->where('active', 1);
     }
 
     public function root_taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id', 'post_type_id')->whereNull('parent_id')->where('active', 1)->orderBy('position');
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->whereNull('parent_id')->where('active', 1)->orderBy('position');
     }
 
-    public static function get_hierarchical_taxonomies($post_type)
+    public static function get_hierarchical_taxonomies($post_type_id)
     {
-        $items = TaxonomyTerm::with('root_taxonomies', 'content_post_type')            
+        $items = PostTypeTaxonomy::with('root_taxonomies', 'content_post_type')
             ->whereHas('taxonomies', function ($query) {
                 $query->whereNull('parent_id')->where('active', 1);
             })
-            ->where(['post_type' => $post_type, 'hierarchical' => 1, 'active' => 1])
+            ->where(['post_type_id' => $post_type_id, 'hierarchical' => 1, 'active' => 1])
             ->orderBy('position')
             ->get();
-            
+
         return $items;
     }
 
@@ -87,4 +87,6 @@ class PostTypeTaxonomy extends Model
         }
         return json_decode(json_encode($all_language_contents));
     }
+
+
 }

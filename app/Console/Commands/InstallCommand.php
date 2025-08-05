@@ -25,8 +25,8 @@ use Illuminate\Console\Command;
 use Artisan;
 use App\Models\Config;
 use App\Models\User;
-use App\Pivlu\Helpers;
-use App\Pivlu\Setup;
+use App\Functions\HelperFunctions;
+use App\Functions\SetupFunctions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Schema;
@@ -75,7 +75,7 @@ class InstallCommand extends Command
         $admin_name = $this->askValid('Input administrator full name: ', 'admin_name', ['required', 'min:3']);
         $admin_email = $this->askValid('Input administrator email: ', 'admin_email', ['required', 'email']);
         $admin_pass = $this->askValid('Input administrator password: ', 'admin_pass', ['required', 'min:5']);
-        $admin_code = Helpers::generateRandomInteger(12);
+        $admin_code = HelperFunctions::generateRandomInteger(12);
         $admin_user = User::updateOrInsert(['email' => $admin_email], [
             'name' => $admin_name ?? 'Admin',
             'email' => $admin_email,
@@ -89,19 +89,19 @@ class InstallCommand extends Command
         $user_id = User::where('email', $admin_email)->value('id');
 
         $this->line('Setup default language');
-        Setup::check_default_language();
+        SetupFunctions::check_default_language();
 
         $this->line('Setup website settings');
-        Setup::check_default_website_settings();
+        SetupFunctions::check_default_website_settings();
 
         $this->line('Setup website default post types');
-        Setup::check_default_post_types();
+        SetupFunctions::check_default_post_types();
 
         $this->line('Check default block types');
-        Setup::check_default_block_types();
+        SetupFunctions::check_default_block_types();
 
         $this->line('Check default theme');
-        Setup::check_default_theme();
+        SetupFunctions::check_default_theme();
 
         // Create the symbolic link 
         Artisan::call('storage:link');

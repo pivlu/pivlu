@@ -21,6 +21,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Functions\PostFunctions;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PostType;
@@ -120,7 +121,7 @@ class PostTypeTaxonomyController extends Controller
             );
 
             $slug = $request->$slug_key ?? $request->$name_key;
-            $slug = Str::slug($slug, '-');                     
+            $slug = Str::slug($slug, '-');
             // Post type taxonomy slug must be unique (for same language and same post type). If slug exists, then add the post type ID in the slug
             $item_same_lang_and_slug = PostTypeTaxonomyContent::where('slug', $slug)->where('lang_id', $lang->id)->first();
             if ($item_same_lang_and_slug) {
@@ -164,6 +165,8 @@ class PostTypeTaxonomyController extends Controller
         ]);
 
         foreach (admin_languages() as $lang) {
+            $original_slug = PostTypeTaxonomyContent::where(['post_type_taxonomy_id' => $request->id, 'lang_id' => $lang->id])->value('slug');
+
             $name_key = 'name_' . $lang->id;
             $slug_key = 'slug_' . $lang->id;
             $label_singular_key = 'label_singular_' . $lang->id;
@@ -202,6 +205,8 @@ class PostTypeTaxonomyController extends Controller
                     'labels' => json_encode($labels),
                 ]
             );
+
+            if ($original_slug != $slug) PostFunctions::regenerate_post_taxonomies_url_path($post_type_taxonomy_id = $request->id);
         }
 
         return redirect(route('admin.post-type-taxonomies.index', ['post_type_id' => $post_type->id]))->with('success', 'updated');

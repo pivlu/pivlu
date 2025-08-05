@@ -6,7 +6,7 @@
     <title>Pivlu Clean Blog</title>
     <meta name="description" content="Site meta description">
 
-    @include("{$theme_path}.includes.head")
+    @include(theme_head())
 </head>
 
 <body>
@@ -22,8 +22,8 @@
             @include(theme_section('samples.homepage-posts'))
         @endif
 
-        @foreach (posts() as $post)
-            <!-- Blog Post Item Start-->
+        @foreach ($posts as $post)
+
             <div class="listings-box">
 
                 <div class="row">

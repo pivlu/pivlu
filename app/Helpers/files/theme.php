@@ -71,6 +71,8 @@ if (!function_exists('theme_include')) {
 
 		if ($destination == 'menu')
 			$what_to_include = 'menu';
+		elseif ($destination == 'head')
+			$what_to_include = 'head';
 		elseif ($destination == 'footer')
 			$what_to_include = 'footer';
 		elseif ($destination == 'section')
@@ -92,9 +94,18 @@ if (!function_exists('theme_menu')) {
 	}
 }
 
+if (!function_exists('theme_head')) {
+	function theme_head()
+	{
+		include(resource_path('views/web/include-plugins-head.blade.php'));
+		return theme_include('head');
+	}
+}
+
 if (!function_exists('theme_footer')) {
 	function theme_footer()
 	{
+		include(resource_path('views/web/include-plugins-footer.blade.php'));
 		return theme_include('footer');
 	}
 }
@@ -103,5 +114,18 @@ if (!function_exists('theme_section')) {
 	function theme_section($filename)
 	{
 		return theme_include('section', $filename);
+	}
+}
+
+
+if (!function_exists('get_active_theme_view')) {
+	function get_active_theme_view()
+	{
+		$active_theme = Config::get_config('active_theme') ?? 'builder';
+
+		if ($active_theme != 'builder')
+			return 'themes.' . $active_theme . '.';
+		else
+			return 'web.builder.';
 	}
 }

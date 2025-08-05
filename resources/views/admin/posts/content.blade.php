@@ -4,8 +4,10 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index') }}">{{ __('Posts') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">
+                            {{ $post_type->default_language_content->name ?? __('Posts') }}
+                        </a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>                    
                 </ol>
             </nav>
         </div>
@@ -86,7 +88,7 @@
                 {{ __('This item is in the Trash.') }}
             </div>
         @endif
-        
+
         <div class="row gy-5">
 
             <div class="col-12">

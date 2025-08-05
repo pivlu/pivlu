@@ -17,7 +17,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">
-                            {{ $post_type->name ?? __('Posts') }}
+                            {{ $post_type->default_language_content->name ?? __('Posts') }}
                         </a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>
                 </ol>
@@ -120,7 +120,7 @@
 
                             <div class="form-group">
                                 <label>
-                                    {{ __(json_decode($post_type->default_language_content->labels)->singular ?? $post_type->name) }} {{ __('title') }}
+                                    {{ __(json_decode($post_type->default_language_content->labels ?? null)->singular ?? null) }} {{ __('title') }}
                                 </label>
                                 <input type="text" class="form-control" name="title_{{ $lang->id }}" value="{{ $lang->post_content['title'] ?? null }}" @if ($lang->is_default == 1) required @endif />
                             </div>
@@ -176,44 +176,37 @@
 
                             </div>
 
-                            @if (count(languages()) > 1)
+                            @if (count(languages()) > 1 && !$loop->last)
                                 <hr>
                             @endif
                         @endforeach
 
-                        <hr>
+                        @if ($post_type->type != 'page')
+                            <hr>
 
-                        <div class="form-group">
-                            <label for="formFile" class="form-label">{{ __('Change main image') }} ({{ __('optional') }})</label>
-                            <input class="form-control" type="file" id="formFile" name="image">
-                            <div class="text-muted small">{{ __('Image file') }}. {{ __('Maximum image size') }}: {{ (int) (config('pivlu.uploads_image_max_size') ?? 5120) / 1024 }} MB</div>
+                            <div class="form-group">
+                                <label for="formFile" class="form-label">{{ __('Change main image') }} ({{ __('optional') }})</label>
+                                <input class="form-control" type="file" id="formFile" name="image">
+                                <div class="text-muted small">{{ __('Image file') }}. {{ __('Maximum image size') }}: {{ (int) (config('pivlu.uploads_image_max_size') ?? 5120) / 1024 }} MB</div>
 
-                            @if ($post->media_id)
-                                <div class="mt-3"></div>
-                                <div class="float-start me-2"><img style="max-width:25px; height:auto;" src="{{ image($post->media_id, 'thumb_square') }}" /></div>
+                                @if ($post->media_id)
+                                    <div class="mt-3"></div>
+                                    <div class="float-start me-2"><img style="max-width:25px; height:auto;" src="{{ image($post->media_id, 'thumb_square') }}" /></div>
 
-                                <a target="_blank" href="{{ image($post->media_id) }}">{{ __('Large') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'square') }}">{{ __('Square') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'small') }}">{{ __('Small') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'thumb') }}">{{ __('Thumb') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'thumb_square') }}">{{ __('Thumb square') }}</a>
-                                | <a class="text-danger" href="{{ route('admin.posts.delete_main_image', ['id' => $post->id]) }}">{{ __('Delete image') }}</a>
-                            @endif
-                        </div>
+                                    <a target="_blank" href="{{ image($post->media_id) }}">{{ __('Large') }}</a> |
+                                    <a target="_blank" href="{{ image($post->media_id, 'square') }}">{{ __('Square') }}</a> |
+                                    <a target="_blank" href="{{ image($post->media_id, 'small') }}">{{ __('Small') }}</a> |
+                                    <a target="_blank" href="{{ image($post->media_id, 'thumb') }}">{{ __('Thumb') }}</a> |
+                                    <a target="_blank" href="{{ image($post->media_id, 'thumb_square') }}">{{ __('Thumb square') }}</a>
+                                    | <a class="text-danger" href="{{ route('admin.posts.delete_main_image', ['id' => $post->id]) }}">{{ __('Delete image') }}</a>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <div class="form-group col-xl-4 col-md-5 col-sm-12">
-                    <div class="p-3 bg-light mb-3">
-                        @if ($post->user->avatar)
-                            <span class="float-start me-2"><img class="img-fluid rounded rounded-circle" style="width:25px;" src="{{ avatar($post->user_id) }}" /></span>
-                        @endif
-                        <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $post->user_id]) }}">{{ $post->user->name }}</a></b>
-
-                        <div class="clearfix"></div>
-
-                        <hr>
-
+                    <div class="p-3 bg-light mb-3">                       
                         <div class="row">
                             <div class="form-group col-md-6 col-12">
                                 <label>{{ __('Publish status') }} </label>
@@ -241,11 +234,11 @@
                             </div>
                         @endif
 
-                        @foreach ($taxonomy_terms as $taxonomy_term)
+                        @foreach ($post_type_taxonomy_terms as $taxonomy_term)
                             <div class="col-12">
                                 <div class="form-group">
                                     @if ($taxonomy_term->hierarchical == 1)
-                                        <label> {{ __(json_decode($taxonomy_term->labels)->plural ?? $taxonomy_term->name) }}</label>
+                                        <label> {{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->plural ?? __('Select')) }}</label>
 
                                         @foreach ($taxonomy_term->taxonomies as $taxonomy_item)
                                             @php
@@ -260,9 +253,9 @@
                                             <div class="form-text">{{ __('No item') }}</div>
                                         @endif
                                     @else
-                                        <label> {{ __(json_decode($taxonomy_term->labels)->plural ?? $taxonomy_term->name) }}</label>
+                                        <label> {{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->plural ?? __('Select')) }}</label>
                                         <input type="text" class="form-control tagsinput" name="non-hierarchical-taxonomies[]" id="tags-{{ $taxonomy_term->id }}"
-                                            placeholder='{{ __(json_decode($taxonomy_term->labels)->search ?? 'Add ' . $taxonomy_term->name) }}'
+                                            placeholder='{{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->search ?? 'Add ' . $taxonomy_term->name) }}'
                                             value="{{ get_existing_taxonomies_list($post->id, $taxonomy_term->id) }}">
 
                                         @php
@@ -308,29 +301,7 @@
 
                         <div class="collapse" id="collapseSettings">
 
-                            @if ($post_type->type != 'page')
-                                <div class="form-group">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="customSwitchComments" name="disable_comments" @if ($post->disable_comments) checked @endif
-                                            @if ($config->posts_comments_disabled ?? null) disabled @endif>
-                                        <label class="form-check-label" for="customSwitchComments">{{ __('Disable comments for this item') }}</label>
-                                    </div>
-                                    @if ($config->posts_comments_disabled ?? null)
-                                        <div class="text-danger">{{ __('The commenting system is disabled globally.') }} <a target="_blank" href="{{ route('admin.posts.config') }}">{{ __('Change') }}</a></div>
-                                    @endif
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="customSwitchLike" name="disable_likes" @if ($post->disable_likes) checked @endif
-                                            @if ($config->posts_likes_disabled ?? null) disabled @endif>
-                                        <label class="form-check-label" for="customSwitchLikes">{{ __('Disable likes for this item') }}</label>
-                                    </div>
-                                    @if ($config->posts_likes_disabled ?? null)
-                                        <div class="text-danger">{{ __('The like system is disabled globally.') }} <a target="_blank" href="{{ route('admin.posts.config') }}">{{ __('Change') }}</a></div>
-                                    @endif
-                                </div>
-
+                            @if ($post_type->type != 'page')                                
                                 <div class="form-group">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="customSwitchSticky" name="sticky" @if ($post->sticky) checked @endif>
@@ -353,7 +324,7 @@
                         <div class="clearfix"></div>
 
                         <button type="submit" class="btn btn-primary mt-3">
-                            {{ __(json_decode($post_type->default_language_content->labels)->update ?? __('Update')) }}
+                            {{ __(json_decode($post_type->default_language_content->labels ?? null)->update ?? __('Update')) }}
                         </button>
                     </div>
 
@@ -365,7 +336,7 @@
 
         @can('delete', $post)
             @if (!$post->deleted_at)
-                <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post->id }}" class="btn btn-danger float-end">{{ __(json_decode($post_type->labels)->delete ?? __('Delete')) }}</a>
+                <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post->id }}" class="btn btn-danger float-end">{{ __(json_decode($post_type->default_language_content->labels ?? null)->delete ?? __('Delete')) }}</a>
                 <div class="modal fade confirm-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">

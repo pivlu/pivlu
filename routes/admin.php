@@ -24,7 +24,6 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AccountController;
-use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -43,19 +42,9 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
-    // Wizard
-    Route::get('wizard', [DashboardController::class, 'wizard'])->name('wizard');
-
-    // Accounts
-    Route::get('accounts/deleted', [AccountController::class, 'deleted'])->name('accounts.deleted');
-    Route::get('accounts/deleted/action/{action}/{id}', [AccountController::class, 'deleted_action'])->name('accounts.deleted.action')->where(['action' => '[a-z0-9_-]+'])->where('id', '[0-9]+');
-   
+    // Accounts    
     Route::resource('accounts', AccountController::class)->parameters(['accounts' => 'id']);
-
-    Route::get('account/{id}/internal-notes', [AccountController::class, 'internal_notes'])->where('id', '[0-9]+')->name('account.internal_notes');
-    Route::post('account/{id}/internal-notes', [AccountController::class, 'store_internal_note'])->where('id', '[0-9]+');
-    Route::delete('account/{id}/internal-notes', [AccountController::class, 'destroy_internal_note'])->where('id', '[0-9]+');
-
+    
     Route::get('account/{id}/block', [AccountController::class, 'block'])->where('id', '[0-9]+')->name('account.block');
     Route::post('account/{id}/action/{action}', [AccountController::class, 'action'])->where('id', '[0-9]+')->where('action', '[a-zA-Z0-9]+')->name('account.action');
 
@@ -72,9 +61,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::get('posts/{id}/content', [PostController::class, 'content'])->name('posts.content')->where('id', '[0-9]+');
     Route::post('posts/{id}/content', [PostController::class, 'update_content'])->name('posts.content.new')->where('id', '[0-9]+');
     Route::delete('posts/{id}/content/delete/{block_id}', [PostController::class, 'delete_content'])->name('posts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
-
     Route::get('posts/{id}/delete-main-image', [PostController::class, 'delete_main_image'])->name('posts.delete_main_image')->where('id', '[0-9]+');
-    Route::get('posts/{id}/custom-fieldsf', [PostController::class, 'custom_fields'])->name('post.cf');
     
 
 
@@ -86,6 +73,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
         // Config
         Route::get('config/{tab}', [ConfigController::class, 'index'])->name('config')->where(['tab' => '[a-zA-Z0-9_-]+']);
         Route::post('config/{tab}', [ConfigController::class, 'update'])->where(['tab' => '[a-zA-Z0-9_-]+']);
+        Route::post('config-lang', [ConfigController::class, 'update_config_lang'])->where(['tab' => '[a-zA-Z0-9_-]+']);
 
         // Recycle Bin
         Route::get('recycle-bin', [RecycleBinController::class, 'index'])->name('recycle_bin');
@@ -97,7 +85,5 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     // Blocks routes
     Route::resource('blocks', BlockController::class)->parameters(['blocks' => 'id']);
-
-    // Other routes
-    Route::get('ajax/{source}', [AjaxController::class, 'fetch'])->name('ajax')->where('source', '[a-z0-9_-]+');
+    
 });

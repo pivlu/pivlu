@@ -30,7 +30,8 @@ class PostTaxonomyContent extends Model
         'post_taxonomy_id',
         'lang_id',
         'name',
-        'slug',
+        'slug',   
+        'url_path',     
         'description',
         'meta_title',
         'meta_description',
@@ -40,7 +41,7 @@ class PostTaxonomyContent extends Model
 
     public $timestamps = false;
 
-    public function taxonomy()
+    public function post_taxonomy()
     {
         return $this->belongsTo(PostTaxonomy::class, 'post_taxonomy_id');
     }

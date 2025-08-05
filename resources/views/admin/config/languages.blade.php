@@ -40,7 +40,7 @@
     </div>
 
 
-    <div class="card-body">       
+    <div class="card-body">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -54,7 +54,7 @@
         @if ($message = Session::get('success'))
             <div class="alert alert-success">
                 @if ($message == 'created')
-                    <h5 class="alert-heading">{{ __('Created') }}</h5>                    
+                    <h5 class="alert-heading">{{ __('Created') }}</h5>
                 @endif
                 @if ($message == 'updated')
                     {{ __('Updated') }}
@@ -85,6 +85,7 @@
                     <tr>
                         <th>{{ __('Details') }}</th>
                         <th width="80">{{ __('Code') }}</th>
+                        <th width="280">{{ __('Site label') }}</th>
                         <th width="300">{{ __('Locale') }}</th>
                         <th width="130">{{ __('Actions') }}</th>
                     </tr>
@@ -117,7 +118,6 @@
                                 @endif
 
                                 <div class="small text-muted mt-1">
-                                    <b>{{ __('Site label') }}</b>: {{ $lang->site_label ?? config('app.name') }}
                                     @if ($lang->dir == 'rtl')
                                         <br>{{ __('Text direction: RTL') }}
                                     @endif
@@ -128,6 +128,9 @@
                                 <h5>{{ $lang->code }}</h5>
                             </td>
 
+                            <td>
+                                {{ $lang->site_label ?? config('app.name') }}
+                            </td>
 
                             <td>
                                 <div class="small texx-muted">

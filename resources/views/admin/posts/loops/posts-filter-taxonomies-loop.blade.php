@@ -1,6 +1,7 @@
-
-<option @if (($search_taxonomy_id ?? null) == $taxonomy_item->id) selected @endif value="{{ $taxonomy_item->id }}">
-    @for ($i = 1; $i < $loop->depth; ++$i)---@endfor {{ $taxonomy_item->name }}
+<option @if (in_array($taxonomy_item->id, $search_taxonomy_ids)) selected @endif value="{{ $taxonomy_item->id }}">
+    @for ($i = 1; $i < $loop->depth; ++$i)
+        --
+    @endfor {{ $taxonomy_item->default_language_content->name ?? null}}
 </option>
 
 

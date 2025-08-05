@@ -39,6 +39,11 @@ class PostTaxonomyRelation extends Model
 
     public function taxonomy()
     {
-        return $this->belongsTo(Taxonomy::class, 'taxonomy_id', 'id')->with('term');
+        return $this->belongsTo(PostTaxonomy::class, 'post_taxonomy_id', 'id')->with('default_language_content');
+    }   
+
+    public function post_type_taxonomy()
+    {
+        return $this->belongsTo(PostTypeTaxonomy::class, 'post_type_taxonomy_id', 'id')->with('default_language_content');
     }   
 }

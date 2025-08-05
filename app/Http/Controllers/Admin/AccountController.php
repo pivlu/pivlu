@@ -29,10 +29,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\UserInternalNote;
 use App\Models\UserPermission;
-use App\Models\Media;
 use App\Models\User;
 use App\Models\UserMeta;
-use App\Pivlu\Helpers;
+use App\Functions\HelperFunctions;
+use App\Functions\FileFunctions;
 use Auth;
 
 class AccountController extends Controller
@@ -129,7 +129,7 @@ class AccountController extends Controller
 
         if ($validator->fails()) return redirect(route('admin.accounts.index'))->withErrors($validator)->withInput();
 
-        $code = Helpers::generateRandomInteger(12);
+        $code = HelperFunctions::generateRandomInteger(12);
 
         $user = User::create([
             'code' => $code,
@@ -142,7 +142,7 @@ class AccountController extends Controller
         ]);
 
         // process avatar     
-        if ($request->hasFile('avatar')) Media::store_user_avatar($request->file('avatar'), $user->id);
+        if ($request->hasFile('avatar')) FileFunctions::store_user_avatar($request->file('avatar'), $user->id);
 
         return redirect(route('admin.accounts.index', ['search_role' => $search_role]))->with('success', 'created');
     }
@@ -193,7 +193,7 @@ class AccountController extends Controller
         ]);
 
         // process avatar     
-        if ($request->hasFile('avatar')) Media::store_user_avatar($request->file('avatar'), $user->id, $user->avatar_media_id);
+        if ($request->hasFile('avatar')) FileFunctions::store_user_avatar($request->file('avatar'), $user->id, $user->avatar_media_id);
 
         if ($request->has('blocked_at')) UserMeta::add_meta($request->id, 'block_reason', $request->block_reason);
 

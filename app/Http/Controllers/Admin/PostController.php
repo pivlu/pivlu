@@ -21,20 +21,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\PostContent;
 use App\Models\PostType;
-use App\Models\PostTypeTaxonomy;
 use App\Models\PostTaxonomy;
-use App\Models\TaxonomyTerm;
-use App\Models\Taxonomy;
+use App\Models\PostTaxonomyRelation;
+use App\Models\PostTypeTaxonomy;
 use App\Models\Block;
 use App\Models\BlockType;
-use App\Models\Media;
 use App\Models\Language;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Str;
+use App\Functions\PostFunctions;
+use App\Functions\FileFunctions;
+use App\Functions\PostBlockFunctions;
 use Auth;
 
 class PostController extends Controller
@@ -49,31 +50,37 @@ class PostController extends Controller
         if (!$post_type_id) return redirect(route('admin'));
         $this->check_post_type_exists($post_type_id);
 
-        $taxonomy_terms = PostTypeTaxonomy::with('default_language_content')->where(['post_type_id' => $post_type_id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();        
-
         $post_type = PostType::with('default_language_content')->find($post_type_id);
 
         $search_terms = $request->search_terms;
         $search_status = $request->search_status;
-        $search_categ_id = $request->search_categ_id;
-        $search_tag_id = $request->search_tag_id;
+        $search_taxonomy_ids = $request->search_taxonomy_ids ?? [];
+        //dd($search_taxonomy_ids);
         $search_sticky = $request->search_sticky;
 
         $posts = Post::with('user', 'taxonomies')->where('post_type_id', $post_type_id);
 
         if ($search_status)
-            $posts = $posts->where('posts.status', 'like', $search_status);
+            $posts = $posts->where('status', $search_status);
 
         if ($search_terms)
-            $posts = $posts->where(function ($query) use ($search_terms) {
-                $query->where('posts.title', 'like', "%$search_terms%")
-                    ->orWhere('posts.search_terms', 'like', "%$search_terms%");
+            $posts = $posts->whereHas('default_language_content', function ($query) use ($search_terms) {
+                $query->where('title', 'like', "%$search_terms%")->orWhere('search_terms', 'like', "%$search_terms%");
             });
-       
-        if ($search_sticky == 1)
-            $posts = $posts->where('posts.sticky', 1);
 
-        $posts = $posts->orderByDesc('id')->paginate(20);
+        if (count($search_taxonomy_ids) > 0)
+            foreach ($search_taxonomy_ids as $search_taxonomy_id) {                
+                if ($search_taxonomy_id) {                    
+                    $posts = $posts->whereHas('taxonomies', function ($query) use ($search_taxonomy_id) {
+                        $query->where('post_taxonomy_id', $search_taxonomy_id);
+                    });
+                }
+            }
+
+        if ($search_sticky == 1)
+            $posts = $posts->where('sticky', 1);
+
+        $posts = $posts->orderByDesc('is_homepage')->orderByDesc('id')->paginate(20);
 
         return view('admin.index', [
             'view_file' => 'admin.posts.index',
@@ -82,11 +89,10 @@ class PostController extends Controller
             'search_terms' => $search_terms,
             'search_status' => $search_status,
             'search_sticky' => $search_sticky,
-            'search_categ_id' => $search_categ_id,
-            'search_tag_id' => $search_tag_id,
+            'search_taxonomy_ids' => $search_taxonomy_ids,
             'posts' => $posts,
-            'post_type' => $post_type,  
-            'taxonomy_terms' => $taxonomy_terms ?? null,
+            'post_type' => $post_type,
+            'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type_id),
         ]);
     }
 
@@ -101,7 +107,6 @@ class PostController extends Controller
         if (!$post_type_id) return redirect(route('admin'));
         $this->check_post_type_exists($post_type_id);
 
-        $taxonomy_terms = PostTypeTaxonomy::with('taxonomies')->where(['post_type_id' => $post_type_id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
         $post_type = PostType::find($post_type_id);
 
         return view('admin.index', [
@@ -109,8 +114,9 @@ class PostController extends Controller
             'active_menu' => 'post_type_' . $post_type_id ?? null,
             'post_type_id' => $post_type_id,
             'post_type' => $post_type ?? null,
-            'taxonomy_terms' => $taxonomy_terms,
-            'root_pages' => PostType::get_root_pages(), // for pages type only
+
+            'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type_id),
+            'root_pages' => PostType::get_root_pages(), // for pages type only            
         ]);
     }
 
@@ -122,7 +128,7 @@ class PostController extends Controller
     {
 
         $post_type_id = $request->post_type_id;
-        if (!$post_type_id) return redirect(route('admin'));
+        if (!$post_type_id) return redirect(route('admin2'));
         $this->check_post_type_exists($post_type_id);
 
         $post = Post::create([
@@ -144,14 +150,14 @@ class PostController extends Controller
             if ($request->$slug_key) $post_content_slug = Str::slug($request->$slug_key, '-');
             else $post_content_slug = Str::slug($request->$title_key, '-');
 
-            // Check for duplicate (same post type, salug and language). If exists, add ID in the slug             
+            // Check for duplicate (same post type, slug and language). If exists, add ID in the slug             
             $post_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->first();
             if ($post_same_lang_and_slug) {
                 if (Post::where(['id' => $post_same_lang_and_slug->id, 'post_type_id' => $post->post_type_id])->exists())
                     $post_content_slug = $post_content_slug . '-' . $post->id;
             }
 
-            $path = Post::generate_url($request->id, $lang->id);
+            //$path = PostFunctions::get_post_url_path($request->id, $lang->id);
 
             PostContent::create([
                 'post_id' => $post->id,
@@ -168,7 +174,7 @@ class PostController extends Controller
 
         // process image        
         if ($request->hasFile('image')) {
-            $media = Media::store_image($request->file('image'));
+            $media = FileFunctions::store_image($request->file('image'));
             if ($media) {
                 $post->update(['media_id' => $media->id]);
                 $media->update(['post_id' => $post->id]);
@@ -176,7 +182,7 @@ class PostController extends Controller
                 $upload_fails = true;
         }
 
-        PostTaxonomy::recount_posts($post_type_id);
+        PostFunctions::post_taxonomy_recount_posts($post_type_id);
 
         return redirect(route('admin.posts.content', ['id' => $post->id, 'post_type_id' => $post_type_id]))->with('success', 'post_created')->with('upload_fails', $upload_fails ?? null);
     }
@@ -192,13 +198,12 @@ class PostController extends Controller
         $post = $post->first();
 
         if (!$post) return redirect(route('admin.posts.index'));
-        
-        $taxonomy_terms = PostTypeTaxonomy::with('taxonomies')->where(['post_type_id' => $post->post_type_id, 'active' => 1, 'admin_filter' => 1])->orderBy('position')->get();
+
         $post_type = PostType::find($post->post_type_id);
 
         $author_count_published_posts = Post::where('user_id', $post->user_id)->where('status', 'active')->count();
         $author_count_pending_posts = Post::where('user_id', $post->user_id)->where('status', 'pending')->count();
-        
+
         $post_id = $post->id;
         $content_langs = Language::where('status', '!=', 'disabled')->with(['post_content' => function ($query) use ($post_id) {
             $query->where('post_id', $post_id);
@@ -210,8 +215,16 @@ class PostController extends Controller
             $preview_urls[$lang->name] = PostContent::where(['post_id' => $post->id, 'lang_id' => $lang->id])->value('url');
         }
 
+
+        // post taxonomies (array)
+        $post_taxonomies_array = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_taxonomy_id')->toarray();
+
+
+        if ($post->is_homepage == '1') $view_file = 'update-homepage';
+        else $view_file = 'update';
+
         return view('admin.index', [
-            'view_file' => 'admin.posts.update',
+            'view_file' => 'admin.posts.' . $view_file,
             'active_menu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'details',
@@ -220,10 +233,11 @@ class PostController extends Controller
             'author_count_pending_posts' => $author_count_pending_posts,
             'content_langs' => $content_langs,
             'preview_urls' => $preview_urls,
-            
+
             'post_type' => $post_type,
-            'taxonomy_terms' => $taxonomy_terms ?? null, // Object
+            'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type->id),
             'root_pages' => PostType::get_root_pages(), // for pages type only
+            'post_taxonomies_array' => $post_taxonomies_array,
         ]);
     }
 
@@ -236,7 +250,8 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts'));
 
-        $this->check_post_type_exists($post->post_type_id);
+        $post_type = PostType::find($post->post_type_id);
+        if (!$post_type) return redirect(route('admin.posts'));
 
         Post::where('id', $request->id)->update([
             'status' => $request->status,
@@ -258,44 +273,44 @@ class PostController extends Controller
             // Check for duplicate (same post type, slug and language). If exists, add ID in the slug             
             $post_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->where('post_id', '!=', $post->id)->first();
             if ($post_same_lang_and_slug) {
-                if (Post::where(['id' => $post_same_lang_and_slug->id, 'type' => $post->type])->exists()) {
+                if (Post::where(['id' => $post_same_lang_and_slug->id, 'post_type_id' => $post_type->id])->exists()) {
                     $post_content_slug = $post_content_slug . '-' . $post->id;
                 }
             }
 
-            $path = Post::generate_url($request->id, $lang->id);
+            //if($post->is_homepage != 1) $path = PostFunctions::get_post_url_path($request->id, $lang->id);
 
             PostContent::updateOrInsert(
                 ['post_id' => $request->id, 'lang_id' => $lang->id],
                 [
-                    'title' => $request->$title_key,
-                    'slug' => $post_content_slug,
+                    'title' => $request->$title_key ?? null,
+                    'slug' => $post_content_slug ?? null,
                     'url' => $path ?? null,
-                    'summary' => $request->$summary_key,
-                    'search_terms' => $request->$search_terms_key,
-                    'meta_title' => $request->$meta_title_key,
-                    'meta_description' => $request->$meta_description_key,
+                    'summary' => $request->$summary_key ?? null,
+                    'search_terms' => $request->$search_terms_key ?? null,
+                    'meta_title' => $request->$meta_title_key ?? null,
+                    'meta_description' => $request->$meta_description_key ?? null,
                 ]
             );
         }
 
-        if ($post->type != 'page') {
+
+        if ($post_type->type != 'page') {
             // Hierarchical taxonomies
             $hierarchical_taxonomies = $request->only(['taxonomies']); // array        
             if (count($hierarchical_taxonomies['taxonomies'] ?? []) > 0) {
                 foreach ($hierarchical_taxonomies['taxonomies'] as $hierarchical_taxonomy_id) {
-                    //echo $hierarchical_taxonomy_id . "<br>";
-                    $taxonomy_term = Taxonomy::where('id', $hierarchical_taxonomy_id)->value('taxonomy');
-                    $taxonomy_term_id = TaxonomyTerm::where('taxonomy', $taxonomy_term)->value('id');
-                    PostTaxonomy::updateOrCreate(['post_id' => $post->id, 'taxonomy_id' => $hierarchical_taxonomy_id, 'taxonomy_term_id' => $taxonomy_term_id]);
+                    $post_type_taxonomy_id = PostTaxonomy::where('id', $hierarchical_taxonomy_id)->value('post_type_taxonomy_id');
+                    $taxonomy_term_id = PostTypeTaxonomy::where('post_type_id', $post_type_taxonomy_id)->value('id');
+                    PostTaxonomyRelation::updateOrInsert(['post_id' => $post->id, 'post_taxonomy_id' => (int)$hierarchical_taxonomy_id, 'post_type_taxonomy_id' => $post_type_taxonomy_id]);
                 }
             }
 
             // Delete taxonomies not sent and found in database
-            $existingTaxonomies = PostTaxonomy::where('post_id', $post->id)->pluck('taxonomy_id')->toArray();
+            $existingTaxonomies = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_taxonomy_id')->toArray();
             foreach ($existingTaxonomies as $existing_taxonomy_id) {
                 if (!in_array($existing_taxonomy_id, $hierarchical_taxonomies['taxonomies'] ?? array()))
-                    PostTaxonomy::where(['post_id' => $post->id, 'taxonomy_id' => $existing_taxonomy_id])->delete();
+                    PostTaxonomyRelation::where(['post_id' => $post->id, 'post_taxonomy_id' => $existing_taxonomy_id])->delete();
             }
 
 
@@ -308,10 +323,9 @@ class PostController extends Controller
                         if (count($non_hierarchical_taxonomy_items ?? []) > 0) {
                             foreach ($non_hierarchical_taxonomy_items as $non_hierarchical_taxonomy_item) {
                                 $non_hierarchical_taxonomy_item_id = $non_hierarchical_taxonomy_item->id;
-                                //dd($non_hierarchical_taxonomy_item_id);
-                                $taxonomy_term = Taxonomy::where('id', $non_hierarchical_taxonomy_item_id)->value('taxonomy');
-                                $taxonomy_term_id = TaxonomyTerm::where('taxonomy', $taxonomy_term)->value('id');
-                                PostTaxonomy::updateOrCreate(['post_id' => $post->id, 'taxonomy_id' => $non_hierarchical_taxonomy_item_id, 'taxonomy_term_id' => $taxonomy_term_id]);
+                                $post_type_taxonomy_id = PostTaxonomy::where('id', $non_hierarchical_taxonomy_item_id)->value('post_type_taxonomy_id');
+                                $taxonomy_term_id = PostTypeTaxonomy::where('post_type_id', $post_type_taxonomy_id)->value('id');
+                                PostTaxonomyRelation::updateOrInsert(['post_id' => $post->id, 'post_taxonomy_id' => (int)$non_hierarchical_taxonomy_item_id, 'post_type_taxonomy_id' => $taxonomy_term_id]);
                             }
                         }
                     }
@@ -322,7 +336,7 @@ class PostController extends Controller
 
         // process image        
         if ($request->hasFile('image')) {
-            $media = Media::store_image($request->file('image'), $post->media_id);
+            $media = FileFunctions::store_image($request->file('image'), $post->media_id);
             if ($media) {
                 $post->update(['media_id' => $media->id]);
                 $media->update(['post_id' => $post->id]);
@@ -330,7 +344,7 @@ class PostController extends Controller
                 $upload_fails = true;
         }
 
-        Taxonomy::recount_posts($post->type);
+        PostFunctions::post_taxonomy_recount_posts($post->post_type_id);
 
         return redirect(route('admin.posts.show', ['id' => $request->id]))->with('success', 'updated')->with('upload_fails', $upload_fails ?? null);
     }
@@ -361,7 +375,7 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        if ($post->media_id) Media::delete_media($post->media_id);
+        if ($post->media_id) FileFunctions::delete_media($post->media_id);
 
         $post->update(['media_id' => null]);
 
@@ -377,9 +391,7 @@ class PostController extends Controller
         $post = Post::with('user', 'default_language_content')->find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        $type = $post->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
-        $post_type = PostType::with('default_language_content')->where(['type' => $type, 'active' => 1])->first();
+        $post_type = PostType::with('default_language_content')->find($post->post_type_id);
 
         return view('admin.index', [
             'view_file' => 'admin.posts.content',
@@ -388,8 +400,7 @@ class PostController extends Controller
             'post_menu_tab' => 'content',
 
             'post' => $post,
-            'post_type' => $post_type ?? null, // Object  
-            'type' => $type ?? null, // String
+            'post_type' => $post_type ?? null,
             'block_types' => BlockType::get_block_types()
         ]);
     }
@@ -416,7 +427,7 @@ class PostController extends Controller
             'user_id' => Auth::user()->id
         ]);
 
-        Block::regenerate_post_blocks($request->id);
+        PostBlockFunctions::regenerate_post_blocks($request->id);
 
         return redirect(route('admin.blocks.show', ['id' => $block->id, 'type_id' => $request->type_id]));
     }
@@ -433,7 +444,7 @@ class PostController extends Controller
 
         Block::where('id', $request->block_id)->delete();
 
-        Block::regenerate_post_blocks($request->id);
+        PostBlockFunctions::regenerate_post_blocks($request->id);
 
         return redirect(route('admin.posts.content', ['id' => $request->id]))->with('success', 'deleted');
     }
@@ -458,7 +469,7 @@ class PostController extends Controller
             $i++;
         }
 
-        Block::regenerate_post_blocks($request->id);
+        PostBlockFunctions::regenerate_post_blocks($request->id);
     }
 
 
