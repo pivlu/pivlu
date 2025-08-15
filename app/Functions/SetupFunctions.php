@@ -30,7 +30,12 @@ use App\Models\PostTypeTaxonomy;
 use App\Models\PostTypeTaxonomyContent;
 use App\Models\Language;
 use App\Models\BlockType;
-use App\Models\Config;
+use App\Models\Theme;
+use App\Models\ThemeButton;
+use App\Models\ThemeStyle;
+use App\Models\ThemeMenu;
+use App\Models\ThemeMenuItem;
+use App\Models\ThemeMenuContent;
 
 class SetupFunctions
 {
@@ -289,13 +294,129 @@ class SetupFunctions
                 'icon' => '<i class="bi bi-code"></i>'
             ]);
         }
+
+        if (BlockType::where(['type' => 'posts', 'core' => 1])->doesntExist()) {
+            BlockType::create([
+                'type' => 'posts',
+                'label' => 'Posts content',
+                'description' => 'Posts content',
+                'core' => 1,
+                'position' => 14,
+                'icon' => '<i class="bi bi-card-text"></i>'
+            ]);
+        }
     }
 
 
     // Add default theme, if not exists        
     public static function check_default_theme()
     {
-        $active_theme = Config::get_config('active_theme');
-        if (!$active_theme || (($active_theme ?? null) == '')) Config::update_config('active_theme', 'pivlu_default_one');
+
+        if (Theme::where('is_default', 1)->doesntExist()) {
+            Theme::create([
+                'is_default' => 1,
+                'label' => 'Default theme',
+                'slug' => 'default_theme',
+                'is_builder' => 1,
+                'style_id' => ThemeStyle::where('is_default', 1)->value('id'),
+                'menu_id' => ThemeMenu::where('is_default', 1)->value('id'),
+            ]);
+        }
+    }
+
+
+
+    // Add a default button, if not exists        
+    public static function check_default_button()
+    {
+        if (ThemeButton::where('is_default', 1)->doesntExist()) {
+            $data = [
+                'bg_color' => config('pivlu.defaults.button_bg_color'),
+                'font_color' => config('pivlu.defaults.button_font_color'),
+                'border_color' => config('pivlu.defaults.button_border_color'),
+                'bg_color_hover' => config('pivlu.defaults.button_bg_color_hover'),
+                'font_color_hover' => config('pivlu.defaults.button_font_color_hover'),
+                'border_color_hover' => config('pivlu.defaults.button_border_color_hover'),
+                'shadow' => null,
+                'rounded' => null,
+                "font_weight" => 'normal',
+                "size" => null,
+            ];
+
+            ThemeButton::create([
+                'is_default' => 1,
+                'label' => 'Default button',
+                'data' => json_encode($data)
+            ]);
+        }
+    }
+
+
+    // Add a default style, if not exists        
+    public static function check_default_style()
+    {
+        if (ThemeStyle::where('is_default', 1)->doesntExist()) {
+            $data = [
+                'text_color' => config('pivlu.defaults.font_color'),
+                'text_size' => config('pivlu.defaults.font_size'),
+                'h1_size' => config('pivlu.defaults.h1_size'),
+                'h2_size' => config('pivlu.defaults.h2_size'),
+                'h3_size' => config('pivlu.defaults.h3_size'),
+
+                "link_color" => config('pivlu.defaults.link_color'),
+                "link_color_hover" => config('pivlu.defaults.link_color_hover'),
+                "link_color_underline" => config('pivlu.defaults.link_color_underline'),
+                "link_color_underline_hover" => config('pivlu.defaults.link_color_underline_hover'),
+                "link_decoration" => config('pivlu.defaults.link_decoration'),
+                "link_hover_decoration" => config('pivlu.defaults.link_hover_decoration'),
+
+                "nav_bg_color" => config('pivlu.defaults.nav_bg_color'),
+                "nav_font_color" => config('pivlu.defaults.nav_font_color'),
+                "nav_font_size" => config('pivlu.defaults.nav_font_size'),
+                "nav_link_color" => config('pivlu.defaults.nav_link_color'),
+                "nav_link_color_hover" => config('pivlu.defaults.nav_link_color_hover'),
+                "nav_link_color_underline" => config('pivlu.defaults.nav_link_color_underline'),
+                "nav_link_hover_decoration" => config('pivlu.defaults.nav_link_hover_decoration'),
+
+                "dropdown_font_color" => config('pivlu.defaults.dropdown_font_color'),
+                "dropdown_bg_color" => config('pivlu.defaults.dropdown_bg_color'),
+                "dropdown_link_color" => config('pivlu.defaults.dropdown_link_color'),
+                "dropdown_link_color_hover" => config('pivlu.defaults.dropdown_link_color_hover'),
+                "dropdown_link_color_underline" => config('pivlu.defaults.dropdown_link_color_underline'),
+                "dropdown_bg_color_hover" => config('pivlu.defaults.dropdown_bg_color_hover'),
+                "dropdown_link_hover_decoration" => config('pivlu.defaults.dropdown_link_hover_decoration'),
+            ];
+
+            ThemeStyle::create([
+                'is_default' => 1,
+                'label' => 'Default style',
+                'data' => json_encode($data)
+            ]);
+        }
+    }
+
+
+    public static function check_default_menu()
+    {
+        // Add default menu, if not exists
+        if (ThemeMenu::where(['is_default' => 1])->doesntExist()) {
+            $menu = ThemeMenu::create([
+                'label' => 'Default menu',
+                'is_default' => 1,
+            ]);
+
+            $menu_item = ThemeMenuItem::create([
+                'menu_id' => $menu->id,
+                'type' => 'homepage',
+                'position' => 1
+            ]);
+
+            ThemeMenuContent::create([
+                'lang_id' => Language::get_default_language()->id,
+                'menu_id' => $menu->id,
+                'item_id' => $menu_item->id,
+                'label' => 'Home'
+            ]);
+        }
     }
 }

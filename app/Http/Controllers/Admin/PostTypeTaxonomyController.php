@@ -48,7 +48,7 @@ class PostTypeTaxonomyController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.post-types.taxonomies',
-            'active_menu' => 'config',
+            'active_menu' => 'website',
             'active_submenu' => 'post-types',
             'post_type' => $post_type,
             'post_type_taxonomies' => $post_type_taxonomies,
@@ -73,7 +73,7 @@ class PostTypeTaxonomyController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.post-types.show-taxonomy',
-            'active_menu' => 'config',
+            'active_menu' => 'website',
             'active_submenu' => 'post-types',
             'post_type_taxonomy' => $post_type_taxonomy,
             'post_type' => $post_type,

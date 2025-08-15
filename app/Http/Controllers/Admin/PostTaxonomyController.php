@@ -64,7 +64,8 @@ class PostTaxonomyController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.taxonomies',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => $post_type_taxonomy->id ?? null,
             'count_taxonomies' => $count_taxonomies,
             'search_terms' => $search_terms,
@@ -95,7 +96,8 @@ class PostTaxonomyController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.show-taxonomy',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => $post_type_taxonomy->id ?? null,
             'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type->id),
 

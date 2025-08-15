@@ -80,7 +80,7 @@
         <div class="row mb-3">
             <div class="col-12">
                 @if ($account->avatar_media_id)
-                    <span class="float-start me-2"><img style="max-height:120px; width:auto;" src="{{ avatar($account->avatar_media_id) }}" /></span>
+                    <span class="float-start me-2"><img style="max-height:120px; width:auto;" src="{{ avatar($account->id) }}" /></span>
                 @endif
                 {{ __('ID') }}: {{ strtoupper($account->id) }} | {{ __('Code') }}: {{ $account->code }} <br>
                 {{ __('Registered') }}: {{ date_locale($account->created_at, 'datetime') }} <br>

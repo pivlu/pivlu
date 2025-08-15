@@ -1,4 +1,4 @@
-    <div class="row gy-5">
+    <div class="row">
 
         <div class="col-12">
             <div class="builder-col sortable" id="sortable_top">

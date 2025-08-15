@@ -17,18 +17,12 @@
 
 <div class="card">
 
+    @include('admin.posts.includes.menu-post')
+
     <div class="card-header">
-
-        <div class="mb-2">
-            @include('admin.posts.includes.menu-post')
-        </div>
-
+        
         <div class="float-end">
-
-            @if ($post->status != 'published')
-                <div class="btn btn-warning btn-sm float-end ms-2">{{ __('Not published') }}</div>
-            @endif
-
+           
             @if (count(admin_languages()) > 1)
                 <div class="dropdown float-end">
                     <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">

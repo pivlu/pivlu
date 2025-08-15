@@ -18,13 +18,11 @@
 
 <div class="card">
 
+    @include('admin.posts.includes.menu')
+
     <div class="card-header">
 
-        <div class="row">
-
-            <div class="col-12 col-sm-12 mb-3">
-                @include('admin.posts.includes.menu')
-            </div>
+        <div class="row">          
 
             <div class="col-12 col-sm-12 col-md-6 order-md-1 order-first">
                 <div class="card-title fw-bold">

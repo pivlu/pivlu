@@ -7,7 +7,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">
                             {{ $post_type->default_language_content->name ?? __('Posts') }}
                         </a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>                    
+                    <li class="breadcrumb-item active" aria-current="page">{{ $post->default_language_content->title ?? '-' }}</li>
                 </ol>
             </nav>
         </div>
@@ -17,13 +17,11 @@
 
 <div class="card">
 
+    @include('admin.posts.includes.menu-post')
+
     <div class="card-header">
 
         <div class="row">
-
-            <div class="col-12 mb-3">
-                @include('admin.posts.includes.menu-post')
-            </div>
 
             <div class="col-12">
                 @if ($post->status != 'published')
@@ -89,7 +87,7 @@
             </div>
         @endif
 
-        <div class="row gy-5">
+        <div class="row">
 
             <div class="col-12">
                 <div class="builder-col sortable" id="sortable_top">

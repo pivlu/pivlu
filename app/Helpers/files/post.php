@@ -26,6 +26,7 @@ use App\Models\PostType;
 use App\Models\Block;
 use App\Models\BlockContent;
 use App\Models\Language;
+use App\Models\ThemeConfig;
 use App\Functions\PostFunctions;
 
 if (!function_exists('get_existing_taxonomies_list')) {
@@ -79,6 +80,19 @@ if (!function_exists('content_blocks')) {
 		}
 
 		return $blocks ?? array();
+	}
+}
+
+
+
+// Get blocks for homepage
+if (!function_exists('homepage_blocks')) {
+	function homepage_blocks($theme_id)
+	{
+
+		$blocks = Block::where(['theme_id' => $theme_id, 'is_homepage_block' => 1])->orderBy('position')->get();
+
+		return $blocks ?? [];
 	}
 }
 
@@ -145,14 +159,14 @@ if (!function_exists('breadcrumb')) {
 if (!function_exists('posts')) {
 	function posts($type = null)
 	{
-		if(!$type) $type = 'post';
+		if (!$type) $type = 'post';
 
 		$post_type = PostType::where('type', $type)->first();
-		if(! $post_type) return null;
+		if (! $post_type) return null;
 
 		$items = Post::with('active_language_content', 'user')->where('post_type_id', $post_type->id)->where('status', 'published')->paginate(25);
 
-		foreach($items as $item) {
+		foreach ($items as $item) {
 			$item->title = $item->active_language_content->title;
 			$item->summary = $item->active_language_content->summary;
 			$item->image = image($item->media_id, 'thumb');
@@ -160,9 +174,7 @@ if (!function_exists('posts')) {
 			$item->author_avatar = $item->user->avatar_media_id;
 			$item->url = PostFunctions::get_post_url($item->id, Language::get_active_language()->id);
 		}
-		
+
 		return $items;
 	}
 }
-
-

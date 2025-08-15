@@ -16,9 +16,12 @@
 
                         <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
                             <ul id="nav" class="navbar-nav ms-auto">
-                                <li class="nav-item d-lg-none d-xl-block">
-                                    <a href="{{ route('home') }}">{{ __('Home') }}</a>
-                                </li>
+
+                                @include("{$theme_path}.components.nav-links")                               
+
+                                @include("{$theme_path}.components.nav-langs")
+
+                                @include("{$theme_path}.components.nav-auth")
                             </ul>
                         </div>
                         <!-- navbar collapse -->

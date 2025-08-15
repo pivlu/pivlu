@@ -35,6 +35,8 @@ return new class extends Migration
             $table->unsignedBigInteger('type_id')->nullable();
             $table->text('settings')->nullable();
             $table->unsignedBigInteger('post_id')->nullable();
+            $table->boolean('is_homepage_block')->default(false);
+            $table->unsignedBigInteger('theme_id')->nullable();
             $table->string('label', 100)->nullable();            
             $table->integer('position')->default(0);
             $table->boolean('hidden')->default(false);

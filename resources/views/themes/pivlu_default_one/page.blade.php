@@ -35,7 +35,7 @@
                             {{ date_locale($page->created_at) }}
                         @endif
 
-                        <img src="{{ avatar($page->author_avatar) }}" alt="{{ $page->author_name }}" class="avatar rounded-circle ms-2">
+                        <img src="{{ avatar($page->user_id) }}" alt="{{ $page->author_name }}" class="avatar rounded-circle ms-2">
 
                         <a href="{{ route('profile', ['username' => $page->user->username]) }}">{{ $page->author_name }}</a>                                          
                     </div>

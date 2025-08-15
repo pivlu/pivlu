@@ -42,7 +42,36 @@
                 @endif
             </div>
         @endif
-    
+
+
+        <form method="post">
+            @csrf
+
+            @foreach (admin_languages() as $lang)
+                <div class="form-group">
+                    <label>
+                        @if (count(admin_languages()) > 1)
+                            {!! flag($lang->code) !!}
+                            @endif{{ __('Website label') }} @if (count(admin_languages()) > 1)
+                                ({{ $lang->name }})
+                            @endif
+                    </label>
+                    <input type="text" class="form-control" name="site_label_{{ $lang->id }}" value="{{ $lang->site_label ?? null }}">
+                    <div class="text-muted small">{{ __('A short website title (1-3 words)') }}</div>
+                </div>
+
+                @if (count(admin_languages()) > 1 && !$loop->last)
+                    <div class="mb-4"></div>
+                @endif
+            @endforeach
+           
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
+            </div>
+        </form>
+
+
         <form method="post">
             @csrf
 
@@ -69,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="text-muted mb-4">                
+            <div class="text-muted mb-4">
                 {{ __('Disable public website and redirect to login page.') }}
                 <b>{{ __('Use this settings if you only need to use internal apps (internal collaboration, tasks, projects, workspaces...).') }}</b>
             </div>
@@ -82,7 +111,7 @@
                 </div>
             </div>
 
-            <div class="text-muted small mb-3">                
+            <div class="text-muted small mb-3">
                 {{ __('If enabled, public website can not be accessible by visitors and registered users can not use their accounts. Administrators and internal users can use their accounts.') }}
             </div>
 
@@ -103,7 +132,7 @@
                     <div class="text-muted small">{{ __('Tip: you can use HTML code.') }}</div>
                 </div>
             </div>
-                        
+
 
             <div class="form-group">
                 <label>{{ __('Website author') }}</label>
@@ -115,7 +144,7 @@
                 <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
             </div>
         </form>
-        
+
     </div>
     <!-- end card-body -->
 

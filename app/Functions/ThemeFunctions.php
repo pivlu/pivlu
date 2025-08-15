@@ -21,8 +21,15 @@
 
 namespace App\Functions;
 
+use File;
+use App\Models\Language;
+use App\Models\ThemeMenuItem;
+use App\Models\ThemeMenuContent;
+use App\Models\ConfigLang;
+use App\Models\PostContent;
+
 class ThemeFunctions
-{   
+{
 
     public static function font_sizes()
     {
@@ -104,5 +111,248 @@ class ThemeFunctions
         $array[42] = (object)array('value' => "'Work Sans', sans-serif", 'name' => 'Work Sans', 'weight' => '400;700', 'import' => 'Work+Sans:wght@400;700');
 
         return (object)$array;
+    }
+
+
+
+    public static function generate_styles_css()
+    {
+        // Create the directory if it does not exist
+        $css_folder = 'custom/';
+
+        if (!File::isDirectory($css_folder)) {
+            File::makeDirectory($css_folder, 0777, true, true);
+        }
+
+        $css_file = fopen($css_folder . '/styles.css', "w");
+
+        $styles = ThemeStyle::get();
+        //$buttons = TemplateButton::get();
+        $fonts_array = array();
+
+        // 1. IMPORT FONTS
+        foreach ($styles as $style) {
+            $font_family = $style->font_family ?? config('pivlu.defaults.font_family');
+            $font_weights = $style->font_family_weights;
+            $arr1 = explode(',', $font_family);
+            $font_family_import = str_replace('\'', '', $arr1[0]);
+            $font_family_import = str_replace(' ', '+', $font_family_import);
+            $font_family_import =  $font_family_import . ":wght@" . $font_weights;
+
+            //echo $font_family_import . "<br>";
+            array_push($fonts_array, $font_family_import);
+
+            $fonts_array = array_unique($fonts_array);
+
+            $fonts_list = '';
+            foreach ($fonts_array as $font_import) {
+                $fonts_list = $fonts_list . '&family=' . $font_import;
+            }
+
+            if (substr($fonts_list, 0, 8) == '&family=') $fonts_list = substr($fonts_list, 8);
+            $import_url = 'https://fonts.googleapis.com/css2?family=' . $fonts_list . '&display=swap';
+        }
+
+        if (count($styles) > 0) {
+            $write_import = "@import url('" . $import_url . "');\n ";
+            fwrite($css_file, $write_import);
+        }
+
+        foreach ($styles as $style) {
+            // 2. FONTS AND COLORS
+            $font_color = $style->text_color ?? config('pivlu.defaults.font_color');
+            $text_font_weight = $style->text_font_weight ?? 'normal';
+            $text_font_size = $style->text_size ?? '1em';
+            $title_size = $style->title_size ?? '2.2em';
+            $subtitle_size = $style->subtitle_size ?? '1.8em';
+            $title_font_weight = $style->title_font_weight ?? 'normal';
+            $subtitle_font_weight = $style->subtitle_font_weight ?? 'normal';
+            $text_align = $style->text_align ?? 'left';
+            $caption_color = $style->caption_color ?? 'grey';
+            $caption_size = $style->caption_size ?? '0.95em';
+            $caption_style = $style->caption_style ?? 'normal';
+
+            $write = ".style_$style->id { color: $font_color !important; font-weight: $text_font_weight !important; font-size: $text_font_size !important; text-align: $text_align !important;  } ";
+            $write .= ".style_$style->id .title {font-size: $title_size !important; font-weight: $title_font_weight !important; line-height:1.3 } ";
+            $write .= ".style_$style->id .subtitle { font-size: $subtitle_size !important; font-weight: $subtitle_font_weight !important; line-height:1.3 } ";
+            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color !important; font-size: $caption_size !important; } ";
+            fwrite($css_file, $write);
+
+            if ($style->font_family) {
+                $font_family = $style->font_family;
+                $write = ".style_$style->id { font-family: $font_family!important; } ";
+                fwrite($css_file, $write);
+            }
+
+            if ($style->bg_color) {
+                $bg_color = $style->bg_color ?? config('pivlu.defaults.bg_color');
+                $write = ".style_$style->id { background-color: $bg_color!important; } ";
+                fwrite($css_file, $write);
+            }
+
+            // 3. LINKS            
+            $link_color = $style->link_color ?? config('pivlu.defaults.link_color');
+            $link_color_hover = $style->link_hover_color ?? config('pivlu.defaults.link_color_hover');
+            $link_underline_offset = $style->link_underline_offset ?? 'auto';
+            $link_underline_thickness = $style->link_underline_thickness ?? 'auto';
+            $link_underline_color = $style->link_underline_color ?? 'black';
+            $link_underline_color_hover = $style->link_underline_color_hover ?? 'black';
+
+            $link_decoration = $style->link_decoration ?? config('pivlu.defaults.link_decoration');
+            $link_hover_decoration = $style->link_hover_decoration ?? config('pivlu.defaults.link_hover_decoration');
+            $link_underline_offset = $style->link_underline_offset ?? config('pivlu.defaults.link_hover_decoration');
+
+            $link_font_weight = $style->link_font_weight ?? 'normal';
+
+            $write = ".style_$style->id a { color: $link_color; text-decoration: $link_decoration !important; -webkit-text-decoration-color: $link_underline_color !important; text-decoration-color: $link_underline_color !important; font-weight: $link_font_weight; text-decoration-thickness: $link_underline_thickness !important; 
+                text-underline-offset: $link_underline_offset !important; } ";
+
+            if ($style->link_decoration == 'double') $write .= ".style_$style->id a { text-decoration-line: underline; text-decoration-style: double; } ";
+            if ($style->link_decoration == 'dashed') $write .= ".style_$style->id a { text-decoration-line: underline; text-decoration-style: dashed; } ";
+            if ($style->link_decoration == 'dotted') $write .= ".style_$style->id a { text-decoration-line: underline; text-decoration-style: dotted; } ";
+            if ($style->link_decoration == 'wavy') $write .= ".style_$style->id a { text-decoration-line: underline; text-decoration-style: wavy; } ";
+
+            $write .= ".style_$style->id a:hover { color: $link_color_hover; 
+                text-decoration: $link_hover_decoration !important; 
+                -webkit-text-decoration-color: $link_underline_color !important; 
+                text-decoration-color: $link_underline_color_hover !important;                
+                text-decoration-thickness: $link_underline_thickness !important;
+                text-underline-offset: $link_underline_offset !important; } ";
+
+            if ($style->link_hover_decoration == 'double') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: double; } ";
+            if ($style->link_hover_decoration == 'dashed') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: dashed; } ";
+            if ($style->link_hover_decoration == 'dotted') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: dotted; } ";
+            if ($style->link_hover_decoration == 'wavy') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: wavy; } ";
+
+            // Do not overwrite Buttons style            
+            $write .= ".style_$style->id .btn a { color: inherit !important; } ";
+
+            fwrite($css_file, $write);
+        }
+
+        // BUTTONS
+        foreach ($buttons as $button) {
+            $bg_color = $button->bg_color ?? config('pivlu.defaults.button_bg_color');
+            $font_color = $button->font_color ?? config('pivlu.defaults.button_font_color');
+            $font_weight = $button->font_weight ?? 'normal';
+            $rounded = $button->rounded ?? 0;
+            $border_color = $button->border_color ?? config('pivlu.defaults.button_border_color');
+            $bg_color_hover = $button->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover');
+            $font_color_hover = $button->font_color_hover ?? config('pivlu.defaults.button_font_color_hover');
+            $border_color_hover = $button->border_color_hover ?? config('pivlu.defaults.button_border_color_hover');
+
+            $write = ".btn_$button->id, a .btn_$button->id, .style_nav .btn_$button->id, .style_nav a .btn_$button->id {
+                background-color: $bg_color !important; 
+                color: $font_color !important;
+                font-weight: $font_weight !important;
+                text-decoration: none !important;
+                border-radius: $rounded !important;
+            } ";
+
+            $write .= ".btn_$button->id:hover, .style_nav .btn_$button->id:hover {
+                background-color: $bg_color_hover  !important;
+                color: $font_color_hover !important;
+                font-weight: $font_weight !important;
+                text-decoration: none !important; } ";
+
+            $write .= ".btn_$button->id a, a .btn_$button->id {
+                color: $font_color  !important;       
+                font-weight: $font_weight !important;         
+                text-decoration: none !important; }";
+
+            $write .= ".btn_$button->id a:hover, a:hover .btn_$button->id {
+                color: $font_color_hover  !important;
+                text-decoration: none !important; }";
+
+            fwrite($css_file, $write);
+        }
+
+
+        // END. Close the file
+        fclose($css_file);
+        return;
+    }
+
+
+
+
+    public static function generate_menu_links($menu_id)
+    {
+        $default_lang_id = Language::get_default_language()->id;
+
+        $langs = Language::get_languages();
+
+        foreach ($langs as $lang) {
+
+            $links = ThemeMenuItem::where('menu_id', $menu_id)->whereNull('parent_id')->orderBy('position')->get();
+
+            $items = array();
+
+            foreach ($links as $link) {
+
+                $dropdown = array();
+
+                if ($link->type == 'home') {
+                    if ($lang->id == $default_lang_id) $url = route('home');
+                    else $url = route('locale.home', ['locale' => $lang->code]);
+                }
+
+                if ($link->type == 'page') {
+                    $page = PostContent::where('post_id', $link->value)->where('lang_id', $lang->id)->first();
+                    if ($page) {
+                        if ($lang->id == $default_lang_id)
+                            $url = route('level1', ['slug' => $page->slug ?? null]);
+                        else {
+                            $lang = Language::where('id', $page->lang_id)->first();
+                            $url = route('locale.page', ['locale' => $lang->code, 'slug' => $page->slug]);
+                        }
+                    } else $url = '#';
+                }
+
+                if ($link->type == 'custom')
+                    $url = $link->value;
+
+                if ($link->type == 'dropdown') {
+                    $url = '#';
+
+                    $dropdown_links = ThemeMenuItem::where('menu_id', $menu_id)->where('parent_id', $link->id)->orderBy('position')->get();
+                    foreach ($dropdown_links as $dropdown_link) {
+
+                        if ($dropdown_link->type == 'home') {
+                            if ($lang->id == $default_lang_id) $dropdown_url = route('home');
+                            else $dropdown_url = route('locale.home', ['locale' => $lang->code]);
+                        }
+
+                        if ($dropdown_link->type == 'page') {
+                            $page = PostContent::where('post_id', $dropdown_link->value)->where('lang_id', $lang->id)->first();
+                            if ($page) {
+                                if ($lang->id == $default_lang_id)
+                                    $dropdown_url = route('page', ['slug' => $page->slug ?? null]);
+                                else {
+                                    $lang = Language::where('id', $page->lang_id)->first();
+                                    $dropdown_url = route('locale.page', ['locale' => $lang->code, 'slug' => $page->slug]);
+                                }
+                            } else $dropdown_url = '#';
+                        }
+
+                        if ($dropdown_link->type == 'custom')
+                            $dropdown_url = $dropdown_link->value;
+
+                        $menu_content = ThemeMenuContent::where(['menu_id' => $menu_id, 'item_id' => $dropdown_link->id, 'lang_id' => $lang->id])->first();
+
+                        $dropdown[] = array('label' => $menu_content->label ?? '#', 'url' => $dropdown_url ?? null, 'new_tab' => $dropdown_link->new_tab, 'icon' => $dropdown_link->icon);
+                    }
+                }
+
+
+                $menu_content = ThemeMenuContent::where(['menu_id' => $menu_id, 'item_id' => $link->id, 'lang_id' => $lang->id])->first();
+
+                $items[] = array('label' => $menu_content->label ?? '#', 'url' => $url ?? '#', 'dropdown' => $dropdown, 'type' => $link->type, 'btn_id' => $link->btn_id, 'new_tab' => $link->new_tab, 'icon' => $link->icon);
+            }
+
+            ConfigLang::update_config($lang->id, 'menu_links_'.$menu_id, serialize($items));
+        }
+
+        return null;
     }
 }

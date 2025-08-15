@@ -2,7 +2,7 @@
 $fonts_list = '';
 @endphp
 
-@foreach (template_fonts() as $font)
+@foreach ($fonts as $font)
     @php
 	$font_family_import = str_replace(' ', '+', $font->name);
     $fonts_list = $fonts_list.'&family='.$font_family_import;

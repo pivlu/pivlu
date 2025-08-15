@@ -26,8 +26,9 @@ use App\Http\Controllers\Controller;
 use DB;
 use App\Models\Block;
 use App\Models\Language;
+use App\Models\ThemeStyle;
 use App\Functions\ThemeFunctions;
-use App\Functions\PostBlockFunctions;
+use App\Functions\BlockFunctions;
 
 class BlockController extends Controller
 {
@@ -71,6 +72,7 @@ class BlockController extends Controller
             'langs' => Language::get_languages(),
             'referer' => $referer,
             'font_sizes' => ThemeFunctions::font_sizes(),
+            'styles' => ThemeStyle::orderBy('label')->get(),
         ]);
     }
 
@@ -89,9 +91,9 @@ class BlockController extends Controller
 
         $block->update(['label' =>  $request->label ?? null, 'hidden' => $request->has('hidden') ? 1 : 0]);
 
-        PostBlockFunctions::update_block($id, $block->type_id, $request);
+        BlockFunctions::update_block($id, $block->type_id, $request);
 
-        PostBlockFunctions::regenerate_post_blocks($block->post_id);
+        BlockFunctions::regenerate_post_blocks($block->post_id);
 
         if (($request->submit_return_to_block ?? null) == 'block') return redirect(route('admin.blocks.show', ['id' => $id, 'referer' => $referer ?? null]))->with('success', 'updated');
         elseif ($referer) return redirect($referer)->with('success', 'updated');
@@ -109,7 +111,7 @@ class BlockController extends Controller
 
         $block->delete();
 
-        PostBlockFunctions::regenerate_post_blocks($block->post_id);
+        BlockFunctions::regenerate_post_blocks($block->post_id);
 
         return redirect(route('admin.blocks'))->with('success', 'deleted');
     }

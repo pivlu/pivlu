@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AccountInternalNoteController;
 use App\Http\Controllers\Admin\BlockController;
@@ -34,6 +35,12 @@ use App\Http\Controllers\Admin\PostTypeTaxonomyController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostTaxonomyController;
 use App\Http\Controllers\Admin\RecycleBinController;
+use App\Http\Controllers\Admin\ThemeController;
+use App\Http\Controllers\Admin\ThemeHomepageController;
+use App\Http\Controllers\Admin\ThemeButtonController;
+use App\Http\Controllers\Admin\ThemeMenuController;
+use App\Http\Controllers\Admin\ThemeMenuDropdownController;
+use App\Http\Controllers\Admin\ThemeStyleController;
 
 use App\Http\Middleware\LoggedIsAdminMiddleware;
 
@@ -45,7 +52,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     // Accounts    
     Route::resource('accounts', AccountController::class)->parameters(['accounts' => 'id']);
-    
+
     Route::get('account/{id}/block', [AccountController::class, 'block'])->where('id', '[0-9]+')->name('account.block');
     Route::post('account/{id}/action/{action}', [AccountController::class, 'action'])->where('id', '[0-9]+')->where('action', '[a-zA-Z0-9]+')->name('account.action');
 
@@ -54,19 +61,48 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     Route::resource('accounts.internal-notes', AccountInternalNoteController::class)->parameters(['accounts' => 'account_id', 'internal-notes' => 'note_id'])->shallow();
 
-
     // Posts
     Route::resource('post-types', PostTypeController::class)->parameters(['post-types' => 'id']);
     Route::resource('post-type-taxonomies', PostTypeTaxonomyController::class)->parameters(['post-type-taxonomies' => 'id']);
     Route::resource('post-taxonomies', PostTaxonomyController::class)->parameters(['post-taxonomies' => 'id']);
-        
+
     Route::resource('posts', PostController::class)->parameters(['posts' => 'id']);
     Route::post('posts/{id}/sortable', [PostController::class, 'sortable'])->name('posts.sortable')->where('id', '[0-9]+');
     Route::get('posts/{id}/content', [PostController::class, 'content'])->name('posts.content')->where('id', '[0-9]+');
     Route::post('posts/{id}/content', [PostController::class, 'update_content'])->name('posts.content.new')->where('id', '[0-9]+');
     Route::delete('posts/{id}/content/delete/{block_id}', [PostController::class, 'delete_content'])->name('posts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
     Route::get('posts/{id}/delete-main-image', [PostController::class, 'delete_main_image'])->name('posts.delete_main_image')->where('id', '[0-9]+');
-    
+
+    // Theme Menus
+    Route::resource('appearance/theme-menus', ThemeMenuController::class)->parameters(['theme-menus' => 'id']);
+    Route::post('appearance/theme-menu/{menu_id}/item/create', [ThemeMenuController::class, 'store_item'])->name('theme-menus.item.create')->where('menu_id', '[0-9]+');
+    Route::put('appearance/theme-menu/item/update/{item_id}', [ThemeMenuController::class, 'update_item'])->name('theme-menus.item.update')->where('item_id', '[0-9]+');
+    Route::delete('appearance/theme-menu/item/delete/{item_id}', [ThemeMenuController::class, 'delete_item'])->name('theme-menus.item.delete')->where('item_id', '[0-9]+');
+    Route::post('appearance/theme-menu/{menu_id}/items/sortable', [ThemeMenuController::class, 'sortable'])->name('theme-menus.items.sortable')->where('menu_id', '[0-9]+');
+
+    Route::get('appearance/theme-menu/{parent_id}/dropdown', [ThemeMenuDropdownController::class, 'index'])->name('theme-menu.dropdown')->where(['parent_id' => '[0-9]+']);
+    Route::post('appearance/theme-menu/{parent_id}/dropdown', [ThemeMenuDropdownController::class, 'store'])->where(['parent_id' => '[0-9]+']);
+    Route::put('appearance/theme-menu/{parent_id}/dropdown/update/{item_id}', [ThemeMenuDropdownController::class, 'update'])->name('theme-menu.dropdown.update')->where(['parent_id' => '[0-9]+', 'item_id' => '[0-9]+']);
+    Route::delete('appearance/theme-menu/{parent_id}/dropdown/delete/{item_id}', [ThemeMenuDropdownController::class, 'destroy'])->name('theme-menu.dropdown.delete')->where(['parent_id' => '[0-9]+', 'item_id' => '[0-9]+']);
+    Route::post('appearance/theme-menu/{parent_id}dropdown/sortable', [ThemeMenuDropdownController::class, 'sortable'])->name('theme-menu.dropdown.sortable')->where(['parent_id' => '[0-9]+']);
+
+    // Theme Footers
+    Route::resource('appearance/theme-footers', ThemeFooterController::class)->parameters(['theme-footers' => 'id']);
+
+    // Themes
+    Route::resource('appearance/themes', ThemeController::class)->parameters(['themes' => 'slug']);
+    Route::get('appearance/theme-set-default/{slug}', [ThemeController::class, 'set_default'])->name('themes.set-default')->where('slug', '[a-zA-Z0-9_-]+');
+
+    Route::post('appearance/theme/{slug}/update-homepage-block', [ThemeHomepageController::class, 'update_block'])->name('theme.homepage.blocks.store')->where('slug', '[a-zA-Z0-9_-]+');
+    Route::delete('appearance/theme/{slug}/delete-homepage-block', [ThemeHomepageController::class, 'delete_block'])->name('theme.homepage.blocks.delete')->where('slug', '[a-zA-Z0-9_-]+');
+    Route::post('appearance/theme/sortable-homepage-blocks/{theme_id}', [ThemeHomepageController::class, 'sortable_blocks'])->name('theme.homepage.blocks.sortable')->where('theme_id', '[0-9]+');
+
+    // Theme Styles
+    Route::resource('appearance/theme-styles', ThemeStyleController::class)->parameters(['theme-styles' => 'id']);
+    Route::get('preview-style/{id}', [ThemeStyleController::class, 'preview_style'])->name('preview-style')->where('id', '[a-z0-9_-]+');
+
+    // Theme Buttons
+    Route::resource('appearance/theme-buttons', ThemeButtonController::class)->parameters(['theme-buttons' => 'id']);
 
 
     //  admin role only
@@ -89,5 +125,8 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     // Blocks routes
     Route::resource('blocks', BlockController::class)->parameters(['blocks' => 'id']);
-    
+
+
+    // Other routes
+    Route::get('ajax/{source}', [AjaxController::class, 'index'])->name('ajax')->where('source', '[a-z0-9_-]+');
 });

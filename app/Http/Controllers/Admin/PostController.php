@@ -35,7 +35,7 @@ use App\Models\BlockType;
 use App\Models\Language;
 use App\Functions\PostFunctions;
 use App\Functions\FileFunctions;
-use App\Functions\PostBlockFunctions;
+use App\Functions\BlockFunctions;
 use Auth;
 
 class PostController extends Controller
@@ -84,7 +84,8 @@ class PostController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.index',
-            'active_menu' => 'post_type_' . $post_type_id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type_id ?? null,
             'menu_section' => 'posts',
             'search_terms' => $search_terms,
             'search_status' => $search_status,
@@ -111,7 +112,8 @@ class PostController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.create',
-            'active_menu' => 'post_type_' . $post_type_id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type_id ?? null,
             'post_type_id' => $post_type_id,
             'post_type' => $post_type ?? null,
 
@@ -225,7 +227,8 @@ class PostController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.' . $view_file,
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,            
             'menu_section' => 'posts',
             'post_menu_tab' => 'details',
             'post' => $post,
@@ -395,7 +398,8 @@ class PostController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.posts.content',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,            
             'menu_section' => 'posts',
             'post_menu_tab' => 'content',
 
@@ -427,7 +431,7 @@ class PostController extends Controller
             'user_id' => Auth::user()->id
         ]);
 
-        PostBlockFunctions::regenerate_post_blocks($request->id);
+        BlockFunctions::regenerate_post_blocks($request->id);
 
         return redirect(route('admin.blocks.show', ['id' => $block->id, 'type_id' => $request->type_id]));
     }
@@ -444,7 +448,7 @@ class PostController extends Controller
 
         Block::where('id', $request->block_id)->delete();
 
-        PostBlockFunctions::regenerate_post_blocks($request->id);
+        BlockFunctions::regenerate_post_blocks($request->id);
 
         return redirect(route('admin.posts.content', ['id' => $request->id]))->with('success', 'deleted');
     }
@@ -469,7 +473,7 @@ class PostController extends Controller
             $i++;
         }
 
-        PostBlockFunctions::regenerate_post_blocks($request->id);
+        BlockFunctions::regenerate_post_blocks($request->id);
     }
 
 

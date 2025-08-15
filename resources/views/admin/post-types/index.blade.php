@@ -16,24 +16,14 @@
 
     <div class="card-header">
 
-        <div class="row">
-
-            <div class="col-12 col-sm-12 col-md-6 order-md-1 order-first">
-                <div class="card-title">
-                    {{ __('Post types') }}
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
-                <div class="float-end">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#create-post-type" class="btn btn-primary"><i class="bi bi-plus-circle"></i> {{ __('Create custom post type') }}</a>
-
-                    @include('admin.post-types.includes.modal-create-post-type')
-
-                </div>
-            </div>
+        <div class="float-end">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#create-post-type" class="btn btn-primary"><i class="bi bi-plus-circle"></i> {{ __('Create custom post type') }}</a>
+            @include('admin.post-types.includes.modal-create-post-type')
         </div>
 
+        <div class="card-title">
+            {{ __('Post types') }}
+        </div>
     </div>
 
 
@@ -138,7 +128,8 @@
                                             @if ($post_type_content->lang_code == get_default_language()->code)
                                                 <a target="_blank" href="{{ route('home') }}/{{ $post_type_content->slug }}">/{{ $post_type_content->slug }}</a>
                                             @else
-                                                <a target="_blank" href="{{ route('home') }}/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}">/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}</a>
+                                                <a target="_blank"
+                                                    href="{{ route('home') }}/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}">/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}</a>
                                             @endif
                                         @else
                                             <span class="text-danger">{{ __('not set') }}</span>

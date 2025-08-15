@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="meta">
-                            <img class="avatar rounded-circle" src="{{ avatar($post->author_avatar) }}" alt="{{ $post->author_name }}"> <a href="#"> {{ $post->author_name }}</a> <i class="bi bi-calendar ms-3"></i>
+                            <img class="avatar rounded-circle" src="{{ avatar($post->user_id) }}" alt="{{ $post->author_name }}"> <a href="#"> {{ $post->author_name }}</a> <i class="bi bi-calendar ms-3"></i>
                             {{ date_locale($post->created_at) }}
                         </div>
 

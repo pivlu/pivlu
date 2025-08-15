@@ -24,7 +24,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Config;
-use App\Models\ConfigLang;
 use App\Models\Language;
 
 class ConfigController extends Controller
@@ -41,8 +40,8 @@ class ConfigController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.config.' . $tab,
-            'active_menu' => 'config',
-            'active_submenu' => 'config.website',
+            'active_menu' => 'website',
+            'active_submenu' => 'config',
             'active_tab' => $tab,
             'seo_module' => $seo_module ?? null,
             'seo_configs' => $seo_configs ?? null,

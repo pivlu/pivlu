@@ -1,4 +1,4 @@
-<nav class="nav nav-tabs" id="myTab" role="tablist">
+<nav class="nav nav-tabs mb-2" id="myTab" role="tablist">
     <a class="nav-item nav-link @if (($menu_section ?? null) == 'posts') active @endif" href="{{ route('admin.posts.index', ['post_type_id' => $post_type->id]) }}">{!! $post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
         {{ $post_type->default_language_content->name ?? __('Posts') }}</a>
 

@@ -37,6 +37,11 @@ a {
     color: #a37715
 }
 
+.bg-success {
+    background-color: #55b78a !important;
+    color: #ffffff
+}
+
 .bg-orange {
     background-color: #f3b440 !important;
     color: #3d3522
@@ -568,7 +573,7 @@ label,
 .form-group label {
     font-weight: 700;
     margin-bottom: .3rem !important;
-    font-size: 0.9em;
+    font-size: 0.95em;
 }
 
 .form-group small {
@@ -1600,7 +1605,7 @@ a {
 }
 
 .nav {
-    background-color: #fbf7f0;
+    background-color: #798cab;
 }
 
 .nav-tabs {
@@ -1609,8 +1614,8 @@ a {
 }
 
 .nav-tabs a {
-    color: #525252;
-    font-weight: 600;
+    color: #fff;
+    font-weight: 400;
 }
 
 .nav-tabs .nav-item {
@@ -1626,7 +1631,7 @@ a {
 }
 
 .nav-tabs .nav-item.show .nav-link,
-.nav-tabs .nav-link.active {
+.nav-tabs .nav-link.active, .nav-tabs .nav-link:focus {
     color: #143059;
     background-color: #ffd33e;
     border: 0;
@@ -2335,4 +2340,8 @@ input[type=radio]+label:hover {
 
 .table-warning {
     --bs-table-bg: #fff9e6;
+}
+
+.trumbowyg.trumbowyg-box .trumbowyg-editor {
+min-height: 250px;
 }

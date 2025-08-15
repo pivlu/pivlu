@@ -20,6 +20,7 @@
  */
 
 use App\Models\Media;
+use App\Models\User;
 use App\Models\Language;
 use Illuminate\Support\Facades\Storage;
 
@@ -54,14 +55,18 @@ if (!function_exists('image')) {
 
 // Return avatar url
 if (!function_exists('avatar')) {
-	function avatar($avatar_media_id, $format = null)
+	function avatar($user_id, $format = null, $show_no_avatar = null)
 	{
-		$media = Media::find($avatar_media_id);
+		$user = User::find($user_id);		
+		$media = Media::find($user->avatar_media_id ?? null);
 		if (!$media) {
-			if ($format == 'thumb')
-				return asset('assets/img/no-avatar-icon.png');
-			else
-				return asset('assets/img/no-avatar.png');
+			if(!$show_no_avatar) return null;
+			else {
+				if ($format == 'thumb')
+					return asset('assets/img/no-avatar-icon.png');
+				else
+					return asset('assets/img/no-avatar.png');
+			}
 		}
 
 		if (! $format)

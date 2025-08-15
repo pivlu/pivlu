@@ -26,8 +26,9 @@ use App\Models\BlockContent;
 use App\Models\BlockType;
 use App\Models\Post;
 use App\Models\Language;
+use App\Models\ThemeConfig;
 
-class PostBlockFunctions
+class BlockFunctions
 {
 
     /**
@@ -54,6 +55,32 @@ class PostBlockFunctions
 
         return;
     }
+
+
+    /**
+     * Regenerate homepage blocks
+     *
+     * @return null
+     */
+    public static function regenerate_homepage_blocks($theme_id)
+    {
+        $blocks = Block::with('block_type')
+            ->where('is_homepage_block', 1)
+            ->where('theme_id', $theme_id)
+            ->where('hidden', 0)
+            ->orderBy('position')
+            ->get();
+
+        $blocks_array = [];
+        foreach ($blocks as $block) {
+            $blocks_array[] = ['id' => $block->id, 'type_id' => $block->type_id, 'type' => $block->block_type->type, 'settings' => $block->settings];
+        }
+
+        ThemeConfig::update_config($theme_id, 'homepage_blocks', serialize($blocks_array));
+
+        return;
+    }
+
 
 
 
@@ -246,9 +273,9 @@ class PostBlockFunctions
 
             // EDITOR 
             if ($block_type->type == 'editor') {
-                $content = $request->$key_content;                
+                $content = $request->$key_content;
                 $content = trim($content);
-                
+
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
 
                 // header data

@@ -20,8 +20,10 @@
  */
 
 use App\Models\Config;
+use App\Models\ConfigLang;
 use App\Models\Language;
-
+use App\Models\ThemeConfig;
+use App\Models\ThemeMenu;
 
 if (!function_exists('theme_asset')) {
 	function theme_asset($file = null)
@@ -127,5 +129,29 @@ if (!function_exists('get_active_theme_view')) {
 			return 'themes.' . $active_theme . '.';
 		else
 			return 'web.builder.';
+	}
+}
+
+
+
+if (!function_exists('theme_menu_links')) {
+	function theme_menu_links()
+	{
+		if ($_GET['preview_theme'] ?? null) {
+			$theme = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET['preview_theme']);
+		} else
+			$theme = Config::config()->active_theme ?? null;
+
+		$theme_menu_id = ThemeConfig::where(['theme' => $theme, 'name' => 'menu_id'])->value('value');
+		if (! $theme_menu_id) $theme_menu_id = ThemeMenu::where(['is_default' => 1])->value('id');
+		if (! $theme_menu_id) return [];
+
+		$menu_links = ConfigLang::get_config(Language::get_active_language()->id, 'menu_links_' . $theme_menu_id);
+		if ($menu_links) {
+			$menu_links = unserialize($menu_links);
+			$menu_links = json_decode(json_encode($menu_links)); // array to object
+		}
+		
+		return $menu_links ?? [];
 	}
 }

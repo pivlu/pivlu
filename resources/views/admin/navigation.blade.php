@@ -23,7 +23,7 @@
                         <div class="user-menu d-flex">
                             <div class="user-img d-flex align-items-center">
                                 <div class="avatar avatar-md">
-                                    <img src="{{ avatar(Auth::user()->avatar_media_id) }}" class="img-fluid" />
+                                    <img src="{{ avatar(Auth::user()->id) }}" class="img-fluid" />
                                 </div>
                             </div>
                         </div>

@@ -14,15 +14,13 @@
 
 <div class="card">
 
+    @if ($post_type->type != 'page')
+        @include('admin.posts.includes.menu')
+    @endif
+
     <div class="card-header">
 
         <div class="row">
-
-            @if ($post_type->type != 'page')
-                <div class="col-12 col-sm-12 mb-3">
-                    @include('admin.posts.includes.menu')
-                </div>
-            @endif
 
             <div class="col-12 col-sm-12 col-md-6 order-md-1 order-first">
                 <div class="card-title fw-bold">
@@ -244,16 +242,16 @@
 
 
                                     @foreach ($post->all_languages_contents as $page_content)
-                                        @if (count(admin_languages()) > 1)
-                                            <div class="fw-bold fs-6">
+                                        <div class="fw-bold fs-6">
+                                            @if (count(admin_languages()) > 1)
                                                 <span class="me-1">{!! flag($page_content->lang_code) !!}</span>
-                                                @if ($page_content->title)
-                                                    {{ $page_content->title }}</a>
-                                                @else
-                                                    <span class="text-danger">{{ __('not set') }}</span>
-                                                @endif
-                                            </div>
-                                        @endif
+                                            @endif
+                                            @if ($page_content->title)
+                                                {{ $page_content->title }}</a>
+                                            @else
+                                                <span class="text-danger">{{ __('not set') }}</span>
+                                            @endif
+                                        </div>
 
                                         <div class="text-muted small">
                                             <div>
@@ -291,7 +289,7 @@
                                 @endif
 
                                 <td>
-                                    <span class="float-start me-2"><img style="max-width:40px; height:auto;" class="rounded-circle" src="{{ avatar($post->user_id) }}" /></span>
+                                    <span class="float-start me-2"><img style="max-width:40px; height:auto;" class="rounded-circle" src="{{ avatar($post->user->id) }}" /></span>
                                     <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $post->user_id]) }}">{{ $post->user->name }}</a></b>
                                     <div class="small">{{ $post->user->email }}</div>
                                 </td>

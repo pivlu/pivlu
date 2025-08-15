@@ -22,8 +22,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Validator;
-use Functions\FileFunctions;
 
 class Block extends Model
 {
@@ -33,6 +31,8 @@ class Block extends Model
         'label',
         'settings',
         'post_id',
+        'is_homepage_block',
+        'theme_id',
         'position',
         'hidden',
         'user_id',

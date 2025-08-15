@@ -45,18 +45,40 @@
                     </ul>
                 </li>
 
-                @foreach ($posts_types as $sidebar_post_type)
-                    <li class="sidebar-item @if (($active_menu ?? null) == 'post_type_'.$sidebar_post_type->id) active @endif">
-                        <a href="{{ route('admin.posts.index', ['post_type_id' => $sidebar_post_type->id]) }}" class='sidebar-link'>
-                            {!! $sidebar_post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
-                            @if ($sidebar_post_type->type == 'page')
-                                <span>{{ __('Pages') }}</span>
-                            @else
-                                <span>{{ $sidebar_post_type->default_language_content->name }}</span>
-                            @endif
-                        </a>
-                    </li>
-                @endforeach
+
+                <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'website') active @endif">
+                    <a href="#" class='sidebar-link'>
+                        <i class="bi bi-globe"></i>
+                        <span>{{ __('Website') }}</span>
+                    </a>
+                    <ul class="submenu @if (($active_menu ?? null) == 'website') active @endif">
+
+                        @foreach ($posts_types as $sidebar_post_type)
+                            <li class="submenu-item @if (($active_submenu ?? null) == 'post_type_' . $sidebar_post_type->id) active @endif">
+                                <a href="{{ route('admin.posts.index', ['post_type_id' => $sidebar_post_type->id]) }}">
+                                    {!! $sidebar_post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
+                                    @if ($sidebar_post_type->type == 'page')
+                                        <span>{{ __('Pages') }}</span>
+                                    @else
+                                        <span>{{ $sidebar_post_type->default_language_content->name }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        @endforeach                       
+                        
+                         <li class="submenu-item @if (($active_submenu ?? null) == 'appearance') active @endif">
+                            <a href="{{ route('admin.themes.index') }}"><i class="bi bi-easel"></i> {{ __('Theme builder') }}</a>
+                        </li>
+
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
+                            <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
+                        </li>  
+
+                         <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
+                            <a href="{{ route('admin.post-types.index') }}"><i class="bi bi-check2-square"></i> {{ __('Manage post types') }}</a>
+                        </li>
+                    </ul>
+                </li>                             
 
                 <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'config') active @endif">
                     <a href="#" class='sidebar-link'>
@@ -65,12 +87,8 @@
                     </a>
                     <ul class="submenu @if (($active_menu ?? null) == 'config') active @endif">
                         <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
-                            <a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Website') }}</a>
-                        </li>
-
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
-                            <a href="{{ route('admin.post-types.index') }}">{{ __('Post Types') }}</a>
-                        </li>
+                            <a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Plugins / Modules') }}</a>
+                        </li>                        
                     </ul>
                 </li>
 

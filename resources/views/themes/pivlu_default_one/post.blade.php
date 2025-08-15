@@ -33,7 +33,7 @@
                     <div class="meta mb-3">
                         {{ date_locale($post->created_at) }}
 
-                        <img src="{{ avatar($post->author_avatar) }}" alt="{{ $post->author_name }}" class="avatar rounded-circle ms-2">
+                        <img src="{{ avatar($post->user_id) }}" alt="{{ $post->author_name }}" class="avatar rounded-circle ms-2">
 
                         <a href="{{ route('profile', ['username' => $post->user->username]) }}">{{ $post->author_name }}</a>
 

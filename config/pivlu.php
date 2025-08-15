@@ -25,4 +25,50 @@ return [
     'uploads_image_quality' =>  env('UPLOADS_IMAGE_QUALITY', 75), // 10 to 100
     'uploads_image_max_size' =>  env('UPLOADS_IMAGE_MAX_SIZE', 5120), // in kB (5120kb = 5MB)
 
+
+    // Default values for theme styles
+    'defaults' => [        
+        "font_family" => "'Open Sans', sans-serif",
+        "font_size" => "1em",
+        "font_color" => "#3E3E3E",
+        "font_color_light" => "#b9b9b9",
+
+        "h1_size" => "2em",
+        "h2_size" => "1.5em",
+        "h3_size" => "1.2em",
+        "title_size" => "1.3em",
+
+        "bg_color_dark" => "#5F5F5F",
+        "bg_color" => "#FFFFFF",
+
+        "link_color" => "#1A94FF",
+        "link_color_hover" => "#006DCD",
+        "link_color_underline" => "#3E3E3E",
+        "link_color_underline_hover" => "#006DCD",
+        "link_decoration" => "none",
+        "link_hover_decoration" => "underline",
+
+        "nav_bg_color" => "#334E5C",
+        "nav_font_color" => "#DADADA",
+        "nav_font_size" => "1em",
+        "nav_link_color" => "#F0F0F0",
+        "nav_link_color_hover" => "#D8E3E9",
+        "nav_link_color_underline" => "#D8E3E9",
+        "nav_link_hover_decoration" => "none",
+
+        "dropdown_font_color" => "#3e3e3e",
+        "dropdown_bg_color" => "#fbf7f0",
+        "dropdown_link_color" => "#cd2653",
+        "dropdown_link_color_hover" => "#d7446b",
+        "dropdown_link_color_underline" => "#5d5d5d",
+        "dropdown_bg_color_hover" => "#d7446b",
+        "dropdown_link_hover_decoration" => "none",
+
+        "button_font_color" => "#FFFFFF",
+        "button_bg_color" => "#40A6FF",
+        "button_border_color" => "#40A6FF",
+        "button_font_color_hover" => "#f4f7f8",
+        "button_bg_color_hover" => "#1A94FF",
+        "button_border_color_hover" => "#1A94FF",
+    ],
 ];

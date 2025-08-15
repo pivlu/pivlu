@@ -72,7 +72,7 @@ class PostType extends Model
     {
         $page_post_type = PostType::where('type', 'page')->first();
 
-        $root_pages = Post::where('post_type_id', $page_post_type->id)->whereNull('parent_id')->get();
+        $root_pages = Post::where('post_type_id', $page_post_type->id)->where('is_homepage', 0)->whereNull('parent_id')->get();
 
         return $root_pages;
     }

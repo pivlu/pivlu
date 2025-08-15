@@ -17,9 +17,7 @@
 
 <div class="card">
 
-    <div class="card-header">
-        @include('admin.posts.includes.menu')
-    </div>
+    @include('admin.posts.includes.menu')
 
     <div class="card-body">
 
