@@ -9,9 +9,14 @@
         "CRM",
         "Website buider"
     ],
-    "license": "AGPL-3.0",
+    "license": "AGPL-3.0-or-later",
     "homepage": "https://pivlu.com",
-    "author": "Gabriel Chimilevschi",
+    "authors": [
+        {
+            "name": "Chimilevschi Iosif Gabriel",
+            "email": "office@pivlu.com"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "intervention/image-laravel": "^1.5",
