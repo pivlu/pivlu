@@ -85,7 +85,7 @@ class ThemeController extends Controller
         if (! $theme) return redirect(route('admin.themes.index'));
 
         $theme_tab = $request->theme_tab ?? 'homepage';
-        if (!in_array($theme_tab, ['homepage', 'global', 'nav', 'nav2', 'footer', 'posts'])) $theme_tab = 'global';        
+        if (!in_array($theme_tab, ['homepage', 'global', 'nav', 'nav2', 'footer', 'posts', 'contact'])) $theme_tab = 'global';        
 
         return view('admin.index', [
             'view_file' => 'admin.theme.show',

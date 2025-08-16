@@ -64,21 +64,25 @@
                                     @endif
                                 </a>
                             </li>
-                        @endforeach                       
-                        
-                         <li class="submenu-item @if (($active_submenu ?? null) == 'appearance') active @endif">
+                        @endforeach
+
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'forms') active @endif">
+                            <a href="{{ route('admin.forms') }}"><i class="bi bi-input-cursor-text"></i> {{ __('Forms') }}</a>
+                        </li>
+
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'appearance') active @endif">
                             <a href="{{ route('admin.themes.index') }}"><i class="bi bi-easel"></i> {{ __('Theme builder') }}</a>
                         </li>
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
                             <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
-                        </li>  
+                        </li>
 
-                         <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
                             <a href="{{ route('admin.post-types.index') }}"><i class="bi bi-check2-square"></i> {{ __('Manage post types') }}</a>
                         </li>
                     </ul>
-                </li>                             
+                </li>              
 
                 <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'config') active @endif">
                     <a href="#" class='sidebar-link'>
@@ -86,9 +90,9 @@
                         <span>{{ __('Configuration') }}</span>
                     </a>
                     <ul class="submenu @if (($active_menu ?? null) == 'config') active @endif">
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
-                            <a href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Plugins / Modules') }}</a>
-                        </li>                        
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'modules') active @endif">
+                            <a href="{{ route('admin.modules') }}">{{ __('Plugins / Modules') }}</a>
+                        </li>
                     </ul>
                 </li>
 

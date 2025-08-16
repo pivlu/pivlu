@@ -27,6 +27,7 @@ use DB;
 use App\Models\Block;
 use App\Models\Language;
 use App\Models\ThemeStyle;
+use App\Models\Form;
 use App\Functions\ThemeFunctions;
 use App\Functions\BlockFunctions;
 
@@ -73,6 +74,7 @@ class BlockController extends Controller
             'referer' => $referer,
             'font_sizes' => ThemeFunctions::font_sizes(),
             'styles' => ThemeStyle::orderBy('label')->get(),
+            'forms' =>  Form::where('active', 1)->orderBy('label')->get(),
         ]);
     }
 

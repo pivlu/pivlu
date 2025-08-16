@@ -111,7 +111,8 @@ class ContentController extends Controller
             // check for custom tpl file
             $custom_tpl_file = PostMeta::get_meta($page->id, 'custom_tpl_file') ?? null;
 
-            return view(get_active_theme_view() . ($custom_tpl_file ?? 'page'), [
+            //return view(get_active_theme_view() . ($custom_tpl_file ?? 'page'), [
+            return view('web.' . ($custom_tpl_file ?? 'page'), [
                 'page' => $page,
                 'content_blocks' => $content_blocks ?? array(),
             ]);

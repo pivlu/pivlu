@@ -5,4 +5,5 @@
     <a class="nav-item nav-link @if (($theme_tab ?? null) == 'nav2') active @endif" href="{{ route('admin.themes.show', ['slug' => $theme->slug, 'theme_tab' => 'nav2']) }}">{{ __('Navigation 2') }}</a>
     <a class="nav-item nav-link @if (($theme_tab ?? null) == 'footer') active @endif" href="{{ route('admin.themes.show', ['slug' => $theme->slug, 'theme_tab' => 'footer']) }}">{{ __('Footer') }}</a>
     <a class="nav-item nav-link @if (($theme_tab ?? null) == 'posts') active @endif" href="{{ route('admin.themes.show', ['slug' => $theme->slug, 'theme_tab' => 'posts']) }}">{{ __('Posts') }}</a>    
+    <a class="nav-item nav-link @if (($theme_tab ?? null) == 'contact') active @endif" href="{{ route('admin.themes.show', ['slug' => $theme->slug, 'theme_tab' => 'contact']) }}">{{ __('Contact page') }}</a>   
 </nav>

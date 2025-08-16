@@ -30,28 +30,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_posts', function (Blueprint $table) {
+        Schema::create('pivlu_modules', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('post_type_id')->nullable();
-            $table->unsignedBigInteger('media_id')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->integer('parent_id')->nullable(); // used for 'page' type only
-            $table->string('status', 20);
-            $table->boolean('sticky')->default(false);
-            $table->integer('hits')->default(0);            
-            $table->integer('like_count')->default(0);
-            $table->integer('comment_count')->default(0);
-            $table->boolean('disable_comments')->default(false);
-            $table->boolean('disable_likes')->default(false);            
-            $table->boolean('is_homepage')->default(false);
-            $table->boolean('is_contactpage')->default(false);
-            $table->mediumtext('blocks')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-            
-            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
-            $table->foreign('media_id')->references('id')->on('pivlu_media')->nullOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->string('name', 50);            
+            $table->string('slug', 50)->unique();
+            $table->boolean('core')->default(false);
+            $table->string('status', 20)->default('inactive');            
+            $table->text('description')->nullable();
+            $table->string('icon')->nullable();
+            $table->timestamps();            
         });
     }
 
@@ -60,7 +47,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_posts');
-        Schema::dropSoftDeletes();
+        Schema::dropIfExists('pivlu_modules');
     }
 };

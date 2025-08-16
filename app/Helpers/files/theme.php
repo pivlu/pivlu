@@ -24,6 +24,8 @@ use App\Models\ConfigLang;
 use App\Models\Language;
 use App\Models\ThemeConfig;
 use App\Models\ThemeMenu;
+use App\Models\ThemeStyle;
+use App\Models\Theme;
 
 if (!function_exists('theme_asset')) {
 	function theme_asset($file = null)
@@ -123,7 +125,7 @@ if (!function_exists('theme_section')) {
 if (!function_exists('get_active_theme_view')) {
 	function get_active_theme_view()
 	{
-		$active_theme = Config::get_config('active_theme') ?? 'builder';
+		$active_theme = Theme::where('is_active_theme', 1)->value('slug');
 
 		if ($active_theme != 'builder')
 			return 'themes.' . $active_theme . '.';
@@ -132,6 +134,14 @@ if (!function_exists('get_active_theme_view')) {
 	}
 }
 
+if (!function_exists('get_active_theme')) {
+	function get_active_theme()
+	{
+		$active_theme = Theme::where('is_active_theme', 1)->value('slug');
+
+		return $active_theme;
+	}
+}
 
 
 if (!function_exists('theme_menu_links')) {
@@ -155,3 +165,13 @@ if (!function_exists('theme_menu_links')) {
 		return $menu_links ?? [];
 	}
 }
+
+if (!function_exists('get_default_style')) {
+	function get_default_style()
+	{
+		$id = ThemeStyle::where('is_default', 1)->value('id');
+
+		return 'style_' . $id;
+	}
+}
+

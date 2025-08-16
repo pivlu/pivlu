@@ -69,8 +69,8 @@ class PostController extends Controller
             });
 
         if (count($search_taxonomy_ids) > 0)
-            foreach ($search_taxonomy_ids as $search_taxonomy_id) {                
-                if ($search_taxonomy_id) {                    
+            foreach ($search_taxonomy_ids as $search_taxonomy_id) {
+                if ($search_taxonomy_id) {
                     $posts = $posts->whereHas('taxonomies', function ($query) use ($search_taxonomy_id) {
                         $query->where('post_taxonomy_id', $search_taxonomy_id);
                     });
@@ -80,7 +80,7 @@ class PostController extends Controller
         if ($search_sticky == 1)
             $posts = $posts->where('sticky', 1);
 
-        $posts = $posts->orderByDesc('is_homepage')->orderByDesc('id')->paginate(20);
+        $posts = $posts->orderByDesc('is_homepage')->orderByDesc('is_contactpage')->orderByDesc('id')->paginate(20);
 
         return view('admin.index', [
             'view_file' => 'admin.posts.index',
@@ -228,7 +228,7 @@ class PostController extends Controller
         return view('admin.index', [
             'view_file' => 'admin.posts.' . $view_file,
             'active_menu' => 'website',
-            'active_submenu' => 'post_type_' . $post_type->id ?? null,            
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'details',
             'post' => $post,
@@ -361,6 +361,7 @@ class PostController extends Controller
         $post = Post::find($request->id);
 
         if (!$post) return redirect(route('admin.posts.index'));
+        if ($post->is_homepage == 1 || $post->is_contactpage == 1) return redirect(route('admin.posts.index'));
 
         $this->check_post_type_exists($post->post_type_id);
 
@@ -399,7 +400,7 @@ class PostController extends Controller
         return view('admin.index', [
             'view_file' => 'admin.posts.content',
             'active_menu' => 'website',
-            'active_submenu' => 'post_type_' . $post_type->id ?? null,            
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'content',
 

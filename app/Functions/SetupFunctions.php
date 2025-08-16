@@ -30,12 +30,16 @@ use App\Models\PostTypeTaxonomy;
 use App\Models\PostTypeTaxonomyContent;
 use App\Models\Language;
 use App\Models\BlockType;
+use App\Models\Module;
 use App\Models\Theme;
 use App\Models\ThemeButton;
 use App\Models\ThemeStyle;
 use App\Models\ThemeMenu;
 use App\Models\ThemeMenuItem;
 use App\Models\ThemeMenuContent;
+use App\Models\Form;
+use App\Models\FormField;
+use App\Models\FormFieldContent;
 
 class SetupFunctions
 {
@@ -136,15 +140,14 @@ class SetupFunctions
 
     public static function check_default_website_settings()
     {
+        // first admin user_id
+        $admin_user_id = User::where(['role' => 'admin'])->orderByDesc('id')->value('id');
+
+        // id for page type
+        $page_post_type = PostType::where(['type' => 'page'])->first();
+
         // Add homepage, if not exists
         if (Post::where(['is_homepage' => 1])->doesntExist()) {
-
-            // first admin user_id
-            $admin_user_id = User::where(['role' => 'admin'])->orderByDesc('id')->value('id');
-
-            // id for page type
-            $page_post_type = PostType::where(['type' => 'page'])->first();
-
             $homepage_post = Post::create([
                 'post_type_id' => $page_post_type->id,
                 'is_homepage' => 1,
@@ -156,6 +159,94 @@ class SetupFunctions
                 'lang_id' => Language::get_default_language()->id,
                 'post_id' => $homepage_post->id,
                 'title' => 'Homepage'
+            ]);
+        }
+
+
+        // Add contact form, if not exists
+        if (Form::where(['is_contact_form' => 1])->doesntExist()) {
+            $contact_form = Form::create([
+                'label' => 'Contact form',
+                'active' => 1,
+                'is_contact_form' => 1,
+            ]);
+
+            // insert NAME field
+            $field_name = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 0,
+                'protected' => 1,
+                'is_default_name' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
+            }
+
+            // insert EMAIL field
+            $field_email = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'email',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 1,
+                'protected' => 1,
+                'is_default_email' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
+            }
+
+            // insert SUBJECT field
+            $field_subject = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 2,
+                'protected' => 1,
+                'is_default_subject' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
+            }
+
+            // insert MESSAGE field
+            $field_message = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'textarea',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 3,
+                'protected' => 1,
+                'is_default_message' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
+            }
+        }
+
+
+        // Add contact page, if not exists
+        if (Post::where(['is_contactpage' => 1])->doesntExist()) {
+            $contactpage_post = Post::create([
+                'post_type_id' => $page_post_type->id,
+                'is_contactpage' => 1,
+                'status' => 'published',
+                'user_id' => $admin_user_id
+            ]);
+
+            PostContent::create([
+                'lang_id' => Language::get_default_language()->id,
+                'post_id' => $contactpage_post->id,
+                'title' => 'Contact',
+                'slug' => 'contact'
             ]);
         }
     }
@@ -305,6 +396,17 @@ class SetupFunctions
                 'icon' => '<i class="bi bi-card-text"></i>'
             ]);
         }
+
+        if (BlockType::where(['type' => 'form', 'core' => 1])->doesntExist()) {
+            BlockType::create([
+                'type' => 'form',
+                'label' => 'Form',
+                'description' => 'Form',
+                'core' => 1,
+                'position' => 15,
+                'icon' => '<i class="bi bi-textarea-resize"></i>'
+            ]);
+        }
     }
 
 
@@ -416,6 +518,22 @@ class SetupFunctions
                 'menu_id' => $menu->id,
                 'item_id' => $menu_item->id,
                 'label' => 'Home'
+            ]);
+        }
+    }
+
+
+    // Add default apps, if not exists
+    public static function check_default_apps()
+    {
+        if (Module::where('slug', 'contact')->doesntExist()) {
+            Module::create([
+                'name' => 'Contact',
+                'description' => 'Add a contact page and contact form on your website.',
+                'slug' => 'contact',
+                'icon' => '<i class="bi-textarea-resize"></i>',
+                'core' => 1,
+                'status' => 'inactive',
             ]);
         }
     }

@@ -29,7 +29,10 @@ use App\Http\Controllers\Admin\AccountInternalNoteController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FormController;
+use App\Http\Controllers\Admin\FormDataController;
 use App\Http\Controllers\Admin\LangController;
+use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\PostTypeTaxonomyController;
 use App\Http\Controllers\Admin\PostController;
@@ -105,6 +108,26 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::resource('appearance/theme-buttons', ThemeButtonController::class)->parameters(['theme-buttons' => 'id']);
 
 
+    // Forms
+    Route::resource('forms/config', FormController::class)
+        ->names(['index' => 'forms.config', 'create' => 'forms.config.create', 'show' => 'forms.config.show'])
+        ->parameters(['config' => 'id']);
+    Route::post('forms/config/{id}/add-field', [FormController::class, 'add_field'])->name('forms.config.add_field')->where('id', '[0-9]+');
+    Route::put('forms/config/{id}/update-field/{field_id}', [FormController::class, 'update_field'])->name('forms.config.update_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
+    Route::delete('forms/config/{id}/delete-field/{field_id}', [FormController::class, 'destroy_field'])->name('forms.config.delete_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
+    Route::post('forms/config/{id}/sortable', [FormController::class, 'sortable'])->name('forms.config.sortable')->where('id', '[0-9]+');
+
+    Route::get('forms', [FormDataController::class, 'index'])->name('forms');
+    Route::get('forms/trash', [FormDataController::class, 'trash'])->name('forms.trash');
+    Route::get('forms/{id}', [FormDataController::class, 'show'])->name('forms.show')->where('id', '[0-9]+');
+    Route::get('forms/{id}/delete', [FormDataController::class, 'destroy'])->name('forms.delete')->where('id', '[0-9]+');
+    Route::get('forms/{id}/to-trash', [FormDataController::class, 'to_trash'])->name('forms.to_trash')->where('id', '[0-9]+');
+    Route::get('forms/{id}/mark', [FormDataController::class, 'mark'])->name('forms.mark')->where('id', '[0-9]+');
+    Route::post('forms/{id}/create-task', [FormDataController::class, 'create_task'])->name('forms.create-task');
+    Route::post('forms/multiple-action', [FormDataController::class, 'multiple_action'])->name('forms.multiple_action');
+    Route::delete('forms/empty-trash', [FormDataController::class, 'empty_trash'])->name('forms.empty_trash');
+
+
     //  admin role only
     Route::middleware(LoggedIsAdminMiddleware::class)->group(function () {
         // Languages
@@ -114,6 +137,18 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
         Route::get('config/{tab}', [ConfigController::class, 'index'])->name('config')->where(['tab' => '[a-zA-Z0-9_-]+']);
         Route::post('config/{tab}', [ConfigController::class, 'update'])->where(['tab' => '[a-zA-Z0-9_-]+']);
         Route::post('config-lang', [ConfigController::class, 'update_config_lang'])->where(['tab' => '[a-zA-Z0-9_-]+']);
+
+        // Modules
+        Route::get('modules', [ModuleController::class, 'index'])->name('modules');
+        Route::post('modules', [ModuleController::class, 'update']);
+
+        // Contact
+        Route::get('contact/fields', [ContactController::class, 'fields'])->name('contact.fields');
+        Route::post('contact/fields/add-field', [ContactController::class, 'add_field'])->name('contact.add_field');
+        Route::get('contact/fields/update-field/{field_id}', [ContactController::class, 'show_field'])->name('contact.show_field')->where('field_id', '[0-9]+');
+        Route::put('contact/fields/update-field/{field_id}', [ContactController::class, 'update_field'])->name('contact.update_field')->where('field_id', '[0-9]+');
+        Route::delete('contact/fields/delete-field/{field_id}', [ContactController::class, 'destroy_field'])->name('contact.delete_field')->where('field_id', '[0-9]+');
+        Route::post('contact/fields/sortable-fields', [ContactController::class, 'sortable_fields'])->name('contact.sortable_fields');
 
         // Recycle Bin
         Route::get('recycle-bin', [RecycleBinController::class, 'index'])->name('recycle_bin');

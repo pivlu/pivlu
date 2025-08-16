@@ -151,11 +151,18 @@
 
                 <tbody>
                     @foreach ($posts as $post)
-                        @if ($post->is_homepage == 1)
+                        @if ($post->is_homepage == 1 || $post->is_contactpage == 1)
                             <tr @if ($post->status != 'published') class="table-light" @endif>
 
                                 <td>
-                                    <div class="float-end ms-2 badge bg-secondary fw-normal">{{ __('Homepage') }}</div>
+                                    <div class="float-end ms-2 badge bg-secondary fw-normal">
+                                        @if ($post->is_homepage == 1)
+                                            {{ __('Home page') }}
+                                        @endif
+                                        @if ($post->is_contactpage == 1)
+                                            {{ __('Contact page') }}
+                                        @endif
+                                    </div>
 
                                     <span class="text-muted small">
                                         @foreach ($post->all_languages_contents as $page_content)
@@ -165,7 +172,12 @@
                                                         {!! flag($page_content->lang_code) !!}
                                                     </span>
                                                 @endif
-                                                {{ __('Homepage') }}
+                                                @if ($post->is_homepage == 1)
+                                                    {{ __('Home page') }}
+                                                @endif
+                                                @if ($post->is_contactpage == 1)
+                                                    {{ __('Contact page') }}
+                                                @endif
                                             </div>
 
                                             <div>
@@ -204,7 +216,12 @@
                                 <td>
                                     <div class="d-grid gap-2">
                                         <a href="{{ route('admin.posts.show', ['id' => $post->id]) }}" class="btn btn-primary btn-sm mb-2">
-                                            {{ __('Update homepage') }}
+                                            @if ($post->is_homepage == 1)
+                                                {{ __('Update home page') }}
+                                            @endif
+                                            @if ($post->is_contactpage == 1)
+                                                {{ __('Update contact page') }}
+                                            @endif
                                         </a>
                                     </div>
                                 </td>

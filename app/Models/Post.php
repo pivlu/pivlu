@@ -42,6 +42,7 @@ class Post extends Model
         'search_terms',
         'blocks',
         'is_homepage',
+        'is_contactpage',
     ];
 
     protected $table = 'pivlu_posts';
