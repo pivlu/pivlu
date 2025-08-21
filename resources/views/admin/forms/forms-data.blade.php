@@ -25,7 +25,7 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    <a href="{{ route('admin.forms.trash') }}" class="btn btn-secondary me-2"><i class="bi bi-trash"></i> {{ __('Trash') }}</a>
+                    <a href="{{ route('admin.recycle_bin.module', ['module' => 'forms']) }}" class="btn btn-secondary me-2"><i class="bi bi-trash"></i> {{ __('Trash') }}</a>
 
                     <a href="{{ route('admin.forms.config') }}" class="btn btn-primary me-1"><i class="bi bi-gear"></i> {{ __('Manage forms') }}</a>
                 </div>

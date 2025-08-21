@@ -60,7 +60,7 @@
                         </div>
 
                         <div class="mb-3">{{ $module->description }}</div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group">
                             <label>{{ __('Module status') }}</label>
                             <select name="module_{{ $module->id }}" class="form-select @if (($module->status ?? null) == 'active') is-valid @else is-invalid @endif" onchange="this.form.submit()">
                                 <option @if (($module->status ?? null) == 'disabled') selected @endif value="disabled">{{ __('Disabled') }}</option>

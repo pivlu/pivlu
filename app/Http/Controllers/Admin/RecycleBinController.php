@@ -28,6 +28,8 @@ use App\Models\Block;
 use App\Models\BlockContent;
 use App\Models\Post;
 use App\Models\PostType;
+use App\Models\FormData;
+use App\Models\Form;
 use Auth;
 
 class RecycleBinController extends Controller
@@ -38,6 +40,7 @@ class RecycleBinController extends Controller
 
         $rbAccountsCount = User::onlyTrashed()->count();
         $rbPostsCount = Post::onlyTrashed()->count();
+        $rbFormsCount = FormData::onlyTrashed()->count();
 
         return view('admin.index', [
             'view_file' => 'admin.recycle-bin.index',
@@ -45,6 +48,7 @@ class RecycleBinController extends Controller
             'active_submenu' => 'recycle_bin',
             'rbAccountsCount' => $rbAccountsCount ?? 0,
             'rbPostsCount' => $rbPostsCount ?? 0,
+            'rbFormsCount' => $rbFormsCount ?? 0,
         ]);
     }
 
@@ -54,7 +58,7 @@ class RecycleBinController extends Controller
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
 
         $module = $request->module;
-        if (!($module == 'accounts' || $module == 'posts')) return redirect(route('admin.recycle_bin'));
+        if (!($module == 'accounts' || $module == 'posts' || $module == 'forms')) return redirect(route('admin.recycle_bin'));
 
         // DELETED ACCOUNTS
         if ($module == 'accounts') {
@@ -98,6 +102,45 @@ class RecycleBinController extends Controller
         }
 
 
+        // DELETED FORMS
+        if ($module == 'forms') {
+            $deletedItemsCount = FormData::onlyTrashed()->count();
+
+            $search_terms = $request->search_terms;
+            $search_form_id = $request->search_form_id;
+            $search_status = $request->search_status;
+            $search_replied = $request->search_replied;
+            $search_important = $request->search_important;
+
+            $items = Post::with('user', 'default_language_content')->onlyTrashed();
+
+            if ($search_terms) $items = $items->where(function ($query) use ($search_terms) {
+                $query->where('name', 'like', "%$search_terms%")
+                    ->orWhere('email', 'like', "%$search_terms%")
+                    ->orWhere('subject', 'like', "%$search_terms%");
+            });
+
+            if ($search_form_id) {
+                $items = $items->where('form_id', $search_form_id);
+            }
+
+            if ($search_status == 'unread')
+                $items = $items->whereNull('read_at');
+            if ($search_status == 'read')
+                $items = $items->whereNotNull('read_at');
+
+            if ($search_replied == 'yes')
+                $items = $items->whereNotNull('responded_at');
+            if ($search_replied == 'no')
+                $items = $items->whereNull('responded_at');
+
+            if ($search_important == '1')
+                $items = $items->where('is_important', 1);
+
+            $items = $items->orderByDesc('id')->paginate(25);
+
+            $forms = Form::orderByDesc('is_contact_form')->orderBy('label')->orderByDesc('id')->get();
+        }
 
         return view('admin.index', [
             'view_file' => 'admin.recycle-bin.' . $module,
@@ -106,11 +149,15 @@ class RecycleBinController extends Controller
             'deletedItemsCount' => $deletedItemsCount ?? 0,
             'items' => $items ?? null,
 
-            // Search (for all modules):
-            'search_terms' => $search_terms ?? null, //posts / pages
+            'search_terms' => $search_terms ?? null, //posts / pages / forms
             'search_status' => $search_status ?? null,
             'search_post_type' => $search_post_type ?? null,
             'post_types' => $post_types ?? null, // posts
+
+            'forms' => $forms ?? null,
+            'search_form_id' => $search_form_id ?? null,
+            'search_replied' => $search_replied ?? null,
+            'search_important' => $search_important ?? null,
         ]);
     }
 
@@ -121,7 +168,7 @@ class RecycleBinController extends Controller
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
 
         $module = $request->module;
-        if (!($module == 'accounts' || $module == 'posts')) return redirect(route('admin.recycle_bin'));
+        if (!($module == 'accounts' || $module == 'posts' || $module == 'forms')) return redirect(route('admin.recycle_bin'));
 
         // ACCOUNTS
         if ($module == 'accounts') {
@@ -165,7 +212,7 @@ class RecycleBinController extends Controller
         if (Auth::user()->role != 'admin') return redirect(route('admin'));
 
         $module = $request->module;
-        if (!($module == 'accounts' || $module == 'posts')) return redirect(route('admin.recycle_bin'));
+        if (!($module == 'accounts' || $module == 'posts' || $module == 'forms')) return redirect(route('admin.recycle_bin'));
 
         // ACCOUNTS
         if ($module == 'accounts') {

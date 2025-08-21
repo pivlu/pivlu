@@ -17,11 +17,11 @@
     <div class="card-body">
 
         @if ($message = Session::get('success'))
-            <div class="alert alert-success">
-                @if ($message == 'deleted')
-                    {{ __('Deleted') }}
-                @endif
-            </div>
+        <div class="alert alert-success">
+            @if ($message == 'deleted')
+            {{ __('Deleted') }}
+            @endif
+        </div>
         @endif
 
 
@@ -35,7 +35,7 @@
                     <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'accounts']) }}">{{ __('View deleted accounts') }}</a>
                 </div>
             </div>
-           
+
             <div class="col-12 col-md-6 col-lg-6 col-xl-3">
                 <div class="card-box noradius noborder bg-light">
                     <i class="bi bi-file-text float-end"></i>
@@ -44,7 +44,15 @@
                     <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'posts']) }}">{{ __('View deleted posts') }}</a>
                 </div>
             </div>
-         
+
+            <div class="col-12 col-md-6 col-lg-6 col-xl-3">
+                <div class="card-box noradius noborder bg-light">
+                    <i class="bi bi-textarea-resize float-end"></i>
+                    <h6 class="text-uppercase fw-bold mb-4">{{ __('Forms') }}</h6>
+                    <div class="mb-3 fs-6 @if($rbFormsCount > 0) fw-bold text-danger @endif">{{ $rbFormsCount ?? 0 }} {{ __('messages deleted') }}</div>
+                    <a class="btn btn-gear" href="{{ route('admin.recycle_bin.module', ['module' => 'forms']) }}">{{ __('View deleted messages') }}</a>
+                </div>
+            </div>
         </div>
         <!-- end row -->
 

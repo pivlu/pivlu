@@ -29,6 +29,7 @@ use App\Models\PostTypeContent;
 use App\Models\PostTypeTaxonomy;
 use App\Models\PostTypeTaxonomyContent;
 use App\Models\Language;
+use App\Models\Block;
 use App\Models\BlockType;
 use App\Models\Module;
 use App\Models\Theme;
@@ -79,7 +80,7 @@ class SetupFunctions
             PostTypeContent::create([
                 'lang_id' => $default_language->id,
                 'post_type_id' => $post_type_post->id,
-                'name' => 'Post',
+                'name' => 'Posts',
                 'slug' => 'posts',
                 'labels' => '{"singular":"Post","plural":"Posts","create":"Create new post","update":"Update post","delete":"Delete post","all":"All posts","search":"Search in posts"}',
             ]);
@@ -145,6 +146,9 @@ class SetupFunctions
 
         // id for page type
         $page_post_type = PostType::where(['type' => 'page'])->first();
+
+        // id for forms block   
+        $form_block_type = BlockType::where(['type' => 'form'])->first();
 
         // Add homepage, if not exists
         if (Post::where(['is_homepage' => 1])->doesntExist()) {
@@ -248,7 +252,23 @@ class SetupFunctions
                 'title' => 'Contact',
                 'slug' => 'contact'
             ]);
+
+            $contact_block_form = Block::create([
+                'type_id' => $form_block_type->id,
+                'post_id' => $contactpage_post->id, 
+                'label' => 'Contact form',
+                'position' => 1,
+                'user_id' => $admin_user_id
+            ]);
+
+            $block_settings = array('form_id' => $contact_form->id);
+            $contact_block_form->update(['settings' => serialize($block_settings)]);
+
+            $contactpage_post->update(['blocks' => serialize(['id' => $contact_block_form->id, 'type_id' =>  $form_block_type->id, 'type' => 'form'])]);
         }
+
+
+
     }
 
 

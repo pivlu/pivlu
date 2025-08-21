@@ -219,7 +219,7 @@ class BlockFunctions
                 if ($request->hasFile('avatar')) {
                     $validator = Validator::make($request->all(), ['avatar' => 'file|image|max:5120']); // image mime, max 5 MB
                     if (!$validator->fails()) {
-                        $image = Upload::storeImage($request->file('avatar'), $oldImageCode = $inputs["existing_avatar"] ?? null, $data = array('module' => $block_module, 'item_id' => null, 'extra_item_id' => null));
+                        $image = Upload::storeImage($request->file('avatar'), $oldImageCode = $inputs["existing_avatar"] ?? null, $data = array('item_id' => null, 'extra_item_id' => null));
                         $block_settings['avatar'] = $image->code;
                     }
                 }
@@ -243,6 +243,12 @@ class BlockFunctions
             $block->update(['settings' => serialize($block_settings)]);
         }
 
+        // Extra content FORM               
+        if ($block_type->type == 'form') {
+            $block_settings = array('form_id' => null);
+            if ($request->form_id) $block_settings['form_id'] = $request->form_id;
+            $block->update(['settings' => serialize($block_settings)]);
+        }
 
         // ***************************************************
         // Block CONTENT
