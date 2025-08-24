@@ -8,6 +8,7 @@ class ThemeStyle extends Model
 {
     protected $fillable = [
         'label',
+        'style',
         'is_default',    
         'is_block_style',
         'data'

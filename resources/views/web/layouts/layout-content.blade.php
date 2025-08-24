@@ -1,9 +1,9 @@
-@foreach (content_blocks($module, $content_id) as $block)
-    @php
-        $block_extra = unserialize($block->block_extra);        
+@foreach ($content_blocks as $block)
+    @php        
+        $block_settings = unserialize($block['settings']);        
     @endphp
 
-    <div class="section" id="block-{{ $block->id }}" @if ($block_extra['bg_color'] ?? null) style="background-color: {{ $block_extra['bg_color'] }}" @endif>
+    <div class="section" id="block-{{ $block['id'] }}" @if ($block_settings['bg_color'] ?? null) style="background-color: {{ $block_settings['bg_color'] }}" @endif>
         @include("web.includes.blocks-switch")
     </div>
 @endforeach

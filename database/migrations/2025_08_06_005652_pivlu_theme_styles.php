@@ -32,6 +32,7 @@ return new class extends Migration
     {
         Schema::create('pivlu_theme_styles', function (Blueprint $table) {
             $table->id();
+            $table->string('style', 100)->nullable();
             $table->string('label', 100);
             $table->boolean('is_default')->default(false);
             $table->boolean('is_block_style')->default(false);

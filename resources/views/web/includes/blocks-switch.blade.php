@@ -26,6 +26,12 @@
         </div>
     @break
 
+     @case('form')
+        <div class="container-xxl">
+            @include('web.blocks.form')
+        </div>
+    @break
+
     @case('gallery')
         <div class="container-xxl">
             @include('web.blocks.gallery')

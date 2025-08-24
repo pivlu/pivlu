@@ -175,3 +175,45 @@ if (!function_exists('get_default_style')) {
 	}
 }
 
+
+if (!function_exists('get_style')) {
+	function get_style($style)
+	{
+		$id = ThemeStyle::where('style', $style)->value('id');
+
+		return 'style_' . $id;
+	}
+}
+
+
+
+// menu links
+if (!function_exists('menu_links')) {
+	function menu_links()
+	{
+		$active_theme_id = Theme::where('is_active_theme', 1)->value('id');
+		$val = ConfigLang::where('lang_id', Language::get_active_language()->id)->where('name', 'menu_links_'.$active_theme_id)->value('value');
+		$menu_links = unserialize($val);
+
+		$menu_links = json_decode(json_encode($menu_links));
+		
+		return (object)($menu_links ?? []);
+	}
+}
+
+
+
+// Get blocks for a specific footer column
+if (!function_exists('footer_blocks')) {
+	function footer_blocks($footer, $col)
+	{
+		/*
+		// get footer layout (number of columns)
+		if ($footer == 'primary') $layout = SysConfig::config()->footer_columns ?? 1;
+		if ($footer == 'secondary') $layout = SysConfig::config()->footer2_columns ?? 1;
+
+		$blocks = TemplateFooterBlock::where('footer', $footer)->where('layout', $layout)->where('col', $col)->orderBy('position')->get();
+		*/
+		return $blocks ?? [];
+	}
+}

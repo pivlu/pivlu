@@ -23,11 +23,11 @@
     <div class="form-group col-md-4 col-xl-2">
         <label>{{ __('Image position') }}</label>
         <select class="form-select" name="image_position" id="image_position" onchange="change_image_position()">
-            <option @if (($block_settings['image_position'] ?? null) == 'top') selected @endif value="top">{{ __('Top (above text content)') }}</option>
-            <option @if (($block_settings['image_position'] ?? null) == 'bottom') selected @endif value="bottom">{{ __('Bottom (below text content)') }}</option>
-            <option @if (($block_settings['image_position'] ?? null) == 'right') selected @endif value="right">{{ __('Right') }}</option>
-            <option @if (($block_settings['image_position'] ?? null) == 'left') selected @endif value="left">{{ __('Left') }}</option>
-            <option @if (($block_settings['image_position'] ?? null) == 'cover') selected @endif value="cover">{{ __('Background cover') }}</option>
+            <option @if (($block_settings['image_position'] ?? null)=='top' ) selected @endif value="top">{{ __('Top (above text content)') }}</option>
+            <option @if (($block_settings['image_position'] ?? null)=='bottom' ) selected @endif value="bottom">{{ __('Bottom (below text content)') }}</option>
+            <option @if (($block_settings['image_position'] ?? null)=='right' ) selected @endif value="right">{{ __('Right') }}</option>
+            <option @if (($block_settings['image_position'] ?? null)=='left' ) selected @endif value="left">{{ __('Left') }}</option>
+            <option @if (($block_settings['image_position'] ?? null)=='cover' ) selected @endif value="cover">{{ __('Background cover') }}</option>
         </select>
     </div>
 
@@ -37,8 +37,8 @@
         <div class="text-muted small">{{ __('Image file. Maximum 5 MB.') }}</div>
     </div>
     @if ($block_settings['media_id'] ?? null)
-        <a target="_blank" href="{{ image($block_settings['media_id']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings['media_id']) }}" class="img-fluid"></a>
-        <input type="hidden" name="existing_image" value="{{ $block_settings['media_id'] ?? null }}">
+    <a target="_blank" href="{{ image($block_settings['media_id']) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings['media_id']) }}" class="img-fluid"></a>
+    <input type="hidden" name="existing_image" value="{{ $block_settings['media_id'] ?? null }}">
     @endif
 
     <script>
@@ -82,9 +82,9 @@
             <div class="col-md-4 col-lg-3 col-xl-2 col-12 form-group mt-2">
                 <label class="form-label">{{ __('Image column width') }}</label>
                 <select name="img_col" class="form-select">
-                    <option @if (($block_settings['img_col'] ?? null) == '50') selected @endif value="50">{{ __('1/2 (50%)') }}</option>
-                    <option @if (($block_settings['img_col'] ?? null) == '33') selected @endif value="33">{{ __('1/3 (33%)') }}</option>
-                    <option @if (($block_settings['img_col'] ?? null) == '25') selected @endif value="25">{{ __('1/4 (25%)') }}</option>
+                    <option @if (($block_settings['img_col'] ?? null)=='50' ) selected @endif value="50">{{ __('1/2 (50%)') }}</option>
+                    <option @if (($block_settings['img_col'] ?? null)=='33' ) selected @endif value="33">{{ __('1/3 (33%)') }}</option>
+                    <option @if (($block_settings['img_col'] ?? null)=='25' ) selected @endif value="25">{{ __('1/4 (25%)') }}</option>
                 </select>
             </div>
         </div>
@@ -93,9 +93,9 @@
             <div class="col-md-4 col-lg-3 col-xl-2 col-12 form-group mt-2">
                 <label class="form-label">{{ __('Image width') }}</label>
                 <select name="img_container_width" class="form-select">
-                    <option @if (($block_settings['img_container_width'] ?? null) == 'col-12') selected @endif value="col-12">{{ __('Full width') }}</option>
-                    <option @if (($block_settings['img_container_width'] ?? null) == 'col-12 col-md-8 offset-md-2') selected @endif value="col-12 col-md-8 offset-md-2">{{ __('75%') }}</option>
-                    <option @if (($block_settings['img_container_width'] ?? null) == 'col-12 col-md-6 offset-md-3') selected @endif value="col-12 col-md-6 offset-md-3">{{ __('50%') }}</option>
+                    <option @if (($block_settings['img_container_width'] ?? null)=='col-12' ) selected @endif value="col-12">{{ __('Full width') }}</option>
+                    <option @if (($block_settings['img_container_width'] ?? null)=='col-12 col-md-8 offset-md-2' ) selected @endif value="col-12 col-md-8 offset-md-2">{{ __('75%') }}</option>
+                    <option @if (($block_settings['img_container_width'] ?? null)=='col-12 col-md-6 offset-md-3' ) selected @endif value="col-12 col-md-6 offset-md-3">{{ __('50%') }}</option>
                 </select>
             </div>
         </div>
@@ -148,81 +148,103 @@
 <h5 class="mb-3">{{ __('Block content') }}:</h5>
 
 @foreach ($content_langs as $lang)
-    @if (count($languages) > 1)
-        <h5 class="mb-3">{!! flag($lang->code) !!} {{ $lang->name }}</h5>
-    @endif
+@if (count($languages) > 1)
+<h5 class="mb-3">{!! flag($lang->code) !!} {{ $lang->name }}</h5>
+@endif
 
-    @php
-        if (($is_layout_block ?? null) == 1) {
-            $content_array = unserialize($lang->layout_block_content->content ?? null);
-        } else {
-            $content_array = unserialize($lang->block_content ?? null);
-        }
-    @endphp
+@php
+if (($is_layout_block ?? null) == 1) {
+$content_array = unserialize($lang->layout_block_content->content ?? null);
+} else {
+$content_array = unserialize($lang->block_content ?? null);
+}
+@endphp
 
-    <div class="form-group">
-        <label>{{ __('Title') }}</label>
-        <input class="form-control" name="title_{{ $lang->id }}" value="{{ $content_array['title'] ?? null }}">
-    </div>
+<div class="form-group">
+    <label>{{ __('Title') }}</label>
+    <input class="form-control" name="title_{{ $lang->id }}" value="{{ $content_array['title'] ?? null }}">
+</div>
 
-    <div class="form-group">
-        <label>{{ __('Content') }}</label>
-        <textarea class="form-control trumbowyg" name="content_{{ $lang->id }}">{{ $content_array['content'] ?? null }}</textarea>
-    </div>
+<div class="form-group">
+    <label>{{ __('Content') }}</label>
+    <textarea class="form-control trumbowyg" name="content_{{ $lang->id }}">{{ $content_array['content'] ?? null }}</textarea>
+</div>
 
-    <div class="row">
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 1 label') }}</label>
-                <input type="text" class="form-control" name="btn1_label_{{ $lang->id }}" value="{{ $content_array['btn1_label'] ?? null }}">
-                <div class="form-text">{{ __('Leave empty to hide button') }}</div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 1 URL') }}</label>
-                <input type="text" class="form-control" name="btn1_url_{{ $lang->id }}" value="{{ $content_array['btn1_url'] ?? null }}">
-            </div>
-        </div>
-
-
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 1 icon') }} ({{ __('optional') }})</label>
-                <input type="text" class="form-control" name="btn1_icon_{{ $lang->id }}" value="{{ $content_array['btn1_icon'] ?? null }}">
-            </div>
+<div class="row">
+    <div class="col-md-4 col-lg-3 col">
+        <div class="form-group">
+            <label>{{ __('Button 1 style') }} [<a target="_blank" href="{{ route('admin.theme-buttons.index') }}">{{ __('Manage buttons') }}</a>]</label>
+            <select class="form-select" name="btn1_id_{{ $lang->id }}">
+                @foreach ($buttons as $button)
+                <option @if (($content_array['btn1_id'] ?? null)==$button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 2 label') }}</label>
-                <input type="text" class="form-control" name="btn2_label_{{ $lang->id }}" value="{{ $content_array['btn2_label'] ?? null }}">
-                <div class="form-text">{{ __('Leave empty to hide button') }}</div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 2 URL') }}</label>
-                <input type="text" class="form-control" name="btn2_url_{{ $lang->id }}" value="{{ $content_array['btn2_url'] ?? null }}">
-            </div>
-        </div>
-
-
-        <div class="col-md-4 col-lg-3 col-xl-2">
-            <div class="form-group">
-                <label>{{ __('Button 2 icon') }} ({{ __('optional') }})</label>
-                <input type="text" class="form-control" name="btn2_icon_{{ $lang->id }}" value="{{ $content_array['btn2_icon'] ?? null }}">
-            </div>
+    <div class="col-md-4 col-lg-3 col-xl-2">
+        <div class="form-group">
+            <label>{{ __('Button 1 label') }}</label>
+            <input type="text" class="form-control" name="btn1_label_{{ $lang->id }}" value="{{ $content_array['btn1_label'] ?? null }}">
+            <div class="form-text">{{ __('Leave empty to hide button') }}</div>
         </div>
     </div>
 
-    <div class="mb-4"></div>
+    <div class="col-md-4 col-lg-3">
+        <div class="form-group">
+            <label>{{ __('Button 1 URL') }}</label>
+            <input type="text" class="form-control" name="btn1_url_{{ $lang->id }}" value="{{ $content_array['btn1_url'] ?? null }}">
+        </div>
+    </div>
 
-    @if (count($languages) > 1 && !$loop->last)
-        <hr>
-    @endif
+
+    <div class="col-md-4 col-lg-3 col-xl-2">
+        <div class="form-group">
+            <label>{{ __('Button 1 icon') }} ({{ __('optional') }})</label>
+            <input type="text" class="form-control" name="btn1_icon_{{ $lang->id }}" value="{{ $content_array['btn1_icon'] ?? null }}">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 col-lg-3">
+        <div class="form-group">
+            <label>{{ __('Button 2 style') }} [<a target="_blank" href="{{ route('admin.theme-buttons.index') }}">{{ __('Manage buttons') }}</a>]</label>
+            <select class="form-select" name="btn2_id_{{ $lang->id }}">
+                @foreach ($buttons as $button)
+                <option @if (($content_array['btn2_id'] ?? null)==$button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3 col-xl-2">
+        <div class="form-group">
+            <label>{{ __('Button 2 label') }}</label>
+            <input type="text" class="form-control" name="btn2_label_{{ $lang->id }}" value="{{ $content_array['btn2_label'] ?? null }}">
+            <div class="form-text">{{ __('Leave empty to hide button') }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3">
+        <div class="form-group">
+            <label>{{ __('Button 2 URL') }}</label>
+            <input type="text" class="form-control" name="btn2_url_{{ $lang->id }}" value="{{ $content_array['btn2_url'] ?? null }}">
+        </div>
+    </div>
+
+
+    <div class="col-md-4 col-lg-3 col-xl-2">
+        <div class="form-group">
+            <label>{{ __('Button 2 icon') }} ({{ __('optional') }})</label>
+            <input type="text" class="form-control" name="btn2_icon_{{ $lang->id }}" value="{{ $content_array['btn2_icon'] ?? null }}">
+        </div>
+    </div>
+</div>
+
+<div class="mb-4"></div>
+
+@if (count($languages) > 1 && !$loop->last)
+<hr>
+@endif
 @endforeach

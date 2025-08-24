@@ -197,6 +197,11 @@ class RecycleBinController extends Controller
             if ($request->action == 'restore') Post::where('id', $request->id)->restore();
         }
 
+        // FORMS
+        if ($module == 'forms') {
+            if ($request->action == 'delete') FormData::where('id', $request->id)->forceDelete();
+            if ($request->action == 'restore') FormData::where('id', $request->id)->restore();
+        }
 
         if (($request->return_to ?? null) == 'recycle_bin')
             return redirect(route('admin.recycle_bin.module', ['module' => $module]))->with('success', $request->action ?? null);
@@ -250,6 +255,15 @@ class RecycleBinController extends Controller
             }
         }
 
+        // FORMS
+        if ($module == 'forms') {
+            if (is_array($request->items_checkbox)) {
+                foreach ($request->items_checkbox as $item_id) {
+                    if ($request->action == 'multiple_delete') FormData::where('id', $item_id)->forceDelete();
+                    if ($request->action == 'multiple_restore') FormData::where('id', $item_id)->restore();
+                }
+            }
+        }
 
         return redirect(route('admin.recycle_bin.module', ['module' => $module]))->with('success', $request->action ?? null);
     }
