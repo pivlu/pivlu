@@ -184,7 +184,7 @@ class PostTypeController extends Controller
         if ($post_type->core == 1) return redirect(route('admin.post-types.index'));
 
         Post::where('post_type_id', $post_type->id)->delete(); // soft delete
-        $type->delete();
+        $post_type->delete();
 
         return redirect(route('admin.post-types.index'))->with('success', 'deleted');
     }

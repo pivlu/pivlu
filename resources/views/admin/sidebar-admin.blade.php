@@ -74,6 +74,10 @@
                             <a href="{{ route('admin.themes.index') }}"><i class="bi bi-easel"></i> {{ __('Theme builder') }}</a>
                         </li>
 
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'blocks') active @endif">
+                            <a href="{{ route('admin.block-components') }}"><i class="bi bi-bounding-box"></i> {{ __('Block components') }}</a>
+                        </li>
+
                         <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
                             <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
                         </li>
