@@ -75,7 +75,7 @@
             @method('PUT')
 
             @php
-                $block_settings = unserialize($block->settings);
+                $block_settings = json_decode($block->settings);
             @endphp
 
 

@@ -23,38 +23,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Block2 extends Model
+class BlockComponentContent extends Model
 {
-
     protected $fillable = [
-        'type',
-        'label',
-        'settings',
-        'active'
+        'block_id',
+        'lang_id',
+        'content',
+        'header',
     ];
 
-    protected $table = 'pivlu_blocks2';
-
-    protected $appends = ['all_languages_contents'];
+    protected $table = 'pivlu_block_component_content';
 
     /**
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\hasOne
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
      */
-    public function content()
-    {
-        return $this->hasOne(Block2Content::class, 'block_id');
-    }
-
-    public function getAllLanguagesContentsAttribute()
-    {
-        $all_language_contents = [];
-        $langs = Language::get_languages();
-        foreach ($langs as $lang) {
-            $content = BlockContent::where('lang_id', $lang->id)->where('block_id', $this->id)->first();
-            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'content' => $content->content ?? null, 'header' => $content->header ?? null];
-        }
-        return json_decode(json_encode($all_language_contents));
-    }
-
+    public $timestamps = false;
 }

@@ -24,11 +24,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-use App\Models\User;
-use App\Models\Block2;
-use App\Models\Block2Content;
-use Auth;
+use App\Models\BlockComponent;
+use App\Functions\BlockComponentFunctions;
 
 class BlockComponentController extends Controller
 {
@@ -45,13 +44,12 @@ class BlockComponentController extends Controller
 
     public function type(Request $request)
     {
-        $type = $request->type;
-        if (!$type)
-            $type = 'form';
+        $type = $request->type ?? 'form';
+
         if (!($type == 'form' || $type == 'hero' || $type == 'slider' || $type == 'gallery'))
             return redirect(route('admin'));
 
-        $items = Block2::where('type', $type)->orderByDesc('active')->orderByDesc('id')->paginate(25);
+        $items = BlockComponent::where('type', $type)->orderByDesc('active')->orderByDesc('id')->paginate(25);
 
         return view('admin.index', [
             'view_file' => 'admin.blocks.type',
@@ -67,7 +65,7 @@ class BlockComponentController extends Controller
     {
         $type = $request->type;
 
-        $block = Block2::where(['type' => $request->type, 'id' => $request->id])->first();
+        $block = BlockComponent::where(['type' => $request->type, 'id' => $request->id])->first();
         if (!$block)
             return redirect(route('admin.block-components'));
 
@@ -78,7 +76,7 @@ class BlockComponentController extends Controller
 
 
         return view('admin.index', [
-            'view_file' => 'admin.blocks.types.' . $type,
+            'view_file' => 'admin.blocks.components.' . $type . '.index',
             'active_menu' => 'website',
             'active_submenu' => 'blocks',
             'type' => $type,
@@ -96,18 +94,17 @@ class BlockComponentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'label' => 'required',
-            'type' => 'required, in:gallery|form'
+            'type' => ['required', Rule::in(['gallery', 'form', 'hero', 'slider'])]
         ]);
 
         if ($validator->fails())
             return redirect(route('admin.block-components'))->withErrors($validator)->withInput();
 
-        $item = Block2::create([
+        $item = BlockComponent::create([
             'type' => $request->type,
             'label' => $request->label,
             'active' => $request->has('active') ? 1 : 0,
         ]);
-
 
         return redirect(route('admin.block-components.type', ['type' => $request->type]))->with('success', 'created');
     }
@@ -121,13 +118,13 @@ class BlockComponentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'label' => 'required',
-            'type' => 'required, in:gallery|form'
+            'type' => ['required', Rule::in(['gallery', 'form'])]
         ]);
 
         if ($validator->fails())
             return redirect(route('admin.block-components'))->withErrors($validator)->withInput();
 
-        $block = Block2::find($request->id);
+        $block = BlockComponent::find($request->id);
         if (!$block)
             return redirect(route('admin.block-components'));
 
@@ -136,8 +133,9 @@ class BlockComponentController extends Controller
             'active' => $request->has('active') ? 1 : 0,
         ]);
 
+        BlockComponentFunctions::update_block_component($request->id, $request);
 
-        return redirect(route('admin.block-components.type', ['type' => $request->type]))->with('success', 'updated');
+        return redirect(route('admin.block-components.block.show', ['id' => $block->id, 'type' => $request->type]))->with('success', 'updated');
     }
 
 
@@ -148,11 +146,11 @@ class BlockComponentController extends Controller
     public function destroy(Request $request)
     {
 
-        $block = Block2::find($request->id);
+        $block = BlockComponent::find($request->id);
         if (!$block)
             return redirect(route('admin.block-components'));
 
-        Block2::where('id', $request->id)->delete();
+        BlockComponent::where('id', $request->id)->delete();
 
         return redirect(route('admin.block-components.type', ['type' => $request->type]))->with('success', 'deleted');
     }

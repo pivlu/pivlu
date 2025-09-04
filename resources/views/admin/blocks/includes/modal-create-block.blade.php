@@ -20,7 +20,7 @@ debug_backtrace() || die('Direct access not permitted');
                             <div class="form-group">
                                 <label>{{ __('Label') }}</label>
                                 <input class="form-control" name="label" type="text" required />
-                                <div class="form-text">{{ __('Input a label to identify this block. Label is not visible in website') }}</div>                                
+                                <div class="form-text">{{ __('Input a label to identify this block. Label is not visible in website') }}</div>
                             </div>
                         </div>
 
@@ -38,6 +38,7 @@ debug_backtrace() || die('Direct access not permitted');
                 </div>
 
                 <div class="modal-footer">
+                    <input type="hidden" name="type" value="{{ $type }}">
                     <button type="submit" class="btn btn-primary">{{ __('Create new block') }}</button>
                 </div>
 

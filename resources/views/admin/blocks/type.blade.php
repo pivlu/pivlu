@@ -102,12 +102,8 @@
                             <td>
                                 <div class="d-grid gap-2">
                                     <a href="{{ route('admin.block-components.block.show', ['type' => $item->type, 'id' => $item->id]) }}"
-                                        class="btn btn-primary btn-sm mb-2">{{ __('Block settings') }}</a>
-
-                                    <button data-bs-toggle="modal" data-bs-target="#update-block-{{ $item->id }}"
-                                        class="btn btn-secondary btn-sm mb-1">{{ __('Update block') }}</button>
-                                    @include('admin.blocks.includes.modal-update-block')
-
+                                        class="btn btn-primary btn-sm mb-2">{{ __('Manage block') }}</a>
+                                    
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $item->id }}"
                                         class="btn btn-danger btn-sm">{{ __('Delete block') }}</a>
                                     <div class="modal fade confirm-{{ $item->id }}" tabindex="-1" role="dialog"

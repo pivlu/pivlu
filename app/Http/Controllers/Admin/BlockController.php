@@ -31,6 +31,7 @@ use App\Models\Form;
 use App\Models\ThemeButton;
 use App\Functions\ThemeFunctions;
 use App\Functions\BlockFunctions;
+use App\Models\BlockComponent;
 
 class BlockController extends Controller
 {
@@ -76,6 +77,7 @@ class BlockController extends Controller
             'font_sizes' => ThemeFunctions::font_sizes(),
             'styles' => ThemeStyle::orderBy('label')->get(),
             'forms' =>  Form::where('active', 1)->orderByDesc('is_contact_form')->orderBy('label')->get(),
+            'components_gallery' =>  BlockComponent::where('type', 'gallery')->orderByDesc('active')->orderBy('label')->get(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
         ]);
     }

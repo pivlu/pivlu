@@ -112,7 +112,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::get('block-components/{type}', [BlockComponentController::class, 'type'])->name('block-components.type')->where('type', '[a-zA-Z0-9-_]+');
     Route::post('block-components/{type}', [BlockComponentController::class, 'store'])->where('type', '[a-zA-Z0-9-_]+');
     Route::get('block-components/{type}/{id}', [BlockComponentController::class, 'show'])->name('block-components.block.show')->where('id', '[0-9]+')->where('type', '[a-zA-Z0-9-_]+');
-    Route::put('block-components/{type}/update/{id}', [BlockComponentController::class, 'update'])->name('block-components.block.update')->where('id', '[0-9]+')->where('type', '[a-zA-Z0-9-_]+');
+    Route::put('block-components/{type}/{id}', [BlockComponentController::class, 'update'])->name('block-components.block.update')->where('id', '[0-9]+')->where('type', '[a-zA-Z0-9-_]+');
     Route::delete('block-components/{type}/delete/{id}', [BlockComponentController::class, 'destroy'])->name('block-components.block.delete')->where('id', '[0-9]+')->where('type', '[a-zA-Z0-9-_]+');
     Route::get('block-components', [BlockComponentController::class, 'index'])->name('block-components');
 

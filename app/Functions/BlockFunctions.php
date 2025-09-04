@@ -51,7 +51,7 @@ class BlockFunctions
             $blocks_array[] = ['id' => $block->id, 'type_id' => $block->type_id, 'type' => $block->block_type->type, 'settings' => $block->settings];
         }
 
-        $post->update(['blocks' => serialize($blocks_array)]);
+        $post->update(['blocks' => json_encode($blocks_array, JSON_UNESCAPED_UNICODE)]);
 
         return;
     }
@@ -76,7 +76,7 @@ class BlockFunctions
             $blocks_array[] = ['id' => $block->id, 'type_id' => $block->type_id, 'type' => $block->block_type->type, 'settings' => $block->settings];
         }
 
-        ThemeConfig::update_config($theme_id, 'homepage_blocks', serialize($blocks_array));
+        ThemeConfig::update_config($theme_id, 'homepage_blocks', json_encode($blocks_array, JSON_UNESCAPED_UNICODE));
 
         return;
     }
@@ -114,7 +114,7 @@ class BlockFunctions
                 }
             }
 
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
 
@@ -144,8 +144,8 @@ class BlockFunctions
                     $media->update(['post_id' => $block->post_id ?? null]);
                 }
             }
-
-            $block->update(['settings' => serialize($block_settings)]);
+            
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
 
@@ -153,7 +153,7 @@ class BlockFunctions
         if ($block_type->type == 'alert') {
             $block_settings = array('type' => null);
             if ($request->alert_type) $block_settings['type'] = $request->alert_type;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
 
@@ -161,7 +161,7 @@ class BlockFunctions
         if ($block_type->type == 'video') {
             $block_settings = array('full_width_responsive' => null);
             if ($request->full_width_responsive) $block_settings['full_width_responsive'] = $request->full_width_responsive;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // Extra content IMAGE      
@@ -169,19 +169,20 @@ class BlockFunctions
             $block_settings = array('shadow' => null, 'rounded' => null);
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
             if ($request->rounded) $block_settings['rounded'] = $request->rounded;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // Extra content GALLERY        
         if ($block_type->type == 'gallery') {
-            $block_settings = array('shadow' => null, 'rounded' => null, 'cols' => null, 'masonry_layout' => null, 'masonry_cols' => null, 'masonry_gutter' => null);
+            $block_settings = array('gallery_id' => null, 'shadow' => null, 'rounded' => null, 'cols' => null, 'masonry_layout' => null, 'masonry_cols' => null, 'masonry_gutter' => null);
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
             if ($request->rounded) $block_settings['rounded'] = $request->rounded;
             if ($request->cols) $block_settings['cols'] = $request->cols ?? 4;
             if ($request->masonry_layout) $block_settings['masonry_layout'] = $request->masonry_layout;
             if ($request->masonry_cols) $block_settings['masonry_cols'] = $request->masonry_cols ?? 4;
-            if ($request->masonry_gutter) $block_settings['masonry_gutter'] = $request->masonry_gutter ?? 0;
-            $block->update(['settings' => serialize($block_settings)]);
+            if ($request->masonry_gutter) $block_settings['masonry_gutter'] = $request->masonry_gutter ?? 0;            
+            if ($request->gallery_id) $block_settings['gallery_id'] = $request->gallery_id;
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // Extra content CARDS        
@@ -200,15 +201,14 @@ class BlockFunctions
             if ($request->link_location) $block_settings['link_location'] = $request->link_location;
             if ($request->link_btn_id) $block_settings['link_btn_id'] = $request->link_btn_id;
             if ($request->link_btn_size) $block_settings['link_btn_size'] = $request->link_btn_size;
-            if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;
-            $block->update(['settings' => serialize($block_settings)]);
+            if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;            
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
-
 
         // Extra content MAPS       
         if ($block_type->type == 'map') {
-            $block_settings = array('height' => $request->height ?? 400, 'zoom' => $request->zoom ?? 16, 'address' => $request->address);
-            $block->update(['settings' => serialize($block_settings)]);
+            $block_settings = array('height' => $request->height ?? 400, 'zoom' => $request->zoom ?? 16, 'address' => $request->address);            
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // Extra content BLOCKQUOTE       
@@ -226,29 +226,30 @@ class BlockFunctions
             }
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
             if ($request->use_avatar) $block_settings['use_avatar'] = $request->use_avatar;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // CUSTOM
         if ($block_type->type == 'custom') {
             $block_settings = array('bg_color' => null);
             if ($request->use_custom_bg) $block_settings['bg_color'] = $request->bg_color;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // INCLUDE
         if ($block_type->type == 'include') {
             $block_settings = array('bg_color' => null);
             if ($request->use_custom_bg) $block_settings['bg_color'] = $request->bg_color;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // Extra content FORM               
         if ($block_type->type == 'form') {
             $block_settings = array('form_id' => null);
             if ($request->form_id) $block_settings['form_id'] = $request->form_id;
-            $block->update(['settings' => serialize($block_settings)]);
+            $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
+
 
         // ***************************************************
         // Block CONTENT
@@ -287,14 +288,14 @@ class BlockFunctions
                 // header data
                 $header_array = array();
                 $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $request->$key_header_content);
-                $header_content = serialize($header_array);
+                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
             // HERO
             if ($block_type->type == 'hero') {
                 $content = array('title' => $request->$key_title, 'content' => $request->$key_content, 'btn1_label' => $request->$key_btn1_label, 'btn1_url' => $request->$key_btn1_url, 'btn1_id' => $request->$key_btn1_id, 'btn1_icon' => $request->$key_btn1_icon, 'btn2_label' => $request->$key_btn2_label, 'btn2_id' => $request->$key_btn2_id, 'btn2_url' => $request->$key_btn2_url, 'btn2_icon' => $request->$key_btn2_icon);
-                $content = serialize($content);
+                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
 
@@ -307,13 +308,13 @@ class BlockFunctions
             // VIDEO
             if ($block_type->type == 'video') {
                 $content = array('embed' => $request->$key_embed, 'caption' => $request->$key_caption);
-                $content = serialize($content);
+                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
 
                 // header data
                 $header_array = array();
                 $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $request->$key_header_content);
-                $header_content = serialize($header_array);
+                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
@@ -326,174 +327,13 @@ class BlockFunctions
                     if ($media) $media->update(['post_id' => $block->post_id]);
                 }
                 $content = array('media_id' => $media->id ?? $request->$key_existing_image, 'title' => $request->$key_title, 'caption' => $request->$key_caption, 'url' => $request->$key_url);
-                $content = serialize($content);
+                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
 
                 // header data
                 $header_array = array();
                 $header_array = array('add_header' => $request->$key_add_header, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = serialize($header_array);
-                BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
-            }
-
-
-            // GALLERY                      
-            if ($block_type->type == 'gallery') {
-                $post_key_title = 'title_' . $lang->id;
-                $post_key_image = 'image_' . $lang->id;
-                $post_key_caption = 'caption_' . $lang->id;
-                $post_key_position = 'position_' . $lang->id;
-                $post_key_url = 'url_' . $lang->id;
-                $post_key_existing_image = 'existing_image_' . $lang->id;
-                $post_key_delete_image = 'delete_image_' . $lang->id;
-                $images_array_key = array();
-
-                //$counter_key = count(array_filter($_POST[$post_key_title]));
-                $counter_key_images = count(array_filter($_FILES[$post_key_image]['name']));
-                $counter_key_existing = count($request->$post_key_existing_image ?? []);
-                $counter_key = $counter_key_images + $counter_key_existing;
-
-
-                $image = null;
-                $media = null;
-
-                for ($i = 0; $i < $counter_key; $i++) {
-                    $image = null;
-                    $media = null;
-
-                    // delete image (if checkbox is checked)
-                    if ($request->has($post_key_delete_image . '_' . $i)) {
-                        $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
-                        FileFunctions::delete_file($file_media_id_to_delete);
-                        $inputs["$post_key_existing_image"][$i] = null;
-                    }
-
-                    if ($request->hasFile($post_key_image)) {
-                        if ($file = $request->file($post_key_image)[$i] ?? null) {
-                            $media = FileFunctions::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
-                            if ($media) $media->update(['post_id' => $block->post_id]);
-                        }
-                    }
-
-                    $images_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null,  'caption' => $inputs["$post_key_caption"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0, 'url' => $inputs["$post_key_url"][$i] ?? null);
-
-                    // regenerate array and sort by position (asc)
-                    if (count($images_array_key) > 1) {
-                        $position = array_column($images_array_key, 'position');
-                        array_multisort($position, SORT_ASC, $images_array_key);
-                    }
-                }
-
-                $content = serialize($images_array_key);
-                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = serialize($header_array);
-                BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
-            }
-
-
-            // SLIDER
-            if ($block_type->type == 'slider') {
-                $post_key_title = 'title_' . $lang->id;
-                $post_key_content = 'content_' . $lang->id;
-                $post_key_image = 'image_' . $lang->id;
-                $post_key_existing_image = 'existing_image_' . $lang->id;
-                $post_key_url = 'url_' . $lang->id;
-                $post_key_position = 'position_' . $lang->id;
-                $post_key_delete_image = 'delete_image_' . $lang->id;
-                $slides_array_key = array();
-                $counter_key = count(array_filter($_POST[$post_key_title]));
-
-                $image = null;
-                $media = null;
-
-                for ($i = 0; $i < $counter_key; $i++) {
-
-                    $image = null;
-                    $media = null;
-
-                    // delete image (if checkbox is checked)
-                    if ($request->has($post_key_delete_image . '_' . $i)) {
-                        $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
-                        FileFunctions::delete_file($file_media_id_to_delete);
-                        $inputs["$post_key_existing_image"][$i] = null;
-                    }
-
-                    if ($request->hasFile($post_key_image)) {
-                        if ($file = $request->file($post_key_image)[$i] ?? null) {
-                            $media = FileFunctions::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
-                            if ($media) $media->update(['post_id' => $block->post_id]);
-                        }
-                    }
-
-                    $slides_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'content' => $inputs["$post_key_content"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null, 'url' => $inputs["$post_key_url"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0);
-
-                    // regenerate array and sort by position (asc)
-                    if (count($slides_array_key) > 1) {
-                        $position = array_column($slides_array_key, 'position');
-                        array_multisort($position, SORT_ASC, $slides_array_key);
-                    }
-                }
-
-                $content = serialize($slides_array_key);
-                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-            }
-
-
-
-            // CARDS           
-            if ($block_type->type == 'card') {
-                $post_key_title = 'title_' . $lang->id;
-                $post_key_url = 'url_' . $lang->id;
-                $post_key_image = 'image_' . $lang->id;
-                $post_key_content = 'content_' . $lang->id;
-                $post_key_position = 'position_' . $lang->id;
-                $post_key_icon = 'icon_' . $lang->id;
-                $post_key_existing_image = 'existing_image_' . $lang->id;
-                $post_key_delete_image = 'delete_image_' . $lang->id;
-                $cards_array_key = array();
-                $counter_key = count(array_filter($_POST[$post_key_title]));
-
-                $image = null;
-                $media = null;
-
-                for ($i = 0; $i < $counter_key; $i++) {
-                    $image = null;
-                    $media = null;
-
-                    // delete image (if checkbox is checked)
-                    if ($request->has($post_key_delete_image . '_' . $i)) {
-                        $file_media_id_to_delete = $inputs['delete_image_media_id_' . $lang->id . '_' . $i];
-                        FileFunctions::delete_file($file_media_id_to_delete);
-                        $inputs["$post_key_existing_image"][$i] = null;
-                    }
-
-                    if ($request->hasFile($post_key_image)) {
-                        if ($file = $request->file($post_key_image)[$i] ?? null) {
-                            $media = FileFunctions::store_image($file, $old_media_id = $inputs["$post_key_existing_image"][$i] ?? null);
-                            if ($media) $media->update(['post_id' => $block->post_id]);
-                        }
-                    }
-
-                    $cards_array_key[$i] = array('title' => $inputs["$post_key_title"][$i], 'url' => $inputs["$post_key_url"][$i], 'icon' => $inputs["$post_key_icon"][$i], 'media_id' => $media->id ?? $inputs["$post_key_existing_image"][$i] ?? null, 'content' => $inputs["$post_key_content"][$i], 'position' => $inputs["$post_key_position"][$i] ?? 0);
-
-                    // regenerate array and sort by position (asc)
-                    if (count($cards_array_key) > 1) {
-                        $position = array_column($cards_array_key, 'position');
-                        array_multisort($position, SORT_ASC, $cards_array_key);
-                    }
-                }
-
-                $content = serialize($cards_array_key);
-                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = serialize($header_array);
+                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
@@ -502,7 +342,7 @@ class BlockFunctions
                 $post_key_title = 'title_' . $lang->id;
                 $post_key_content = 'content_' . $lang->id;
                 $content_array = array('title' => $inputs["$post_key_title"], 'content' => $inputs["$post_key_content"]);
-                $content = serialize($content_array);
+                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
 
@@ -511,7 +351,7 @@ class BlockFunctions
                 $post_key_source = 'source_' . $lang->id;
                 $post_key_content = 'content_' . $lang->id;
                 $content_array = array('source' => $inputs["$post_key_source"], 'content' => $inputs["$post_key_content"]);
-                $content = serialize($content_array);
+                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
 
@@ -520,7 +360,7 @@ class BlockFunctions
                 // Header data
                 $header_array = array();
                 $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = serialize($header_array);
+                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['header' => $header_content]);
             }
 
@@ -529,7 +369,7 @@ class BlockFunctions
                 $key_tpl_file = 'tpl_file_' . $lang->id;
 
                 $content = array('tpl_file' => $request->$key_tpl_file);
-                $content = serialize($content);
+                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
         }
