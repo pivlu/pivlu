@@ -28,7 +28,7 @@ use App\Models\FormFieldContent;
 class FormField extends Model
 {
     protected $fillable = [
-        'form_id',
+        'block_component_id',
         'type',
         'required',
         'col_md',
@@ -43,8 +43,21 @@ class FormField extends Model
 
     protected $table = 'pivlu_form_fields';
 
+    protected $appends = ['all_languages_contents'];
+
     public function default_lang_field()
     {
-        return $this->hasOne(FormFieldContent::class, 'field_id')->where('lang_id', SysLang::getDefaultLang()->id);
+        return $this->hasOne(FormFieldContent::class, 'field_id')->where('lang_id', Language::get_default_language()->id);
+    }
+
+    public function getAllLanguagesContentsAttribute()
+    {
+        $all_language_contents = [];
+        $langs = Language::get_languages();
+        foreach ($langs as $lang) {
+            $content = FormFieldContent::where('lang_id', $lang->id)->where('field_id', $this->id)->first();
+            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'label' => $content->label ?? null, 'info' => $content->info ?? null, 'dropdowns' => $content->dropdowns ?? null];
+        }
+        return json_decode(json_encode($all_language_contents));
     }
 }

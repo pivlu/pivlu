@@ -18,8 +18,8 @@
             {{ __('Task created') }}
         @endif
         @if ($alert == 'updated')
-        {{ __('Updated') }}
-    @endif
+            {{ __('Updated') }}
+        @endif
     </div>
 @endif
 
@@ -102,14 +102,24 @@
 
                 <hr>
 
-                {{ __('Form') }}: <a href="{{ route('admin.forms.config') }}"><b>{{ $form->label }}</b></a>
+                {{ __('Form') }}: <a href="{{ route('admin.block-components.block.show', ['type' => 'form', 'id' => $form_block_component->id]) }}"><b>{{ $form_block_component->label }}</b></a>
                 <br>
                 @if ($message->referer)
                     {{ __('Referer') }}: <a target="_blank" href="{{ $message->referer ?? '#' }}"><b>{{ $message->referer }}</b></a>
                     <br>
                 @endif
-                {{ __('Source language') }}: {{ lang($message->source_lang_id)->name }}
                 <br>
+
+                @if ($message->geo_data->country_code ?? null)
+                    <div class="mb-2 text-muted small">
+                        <img class="me-1" style="width: 20px; height: 20px;" src="{{ asset('assets//img/flags/circle/' . strtolower($message->geo_data->country_code) . '.svg') }}"
+                            alt="{{ $message->geo_data->country }}">
+                        {{ $message->geo_data->city }},
+                        {{ $message->geo_data->region_name }},
+                        {{ $message->geo_data->country }}
+                    </div>
+                @endif
+
                 IP: {{ $message->ip }}
 
                 <hr>
@@ -122,7 +132,7 @@
                     <a href="{{ route('admin.forms.mark', ['id' => $message->id, 'action' => 'not_important']) }}" class="btn btn-success btn-sm me-2"><i class="bi bi-star"></i>
                         {{ __('Flag as normal') }}</a>
                 @endif
-               
+
 
                 <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $message->id }}" class="btn btn-danger btn-sm ms-2"><i class="bi bi-trash"></i> {{ __('Delete') }}</a>
                 <div class="modal fade confirm-{{ $message->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
@@ -146,25 +156,6 @@
                         </div>
                     </div>
                 </div>
-
-                <hr>
-
-                @if ($message->task_id)
-                    {{ __('This message have a task ') }}
-                    @if ($message->task_closed_at)
-                        <div class="text-success fw-bold">{{ __('Task closed') }}</div>
-                        <a class="btn btn-primary mt-2" href="{{ route('admin.tasks.show', ['id' => $message->task_id]) }}">{{ __('Manage task') }}</a>
-                    @else
-                        <div class="text-danger fw-bold">{{ __('Task not closed') }}</div>
-                        <a class="btn btn-primary mt-2" href="{{ route('admin.tasks.show', ['id' => $message->task_id]) }}">{{ __('View task') }}</a>
-                    @endif
-                @else
-                    {{ __('Convert this message into a task to manage it internally. Sender can have access to task details and progress.') }}:
-                    <div class="mb-2"></div>
-                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#convert-task"><i class="bi bi-card-checklist"></i>
-                        {{ __('Convert into task') }}</a>
-                    @include('admin.forms.modals.convert-task')
-                @endif
 
             </div>
 

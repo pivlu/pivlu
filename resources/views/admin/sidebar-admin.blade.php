@@ -67,7 +67,7 @@
                         @endforeach
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'forms') active @endif">
-                            <a href="{{ route('admin.forms') }}"><i class="bi bi-input-cursor-text"></i> {{ __('Forms') }}</a>
+                            <a href="{{ route('admin.forms') }}"><i class="bi bi-envelope-arrow-up"></i> {{ __('Forms messages') }}</a>
                         </li>
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'appearance') active @endif">
@@ -78,7 +78,7 @@
                             <a href="{{ route('admin.block-components') }}"><i class="bi bi-bounding-box"></i> {{ __('Block components') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'config.website') active @endif">
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'config') active @endif">
                             <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
                         </li>
 

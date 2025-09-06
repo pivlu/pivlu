@@ -1,3 +1,19 @@
+.block {
+    padding: 30px 0; 
+}
+
+.block-header {
+    margin-bottom: 20px;
+}
+.block-header-title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.block-header-content {
+    font-size: 1rem;
+}
+
 /* start-accordion */
 
 .block-accordion {
@@ -183,25 +199,6 @@
 /* end-custom */
 
 
-/* start-download */
-
-.block-download {
-    padding: 30px 0;
-}
-
-.block-download-content {
-    font-size: 1em;
-    margin-bottom: 10px;
-}
-
-.block-download-info {
-    font-size: 0.95em;
-    margin-bottom: 10px;
-}
-
-
-/* end-download */
-
 
 /* start-editor */
 
@@ -217,19 +214,6 @@
 
 .block-form {
     padding: 30px 0;
-}
-
-.block-form-header {
-    margin-bottom: 10px;
-}
-
-.block-form-header-title {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-.block-form-header-content {
-    font-size: 1em;
 }
 
 .block-form-label {
@@ -381,8 +365,8 @@
     padding: 30px 0;
 }
 
-.block-links ul{
-    list-style-type:none;
+.block-links ul {
+    list-style-type: none;
 }
 
 .block-links-header {
@@ -451,7 +435,7 @@
 /* start-slider */
 
 .block-slider {
-    padding: 30px 0;    
+    padding: 30px 0;
 }
 
 .block-slider-title {

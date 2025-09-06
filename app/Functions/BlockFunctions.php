@@ -120,13 +120,25 @@ class BlockFunctions
 
         // Extra content SLIDER
         if ($block_type->type == 'slider') {
-            $block_settings = array('bg_style' => $request->bg_style, 'bg_media_id' => $request->existing_bg_media_id ?? null, 'cover_fixed' => null, 'cover_dark' => null, 'delay_seconds' => $request->delay_seconds);
-            if ($request->cover_fixed ?? null) $block_settings['cover_fixed'] = $request->cover_fixed;
-            if ($request->cover_dark ?? null) $block_settings['cover_dark'] = $request->cover_dark;
-            if ($request->shadow_title ?? null) $block_settings['shadow_title'] = $request->shadow_title;
-            if ($request->shadow_content ?? null) $block_settings['shadow_content'] = $request->shadow_content;
-            if ($request->link_btn_id ?? null) $block_settings['link_btn_id'] = $request->link_btn_id;
-
+            $block_settings = array(
+                'bg_style' => $request->bg_style,
+                'bg_color' => $request->bg_color ?? null,
+                'slider_id' => $request->slider_id ?? null,
+                'bg_media_id' => $request->existing_bg_media_id ?? null,
+                'cover_fixed' => $request->cover_fixed ?? null,
+                'cover_dark' => $request->cover_dark ?? null,
+                'delay_seconds' => $request->delay_seconds ?? null,
+                'shadow_title' => $request->shadow_title ?? null,
+                'shadow_content' => $request->shadow_content ?? null,
+                'button_id' => $request->button_id ?? null,
+                'button_size' => $request->button_size ?? null,
+                'font_color_title' => $request->font_color_title ?? null,
+                'font_color_content' => $request->font_color_content ?? null,
+                'font_size_title' => $request->font_size_title ?? null,
+                'font_size_content' => $request->font_size_content ?? null,
+                'rounded_images' => $request->rounded_images ?? null,
+            );
+                        
             $image = null;
             $media = null;
 
@@ -144,7 +156,7 @@ class BlockFunctions
                     $media->update(['post_id' => $block->post_id ?? null]);
                 }
             }
-            
+
             $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
@@ -174,13 +186,20 @@ class BlockFunctions
 
         // Extra content GALLERY        
         if ($block_type->type == 'gallery') {
-            $block_settings = array('gallery_id' => null, 'shadow' => null, 'rounded' => null, 'cols' => null, 'masonry_layout' => null, 'masonry_cols' => null, 'masonry_gutter' => null);
-            if ($request->shadow) $block_settings['shadow'] = $request->shadow;
-            if ($request->rounded) $block_settings['rounded'] = $request->rounded;
+            $block_settings = array(
+                'bg_color' => ($request->use_custom_bg ? $request->bg_color : null),
+                'gallery_id' => null,
+                'shadow' => $request->shadow ?? null,
+                'rounded' => $request->rounded ?? null,
+                'cols' => null,
+                'masonry_layout' => null,
+                'masonry_cols' => null,
+                'masonry_gutter' => null
+            );
             if ($request->cols) $block_settings['cols'] = $request->cols ?? 4;
             if ($request->masonry_layout) $block_settings['masonry_layout'] = $request->masonry_layout;
             if ($request->masonry_cols) $block_settings['masonry_cols'] = $request->masonry_cols ?? 4;
-            if ($request->masonry_gutter) $block_settings['masonry_gutter'] = $request->masonry_gutter ?? 0;            
+            if ($request->masonry_gutter) $block_settings['masonry_gutter'] = $request->masonry_gutter ?? 0;
             if ($request->gallery_id) $block_settings['gallery_id'] = $request->gallery_id;
             $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
@@ -201,13 +220,13 @@ class BlockFunctions
             if ($request->link_location) $block_settings['link_location'] = $request->link_location;
             if ($request->link_btn_id) $block_settings['link_btn_id'] = $request->link_btn_id;
             if ($request->link_btn_size) $block_settings['link_btn_size'] = $request->link_btn_size;
-            if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;            
+            if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;
             $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
         // Extra content MAPS       
         if ($block_type->type == 'map') {
-            $block_settings = array('height' => $request->height ?? 400, 'zoom' => $request->zoom ?? 16, 'address' => $request->address);            
+            $block_settings = array('height' => $request->height ?? 400, 'zoom' => $request->zoom ?? 16, 'address' => $request->address);
             $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
@@ -245,8 +264,7 @@ class BlockFunctions
 
         // Extra content FORM               
         if ($block_type->type == 'form') {
-            $block_settings = array('form_id' => null);
-            if ($request->form_id) $block_settings['form_id'] = $request->form_id;
+            $block_settings = array('bg_color' => ($request->use_custom_bg ? $request->bg_color : null), 'form_id' => $request->form_id ?? null, 'button_id' => $request->button_id ?? null, 'field_size' => $request->field_size ?? null);
             $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
@@ -278,18 +296,19 @@ class BlockFunctions
             $key_btn2_id = 'btn2_id_' . $lang->id;
             $key_btn2_icon = 'btn2_icon_' . $lang->id;
 
+            // EXTRA HEADER CONTENT
+            if ($block_type->type == 'form' || $block_type->type == 'gallery' || $block_type->type == 'editor' || $block_type->type == 'video' || $block_type->type == 'image') {
+                $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $request->$key_header_content);
+                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
+                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['header' => $header_content]);
+            }
+
+
             // EDITOR 
             if ($block_type->type == 'editor') {
                 $content = $request->$key_content;
                 $content = trim($content);
-
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $request->$key_header_content);
-                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
-                BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
             // HERO
@@ -310,12 +329,6 @@ class BlockFunctions
                 $content = array('embed' => $request->$key_embed, 'caption' => $request->$key_caption);
                 $content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $request->$key_header_content);
-                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
-                BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
             // IMAGE
@@ -329,12 +342,6 @@ class BlockFunctions
                 $content = array('media_id' => $media->id ?? $request->$key_existing_image, 'title' => $request->$key_title, 'caption' => $request->$key_caption, 'url' => $request->$key_url);
                 $content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $request->$key_add_header, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
-                BlockContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
             }
 
             // ALERT
@@ -358,10 +365,18 @@ class BlockFunctions
             // MAP
             if ($block_type->type == 'map') {
                 // Header data
-                $header_array = array();
                 $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
                 $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
                 BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['header' => $header_content]);
+            }
+
+            // FORM
+            if ($block_type->type == 'form') {
+                $post_key_submit_text = 'button_submit_text_' . $lang->id;
+                $content_array = array('button_submit_text' => $inputs["$post_key_submit_text"]);
+                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
+
+                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['header' => $header_content, 'content' => $content]);
             }
 
             // INCLUDE

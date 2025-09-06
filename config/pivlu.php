@@ -29,14 +29,14 @@ return [
     // Default values for theme styles
     'defaults' => [        
         "font_family" => "'Open Sans', sans-serif",
-        "font_size" => "1em",
+        "font_size" => "1rem",
         "font_color" => "#3E3E3E",
         "font_color_light" => "#b9b9b9",
 
-        "h1_size" => "2em",
-        "h2_size" => "1.5em",
-        "h3_size" => "1.2em",
-        "title_size" => "1.3em",
+        "h1_size" => "2rem",
+        "h2_size" => "1.5rem",
+        "h3_size" => "1.2rem",
+        "title_size" => "1.3rem",
 
         "bg_color_dark" => "#5F5F5F",
         "bg_color" => "#FFFFFF",

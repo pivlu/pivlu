@@ -30,8 +30,8 @@ use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\BlockComponentController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BlockFormController;
 use App\Http\Controllers\Admin\FormController;
-use App\Http\Controllers\Admin\FormDataController;
 use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PostTypeController;
@@ -117,24 +117,19 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::get('block-components', [BlockComponentController::class, 'index'])->name('block-components');
 
 
-    // Forms
-    Route::resource('forms/config', FormController::class)
-        ->names(['index' => 'forms.config', 'create' => 'forms.config.create', 'show' => 'forms.config.show'])
-        ->parameters(['config' => 'id']);
-    Route::post('forms/config/{id}/add-field', [FormController::class, 'add_field'])->name('forms.config.add_field')->where('id', '[0-9]+');
-    Route::put('forms/config/{id}/update-field/{field_id}', [FormController::class, 'update_field'])->name('forms.config.update_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
-    Route::delete('forms/config/{id}/delete-field/{field_id}', [FormController::class, 'destroy_field'])->name('forms.config.delete_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
-    Route::post('forms/config/{id}/sortable', [FormController::class, 'sortable'])->name('forms.config.sortable')->where('id', '[0-9]+');
+    // Form block component
+    Route::post('forms/config/{id}/add-field', [BlockFormController::class, 'add_field'])->name('forms.config.add_field')->where('id', '[0-9]+');
+    Route::put('forms/config/{id}/update-field/{field_id}', [BlockFormController::class, 'update_field'])->name('forms.config.update_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
+    Route::delete('forms/config/{id}/delete-field/{field_id}', [BlockFormController::class, 'destroy_field'])->name('forms.config.delete_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
+    Route::post('forms/config/{id}/sortable', [BlockFormController::class, 'sortable'])->name('forms.config.sortable')->where('id', '[0-9]+');
 
-    Route::get('forms', [FormDataController::class, 'index'])->name('forms');
-    Route::get('forms/trash', [FormDataController::class, 'trash'])->name('forms.trash');
-    Route::get('forms/{id}', [FormDataController::class, 'show'])->name('forms.show')->where('id', '[0-9]+');
-    Route::get('forms/{id}/delete', [FormDataController::class, 'destroy'])->name('forms.delete')->where('id', '[0-9]+');
-    Route::get('forms/{id}/to-trash', [FormDataController::class, 'to_trash'])->name('forms.to_trash')->where('id', '[0-9]+');
-    Route::get('forms/{id}/mark', [FormDataController::class, 'mark'])->name('forms.mark')->where('id', '[0-9]+');
-    Route::post('forms/{id}/create-task', [FormDataController::class, 'create_task'])->name('forms.create-task');
-    Route::post('forms/multiple-action', [FormDataController::class, 'multiple_action'])->name('forms.multiple_action');
-    Route::delete('forms/empty-trash', [FormDataController::class, 'empty_trash'])->name('forms.empty_trash');
+    Route::get('forms', [FormController::class, 'index'])->name('forms');
+    Route::get('forms/{id}', [FormController::class, 'show'])->name('forms.show')->where('id', '[0-9]+');
+    Route::get('forms/{id}/delete', [FormController::class, 'destroy'])->name('forms.delete')->where('id', '[0-9]+');
+    Route::get('forms/{id}/to-trash', [FormController::class, 'to_trash'])->name('forms.to_trash')->where('id', '[0-9]+');
+    Route::get('forms/{id}/mark', [FormController::class, 'mark'])->name('forms.mark')->where('id', '[0-9]+');
+    Route::post('forms/multiple-action', [FormController::class, 'multiple_action'])->name('forms.multiple_action');
+    Route::delete('forms/empty-trash', [FormController::class, 'empty_trash'])->name('forms.empty_trash');
 
 
     //  admin role only

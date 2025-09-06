@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg @if ($config->tpl_navbar_sticky ?? null) sticky-top @endif {{ get_style('nav') }}">
+<nav class="navbar navbar-expand-lg @if ($config->tpl_navbar_sticky ?? null) sticky-top @endif">
     <div class="container-xxl">
 
         @if (!($config->tpl_navbar_hide_logo ?? null))
@@ -25,7 +25,7 @@
                                 aria-expanded="false">
                                 {{ $navbar_link->label }} <i class="bi bi-chevron-down"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-lg-end {{ get_style('nav_dropdown') }}"
+                            <ul class="dropdown-menu dropdown-menu-lg-end"
                                 aria-labelledby="navbarDropdown_{{ $navbar_link->label }}">
                                 @foreach ($navbar_link->dropdown as $navbar_dropdown_link)
                                     <li><a @if ($navbar_dropdown_link->new_tab == 1) target="_blank" @endif class="dropdown-item"

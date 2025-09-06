@@ -1,14 +1,24 @@
 <div class="form-group col-md-4 col-xl-3">
-    <label>{{ __('Select gallery') }} [<a target="_blank" href="{{ route('admin.block-components.type', ['type' => 'gallery']) }}"><b>{{ __('Manage galleries') }}</b></a>]</label>
+    <label>{{ __('Select gallery') }}</label>
     @if (count($components_gallery) == 0)
-        <div class="text-danger">{{ __("You don't have any gallery. Go to block compobents to create a new gallery") }}</div>
+        <div class="text-danger mb-2">
+            {{ __("You don't have any gallery. Go to block compoents to create a new gallery") }}
+            <br>
+            <a target="_blank" href="{{ route('admin.block-components.type', ['type' => 'gallery']) }}"><i class="bi bi-images"></i> {{ __('Add new gallery') }}</a>
+            <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
+        </div>
+    @else
+        <div class="mb-2">
+            <a target="_blank" href="{{ route('admin.block-components.type', ['type' => 'gallery']) }}"><i class="bi bi-images"></i> {{ __('Add new gallery') }}</a>
+            <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
+        </div>
+        <select class="form-select" name="gallery_id">
+            <option value="">-- {{ __('select') }} --</option>
+            @foreach ($components_gallery as $gallery)
+                <option @if (($block_settings->gallery_id ?? null) == $gallery->id) selected @endif value="{{ $gallery->id }}">{{ $gallery->label }}</option>
+            @endforeach
+        </select>
     @endif
-    <select class="form-select" name="gallery_id">
-        <option value="">-- {{ __('select') }} --</option>
-        @foreach ($components_gallery as $gallery)
-            <option @if (($block_settings->gallery_id ?? null) == $gallery->id) selected @endif value="{{ $gallery->id }}">{{ $gallery->label }}</option>
-        @endforeach
-    </select>
 </div>
 
 
@@ -69,3 +79,63 @@
         <div class="form-text">{{ __('Gutter is the margin between images.') }}</div>
     </div>
 </div>
+
+<div class="form-group mb-3">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="shadow" name="shadow" @if ($block_settings->shadow ?? null) checked @endif>
+        <label class="form-check-label" for="shadow">{{ __('Add shadow to images') }}</label>
+    </div>
+</div>
+
+<div class="form-group mb-3">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="rounded" name="rounded" @if ($block_settings->rounded ?? null) checked @endif>
+        <label class="form-check-label" for="rounded">{{ __('Add rounded border to images') }}</label>
+    </div>
+</div>
+
+
+@foreach ($content_langs as $lang)
+    @if (count($content_langs) > 1)
+        <h5 class="mb-3">{!! flag($lang->code) !!} {{ $lang->name }}</h5>
+    @endif
+
+    @php
+        $block_header = json_decode($lang->block_header);
+        $block_content = json_decode($lang->block_content);
+    @endphp
+
+    <div class="form-group mb-0">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="add_header_{{ $lang->id }}" name="add_header_{{ $lang->id }}" @if ($block_header->add_header ?? null) checked @endif>
+            <label class="form-check-label" for="add_header_{{ $lang->id }}">{{ __('Add header content') }}</label>
+        </div>
+    </div>
+
+    <script>
+        $('#add_header_{{ $lang->id }}').change(function() {
+            select = $(this).prop('checked');
+            if (select)
+                document.getElementById('hidden_div_header_{{ $lang->id }}').style.display = 'block';
+            else
+                document.getElementById('hidden_div_header_{{ $lang->id }}').style.display = 'none';
+        })
+    </script>
+
+    <div id="hidden_div_header_{{ $lang->id }}" style="display: @if ($block_header->add_header ?? null) block @else none @endif" class="mt-1">
+        <div class="form-group">
+            <label>{{ __('Header title') }}</label>
+            <input class="form-control" name="header_title_{{ $lang->id }}" value="{{ $block_header->title ?? null }}">
+        </div>
+        <div class="form-group">
+            <label>{{ __('Header content') }}</label>
+            <textarea class="form-control trumbowyg" name="header_content_{{ $lang->id }}">{{ $block_header->content ?? null }}</textarea>
+        </div>
+    </div>
+
+    <div class="mb-4"></div>
+
+    @if (count($content_langs) > 1 && !$loop->last)
+        <hr>
+    @endif
+@endforeach

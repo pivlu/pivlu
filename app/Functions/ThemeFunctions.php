@@ -21,9 +21,10 @@
 
 namespace App\Functions;
 
-use File;
 use App\Models\Language;
 use App\Models\ThemeMenuItem;
+use App\Models\ThemeButton;
+use App\Models\ThemeStyle;
 use App\Models\ThemeMenuContent;
 use App\Models\ConfigLang;
 use App\Models\PostContent;
@@ -116,18 +117,11 @@ class ThemeFunctions
 
 
     public static function generate_styles_css()
-    {
-        // Create the directory if it does not exist
-        $css_folder = 'custom/';
-
-        if (!File::isDirectory($css_folder)) {
-            File::makeDirectory($css_folder, 0777, true, true);
-        }
-
-        $css_file = fopen($css_folder . '/styles.css', "w");
+    {        
+        $css_file = fopen('assets/css/custom.css', "w");
 
         $styles = ThemeStyle::get();
-        //$buttons = TemplateButton::get();
+        $buttons = ThemeButton::get();
         $fonts_array = array();
 
         // 1. IMPORT FONTS
@@ -232,18 +226,21 @@ class ThemeFunctions
 
         // BUTTONS
         foreach ($buttons as $button) {
-            $bg_color = $button->bg_color ?? config('pivlu.defaults.button_bg_color');
-            $font_color = $button->font_color ?? config('pivlu.defaults.button_font_color');
-            $font_weight = $button->font_weight ?? 'normal';
-            $rounded = $button->rounded ?? 0;
-            $border_color = $button->border_color ?? config('pivlu.defaults.button_border_color');
-            $bg_color_hover = $button->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover');
-            $font_color_hover = $button->font_color_hover ?? config('pivlu.defaults.button_font_color_hover');
-            $border_color_hover = $button->border_color_hover ?? config('pivlu.defaults.button_border_color_hover');
+            $button_data = json_decode(($button->data));
+
+            $bg_color = $button_data->bg_color ?? config('pivlu.defaults.button_bg_color');
+            $font_color = $button_data->font_color ?? config('pivlu.defaults.button_font_color');
+            $font_weight = $button_data->font_weight ?? 'normal';
+            $rounded = $button_data->rounded ?? 0;
+            $border_color = $button_data->border_color ?? config('pivlu.defaults.button_border_color');
+            $bg_color_hover = $button_data->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover');
+            $font_color_hover = $button_data->font_color_hover ?? config('pivlu.defaults.button_font_color_hover');
+            $border_color_hover = $button_data->border_color_hover ?? config('pivlu.defaults.button_border_color_hover');
 
             $write = ".btn_$button->id, a .btn_$button->id, .style_nav .btn_$button->id, .style_nav a .btn_$button->id {
                 background-color: $bg_color !important; 
                 color: $font_color !important;
+                border-color: $border_color !important;
                 font-weight: $font_weight !important;
                 text-decoration: none !important;
                 border-radius: $rounded !important;
@@ -252,6 +249,7 @@ class ThemeFunctions
             $write .= ".btn_$button->id:hover, .style_nav .btn_$button->id:hover {
                 background-color: $bg_color_hover  !important;
                 color: $font_color_hover !important;
+                border-color: $border_color_hover !important;
                 font-weight: $font_weight !important;
                 text-decoration: none !important; } ";
 
@@ -350,7 +348,7 @@ class ThemeFunctions
                 $items[] = array('label' => $menu_content->label ?? '#', 'url' => $url ?? '#', 'dropdown' => $dropdown, 'type' => $link->type, 'btn_id' => $link->btn_id, 'new_tab' => $link->new_tab, 'icon' => $link->icon);
             }
 
-            ConfigLang::update_config($lang->id, 'menu_links_'.$menu_id, serialize($items));
+            ConfigLang::update_config($lang->id, 'menu_links_'.$menu_id, json_encode($items, JSON_UNESCAPED_UNICODE));
         }
 
         return null;

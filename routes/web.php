@@ -27,7 +27,7 @@ use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\ContentController;
 use App\Http\Controllers\Web\ToolsController;
 use App\Http\Controllers\Web\ProfileController;
-use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\Web\FormController;
 
 Route::get('/account', function () {
     if (Auth::user()) {
@@ -42,6 +42,10 @@ Route::get('maintenance-mode', [ToolsController::class, 'maintenance'])->name('m
 // Web New Account Invitation
 Route::get('action/invite', [ToolsController::class, 'account_invitation']);
 Route::post('action/invite', [ToolsController::class, 'account_invitation_submit']);
+
+ // Submit form
+Route::put('/form-submit/{id}', [FormController::class, 'submit'])->name('form.submit')->where(['id' => '[0-9]+']);
+
 
 // 1. DEFAULT LANGUAGE
 // Web Homepage

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pivlu_form_data', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('form_id')->nullable();
+            $table->unsignedBigInteger('block_component_id')->nullable();
             $table->string('name', 250)->nullable();
             $table->string('email', 250)->nullable();
             $table->text('subject')->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('form_id')->references('id')->on('pivlu_forms')->nullOnDelete();
+            $table->foreign('block_component_id')->references('id')->on('pivlu_block_components')->nullOnDelete();
             $table->foreign('source_lang_id')->references('id')->on('pivlu_languages')->nullOnDelete();
         });
     }

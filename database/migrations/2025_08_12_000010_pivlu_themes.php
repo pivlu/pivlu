@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('menu_id')->nullable();
             $table->unsignedBigInteger('footer_id')->nullable();
             $table->boolean('is_default')->default(false);
-            $table->boolean('is_active_theme')->default(false);
+            $table->boolean('is_active')->default(false);
             $table->boolean('is_builder')->default(true);
             $table->timestamps();
             

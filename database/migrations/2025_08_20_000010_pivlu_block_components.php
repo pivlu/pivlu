@@ -30,11 +30,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_blocks2', function (Blueprint $table) {
+        Schema::create('pivlu_block_components', function (Blueprint $table) {
             $table->id();
             $table->string('type', 50);
-            $table->text('settings')->nullable();
             $table->string('label', 100)->nullable();            
+            $table->text('settings')->nullable();            
             $table->boolean('active')->default(false);   
             $table->timestamps();
         });
@@ -45,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_blocks2');
+        Schema::dropIfExists('pivlu_block_components');
     }
 };

@@ -21,6 +21,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Functions\ThemeFunctions;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -131,7 +132,7 @@ class ThemeButtonController extends Controller
         ]);
 
         // regenerate css file
-        //Template::generate_styles_css();
+        ThemeFunctions::generate_styles_css();
 
         return redirect(route('admin.theme-buttons.show', ['id' => $request->id]))->with('success', 'updated');
     }

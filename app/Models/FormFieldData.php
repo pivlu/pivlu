@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 class FormFieldData extends Model
 {
     protected $fillable = [
-        'form_id',
+        'block_component_id',
         'form_data_id',
         'field_id',
         'value',
@@ -37,5 +37,10 @@ class FormFieldData extends Model
     public function field()
     {
         return $this->belongsTo(FormField::class, 'field_id')->with('default_lang_field');
+    }
+
+    public function media()
+    {
+        return $this->belongsTo(Media::class, 'value', 'code');
     }
 }

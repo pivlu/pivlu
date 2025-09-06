@@ -25,6 +25,7 @@ use App\Models\Language;
 use App\Models\ThemeConfig;
 use App\Models\ThemeMenu;
 use App\Models\ThemeStyle;
+use App\Models\ThemeButton;
 use App\Models\Theme;
 
 if (!function_exists('theme_asset')) {
@@ -161,7 +162,7 @@ if (!function_exists('theme_menu_links')) {
 			$menu_links = unserialize($menu_links);
 			$menu_links = json_decode(json_encode($menu_links)); // array to object
 		}
-		
+
 		return $menu_links ?? [];
 	}
 }
@@ -191,13 +192,15 @@ if (!function_exists('get_style')) {
 if (!function_exists('menu_links')) {
 	function menu_links()
 	{
-		$active_theme_id = Theme::where('is_active_theme', 1)->value('id');
-		$val = ConfigLang::where('lang_id', Language::get_active_language()->id)->where('name', 'menu_links_'.$active_theme_id)->value('value');
-		$menu_links = unserialize($val);
+		$active_theme = Theme::get_active_theme();
+		if (! $active_theme) return [];
 
-		$menu_links = json_decode(json_encode($menu_links));
-		
-		return (object)($menu_links ?? []);
+		$theme_menu_id = $active_theme->menu_id;
+
+		$val = ConfigLang::where('lang_id', Language::get_active_language()->id)->where('name', 'menu_links_' . $theme_menu_id)->value('value');
+		$menu_links = json_decode($val);
+
+		return $menu_links ?? [];
 	}
 }
 
@@ -215,5 +218,15 @@ if (!function_exists('footer_blocks')) {
 		$blocks = TemplateFooterBlock::where('footer', $footer)->where('layout', $layout)->where('col', $col)->orderBy('position')->get();
 		*/
 		return $blocks ?? [];
+	}
+}
+
+
+if (!function_exists('button')) {
+	function button($id)
+	{
+		if (!$id) return null;
+		$button = ThemeButton::find($id);
+		return $button;
 	}
 }

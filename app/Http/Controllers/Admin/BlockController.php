@@ -76,8 +76,9 @@ class BlockController extends Controller
             'referer' => $referer,
             'font_sizes' => ThemeFunctions::font_sizes(),
             'styles' => ThemeStyle::orderBy('label')->get(),
-            'forms' =>  Form::where('active', 1)->orderByDesc('is_contact_form')->orderBy('label')->get(),
+            'components_form' =>  BlockComponent::where('type', 'form')->orderByDesc('id')->get(),
             'components_gallery' =>  BlockComponent::where('type', 'gallery')->orderByDesc('active')->orderBy('label')->get(),
+            'components_slider' =>  BlockComponent::where('type', 'slider')->orderByDesc('active')->orderBy('label')->get(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
         ]);
     }

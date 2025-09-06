@@ -27,7 +27,7 @@
                 <div class="float-end">
                     <a href="{{ route('admin.recycle_bin.module', ['module' => 'forms']) }}" class="btn btn-secondary me-2"><i class="bi bi-trash"></i> {{ __('Trash') }}</a>
 
-                    <a href="{{ route('admin.forms.config') }}" class="btn btn-primary me-1"><i class="bi bi-gear"></i> {{ __('Manage forms') }}</a>
+                    <a href="{{ route('admin.block-components.type', ['type' => 'form']) }}" class="btn btn-primary me-1"><i class="bi bi-gear"></i> {{ __('Manage forms') }}</a>
                 </div>
             </div>
 
@@ -65,50 +65,50 @@
             </div>
         @endif
 
+        <section>
+            <form action="{{ route('admin.forms') }}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
+
+                <div class="col-12">
+                    <input type="text" name="search_terms" placeholder="{{ __('Search sender name or email') }}" class="form-control me-2 mb-2 @if ($search_terms) is-valid @endif"
+                        value="<?= $search_terms ?>" />
+                </div>
+
+                <div class="col-12">
+                    <select name="search_status" class="form-select me-2 mb-2 @if ($search_status) is-valid @endif">
+                        <option value="">- {{ __('Any status') }} -</option>
+                        <option @if ($search_status == 'unread') selected="selected" @endif value="unread">{{ __('Unread messages') }}</option>
+                        <option @if ($search_status == 'read') selected="selected" @endif value="read">{{ __('Read messages') }}</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <select class="form-select me-2 mb-2 @if ($search_replied) is-valid @endif" name="search_replied">
+                        <option name="search_replied" selected="selected" value="">- {{ __('All messages') }} -</option>
+                        <option @if ($search_replied == 'no') selected="selected" @endif value="no">{{ __('Without reply') }}</option>
+                        <option @if ($search_replied == 'yes') selected="selected" @endif value="yes">{{ __('With reply') }}</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <select class="form-select me-2 mb-2 @if ($search_important) is-valid @endif" name="search_important">
+                        <option name="search_important" selected="selected" value="">- {{ __('All messages') }} -</option>
+                        <option @if ($search_important == '1') selected="selected" @endif value="1">{{ __('Important messages') }}</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-secondary me-2 mb-2" type="submit"><i class="bi bi-check2"></i> {{ __('Apply') }}</button>
+                    <a class="btn btn-light  mb-2" href="{{ route('admin.forms') }}"><i class="bi bi-arrow-counterclockwise"></i></a>
+                </div>
+
+            </form>
+        </section>
+
+        <div class="mb-2"></div>
+
         @if ($messages->total() == 0)
             {{ __('No message') }}
         @else
-            <section>
-                <form action="{{ route('admin.forms') }}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
-
-                    <div class="col-12">
-                        <input type="text" name="search_terms" placeholder="{{ __('Search sender name or email') }}" class="form-control me-2 mb-2 @if ($search_terms) is-valid @endif"
-                            value="<?= $search_terms ?>" />
-                    </div>
-
-                    <div class="col-12">
-                        <select name="search_status" class="form-select me-2 mb-2 @if ($search_status) is-valid @endif">
-                            <option value="">- {{ __('Any status') }} -</option>
-                            <option @if ($search_status == 'unread') selected="selected" @endif value="unread">{{ __('Only unread messages') }}</option>
-                            <option @if ($search_status == 'read') selected="selected" @endif value="read">{{ __('Only read messages') }}</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <select class="form-select me-2 mb-2 @if ($search_replied) is-valid @endif" name="search_replied">
-                            <option name="search_replied" selected="selected" value="">- {{ __('All messages') }} -</option>
-                            <option @if ($search_replied == 'no') selected="selected" @endif value="no">{{ __('Only messages without reply') }}</option>
-                            <option @if ($search_replied == 'yes') selected="selected" @endif value="yes">{{ __('Only messages with reply') }}</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <select class="form-select me-2 mb-2 @if ($search_important) is-valid @endif" name="search_important">
-                            <option name="search_important" selected="selected" value="">- {{ __('All messages') }} -</option>
-                            <option @if ($search_important == '1') selected="selected" @endif value="1">{{ __('Only important messages') }}</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <button class="btn btn-secondary me-2 mb-2" type="submit"><i class="bi bi-check2"></i> {{ __('Apply') }}</button>
-                        <a class="btn btn-light  mb-2" href="{{ route('admin.forms') }}"><i class="bi bi-arrow-counterclockwise"></i></a>
-                    </div>
-
-                </form>
-            </section>
-
-            <div class="mb-2"></div>
-
             <form method="POST" action="{{ route('admin.forms.multiple_action') }}">
                 @csrf
 
@@ -122,7 +122,7 @@
                                 </th>
                                 <th>{{ __('Details') }}</th>
                                 <th width="220">{{ __('Form') }}</th>
-                                <th width="320">{{ __('Sender') }}</th>
+                                <th width="360">{{ __('Sender') }}</th>
                                 <th width="50"> </th>
                             </tr>
                         </thead>
@@ -151,18 +151,11 @@
                                                 <a href="{{ route('admin.forms.show', ['id' => $message->id]) }}">{{ $message->name }} ({{ $message->email }})</a>
                                             @endif
                                         </div>
-
-                                        @if ($message->task_id)
-                                            @if ($message->task_closed_at)
-                                                <a class="btn btn-success btn-sm mb-2" href="{{ route('admin.tasks.show', ['id' => $message->task_id]) }}">{{ __('Task closed') }}</a>
-                                            @else<a class="btn btn-danger btn-sm mb-2" href="{{ route('admin.tasks.show', ['id' => $message->task_id]) }}">{{ __('Task not closed') }}</a>
-                                            @endif
-                                        @endif
-
+                                        
                                         <div class="text-muted small">
                                             {{ date_locale($message->created_at, 'datetime') }}
                                             <br>
-                                            IP: {{ $message->ip }}                                           
+                                            IP: {{ $message->ip }}
                                         </div>
                                     </td>
 
@@ -181,6 +174,15 @@
                                             {{ $message->email }}
                                         @else
                                             <span class="text-danger">{{ __('No email') }}</span>
+                                        @endif
+
+                                        @if ($message->geo_data->country_code ?? null)
+                                            <div class="mt-2 text-muted small">
+                                                <img class="me-1" style="width: 20px; height: 20px;" src="{{ asset('assets//img/flags/circle/' . strtolower($message->geo_data->country_code) . '.svg') }}"
+                                                    alt="{{ $message->geo_data->country }}"> {{ $message->geo_data->city }},
+                                                {{ $message->geo_data->region_name }},
+                                                {{ $message->geo_data->country }}
+                                            </div>
                                         @endif
                                     </td>
 

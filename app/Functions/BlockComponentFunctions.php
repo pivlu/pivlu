@@ -130,9 +130,8 @@ class BlockComponentFunctions
 
         // Extra content FORM               
         if ($block->type == 'form') {
-            $block_settings = array('form_id' => null);
-            if ($request->form_id) $block_settings['form_id'] = $request->form_id;
-
+            $block_settings = array('form_id' => $request->form_id ?? null);
+            
             $block->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
         }
 
@@ -146,14 +145,7 @@ class BlockComponentFunctions
             $content = null;
 
             $key_content = 'content_' . $lang->id;
-            $key_add_header = 'add_header_' . $lang->id;
-            $key_header_title = 'header_title_' . $lang->id;
-            $key_header_content = 'header_content_' . $lang->id;
-            $key_caption = 'caption_' . $lang->id;
             $key_title = 'title_' . $lang->id;
-            $key_url = 'url_' . $lang->id;
-            $key_existing_image = 'existing_image_' . $lang->id;
-            $key_embed = 'embed_' . $lang->id;
             $key_btn1_label = 'btn1_label_' . $lang->id;
             $key_btn1_url = 'btn1_url_' . $lang->id;
             $key_btn1_id = 'btn1_id_' . $lang->id;
@@ -168,7 +160,7 @@ class BlockComponentFunctions
             if ($block->type == 'hero') {
                 $content = array('title' => $request->$key_title, 'content' => $request->$key_content, 'btn1_label' => $request->$key_btn1_label, 'btn1_url' => $request->$key_btn1_url, 'btn1_id' => $request->$key_btn1_id, 'btn1_icon' => $request->$key_btn1_icon, 'btn2_label' => $request->$key_btn2_label, 'btn2_id' => $request->$key_btn2_id, 'btn2_url' => $request->$key_btn2_url, 'btn2_icon' => $request->$key_btn2_icon);
                 $content = json_encode($content, JSON_UNESCAPED_UNICODE);
-                BlockComponentContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
+                BlockComponentContent::updateOrInsert(['block_component_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
 
             // GALLERY                      
@@ -187,12 +179,9 @@ class BlockComponentFunctions
                 $counter_key_existing = count($request->$post_key_existing_image ?? []);
                 $counter_key = $counter_key_images + $counter_key_existing;
 
-
-                $image = null;
                 $media = null;
 
                 for ($i = 0; $i < $counter_key; $i++) {
-                    $image = null;
                     $media = null;
 
                     // delete image (if checkbox is checked)
@@ -220,13 +209,7 @@ class BlockComponentFunctions
                 }
 
                 $content = json_encode($images_array_key, JSON_UNESCAPED_UNICODE);
-                BlockComponentContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
-                BlockComponentContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
+                BlockComponentContent::updateOrInsert(['block_component_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);                
             }
 
 
@@ -242,12 +225,9 @@ class BlockComponentFunctions
                 $slides_array_key = array();
                 $counter_key = count(array_filter($_POST[$post_key_title]));
 
-                $image = null;
                 $media = null;
 
                 for ($i = 0; $i < $counter_key; $i++) {
-
-                    $image = null;
                     $media = null;
 
                     // delete image (if checkbox is checked)
@@ -274,7 +254,7 @@ class BlockComponentFunctions
                 }
 
                 $content = json_encode($slides_array_key, JSON_UNESCAPED_UNICODE);
-                BlockComponentContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
+                BlockComponentContent::updateOrInsert(['block_component_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
             }
 
 
@@ -291,11 +271,9 @@ class BlockComponentFunctions
                 $cards_array_key = array();
                 $counter_key = count(array_filter($_POST[$post_key_title]));
 
-                $image = null;
                 $media = null;
 
                 for ($i = 0; $i < $counter_key; $i++) {
-                    $image = null;
                     $media = null;
 
                     // delete image (if checkbox is checked)
@@ -322,13 +300,7 @@ class BlockComponentFunctions
                 }
 
                 $content = json_ecode($cards_array_key, JSON_UNESCAPED_UNICODE);
-                BlockComponentContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
-
-                // header data
-                $header_array = array();
-                $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
-                BlockComponentContent::where(['block_id' => $id, 'lang_id' => $lang->id])->update(['header' => $header_content]);
+                BlockComponentContent::updateOrInsert(['block_component_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);                
             }
         }
     }

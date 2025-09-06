@@ -55,43 +55,7 @@
                 @if (count(admin_languages()) > 1)
                     <h5 class="mb-3">{!! flag($block_content->lang_code) !!} {{ $block_content->lang_name }}</h5>
                 @endif
-
-                @php
-                    $header_array = json_decode($block_content->header);
-                @endphp
-
-                <div class="mb-4 mt-3">
-                    <div class="form-group mb-0">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="add_header_{{ $block_content->lang_id }}" name="add_header_{{ $block_content->lang_id }}"
-                                @if ($header_array->add_header ?? null) checked @endif>
-                            <label class="form-check-label" for="add_header_{{ $block_content->lang_id }}">{{ __('Add header content') }}</label>
-                        </div>
-                    </div>
-
-                    <script>
-                        $('#add_header_{{ $block_content->lang_id }}').change(function() {
-                            select = $(this).prop('checked');
-                            if (select)
-                                document.getElementById('hidden_div_header_{{ $block_content->lang_id }}').style.display = 'block';
-                            else
-                                document.getElementById('hidden_div_header_{{ $block_content->lang_id }}').style.display = 'none';
-                        })
-                    </script>
-
-                    <div id="hidden_div_header_{{ $block_content->lang_id }}" style="display: @if ($header_array->add_header ?? null) block @else none @endif" class="mt-2">
-                        <div class="form-group">
-                            <label>{{ __('Header title') }}</label>
-                            <input class="form-control" name="header_title_{{ $block_content->lang_id }}" value="{{ $header_array->title ?? null }}">
-                        </div>
-                        <div class="form-group">
-                            <label>{{ __('Header content') }}</label>
-                            <textarea class="form-control trumbowyg" name="header_content_{{ $block_content->lang_id }}">{{ $header_array->content ?? null }}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-
+                
                 @php
                     $content_array = json_decode($block_content->content, true);
                 @endphp

@@ -30,13 +30,14 @@ class FormData extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'form_id',
+        'block_component_id',
         'source_lang_id',
         'name',
         'email',
         'subject',
         'message',
         'ip',
+        'geo',
         'referer',
         'created_at',
         'read_at',
@@ -45,10 +46,19 @@ class FormData extends Model
         'is_spam',
     ];
 
-    protected $table = 'pivlu_form_data';   
+    protected $table = 'pivlu_form_data';
+
+    protected $appends = ['geo_data'];
 
     public function form(): BelongsTo
     {
-        return $this->BelongsTo(Form::class, 'form_id');
+        return $this->BelongsTo(BlockComponent::class, 'block_component_id');
+    }
+
+    public function getGeoDataAttribute()
+    {
+        $geo = $this->geo;        
+        
+        return json_decode($geo);
     }
 }

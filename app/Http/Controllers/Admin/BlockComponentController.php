@@ -27,6 +27,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 use App\Models\BlockComponent;
+use App\Models\FormField;
+use App\Models\FormFieldContent;
+use App\Models\FormData;
+use App\Models\ThemeButton;
 use App\Functions\BlockComponentFunctions;
 
 class BlockComponentController extends Controller
@@ -74,6 +78,9 @@ class BlockComponentController extends Controller
         else
             $referer = request()->headers->get('referer');
 
+        if ($type == 'form') {
+            $block_form_fields = FormField::where('block_component_id', $request->id)->orderByDesc('active')->orderBy('position')->get();
+        }
 
         return view('admin.index', [
             'view_file' => 'admin.blocks.components.' . $type . '.index',
@@ -81,7 +88,11 @@ class BlockComponentController extends Controller
             'active_submenu' => 'blocks',
             'type' => $type,
             'block' => $block,
+            'settings' => json_decode($block->settings),
             'referer' => $referer,
+
+            'form_fields' => $block_form_fields ?? null,
+            'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
         ]);
     }
 
@@ -100,11 +111,73 @@ class BlockComponentController extends Controller
         if ($validator->fails())
             return redirect(route('admin.block-components'))->withErrors($validator)->withInput();
 
-        $item = BlockComponent::create([
+        $block = BlockComponent::create([
             'type' => $request->type,
             'label' => $request->label,
             'active' => $request->has('active') ? 1 : 0,
         ]);
+
+        if ($request->type == 'form') {
+            // insert NAME field
+            $field_name = FormField::create([
+                'block_component_id' => $block->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 0,
+                'protected' => 1,
+                'is_default_name' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['block_component_id' => $block->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
+            }
+
+            // insert EMAIL field
+            $field_email = FormField::create([
+                'block_component_id' => $block->id,
+                'type' => 'email',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 1,
+                'protected' => 1,
+                'is_default_email' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['block_component_id' => $block->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
+            }
+
+            // insert SUBJECT field
+            $field_subject = FormField::create([
+                'block_component_id' => $block->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 2,
+                'protected' => 1,
+                'is_default_subject' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['block_component_id' => $block->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
+            }
+
+            // insert MESSAGE field
+            $field_message = FormField::create([
+                'block_component_id' => $block->id,
+                'type' => 'textarea',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 3,
+                'protected' => 1,
+                'is_default_message' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['block_component_id' => $block->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
+            }
+        }
 
         return redirect(route('admin.block-components.type', ['type' => $request->type]))->with('success', 'created');
     }
@@ -118,7 +191,7 @@ class BlockComponentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'label' => 'required',
-            'type' => ['required', Rule::in(['gallery', 'form'])]
+            'type' => ['required', Rule::in(['gallery', 'form', 'hero', 'slider'])]
         ]);
 
         if ($validator->fails())
@@ -149,6 +222,14 @@ class BlockComponentController extends Controller
         $block = BlockComponent::find($request->id);
         if (!$block)
             return redirect(route('admin.block-components'));
+
+        if ($request->type == 'form') {
+            // check if exists messages        
+            if (FormData::where('block_component_id', $request->id)->exists()) return redirect(route('admin.block-components.block.show', ['id' => $block->id, 'type' => $request->type]))->with('error', 'form_data_exists');
+
+            FormData::where('block_component_id', $request->id)->delete();
+            FormField::where('block_component_id', $request->id)->delete();
+        }
 
         BlockComponent::where('id', $request->id)->delete();
 

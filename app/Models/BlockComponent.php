@@ -43,7 +43,7 @@ class BlockComponent extends Model
      */
     public function content()
     {
-        return $this->hasOne(BlockComponentContent::class, 'block_id');
+        return $this->hasOne(BlockComponentContent::class, 'block_component_id');
     }
 
     public function getAllLanguagesContentsAttribute()
@@ -51,7 +51,7 @@ class BlockComponent extends Model
         $all_language_contents = [];
         $langs = Language::get_languages();
         foreach ($langs as $lang) {
-            $content = BlockComponentContent::where('lang_id', $lang->id)->where('block_id', $this->id)->first();
+            $content = BlockComponentContent::where('lang_id', $lang->id)->where('block_component_id', $this->id)->first();
             $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'content' => $content->content ?? null, 'header' => $content->header ?? null];
         }
         return json_decode(json_encode($all_language_contents));

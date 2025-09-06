@@ -106,7 +106,7 @@ class ContentController extends Controller
             $page->meta_description = $page->active_language_content->meta_description ?? (substr($page->active_language_content->summary, 0, 200) ?? null);
             $page->author_name = $page->user->name;
             $page->author_avatar = $page->user->avatar_media_id;
-            if ($page->blocks) $content_blocks = unserialize($page->blocks);
+            if ($page->blocks) $content_blocks = json_decode($page->blocks);
 
             // check for custom tpl file
             $custom_tpl_file = PostMeta::get_meta($page->id, 'custom_tpl_file') ?? null;

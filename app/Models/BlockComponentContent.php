@@ -26,10 +26,9 @@ use Illuminate\Database\Eloquent\Model;
 class BlockComponentContent extends Model
 {
     protected $fillable = [
-        'block_id',
+        'block_component_id',
         'lang_id',
         'content',
-        'header',
     ];
 
     protected $table = 'pivlu_block_component_content';

@@ -1,6 +1,6 @@
 <div id="footer">
     <!-- ======= Primary Footer ======= -->
-    <div class="{{ get_style('footer') }}">
+    <div class="">
         <div class="container-xxl">
             @php
                 $footer_columns = $config->footer_columns ?? 1;

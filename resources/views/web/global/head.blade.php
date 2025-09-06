@@ -6,7 +6,7 @@
 @if ($config->favicon ?? null)
     <link rel="shortcut icon" href="{{ image($config->favicon) }}">
 @else    
-    <link rel="shortcut icon" href="{{ config('app.cdn') }}/img/favicon.png">
+    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
 @endif
 
 <!-- Bootstrap CSS-->
@@ -23,11 +23,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" />
 
 <!-- Main CSS Files -->
-<link rel="stylesheet" href="{{ config('app.cdn') }}/css/builder.css" />
-<link rel="stylesheet" href="{{ config('app.cdn') }}/css/blocks.css" />
+<link rel="stylesheet" href="{{ asset('assets/css/builder.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/blocks.css') }}" />
 
 <!-- Custom CSS File -->
-<link rel="stylesheet" href='{{ asset("custom/styles.css") }}' />
+<link rel="stylesheet" href='{{ asset("assets/css/custom.css") }}' />
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
@@ -36,20 +36,3 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" />
 
 {!! $config->template_global_head_code ?? null !!}
-
-@if($config->popup_enabled ?? null)
-<link rel="stylesheet" href="{{ config('app.cdn') }}/css/cookie.css">
-@endif 
-
-@if (($config->google_analytics_id ?? null) && ($config->google_analytics_enabled ?? null))
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ $config->google_analytics_id ?? null }}"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', '{{ $config->google_analytics_id ?? null }}');
-</script>
-@endif

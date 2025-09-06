@@ -1,9 +1,4 @@
-@php
-    $block_data = block($block['id']);
-    $block_header = unserialize($block_data->header ?? null);
-@endphp
-
-@switch($block['type'])
+@switch($block->type)
     @case('alert')
         @include('web.blocks.alert')
     @break
@@ -26,15 +21,21 @@
         </div>
     @break
 
-     @case('form')
+    @case('form')
         <div class="container-xxl">
-            @include('web.blocks.form')
+            <div class="block">
+                @include('web.includes.block-header')
+                @include('web.blocks.form')
+            </div>
         </div>
     @break
 
     @case('gallery')
         <div class="container-xxl">
-            @include('web.blocks.gallery')
+            <div class="block text-center">
+                @include('web.includes.block-header')
+                @include('web.blocks.gallery')
+            </div>
         </div>
     @break
 

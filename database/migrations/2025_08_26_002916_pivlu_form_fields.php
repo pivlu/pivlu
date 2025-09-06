@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pivlu_form_fields', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('form_id');
+            $table->unsignedBigInteger('block_component_id');
             $table->string('type', 250);
             $table->boolean('required')->default(false);
             $table->tinyInteger('col_md')->default(6);
@@ -24,9 +24,11 @@ return new class extends Migration
             $table->boolean('is_default_email')->default(false);
             $table->boolean('is_default_subject')->default(false);
             $table->boolean('is_default_message')->default(false);
+            $table->integer('min_length')->default(null);
+            $table->integer('max_length')->default(null);
             $table->timestamps();
 
-            $table->foreign('form_id')->references('id')->on('pivlu_forms')->cascadeOnDelete();
+            $table->foreign('block_component_id')->references('id')->on('pivlu_block_components')->cascadeOnDelete();
         });
     }
 

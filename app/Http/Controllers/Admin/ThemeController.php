@@ -40,7 +40,7 @@ class ThemeController extends Controller
     public function index(Request $request)
     {
 
-        $themes = Theme::orderByDesc('is_active_theme')->orderByDesc('is_default')->orderByDesc('id')->paginate(25);
+        $themes = Theme::orderByDesc('is_active')->orderByDesc('is_default')->orderByDesc('id')->paginate(25);
 
         return view('admin.index', [
             'view_file' => 'admin.theme.index',

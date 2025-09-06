@@ -23,268 +23,294 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Form;
-use App\Models\FormField;
-use App\Models\FormFieldContent;
-use App\Models\FormFieldData;
+
+use App\Models\BlockComponent;
 use App\Models\FormData;
-use App\Models\Language;
+use App\Models\DriveFile;
+use App\Models\FormFieldData;
 
 class FormController extends Controller
 {
 
     /**
-     * Show all resources
+     * Display all messages
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search_form_id = $request->search_form_id;
+        $search_terms = $request->search_terms;
+        $search_status = $request->search_status;
+        $search_replied = $request->search_replied;
+        $search_important = $request->search_important;
 
-        $forms = Form::orderByDesc('is_contact_form')->orderByDesc('active')->orderByDesc('label')->paginate(25);
+        $messages = FormData::with('form');
+
+        if ($search_form_id)
+            $messages = $messages->where('form_id', $search_form_id);
+
+        if ($search_status == 'unread')
+            $messages = $messages->whereNull('read_at');
+        if ($search_status == 'read')
+            $messages = $messages->whereNotNull('read_at');
+
+        if ($search_replied == 'yes')
+            $messages = $messages->whereNotNull('responded_at');
+        if ($search_replied == 'no')
+            $messages = $messages->whereNull('responded_at');
+
+        if ($search_important == '1')
+            $messages = $messages->where('is_important', 1);
+
+        if ($search_terms) $messages = $messages->where(function ($query) use ($search_terms) {
+            $query->where('name', 'like', "%$search_terms%")
+                ->orWhere('email', 'like', "%$search_terms%")
+                ->orWhere('subject', 'like', "%$search_terms%");
+        });
+
+        $messages = $messages->orderByDesc('id')->paginate(25);
+
+        $count_messages_unread = FormData::whereNull('read_at')->whereNull('deleted_at')->count();
 
         return view('admin.index', [
-            'view_file' => 'admin.forms.forms-config',
+            'view_file' => 'admin.forms.index',
             'active_menu' => 'website',
             'active_submenu' => 'forms',
-            'forms' => $forms,
+            'search_form_id' => $search_form_id,
+            'search_terms' => $search_terms,
+            'search_status' => $search_status,
+            'search_replied' => $search_replied,
+            'search_important' => $search_important,
+            'messages' => $messages,
+            'count_messages_unread' => $count_messages_unread,
         ]);
     }
 
 
     /**
-     * Create form
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'label' => 'required',
-        ]);
-
-        if ($validator->fails()) return redirect(route('admin.forms.config'))->withErrors($validator)->withInput();
-
-        if (Form::where(['label' => $request->label])->exists()) return redirect(route('admin.forms.config'))->with('error', 'duplicate');
-
-        $form = Form::create([
-            'label' => $request->label,
-            'size' => $request->size ?? null,
-            'active' => $request->has('active') ? 1 : 0,
-            'recaptcha' => $request->has('recaptcha') ? 1 : 0,
-        ]);
-
-        // insert NAME field
-        $field_name = FormField::create([
-            'form_id' => $form->id,
-            'type' => 'text',
-            'required' => 1,
-            'col_md' => 6,
-            'active' => 1,
-            'position' => 0,
-            'protected' => 1,
-            'is_default_name' => 1
-        ]);
-        foreach (admin_languages() as $lang) {
-            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
-        }
-
-        // insert EMAIL field
-        $field_email = FormField::create([
-            'form_id' => $form->id,
-            'type' => 'email',
-            'required' => 1,
-            'col_md' => 6,
-            'active' => 1,
-            'position' => 1,
-            'protected' => 1,
-            'is_default_email' => 1
-        ]);
-        foreach (admin_languages() as $lang) {
-            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
-        }
-
-        // insert SUBJECT field
-        $field_subject = FormField::create([
-            'form_id' => $form->id,
-            'type' => 'text',
-            'required' => 1,
-            'col_md' => 12,
-            'active' => 1,
-            'position' => 2,
-            'protected' => 1,
-            'is_default_subject' => 1
-        ]);
-        foreach (admin_languages() as $lang) {
-            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
-        }
-
-        // insert MESSAGE field
-        $field_message = FormField::create([
-            'form_id' => $form->id,
-            'type' => 'textarea',
-            'required' => 1,
-            'col_md' => 12,
-            'active' => 1,
-            'position' => 3,
-            'protected' => 1,
-            'is_default_message' => 1
-        ]);
-        foreach (admin_languages() as $lang) {
-            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
-        }
-
-        return redirect(route('admin.forms.config'))->with('success', 'created');
-    }
-
-
-    /**
-     * Show resource
+     * Show message     
      */
     public function show(Request $request)
     {
-        $form = Form::find($request->id);
-        if (!$form) return redirect(route('admin.forms.config'));
 
-        $fields = FormField::where('form_id', $request->id)->orderByDesc('active')->orderBy('position')->get();
+        $message = FormData::where('id', $request->id)->with('form')->first();
+        if (!$message) return redirect(route('admin.forms'));
+
+        $form_block_component = BlockComponent::where(['id' => $message->block_component_id, 'type' => 'form'])->first();
+        FormData::where('id', $request->id)->update(['read_at' => now()]);
+
+        $fields = FormFieldData::with('field', 'media')
+            ->where('block_component_id', $form_block_component->id)
+            ->where('form_data_id', $message->id)
+            ->get();
 
         return view('admin.index', [
-            'view_file' => 'admin.forms.form-config',
+            'view_file' => 'admin.forms.show',
             'active_menu' => 'website',
             'active_submenu' => 'forms',
-            'form' => $form,
+            'message' => $message,
+            'form_block_component' => $form_block_component,
             'fields' => $fields,
+            'geo' => json_decode($message->geo),
         ]);
     }
 
 
-
     /**
-     * Update form
+     * Display all messages from trash
      */
-    public function update(Request $request)
+    public function trash(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'label' => 'required',
+        $search_form_id = $request->search_form_id;
+        $search_terms = $request->search_terms;
+        $search_status = $request->search_status;
+        $search_replied = $request->search_replied;
+        $search_important = $request->search_important;
+
+        $messages = FormData::with('form')->whereNotNull('deleted_at');
+
+        if ($search_form_id)
+            $messages = $messages->where('forms_data.form_id', $search_form_id);
+
+        if ($search_status == 'unread')
+            $messages = $messages->whereNull('forms_data.read_at');
+        if ($search_status == 'read')
+            $messages = $messages->whereNotNull('forms_data.read_at');
+
+        if ($search_replied == 'yes')
+            $messages = $messages->whereNotNull('forms_data.responded_at');
+        if ($search_replied == 'no')
+            $messages = $messages->whereNull('forms_data.responded_at');
+
+        if ($search_important == '1')
+            $messages = $messages->where('forms_data.is_important', 1);
+
+        if ($search_terms) $messages = $messages->where(function ($query) use ($search_terms) {
+            $query->where('name', 'like', "%$search_terms%")
+                ->orWhere('email', 'like', "%$search_terms%")
+                ->orWhere('subject', 'like', "%$search_terms%");
+        });
+
+        $messages = $messages->orderByDesc('id')->paginate(25);
+
+        return view('admin.index', [
+            'view_file' => 'forms.trash',
+            'active_menu' => 'website',
+            'active_submenu' => 'forms',
+            'search_form_id' => $search_form_id,
+            'search_terms' => $search_terms,
+            'search_status' => $search_status,
+            'search_replied' => $search_replied,
+            'search_important' => $search_important,
+            'messages' => $messages,
         ]);
+    }
 
-        if ($validator->fails()) return redirect(route('admin.forms.config'))->withErrors($validator)->withInput();
+    /**
+     * Move message to trash
+     */
+    public function to_trash(Request $request)
+    {
+        // disable action in demo mode:
+        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
-        if (Form::where(['label' => $request->label])->where('id', '!=', $request->id)->exists()) return redirect(route('admin.forms.config'))->with('error', 'duplicate');
+        FormData::where('id', $request->id)->update(['deleted_at' => now()]);
 
-        Form::where('id', $request->id)->update([
-            'label' => $request->label,
-            'size' => $request->size ?? null,
-            'active' => $request->has('active') ? 1 : 0,
-            'recaptcha' => $request->has('recaptcha') ? 1 : 0,
-        ]);
 
-        return redirect(route('admin.forms.config'))->with('success', 'updated');
+        return redirect(route('admin.forms', ['pagenum' => $request->pagenum]))->with('success', 'moved_to_trash');
     }
 
 
     /**
-     * Remove form
+     * Action for multiple messages selected
+     */
+    public function multiple_action(Request $request)
+    {
+        // disable action in demo mode:
+        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
+
+        if (!$request->messages_checkbox) return redirect(route('admin.forms', ['pagenum' => $request->pagenum]));
+
+        foreach ($request->messages_checkbox as $message_id) {
+            if ($request->action == 'read') {
+                FormData::where('id', $message_id)->update(['read_at' => now()]);
+            }
+            if ($request->action == 'unread') {
+                FormData::where('id', $message_id)->update(['read_at' => null]);
+            }
+            if ($request->action == 'important') {
+                FormData::where('id', $message_id)->update(['is_important' => 1]);
+            }
+            if ($request->action == 'trash') {
+                FormData::where('id', $message_id)->update(['deleted_at' => now()]);
+            }
+            if ($request->action == 'restore') {
+                FormData::where('id', $message_id)->update(['deleted_at' => null]);
+            }
+            if ($request->action == 'delete') {
+                $message = FormData::where('id', $message_id)->with('form')->first();
+                if (!$message) continue;
+
+                // if field had file upload, delete file
+                $fields = FormFieldData::with('file')
+                    ->where('form_data_id', $message_id)
+                    ->get();
+                foreach ($fields as $field) {
+                    if ($field->file) {
+                        @unlink('uploads/' . $file->file);
+                        DriveFile::where('code', $field->code)->delete();
+                    }
+                }
+
+                FormData::where('id', $message_id)->delete();
+                FormFieldData::where('form_data_id', $message_id)->delete();
+            }
+        }
+
+        if ($request->section == 'trash')
+            return redirect(route('admin.forms.trash', ['pagenum' => $request->pagenum]))->with('success', 'updated');
+        else
+            return redirect(route('admin.forms', ['pagenum' => $request->pagenum]))->with('success', 'updated');
+    }
+
+
+    /**
+     * Delete message
      */
     public function destroy(Request $request)
     {
-        $form = Form::find($request->id);
-        if (!$form) return redirect(route('admin.forms.config'));
-        if ($form->is_contact == 1) return redirect(route('admin.forms.config'));
+        // disable action in demo mode:
+        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
-        // check if exists messages        
-        if (FormData::where('form_id', $request->id)->exists()) return redirect(route('admin.forms.config'))->with('error', 'exists_data');
+        $message = FormData::where('id', $request->id)->with('form')->first();
+        if (!$message) return redirect(route('admin.forms'));
 
-        FormData::where('form_id', $request->id)->delete();
-        FormField::where('form_id', $request->id)->delete();
-        Form::where('id', $request->id)->delete();
-
-        return redirect(route('admin.forms.config'))->with('success', 'deleted');
-    }
-
-
-    /**
-     * Add form field 
-     */
-    public function add_field(Request $request)
-    {        
-        $last_pos = FormField::where('form_id', $request->id)->orderByDesc('position')->value('position');
-        $position = ($last_pos ?? 0) + 1;
-
-        $form_field = FormField::create([
-            'form_id' => $request->id,
-            'type' => $request->type,
-            'required' => $request->has('required') ? 1 : 0,
-            'active' => $request->has('active') ? 1 : 0,
-            'col_md' => $request->col_md ?? 12,
-            'position' => $position,
-        ]);        
-
-        foreach (admin_languages() as $lang) {
-            FormFieldContent::create([
-                'form_id' => $request->id,
-                'field_id' => $form_field->id,
-                'lang_id' => $lang->id,
-                'label' => $request['label_' . $lang->id],
-                'info' => $request['info_' . $lang->id],
-                'dropdowns' => $request['dropdowns_' . $lang->id] ?? null
-            ]);
+        // if field had file upload, delete file
+        $fields = FormFieldData::with('file')
+            ->where('form_data_id', $message->id)
+            ->get();
+        foreach ($fields as $field) {
+            if ($field->file) {
+                @unlink('uploads/' . $field->file->file);
+                DriveFile::where('code', $field->file->code)->delete();
+            }
         }
 
-        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'created');
+        FormData::where('id', $request->id)->delete();
+        FormFieldData::where('form_data_id', $request->id)->delete();
+
+        return redirect(route('admin.forms.trash', ['pagenum' => $request->pagenum]))->with('success', 'deleted');
     }
 
 
     /**
-     * Update form field 
+     * Mark message (important, normal...)
      */
-    public function update_field(Request $request)
+    public function mark(Request $request)
     {
-        FormField::where('id', $request->field_id)->update([
-            'type' => $request->type,
-            'required' => $request->has('required') ? 1 : 0,
-            'active' => $request->has('active') ? 1 : 0,
-            'col_md' => $request->col_md ?? 12,
-        ]);
+        // disable action in demo mode:
+        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
-        foreach (admin_languages() as $lang) {
-            FormFieldContent::updateOrCreate(
-                ['form_id' => $request->id, 'field_id' => $request->field_id, 'lang_id' => $lang->id],
-                [
-                    'label' => $request['label_' . $lang->id],
-                    'info' => $request['info_' . $lang->id],
-                    'dropdowns' => $request['dropdowns_' . $lang->id] ?? null
-                ]
-            );
-        }
+        if ($request->action == 'important') FormData::where('id', $request->id)->update(['is_important' => 1]);
 
-        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'updated');
+        if ($request->action == 'not_important') FormData::where('id', $request->id)->update(['is_important' => 0]);
+
+        if ($request->action == 'spam') FormData::where('id', $request->id)->update(['is_spam' => 1]);
+
+        if ($request->action == 'not_spam') FormData::where('id', $request->id)->update(['is_spam' => 0]);
+
+        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'updated');
     }
 
 
     /**
-     * Remove form field
+     * Empty trash
      */
-    public function destroy_field(Request $request)
-    {        
-        if (FormField::where('id', $request->field_id)->value('protected') == 1) return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('error', 'protected');
-
-        FormFieldContent::where('field_id', $request->field_id)->delete();
-        FormFieldData::where('field_id', $request->field_id)->delete();
-        FormField::where('id', $request->field_id)->delete();
-
-        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'deleted');
-    }
-
-
-    /**
-     * Ajax sortable
-     */
-    public function sortable(Request $request)
+    public function empty_trash()
     {
-        $i = 0;
-        $records = $request->all();
+        // disable action in demo mode:
+        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
 
-        foreach ($records['item'] as $key => $value) {
-            FormField::where('form_id', $request->id)->where('id', $value)->update(['position' => $i]);
-            $i++;
+        $messages = FormData::with('form')->whereNotNull('deleted_at')->get();
+
+        foreach ($messages as $message) {
+            $message = FormData::where('id', $message->id)->with('form')->first();
+            if (!$message) continue;
+
+            // if field had file upload, delete file
+            $fields = FormFieldData::with('file')
+                ->where('form_data_id', $message->id)
+                ->get();
+            foreach ($fields as $field) {
+                if ($field->file) {
+                    @unlink('uploads/' . $field->file->file);
+                    DriveFile::where('code', $field->file->code)->delete();
+                }
+            }
+
+            FormData::where('id', $message->id)->delete();
+            FormFieldData::where('form_data_id', $message->id)->delete();
         }
+
+        return redirect(route('admin.forms.trash'))->with('success', 'empty_trash');
     }
 }

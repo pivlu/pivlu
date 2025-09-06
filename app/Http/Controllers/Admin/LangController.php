@@ -40,8 +40,8 @@ class LangController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.config.languages',
-            'active_menu' => 'config',
-            'active_submenu' => 'config.website',
+            'active_menu' => 'website',
+            'active_submenu' => 'config',
             'active_tab' => 'langs',
             'langs' => $langs,
             'locales_array' => LocaleFunctions::locales_array(),
