@@ -24,9 +24,9 @@ use App\Models\PostTaxonomy;
 use App\Models\PostTaxonomyRelation;
 use App\Models\PostType;
 use App\Models\Block;
+use App\Models\BlockType;
 use App\Models\BlockContent;
 use App\Models\Language;
-use App\Models\ThemeConfig;
 use App\Functions\PostFunctions;
 
 if (!function_exists('get_existing_taxonomies_list')) {
@@ -95,7 +95,6 @@ if (!function_exists('homepage_blocks')) {
 		return $blocks ?? [];
 	}
 }
-
 
 
 // show content block 
@@ -173,6 +172,25 @@ if (!function_exists('posts')) {
 			$item->author_name = $item->user->name;
 			$item->author_avatar = $item->user->avatar_media_id;
 			$item->url = PostFunctions::get_post_url($item->id, Language::get_active_language()->id);
+		}
+
+		return $items;
+	}
+}
+
+
+// Generate table of content links for a post 
+if (!function_exists('post_toc')) {
+	function post_toc($id)
+	{
+		$block_type_id = BlockType::where('type', 'post_section')->value('id');
+
+		$items = [];
+
+		$sections = Block::with('active_language_content')->where(['post_id' => $id, 'type_id' => $block_type_id, 'hidden' => 0])->orderBy('position')->get();
+		foreach($sections as $section) {
+			$section_content = json_decode($section->active_language_content->content);			
+			$items[] = ['title' => $section_content->title, 'slug' => $section_content->slug];
 		}
 
 		return $items;

@@ -1,23 +1,23 @@
 @switch($block->type)
     @case('alert')
-        @include('web.blocks.alert')
+        @include('web.includes.blocks.alert')
     @break
 
     @case('blockquote')
-        @include('web.blocks.blockquote')
+        @include('web.includes.blocks.blockquote')
     @break
 
     @case('custom')
-        @include('web.blocks.custom')
+        @include('web.includes.blocks.custom')
     @break
 
     @case('card')
-        @include('web.blocks.card')
+        @include('web.includes.blocks.card')
     @break
 
     @case('editor')
         <div class="container-xxl">
-            @include('web.blocks.editor')
+            @include('web.includes.blocks.editor')
         </div>
     @break
 
@@ -25,7 +25,7 @@
         <div class="container-xxl">
             <div class="block">
                 @include('web.includes.block-header')
-                @include('web.blocks.form')
+                @include('web.includes.blocks.form')
             </div>
         </div>
     @break
@@ -34,18 +34,18 @@
         <div class="container-xxl">
             <div class="block text-center">
                 @include('web.includes.block-header')
-                @include('web.blocks.gallery')
+                @include('web.includes.blocks.gallery')
             </div>
         </div>
     @break
 
     @case('hero')
-        @include('web.blocks.hero')
+        @include('web.includes.blocks.hero')
     @break
 
     @case('image')
         <div class="container-xxl">
-            @include('web.blocks.image')
+            @include('web.includes.blocks.image')
         </div>
     @break
 
@@ -59,15 +59,27 @@
     @break
 
     @case('map')
-        @include('web.blocks.map')
+        @include('web.includes.blocks.map')
     @break
 
     @case('slider')
-        @include('web.blocks.slider')
+        @include('web.includes.blocks.slider')
     @break
 
     @case('video')
-        @include('web.blocks.video')
+        @include('web.includes.blocks.video')
+    @break
+
+    @case('post_section')
+        <div class="container-xxl">
+            @include('web.includes.blocks.post_section')
+        </div>
+    @break
+
+    @case('post_toc')
+        <div class="container-xxl">
+            @include('web.includes.blocks.post_toc')
+        </div>
     @break
 
 @endswitch

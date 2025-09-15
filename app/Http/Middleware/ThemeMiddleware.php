@@ -26,8 +26,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades;
 use Illuminate\View\View;
 use App\Models\Config;
+use App\Models\ThemeConfig;
 use App\Models\ConfigLang;
 use App\Models\Language;
+use App\Functions\ThemeFunctions;
 
 class ThemeMiddleware
 {
@@ -39,7 +41,7 @@ class ThemeMiddleware
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
-    {        
+    {
 
         // Language
         $lang = $request->segment(1);
@@ -47,22 +49,27 @@ class ThemeMiddleware
         if (strlen($lang) === 2 && Language::where(['code' => $lang, 'status' => 'active'])->exists()) {
             app()->setLocale($lang);
             setlocale(LC_ALL, $lang);
-        }       
+        }
 
         Facades\View::composer('*', function (View $view) {
-            $view->with('theme_path', 'themes/'.Config::get_config('active_theme') ?? 'builder');
+            $view->with('theme_path', 'themes/' . Config::get_config('active_theme') ?? 'builder');
+
+            $view->with('active_theme', ThemeFunctions::get_active_theme());
 
             // general config
             $config = Config::config();
             $view->with('config', $config);
-            
+
+            // active theme config
+            $theme_config = ThemeConfig::config();            
+            $view->with('theme_config', $theme_config);
+
             // config depending on language
             $config_lang = ConfigLang::config();
             $view->with('config_lang', $config_lang);
 
             // Locale
             $view->with('locale', config('app.locale'));
-               
         });
 
         return $next($request);

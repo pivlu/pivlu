@@ -1,0 +1,2 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+ html, body { font-family: 'Open Sans', sans-serif; color: #3E3E3E; font-size: 1rem; background-color: #FFFFFF } h1 {font-size: 2rem; font-weight: normal } h2 {font-size: 1.5rem; font-weight: normal } h3 {font-size: 1.2rem; font-weight: normal } .title { font-size: 2rem; font-weight: normal } .subtitle { font-size: 1.5rem; font-weight: normal } .caption { font-style: normal; color: grey; font-size: 0.95rem } 

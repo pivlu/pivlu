@@ -25,14 +25,12 @@
     <!-- Bootstrap Fonts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-
     <!-- Main CSS Files -->
-    <link rel="stylesheet" href="{{ config('nura.cdn') }}/css/builder.css" />
-    <link rel="stylesheet" href="{{ config('nura.cdn') }}/css/blocks.css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/builder.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/blocks.css') }}" />
 
     <!-- Custom CSS File -->
-    <link rel="stylesheet" href='{{ asset('custom/custom.css') }}' />
-    <link rel="stylesheet" href='{{ asset('custom/styles.css') }}' />
+    <link rel="stylesheet" href='{{ asset('assets/css/custom.css') }}' />
 
 </head>
 

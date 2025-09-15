@@ -38,7 +38,7 @@ use App\Models\ThemeStyle;
 use App\Models\ThemeMenu;
 use App\Models\ThemeMenuItem;
 use App\Models\ThemeMenuContent;
-use App\Models\Form;
+use App\Models\BlockComponent;
 use App\Models\FormField;
 use App\Models\FormFieldContent;
 
@@ -168,16 +168,16 @@ class SetupFunctions
 
 
         // Add contact form, if not exists
-        if (Form::where(['is_contact_form' => 1])->doesntExist()) {
-            $contact_form = Form::create([
+        if (BlockComponent::where(['type' => 'form'])->doesntExist()) {
+            $contact_form_component = BlockComponent::create([
                 'label' => 'Contact form',
                 'active' => 1,
-                'is_contact_form' => 1,
+                'type' => 'form',
             ]);
 
             // insert NAME field
             $field_name = FormField::create([
-                'form_id' => $contact_form->id,
+                'block_component_id' => $contact_form->id,
                 'type' => 'text',
                 'required' => 1,
                 'col_md' => 6,
@@ -187,12 +187,12 @@ class SetupFunctions
                 'is_default_name' => 1
             ]);
             foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
+                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
             }
 
             // insert EMAIL field
             $field_email = FormField::create([
-                'form_id' => $contact_form->id,
+                'block_component_id' => $contact_form->id,
                 'type' => 'email',
                 'required' => 1,
                 'col_md' => 6,
@@ -202,12 +202,12 @@ class SetupFunctions
                 'is_default_email' => 1
             ]);
             foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
+                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
             }
 
             // insert SUBJECT field
             $field_subject = FormField::create([
-                'form_id' => $contact_form->id,
+                'block_component_id' => $contact_form->id,
                 'type' => 'text',
                 'required' => 1,
                 'col_md' => 12,
@@ -217,12 +217,12 @@ class SetupFunctions
                 'is_default_subject' => 1
             ]);
             foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
+                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
             }
 
             // insert MESSAGE field
             $field_message = FormField::create([
-                'form_id' => $contact_form->id,
+                'block_component_id' => $contact_form->id,
                 'type' => 'textarea',
                 'required' => 1,
                 'col_md' => 12,
@@ -232,7 +232,7 @@ class SetupFunctions
                 'is_default_message' => 1
             ]);
             foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
+                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
             }
         }
 
@@ -546,14 +546,14 @@ class SetupFunctions
     // Add default apps, if not exists
     public static function check_default_apps()
     {
-        if (Module::where('slug', 'contact')->doesntExist()) {
+        if (Module::where('slug', 'docs')->doesntExist()) {
             Module::create([
-                'name' => 'Contact',
-                'description' => 'Add a contact page and contact form on your website.',
-                'slug' => 'contact',
-                'icon' => '<i class="bi-textarea-resize"></i>',
+                'name' => 'Docs / Knowledge Base',
+                'description' => 'Add a knowledge base on your website.',
+                'slug' => 'docs',
+                'icon' => '<i class="bi-question-circle"></i>',
                 'core' => 1,
-                'status' => 'inactive',
+                'status' => 'disabled',
             ]);
         }
     }

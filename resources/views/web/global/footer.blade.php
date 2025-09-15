@@ -1,26 +1,30 @@
+@php
+    $footer_style_class = $theme_config->tpl_footer_use_custom_style ? 'style_' . $theme_config->tpl_footer_style_id : null;
+    $footer2_style_class = $theme_config->tpl_footer2_use_custom_style ? 'style_' . $theme_config->tpl_footer2_style_id : null;
+
+    $footer_columns = $theme_config->tpl_footer_columns ?? 1;
+    $footer2_columns = $theme_config->tpl_footer2_columns ?? 1;
+@endphp
+
 <div id="footer">
     <!-- ======= Primary Footer ======= -->
-    <div class="">
+    <div class="{{ $footer_style_class }}">
         <div class="container-xxl">
-            @php
-                $footer_columns = $config->footer_columns ?? 1;
-            @endphp
-
             @switch($footer_columns)
                 @case('1')
-                    @include("web.layouts.footer-1-col", ['footer' => 'primary'])
+                    @include('web.includes.footer-1-col', ['footer' => 'primary'])
                 @break
 
                 @case('2')
-                    @include("web.layouts.footer-2-cols", ['footer' => 'primary'])
+                    @include('web.includes.footer-2-cols', ['footer' => 'primary'])
                 @break
 
                 @case('3')
-                    @include("web.layouts.footer-3-cols", ['footer' => 'primary'])
+                    @include('web.includes.footer-3-cols', ['footer' => 'primary'])
                 @break
 
                 @case('4')
-                    @include("web.layouts.footer-4-cols", ['footer' => 'primary'])
+                    @include('web.includes.footer-4-cols', ['footer' => 'primary'])
                 @break
             @endswitch
         </div>
@@ -29,27 +33,23 @@
 
     @if ($config->footer2_show ?? null)
         <!-- ======= Secondary Footer ======= -->
-        <div class="{{ get_style('footer2') }}">
+        <div class="{{ $footer2_style_class }}">
             <div class="container-xxl">
-                @php
-                    $footer_columns = $config->footer2_columns ?? 1;
-                @endphp
-
-                @switch($footer_columns)
+                @switch($footer2_columns)
                     @case('1')
-                        @include("web.layouts.footer-1-col", ['footer' => 'secondary'])
+                        @include('web.includes.footer-1-col', ['footer' => 'secondary'])
                     @break
 
                     @case('2')
-                        @include("web.layouts.footer-2-cols", ['footer' => 'secondary'])
+                        @include('web.includes.footer-2-cols', ['footer' => 'secondary'])
                     @break
 
                     @case('3')
-                        @include("web.layouts.footer-3-cols", ['footer' => 'secondary'])
+                        @include('web.includes.footer-3-cols', ['footer' => 'secondary'])
                     @break
 
                     @case('4')
-                        @include("web.layouts.footer-4-cols", ['footer' => 'secondary'])
+                        @include('web.includes.footer-4-cols', ['footer' => 'secondary'])
                     @break
                 @endswitch
             </div>
@@ -78,24 +78,24 @@
         $popup_button_label_key = 'popup_button_label_' . active_lang()->id;
 
         $popup_content = $config->$popup_content_key;
-        $popup_content = str_replace(array("\r", "\n", "<br>"), '', $popup_content);
+        $popup_content = str_replace(["\r", "\n", '<br>'], '', $popup_content);
 
     @endphp
     <script src="{{ config('app.cdn') }}/js/cookies.js"></script>
     <script>
         var options = {
-            title: '{{ $config->$popup_title_key ?? __("Accept terms") }}',
-            message: "{{ $popup_content ?? __("Accept terms") }}",
+            title: '{{ $config->$popup_title_key ?? __('Accept terms') }}',
+            message: "{{ $popup_content ?? __('Accept terms') }}",
             delay: 600,
             expires: {{ $config->popup_days ?? 30 }}, // 30 days default
-            link: '{{ $config->$popup_destination_page_url_key ?? "#" }}',           
+            link: '{{ $config->$popup_destination_page_url_key ?? '#' }}',
             uncheckBoxes: true,
-            acceptBtnLabel: '{{ $config->$popup_button_label_key ?? __("I agree") }}',
-            moreInfoLabel: '{{ $config->$popup_destination_page_label_key ?? "#" }}',
+            acceptBtnLabel: '{{ $config->$popup_button_label_key ?? __('I agree') }}',
+            moreInfoLabel: '{{ $config->$popup_destination_page_label_key ?? '#' }}',
         }
 
         $(document).ready(function() {
-            $('body').ihavecookies(options);            
+            $('body').ihavecookies(options);
 
             $('#ihavecookiesBtn').on('click', function() {
                 $('body').ihavecookies(options, 'reinit');

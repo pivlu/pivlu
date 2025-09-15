@@ -136,7 +136,7 @@
                                 <option value="">{{ __('Root (no parent)') }}</option>
 
                                 @foreach ($all_post_taxonomies as $select_taxonomy)
-                                    @include('admin.posts.loops.taxonomies-edit-select-loop', $select_taxonomy)
+                                    @include('admin.posts.includes.loops.taxonomies-edit-select-loop', $select_taxonomy)
                                 @endforeach
                             </select>
                         </div>

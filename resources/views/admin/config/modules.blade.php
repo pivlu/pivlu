@@ -30,7 +30,7 @@
 
             <b>{{ __('Active') }}</b>: {{ __('Module is enabled.') }}
             <br>
-            <b>{{ __('Inactive') }}</b>: {{ __('Administrators and internal users (with module permission) have access to manage the module settings and content, but the module is disabled for other users.') }}
+            <b>{{ __('Inactive') }}</b>: {{ __('Module is not active, but administrators and internal users (with module permission) can manage or add content to this module.') }}
             <br>
             <b>{{ __('Disabled') }}</b>: {{ __('Module is disabled and it can not be used.') }}
 

@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+ html, body { font-family: 'Courier Prime', monospace !important; color: #444444 !important; font-size: 1rem !important; background-color: #f3f6f4 !important} h1 {font-size: 2rem !important; font-weight: normal !important } h2 {font-size: 1.6rem !important; font-weight: normal !important } h3 {font-size: 1.2rem !important; font-weight: normal !important } .title { font-size: 2rem !important; font-weight: normal !important } .subtitle { font-size: 1.6rem !important; font-weight: normal !important } .caption { font-style: italic !important; color: #e06666 !important; font-size: 0.95rem !important } a { color: #c90076 !important; text-decoration: none !important; -webkit-text-decoration-color: #f6b26b !important; text-decoration-color: #f6b26b !important; text-decoration-thickness: 6px !important; 
+                text-underline-offset: 0.17em !important; } a:hover { color: #f44336 !important; 
+                text-decoration: underline !important; 
+                -webkit-text-decoration-color: #f6b26b !important; 
+                text-decoration-color: #93c47d !important;                
+                text-decoration-thickness: 6px !important;
+                text-underline-offset: 0.17em !important; } .btn a { color: inherit !important; } 

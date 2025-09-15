@@ -33,7 +33,8 @@ class PostType extends Model
         'internal_only',
         'admin_menu_icon',
         'active',
-        'core'
+        'core',
+        'module_id'
     ];
 
     protected $appends = ['all_languages_contents'];
@@ -54,6 +55,11 @@ class PostType extends Model
     public function contents()
     {
         return $this->hasMany(PostTypeContent::class, 'post_type_id');
+    }
+
+    public function module()
+    {
+        return $this->belongsTo(Module::class, 'module_id');
     }
 
     public function getAllLanguagesContentsAttribute()

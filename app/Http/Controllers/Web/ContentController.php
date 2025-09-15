@@ -181,7 +181,7 @@ class ContentController extends Controller
                     $post->author_name = $post->user->name;
                     $post->author_avatar = $post->user->avatar_media_id;
 
-                    if ($post->blocks) $content_blocks = unserialize($post->blocks);
+                    if ($post->blocks) $content_blocks = json_decode($post->blocks);
 
                     // Get post type taxonomies (userin nav menu)
                     $post_type_nav_items = PostTypeTaxonomy::get_hierarchical_taxonomies($post_type->id);
@@ -195,7 +195,7 @@ class ContentController extends Controller
                     // update hits
                     Post::where('id', $post->id)->increment('hits');
 
-                    return view(get_active_theme_view() . ($custom_tpl_file ?? 'post'), [
+                    return view('web.' . ($custom_tpl_file ?? 'post'), [                    
                         'taxonomy_section' => $post_main_hierarchical_taxonomy->slug ?? null,
                         'post_type' => $post_type,
                         'post_main_hierarchical_taxonomy' => $post_main_hierarchical_taxonomy,

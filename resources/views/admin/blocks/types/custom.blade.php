@@ -4,19 +4,19 @@
 <h5 class="mb-3">{{ __('Block content') }}:</h5>
 
 <div class="alert alert-info">
-    {{ __('Warning: HTML / CSS / JavaScript and tamplate functions code allowed. Bootstrap 5 code is allowed.') }}
+    {{ __('Note: HTML / CSS / JavaScript and template functions code allowed. Bootstrap 5 code is allowed.') }}
 </div>
 
-@foreach ($content_langs as $lang)
-    @if (count($languages) > 1)
-        <h5 class="mb-3">{!! flag($lang->code) !!} {{ $lang->name }}</h5>
+@foreach ($block->all_languages_contents as $lang_content)
+    @if (count(admin_languages()) > 1)
+        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
     @endif
 
-    <textarea name="content_{{ $lang->id }}" class="prism-live line-numbers language-html fill">{{ $lang->block_content }}</textarea>
+    <textarea name="content_{{ $lang_content->lang_id }}" class="prism-live line-numbers language-html fill">{{ $lang_content->content }}</textarea>
 
     <div class="mb-4"></div>
-    
-    @if (count($languages) > 1 && !$loop->last)
+
+    @if (count(admin_languages()) > 1 && !$loop->last)
         <hr>
     @endif
 @endforeach

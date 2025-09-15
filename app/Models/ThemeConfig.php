@@ -29,20 +29,29 @@ class ThemeConfig extends Model
 
     protected $fillable = ['theme_id', 'name', 'value'];
 
-    public $timestamps = false;
-
 
     /**
-     * Get configs from database
+     * Get theme configs from database
      *
      * @return object
      */
     public static function config($theme_id = null)
-    {        
-        if (!$theme_id ?? null) $theme_id = Theme::where('is_default', 1)->value('id');        
+    {
+        if (!$theme_id ?? null) $theme_id = Theme::where('is_active', 1)->value('id');
         $results = ThemeConfig::where('theme_id', $theme_id)->pluck('value', 'name')->toArray();
 
         return (object) $results;
+    }
+
+
+    /**
+     * Get specific config value from database
+     *
+     * @return string
+     */
+    public static function get_config($theme_id, $name)
+    {
+        return ThemeConfig::where(['theme_id' => $theme_id, 'name' => $name])->value('value') ?? null;
     }
 
 
@@ -59,7 +68,7 @@ class ThemeConfig extends Model
             }
         } else {
             ThemeConfig::updateOrCreate(['theme_id' => $theme_id, 'name' => $name], ['value' => $value]);
-        }        
+        }
 
         return null;
     }

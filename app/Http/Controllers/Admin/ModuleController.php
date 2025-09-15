@@ -21,6 +21,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Functions\ModuleFunctions;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Module;
@@ -28,34 +29,39 @@ use App\Models\Module;
 class ModuleController extends Controller
 {
 
-    
+
     public function index(Request $request)
     {
         $modules = Module::orderBy('name')->get();
-        
+
         return view('admin.index', [
             'view_file' => 'admin.config.modules',
             'active_menu' => 'config',
             'active_submenu' => 'modules',
-            'modules' => $modules,            
+            'modules' => $modules,
         ]);
     }
 
-    
+
     public function update(Request $request)
-    {    
-        $modules = $request->except('_token'); 
-        foreach($modules as $module => $status) {            
+    {
+        $modules = $request->except('_token');
+        foreach ($modules as $module => $status) {
             $module_array = explode('_', $module);
-            if($module_array[0] == 'module') {
+            if ($module_array[0] == 'module') {
                 $module_id = $module_array[1];
 
-                if($status == 'active' || $status == 'inactive' || $status == 'disabled')
-                    Module::where('id', $module_id)->update(['status' => $status]);
+                $module = Module::where('id', $module_id)->first();
+
+                if ($status == 'active' || $status == 'inactive' || $status == 'disabled')
+                    $module->update(['status' => $status]);
+
+                // Check DOCS module
+                if (($status != 'disabled') && ($module->slug == 'docs'))
+                    ModuleFunctions::setup_docs();
             }
         }
-        
+
         return redirect(route('admin.modules'))->with('success', 'updated');
     }
-
 }

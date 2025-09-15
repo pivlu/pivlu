@@ -37,9 +37,11 @@ use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\PostTypeTaxonomyController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\PostDocsController;
 use App\Http\Controllers\Admin\PostTaxonomyController;
 use App\Http\Controllers\Admin\RecycleBinController;
 use App\Http\Controllers\Admin\ThemeController;
+use App\Http\Controllers\Admin\ThemeFooterController;
 use App\Http\Controllers\Admin\ThemeHomepageController;
 use App\Http\Controllers\Admin\ThemeButtonController;
 use App\Http\Controllers\Admin\ThemeMenuController;
@@ -77,6 +79,12 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::delete('posts/{id}/content/delete/{block_id}', [PostController::class, 'delete_content'])->name('posts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
     Route::get('posts/{id}/delete-main-image', [PostController::class, 'delete_main_image'])->name('posts.delete_main_image')->where('id', '[0-9]+');
 
+    // Docs
+    Route::post('posts/{id}/docs-content', [PostDocsController::class, 'store'])->name('posts.docs-content-section.create')->where('id', '[0-9]+');
+    Route::get('posts/{id}/docs-content/{section_id}', [PostDocsController::class, 'show'])->name('posts.docs-content-section.show')->where(['id' => '[0-9]+', 'section_id' => '[0-9]+']);
+    Route::delete('posts/{id}/docs-content/{section_id}', [PostDocsController::class, 'destroy'])->name('posts.docs-content-section.delete')->where(['id' => '[0-9]+', 'section_id' => '[0-9]+']);
+    Route::post('posts/{id}/docs-sortable', [PostDocsController::class, 'sortable'])->name('posts.docs.sortable')->where('id', '[0-9]+');
+
     // Theme Menus
     Route::resource('appearance/theme-menus', ThemeMenuController::class)->parameters(['theme-menus' => 'id']);
     Route::post('appearance/theme-menu/{menu_id}/item/create', [ThemeMenuController::class, 'store_item'])->name('theme-menus.item.create')->where('menu_id', '[0-9]+');
@@ -90,12 +98,20 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::delete('appearance/theme-menu/{parent_id}/dropdown/delete/{item_id}', [ThemeMenuDropdownController::class, 'destroy'])->name('theme-menu.dropdown.delete')->where(['parent_id' => '[0-9]+', 'item_id' => '[0-9]+']);
     Route::post('appearance/theme-menu/{parent_id}dropdown/sortable', [ThemeMenuDropdownController::class, 'sortable'])->name('theme-menu.dropdown.sortable')->where(['parent_id' => '[0-9]+']);
 
-    // Theme Footers
-    Route::resource('appearance/theme-footers', ThemeFooterController::class)->parameters(['theme-footers' => 'id']);
+    // Theme Footer
+    Route::get('appearance/theme-footer', [ThemeFooterController::class, 'index'])->name('theme-footer');
+    Route::put('appearance/theme/{slug}/footer', [ThemeFooterController::class, 'update'])->name('theme-footer.update')->where(['slug' => '[a-z0-9_-]+']);
+
+    Route::get('appearance/theme/{slug}/footer/{footer}/content', [ThemeFooterController::class, 'content'])->name('theme-footer.content')->where(['slug' => '[a-z0-9_-]+', 'footer' => '[a-z0-9_-]+']);
+    Route::post('appearance/theme/{slug}/footer/{footer}/content', [ThemeFooterController::class, 'update_content'])->where(['slug' => '[a-z0-9_-]+', 'footer' => '[a-z0-9_-]+']);
+    Route::post('appearance/theme-footer/{footer}/{col}/sortable', [ThemeFooterController::class, 'sortable'])->name('theme-footer.sortable')->where('footer', '[a-z0-9_-]+')->where('col', '[0-9]+');
+    Route::delete('appearance/theme-footer/delete/{block_id}', [ThemeFooterController::class, 'delete_content'])->name('theme-footer.content.delete')->where('block_id', '[0-9]+');
+    Route::get('appearance/theme/{slug}/footer/block/{id}', [ThemeFooterController::class, 'block'])->name('theme-footer.block')->where(['slug' => '[a-z0-9_-]+', 'id' => '[0-9]+']);
+    Route::put('appearance/theme/{slug}/footer/block/{id}', [ThemeFooterController::class, 'block_update'])->where(['slug' => '[a-z0-9_-]+', 'id' => '[0-9]+']);
 
     // Themes
     Route::resource('appearance/themes', ThemeController::class)->parameters(['themes' => 'slug']);
-    Route::get('appearance/theme-set-default/{slug}', [ThemeController::class, 'set_default'])->name('themes.set-default')->where('slug', '[a-zA-Z0-9_-]+');
+    Route::get('appearance/theme-set-active/{slug}', [ThemeController::class, 'set_active'])->name('themes.set-active')->where('slug', '[a-zA-Z0-9_-]+');
 
     Route::post('appearance/theme/{slug}/update-homepage-block', [ThemeHomepageController::class, 'update_block'])->name('theme.homepage.blocks.store')->where('slug', '[a-zA-Z0-9_-]+');
     Route::delete('appearance/theme/{slug}/delete-homepage-block', [ThemeHomepageController::class, 'delete_block'])->name('theme.homepage.blocks.delete')->where('slug', '[a-zA-Z0-9_-]+');

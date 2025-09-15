@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('icon', 100)->nullable();
             $table->integer('position')->default(0);
             $table->boolean('core')->default(false);
+            $table->boolean('allow_in_footer')->default(false);
             $table->timestamps();            
         });
     }

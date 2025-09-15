@@ -247,7 +247,7 @@
                                                 continue;
                                             }
                                         @endphp
-                                        @include('admin.posts.loops.posts-filter-taxonomies-loop-checkboxes', $taxonomy_item)
+                                        @include('admin.posts.includes.loops.posts-filter-taxonomies-loop-checkboxes', $taxonomy_item)
                                     @endforeach
 
                                     @if (count($taxonomy_term->taxonomies) == 0)

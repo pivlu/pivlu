@@ -126,7 +126,7 @@ if (!function_exists('theme_section')) {
 if (!function_exists('get_active_theme_view')) {
 	function get_active_theme_view()
 	{
-		$active_theme = Theme::where('is_active_theme', 1)->value('slug');
+		$active_theme = Theme::where('is_active', 1)->value('slug');
 
 		if ($active_theme != 'builder')
 			return 'themes.' . $active_theme . '.';
@@ -138,9 +138,11 @@ if (!function_exists('get_active_theme_view')) {
 if (!function_exists('get_active_theme')) {
 	function get_active_theme()
 	{
-		$active_theme = Theme::where('is_active_theme', 1)->value('slug');
+		$theme = Theme::where('is_active', 1)->first();
 
-		return $active_theme;
+		if (! $theme) $theme = Theme::where('is_default', 1)->first();
+
+		return $theme;
 	}
 }
 
@@ -204,22 +206,6 @@ if (!function_exists('menu_links')) {
 	}
 }
 
-
-
-// Get blocks for a specific footer column
-if (!function_exists('footer_blocks')) {
-	function footer_blocks($footer, $col)
-	{
-		/*
-		// get footer layout (number of columns)
-		if ($footer == 'primary') $layout = SysConfig::config()->footer_columns ?? 1;
-		if ($footer == 'secondary') $layout = SysConfig::config()->footer2_columns ?? 1;
-
-		$blocks = TemplateFooterBlock::where('footer', $footer)->where('layout', $layout)->where('col', $col)->orderBy('position')->get();
-		*/
-		return $blocks ?? [];
-	}
-}
 
 
 if (!function_exists('button')) {

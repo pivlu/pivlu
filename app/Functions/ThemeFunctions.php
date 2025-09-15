@@ -21,16 +21,31 @@
 
 namespace App\Functions;
 
+use App\Models\Theme;
 use App\Models\Language;
 use App\Models\ThemeMenuItem;
 use App\Models\ThemeButton;
 use App\Models\ThemeStyle;
+use App\Models\ThemeConfig;
 use App\Models\ThemeMenuContent;
 use App\Models\ConfigLang;
 use App\Models\PostContent;
 
 class ThemeFunctions
 {
+
+
+
+    public static function get_active_theme()
+    {
+        $theme = Theme::where('is_active', 1)->first();
+
+        if (! $theme) $theme = Theme::where('is_default', 1)->first();
+
+        return $theme;
+    }
+
+
 
     public static function font_sizes()
     {
@@ -67,49 +82,50 @@ class ThemeFunctions
 
     public static function fonts()
     {
-        $array[0] = (object)array('value' =>  "'Alegreya', serif", 'name' => 'Alegreya', 'weight' => '400;700', 'import' => 'Alegreya:wght@400;700');
-        $array[1] = (object)array('value' =>  "'Alfa Slab One', cursive", 'name' => 'Alfa Slab One', 'weight' => '400', 'import' => 'Alfa+Slab+One:wght@400');
-        $array[2] = (object)array('value' => "'Alegreya Sans', sans-serif", 'name' => 'Alegreya Sans', 'weight' => '400;700', 'import' => 'Alegreya+Sans:wght@400;700');
-        $array[3] = (object)array('value' => "'Anton', sans-serif", 'name' => 'Anton', 'weight' => '400', 'import' => 'Anton:wght@400');
-        $array[4] = (object)array('value' => "'Architects Daughter', cursive", 'name' => 'Architects Daughter', 'weight' => '400', 'import' => 'Architects+Daughter:wght@400');
-        $array[5] = (object)array('value' => "'Archivo Black', sans-serif", 'name' => 'Archivo Black', 'weight' => '400', 'import' => 'Archivo+Black:wght@400');
-        $array[6] = (object)array('value' => "'Arima Madurai', cursive", 'name' => 'Arima Madurai', 'weight' => '400;700', 'import' => 'Arima+Madurai:wght@400;700');
-        $array[7] = (object)array('value' => "'Arvo', serif", 'name' => 'Arvo', 'weight' => '400;700', 'import' => 'Arvo:wght@400;700');
-        $array[8] = (object)array('value' => "'Bitter', serif", 'name' => 'Bitter', 'weight' => '400;700', 'import' => 'Bitter:wght@400;700');
-        $array[9] = (object)array('value' => "'Courgette', cursive", 'name' => 'Courgette', 'weight' => '400', 'import' => 'Courgette:wght@400');
-        $array[10] = (object)array('value' => "'Courier Prime', monospace", 'name' => 'Courier Prime', 'weight' => '400;700', 'import' => 'Courier+Prime:wght@400;700');
-        $array[11] = (object)array('value' => "'Crete Round', serif", 'name' => 'Crete Round', 'weight' => '400', 'import' => 'Crete+Round:wght@400');
-        $array[12] = (object)array('value' => "'Dancing Script', cursive", 'name' => 'Dancing Script', 'weight' => '400;700', 'import' => 'Dancing+Script:wght@400;700');
-        $array[13] = (object)array('value' => "'Exo', sans-serif", 'name' => 'Exo', 'weight' => '400;700', 'import' => 'Exo:wght@400;700');
-        $array[14] = (object)array('value' => "'Fredoka', sans-serif", 'name' => 'Fredoka', 'weight' => '400;700', 'import' => 'Fredoka:wght@400;700');
-        $array[15] = (object)array('value' => "'Inter', sans-serif", 'name' => 'Inter', 'weight' => '400;700', 'import' => 'Inter:wght@400;700');
-        $array[16] = (object)array('value' => "'Krub', sans-serif", 'name' => 'Krub', 'weight' => '400;700', 'import' => 'Krub:wght@400;700');
-        $array[17] = (object)array('value' => "'Lato', sans-serif", 'name' => 'Lato', 'weight' => '400;700', 'import' => 'Lato:wght@400;700');
-        $array[18] = (object)array('value' => "'Libre Baskerville', serif", 'name' => 'Libre Baskerville', 'weight' => '400;700', 'import' => 'Libre+Baskerville:wght@400;700');
-        $array[19] = (object)array('value' => "'Lora', serif", 'name' => 'Lora', 'weight' => '400;700', 'import' => 'Lora:wght@400;700');
-        $array[20] = (object)array('value' => "'Merriweather', serif", 'name' => 'Merriweather', 'weight' => '400;700', 'import' => 'Merriweather:wght@400;700');
-        $array[21] = (object)array('value' => "'Montserrat', sans-serif", 'name' => 'Montserrat', 'weight' => '400;700', 'import' => 'Montserrat:wght@400;700');
-        $array[22] = (object)array('value' => "'Nanum Gothic', sans-serif", 'name' => 'Nanum Gothic', 'weight' => '400;700', 'import' => 'Nanum+Gothic:wght@400;700');
-        $array[23] = (object)array('value' => "'Noto Sans', sans-serif", 'name' => 'Noto Sans', 'weight' => '400;700', 'import' => 'Noto+Sans:wght@400;700');
-        $array[24] = (object)array('value' => "'Nunito', sans-serif", 'name' => 'Nunito', 'weight' => '400;700', 'import' => 'Nunito:wght@400;700');
-        $array[25] = (object)array('value' => "'Open Sans', sans-serif", 'name' => 'Open Sans', 'weight' => '400;700', 'import' => 'Open+Sans:wght@400;700');
-        $array[26] = (object)array('value' => "'Oswald', sans-serif", 'name' => 'Oswald', 'weight' => '400;700', 'import' => 'Oswald:wght@400;700');
-        $array[27] = (object)array('value' => "'Pacifico', cursive", 'name' => 'Pacifico', 'weight' => '400', 'import' => 'Pacifico:wght@400');
-        $array[28] = (object)array('value' => "'Playfair Display', serif", 'name' => 'Playfair Display', 'weight' => '400;700', 'import' => 'Playfair+Display:wght@400;700');
-        $array[29] = (object)array('value' => "'Poppins', sans-serif", 'name' => 'Poppins', 'weight' => '400;700', 'import' => 'Poppins:wght@400;700');
-        $array[30] = (object)array('value' => "'Prata', serif", 'name' => 'Prata', 'weight' => '400', 'import' => 'Prata:wght@400');
-        $array[31] = (object)array('value' => "'Quicksand', sans-serif", 'name' => 'Quicksand', 'weight' => '400;700', 'import' => 'Quicksand:wght@400;700');
-        $array[32] = (object)array('value' => "'Raleway', sans-serif", 'name' => 'Raleway', 'weight' => '400;700', 'import' => 'Raleway:wght@400;700');
-        $array[33] = (object)array('value' => "'Roboto', sans-serif", 'name' => 'Roboto', 'weight' => '400;700', 'import' => 'Roboto:wght@400;700');
-        $array[34] = (object)array('value' => "'Roboto Mono', monospace", 'name' => 'Roboto Mono', 'weight' => '400;700', 'import' => 'Roboto+Mono:wght@400;700');
-        $array[35] = (object)array('value' => "'Roboto Slab', sans-serif", 'name' => 'Roboto Slab', 'weight' => '400;700', 'import' => 'Roboto+Slab:wght@400;700');
-        $array[36] = (object)array('value' => "'Sen', sans-serif", 'name' => 'Sen', 'weight' => '400;700', 'import' => 'Sen:wght@400;700');
-        $array[37] = (object)array('value' => "'Source Code Pro', monospace", 'name' => 'Source Code Pro', 'weight' => '400;700', 'import' => 'Source+Code+Pro:wght@400;700');
-        $array[38] = (object)array('value' =>  "'Source Sans Pro', sans-serif", 'name' => 'Source Sans Pro', 'weight' => '400;700', 'import' => 'Source+Sans+Pro:wght@400;700');
-        $array[39] = (object)array('value' =>  "'Source Serif Pro', sans-serif", 'name' => 'Source Serif Pro', 'weight' => '400;700', 'import' => 'Source+Serif+Pro:wght@400;700');
-        $array[40] = (object)array('value' => "'Ubuntu', sans-serif", 'name' => 'Ubuntu', 'weight' => '400;700', 'import' => 'Ubuntu:wght@400;700');
-        $array[41] = (object)array('value' => "'Urbanist', sans-serif", 'name' => 'Urbanist', 'weight' => '400;700', 'import' => 'Urbanist:wght@400;700');
-        $array[42] = (object)array('value' => "'Work Sans', sans-serif", 'name' => 'Work Sans', 'weight' => '400;700', 'import' => 'Work+Sans:wght@400;700');
+        $array[0] = (object)array('value' => "'Open Sans', sans-serif", 'name' => 'Open Sans', 'weight' => '400;700', 'import' => 'Open+Sans:wght@400;700');
+        $array[1] = (object)array('value' =>  "'Alegreya', serif", 'name' => 'Alegreya', 'weight' => '400;700', 'import' => 'Alegreya:wght@400;700');
+        $array[2] = (object)array('value' =>  "'Alfa Slab One', cursive", 'name' => 'Alfa Slab One', 'weight' => '400', 'import' => 'Alfa+Slab+One:wght@400');
+        $array[3] = (object)array('value' => "'Alegreya Sans', sans-serif", 'name' => 'Alegreya Sans', 'weight' => '400;700', 'import' => 'Alegreya+Sans:wght@400;700');
+        $array[4] = (object)array('value' => "'Anton', sans-serif", 'name' => 'Anton', 'weight' => '400', 'import' => 'Anton:wght@400');
+        $array[5] = (object)array('value' => "'Architects Daughter', cursive", 'name' => 'Architects Daughter', 'weight' => '400', 'import' => 'Architects+Daughter:wght@400');
+        $array[6] = (object)array('value' => "'Archivo Black', sans-serif", 'name' => 'Archivo Black', 'weight' => '400', 'import' => 'Archivo+Black:wght@400');
+        $array[7] = (object)array('value' => "'Arima Madurai', cursive", 'name' => 'Arima Madurai', 'weight' => '400;700', 'import' => 'Arima+Madurai:wght@400;700');
+        $array[8] = (object)array('value' => "'Arvo', serif", 'name' => 'Arvo', 'weight' => '400;700', 'import' => 'Arvo:wght@400;700');
+        $array[9] = (object)array('value' => "'Bitter', serif", 'name' => 'Bitter', 'weight' => '400;700', 'import' => 'Bitter:wght@400;700');
+        $array[10] = (object)array('value' => "'Courgette', cursive", 'name' => 'Courgette', 'weight' => '400', 'import' => 'Courgette:wght@400');
+        $array[11] = (object)array('value' => "'Courier Prime', monospace", 'name' => 'Courier Prime', 'weight' => '400;700', 'import' => 'Courier+Prime:wght@400;700');
+        $array[12] = (object)array('value' => "'Crete Round', serif", 'name' => 'Crete Round', 'weight' => '400', 'import' => 'Crete+Round:wght@400');
+        $array[13] = (object)array('value' => "'Dancing Script', cursive", 'name' => 'Dancing Script', 'weight' => '400;700', 'import' => 'Dancing+Script:wght@400;700');
+        $array[14] = (object)array('value' => "'Exo', sans-serif", 'name' => 'Exo', 'weight' => '400;700', 'import' => 'Exo:wght@400;700');
+        $array[15] = (object)array('value' => "'Fredoka', sans-serif", 'name' => 'Fredoka', 'weight' => '400;700', 'import' => 'Fredoka:wght@400;700');
+        $array[16] = (object)array('value' => "'Inter', sans-serif", 'name' => 'Inter', 'weight' => '400;700', 'import' => 'Inter:wght@400;700');
+        $array[17] = (object)array('value' => "'Krub', sans-serif", 'name' => 'Krub', 'weight' => '400;700', 'import' => 'Krub:wght@400;700');
+        $array[18] = (object)array('value' => "'Lato', sans-serif", 'name' => 'Lato', 'weight' => '400;700', 'import' => 'Lato:wght@400;700');
+        $array[19] = (object)array('value' => "'Libre Baskerville', serif", 'name' => 'Libre Baskerville', 'weight' => '400;700', 'import' => 'Libre+Baskerville:wght@400;700');
+        $array[20] = (object)array('value' => "'Lora', serif", 'name' => 'Lora', 'weight' => '400;700', 'import' => 'Lora:wght@400;700');
+        $array[21] = (object)array('value' => "'Merriweather', serif", 'name' => 'Merriweather', 'weight' => '400;700', 'import' => 'Merriweather:wght@400;700');
+        $array[22] = (object)array('value' => "'Montserrat', sans-serif", 'name' => 'Montserrat', 'weight' => '400;700', 'import' => 'Montserrat:wght@400;700');
+        $array[23] = (object)array('value' => "'Nanum Gothic', sans-serif", 'name' => 'Nanum Gothic', 'weight' => '400;700', 'import' => 'Nanum+Gothic:wght@400;700');
+        $array[24] = (object)array('value' => "'Noto Sans', sans-serif", 'name' => 'Noto Sans', 'weight' => '400;700', 'import' => 'Noto+Sans:wght@400;700');
+        $array[25] = (object)array('value' => "'Nunito', sans-serif", 'name' => 'Nunito', 'weight' => '400;700', 'import' => 'Nunito:wght@400;700');
+        $array[26] = (object)array('value' => "'Open Sans', sans-serif", 'name' => 'Open Sans', 'weight' => '400;700', 'import' => 'Open+Sans:wght@400;700');
+        $array[27] = (object)array('value' => "'Oswald', sans-serif", 'name' => 'Oswald', 'weight' => '400;700', 'import' => 'Oswald:wght@400;700');
+        $array[28] = (object)array('value' => "'Pacifico', cursive", 'name' => 'Pacifico', 'weight' => '400', 'import' => 'Pacifico:wght@400');
+        $array[29] = (object)array('value' => "'Playfair Display', serif", 'name' => 'Playfair Display', 'weight' => '400;700', 'import' => 'Playfair+Display:wght@400;700');
+        $array[30] = (object)array('value' => "'Poppins', sans-serif", 'name' => 'Poppins', 'weight' => '400;700', 'import' => 'Poppins:wght@400;700');
+        $array[31] = (object)array('value' => "'Prata', serif", 'name' => 'Prata', 'weight' => '400', 'import' => 'Prata:wght@400');
+        $array[32] = (object)array('value' => "'Quicksand', sans-serif", 'name' => 'Quicksand', 'weight' => '400;700', 'import' => 'Quicksand:wght@400;700');
+        $array[33] = (object)array('value' => "'Raleway', sans-serif", 'name' => 'Raleway', 'weight' => '400;700', 'import' => 'Raleway:wght@400;700');
+        $array[34] = (object)array('value' => "'Roboto', sans-serif", 'name' => 'Roboto', 'weight' => '400;700', 'import' => 'Roboto:wght@400;700');
+        $array[35] = (object)array('value' => "'Roboto Mono', monospace", 'name' => 'Roboto Mono', 'weight' => '400;700', 'import' => 'Roboto+Mono:wght@400;700');
+        $array[36] = (object)array('value' => "'Roboto Slab', sans-serif", 'name' => 'Roboto Slab', 'weight' => '400;700', 'import' => 'Roboto+Slab:wght@400;700');
+        $array[37] = (object)array('value' => "'Sen', sans-serif", 'name' => 'Sen', 'weight' => '400;700', 'import' => 'Sen:wght@400;700');
+        $array[38] = (object)array('value' => "'Source Code Pro', monospace", 'name' => 'Source Code Pro', 'weight' => '400;700', 'import' => 'Source+Code+Pro:wght@400;700');
+        $array[39] = (object)array('value' =>  "'Source Sans Pro', sans-serif", 'name' => 'Source Sans Pro', 'weight' => '400;700', 'import' => 'Source+Sans+Pro:wght@400;700');
+        $array[40] = (object)array('value' =>  "'Source Serif Pro', sans-serif", 'name' => 'Source Serif Pro', 'weight' => '400;700', 'import' => 'Source+Serif+Pro:wght@400;700');
+        $array[41] = (object)array('value' => "'Ubuntu', sans-serif", 'name' => 'Ubuntu', 'weight' => '400;700', 'import' => 'Ubuntu:wght@400;700');
+        $array[42] = (object)array('value' => "'Urbanist', sans-serif", 'name' => 'Urbanist', 'weight' => '400;700', 'import' => 'Urbanist:wght@400;700');
+        $array[43] = (object)array('value' => "'Work Sans', sans-serif", 'name' => 'Work Sans', 'weight' => '400;700', 'import' => 'Work+Sans:wght@400;700');
 
         return (object)$array;
     }
@@ -117,7 +133,7 @@ class ThemeFunctions
 
 
     public static function generate_styles_css()
-    {        
+    {
         $css_file = fopen('assets/css/custom.css', "w");
 
         $styles = ThemeStyle::get();
@@ -273,6 +289,100 @@ class ThemeFunctions
 
 
 
+    public static function generate_theme_css($theme_slug)
+    {
+        $css_file = fopen('assets/css/themes/' . $theme_slug . '.css', "w");
+
+        $theme = Theme::where('slug', $theme_slug)->first();
+        if (! $theme) return;
+
+        $theme_config = ThemeConfig::config($theme->id);
+
+        // 1. FONT FAMILY
+        $font_family_data = $theme_config->default_font_family_data ?? config('pivlu.defaults.font_family_data');
+        $font_array = explode('|', $font_family_data);
+        $font_family_name = $font_array[0];
+        $font_family_import = $font_array[1];
+
+        $import_url = 'https://fonts.googleapis.com/css2?family=' . $font_family_import . '&display=swap';
+        $write_import = "@import url('" . $import_url . "');\n ";
+        fwrite($css_file, $write_import);
+
+        // 2. FONTS AND COLORS
+        $font_color = $theme_config->default_text_color ?? config('pivlu.defaults.font_color');
+        $font_size = $theme_config->default_font_size ?? config('pivlu.defaults.font_size');
+
+        $h1_size = $theme_config->default_h1_size ?? config('pivlu.defaults.h1_size');
+        $h2_size = $theme_config->default_h2_size ?? config('pivlu.defaults.h2_size');
+        $h3_size = $theme_config->default_h3_size ?? config('pivlu.defaults.h3_size');
+
+        $h1_weight = $theme_config->default_h1_weight ?? 'normal';
+        $h2_weight = $theme_config->default_h2_weight ?? 'normal';
+        $h3_weight = $theme_config->default_h3_weight ?? 'normal';
+
+        $caption_size = $theme_config->default_caption_size ?? config('pivlu.defaults.caption_size');
+        $caption_color = $theme_config->default_caption_color ?? 'grey';
+        $caption_font_style = $theme_config->default_caption_font_style ?? 'normal';
+
+        $bg_color = $theme_config->default_bg_color ?? config('pivlu.defaults.bg_color');
+
+        $write = "html, body { font-family: $font_family_name !important; color: $font_color !important; font-size: $font_size !important; background-color: $bg_color !important} ";
+
+        $write .= "h1 {font-size: $h1_size !important; font-weight: $h1_weight !important } ";
+        $write .= "h2 {font-size: $h2_size !important; font-weight: $h2_weight !important } ";
+        $write .= "h3 {font-size: $h3_size !important; font-weight: $h3_weight !important } ";
+
+        $write .= ".title { font-size: $h1_size !important; font-weight: $h1_weight !important } ";
+        $write .= ".subtitle { font-size: $h2_size !important; font-weight: $h2_weight !important } ";
+        $write .= ".caption { font-style: $caption_font_style !important; color: $caption_color !important; font-size: $caption_size !important } ";
+
+        fwrite($css_file, $write);
+
+
+        // 3. LINKS            
+        $link_color = $theme_config->default_link_color ?? config('pivlu.defaults.link_color');
+        $link_color_hover = $theme_config->default_link_hover_color ?? config('pivlu.defaults.link_color_hover');
+        $link_underline_offset = $theme_config->default_link_underline_offset ?? 'auto';
+        $link_underline_thickness = $theme_config->default_link_underline_thickness ?? 'auto';
+        $link_color_underline = $theme_config->default_link_color_underline ?? config('pivlu.defaults.link_color_underline');
+        $link_color_underline_hover = $theme_config->default_link_color_underline_hover ?? 'black';
+
+        $link_decoration = $theme_config->default_link_decoration ?? config('pivlu.defaults.link_decoration');
+        $link_hover_decoration = $theme_config->default_link_hover_decoration ?? config('pivlu.defaults.link_hover_decoration');
+        $link_underline_offset = $theme_config->default_link_underline_offset ?? config('pivlu.defaults.link_hover_decoration');
+
+        $write = "a { color: $link_color !important; text-decoration: $link_decoration !important; -webkit-text-decoration-color: $link_color_underline !important; text-decoration-color: $link_color_underline !important; text-decoration-thickness: $link_underline_thickness !important; 
+                text-underline-offset: $link_underline_offset !important; } ";
+
+        if (($theme_config->default_link_decoration ?? null) == 'double') $write .= "a { text-decoration-line: underline !important; text-decoration-style: double !important; } ";
+        if (($theme_config->default_link_decoration ?? null) == 'dashed') $write .= "a { text-decoration-line: underline !important; text-decoration-style: dashed !important; } ";
+        if (($theme_config->default_link_decoration ?? null) == 'dotted') $write .= "a { text-decoration-line: underline !important; text-decoration-style: dotted !important; } ";
+        if (($theme_config->default_link_decoration ?? null) == 'wavy') $write .= "a { text-decoration-line: underline !important; text-decoration-style: wavy !important; } ";
+
+        $write .= "a:hover { color: $link_color_hover !important; 
+                text-decoration: $link_hover_decoration !important; 
+                -webkit-text-decoration-color: $link_color_underline !important; 
+                text-decoration-color: $link_color_underline_hover !important;                
+                text-decoration-thickness: $link_underline_thickness !important;
+                text-underline-offset: $link_underline_offset !important; } ";
+
+        if (($theme_config->default_link_hover_decoration ?? null) == 'double') $write .= "a:hover { text-decoration-line: underline; text-decoration-style: double !important; } ";
+        if (($theme_config->default_link_hover_decoration ?? null) == 'dashed') $write .= "a:hover { text-decoration-line: underline; text-decoration-style: dashed !important; } ";
+        if (($theme_config->default_link_hover_decoration ?? null) == 'dotted') $write .= "a:hover { text-decoration-line: underline; text-decoration-style: dotted !important; } ";
+        if (($theme_config->default_link_hover_decoration ?? null) == 'wavy') $write .= "a:hover { text-decoration-line: underline; text-decoration-style: wavy !important; } ";
+
+        // Do not overwrite Buttons style            
+        $write .= ".btn a { color: inherit !important; } ";
+
+        fwrite($css_file, $write);
+
+        // END. Close the file
+        fclose($css_file);
+        return;
+    }
+
+
+
 
     public static function generate_menu_links($menu_id)
     {
@@ -348,7 +458,7 @@ class ThemeFunctions
                 $items[] = array('label' => $menu_content->label ?? '#', 'url' => $url ?? '#', 'dropdown' => $dropdown, 'type' => $link->type, 'btn_id' => $link->btn_id, 'new_tab' => $link->new_tab, 'icon' => $link->icon);
             }
 
-            ConfigLang::update_config($lang->id, 'menu_links_'.$menu_id, json_encode($items, JSON_UNESCAPED_UNICODE));
+            ConfigLang::update_config($lang->id, 'menu_links_' . $menu_id, json_encode($items, JSON_UNESCAPED_UNICODE));
         }
 
         return null;

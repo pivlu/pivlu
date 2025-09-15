@@ -1,14 +1,10 @@
 html,
 body {
-    font-size: 1rem;
-    color: #212529;
-    font-weight: 400;
     padding: 0;
     margin: 0;
     height: 100%;
     display: flex;
-    flex-direction: column;
-    line-height: 1.2;
+    flex-direction: column;    
 }
 
 /* force scrollbar, for Masonry */
@@ -35,20 +31,12 @@ html { overflow-y: scroll; }
 }
 
 p {
-    line-height: 1.6;
     margin-top: 0rem;
     margin-bottom: 0em;
 }
 
 p:not(:last-child) {
     margin-bottom: 1em !important;
-}
-
-h1,
-h2,
-h3,
-h4 {
-    font-weight: 700;    
 }
 
 h1 {
@@ -60,21 +48,7 @@ h2 {
 }
 
 h3 {
-    line-height: 1.2em;
     margin-bottom: 10px;
-}
-
-h4 {
-    line-height: 1.1em;
-}
-
-a {   
-    text-decoration: none;
-}
-
-a:focus,
-a:hover {
-    text-decoration: underline;
 }
 
 a.anchor {
@@ -106,8 +80,6 @@ hr {
 }
 
 .caption {
-    font-size: 14px;
-    font-style: italic;
     display: block;
     margin: 0;
     padding: 10px;
@@ -436,176 +408,3 @@ ul {
     -webkit-box-orient: vertical;
  }
  
-.specs_section {
-    background-color: #ededed;
-    padding: 10px;
-    color: #3d4469;
-    text-transform: uppercase;
-    font-size: 0.9em;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-}
-
-.specs_list {
-    background-color: #f8f9fa;
-    color: #333333;
-    font-size: 15px;
-    padding: 10px;
-}
-
-.multicolor-20{
-    background: linear-gradient(45deg, rgb(0, 216, 255) 0%, rgb(255, 248, 48) 50%, rgb(255, 50, 50) 100%);
-    width: 20px;
-    height: 20px;
-}
-
-.multicolor-36{
-    background: linear-gradient(45deg, rgb(0, 216, 255) 0%, rgb(255, 248, 48) 50%, rgb(255, 50, 50) 100%);
-    width: 36px;
-    height: 36px;
-}
-
-.docs-top-bar {
-    background-color: #617DEB;
-    padding: 40px;
-    margin-bottom: 20px;
-    color: #fff;
-}
-
-.docs-top-bar .title {
-    font-size: 2.2em;
-    margin-bottom: 15px;
-    color: #fff;
-    text-align: center;
-    font-weight: bold;
-}
-
-.docs-top-bar .subtitle {
-    font-size: 1.1em;
-    margin-bottom: 15px;
-    color: #fff;
-    text-align: center;
-}
-
-.docs-top-bar .docs-search {
-    font-size: 1.3em;
-}
-
-.docs-top-bar .input-group-text,
-.docs-top-bar .form-control {
-    border: none;
-}
-
-.docs-featured-bar {
-    background-color: #FBF7F0;
-    padding-top: 30px;
-    padding-bottom: 30px;
-    margin-bottom: 0px;
-    color: #212529;
-}
-
-.docs-card {
-    padding: 30px 20px;
-    margin-bottom: 30px;
-    transition: box-shadow .3s;
-    width: 100%;
-    display: block;
-}
-
-.docs-card .card-categ-icon {
-    font-size: 4em;
-    margin-bottom: 20px;
-}
-
-.docs-card .card-categ-title {
-    font-size: 1.3em;
-    margin-bottom: 20px;
-}
-
-.docs-card .card-categ-description {
-    font-size: 0.9em;
-    line-height: 1.4em;
-}
-
-.docs-card-featured {
-    padding: 15px !important;
-    margin-bottom: 30px;
-    box-shadow: none !important;
-}
-
-.docs-home-categ a {
-    font-size: 1.3em;
-    line-height: 1.5em;
-}
-
-.docs-home-categ-info {
-    font-size: 0.9em;
-    margin-top: 15px;
-    line-height: 1.4em;
-}
-
-.docs-home-card-icon {
-    font-size: 3em;
-    margin-bottom: 20px;
-}
-
-.docs-list-categ {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-}
-
-.docs-list-subcateg {
-    font-size: 0.95em;
-    margin-bottom: 10px;
-}
-
-.docs-categ-level1 {
-    font-size: 1em;
-}
-
-.docs-categ-level2 {
-    font-size: 0.95em;
-}
-
-.docs-categ-level3 {
-    font-size: 0.95em;
-}
-
-.docs-article-title {
-    font-size: 2em;
-    margin-bottom: 20px;
-}
-
-#search-suggestions {
-    position: absolute;
-    left: auto;
-    display: none;
-    z-index: 1000;
-    margin-top: 3px;
-    background-color: #f8f9fa;
-}
-
-.docs-searchresults {
-    border-width: 1px;
-    border-bottom: solid 1px #e0e0e0;
-    min-width: 300px;
-    width: auto;
-    font-size: 1.1em;
-    line-height: 14px;
-}
-
-.docs-searchresults a {
-    display: block;
-    font-size: 0.95em;
-    padding: 10px;
-    text-decoration: none;
-}
-
-.docs-searchresults a .title {
-    font-size: 1em;
-    margin-top: 5px;
-    text-decoration: none;
-    color: #1f1f1f;
-    font-weight: 700;
-    line-height: 1.2em;
-}

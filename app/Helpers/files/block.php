@@ -22,14 +22,17 @@
 use App\Models\BlockComponentContent;
 use App\Models\FormField;
 use App\Models\FormFieldContent;
+use App\Models\ThemeFooterBlock;
+use App\Models\ThemeFooterBlockContent;
 use App\Models\Language;
+use App\Models\Config;
 
 
 if (!function_exists('block_component_content')) {
 	function block_component_content($id)
 	{
 		$content = BlockComponentContent::where('block_component_id', $id)->where('lang_id', Language::get_active_language()->id)->value('content');
-		
+
 		return json_decode($content);
 	}
 }
@@ -39,7 +42,7 @@ if (!function_exists('block_component_content')) {
 // get form fields (for active language)
 if (!function_exists('block_form_fields')) {
 	function block_form_fields($id)
-	{				
+	{
 		// get form fields
 		$fields = FormField::where('block_component_id', $id)->where('active', 1)->orderBy('position')->get();
 
@@ -52,6 +55,41 @@ if (!function_exists('block_form_fields')) {
 			$data[] = array('id' => $field->id, 'type' => $field->type, 'required' => $field->required, 'col_md' => $field->col_md, 'label' => $field_lang->label ?? null, 'info' => $field_lang->info ?? null, 'dropdowns' => $field_lang->dropdowns ?? null);
 		}
 
-		return (json_decode(json_encode($data)));		
+		return (json_decode(json_encode($data)));
+	}
+}
+
+
+
+// Get blocks for a specific footer column
+if (!function_exists('footer_blocks')) {
+	function footer_blocks($theme_id, $footer, $col)
+	{
+		// get footer layout (number of columns)
+		if ($footer == 'primary') $layout = Config::get_config('tpl_footer_columns') ?? 1;
+		if ($footer == 'secondary') $layout = Config::get_config('tpl_footer2_columns') ?? 1;
+
+		$blocks = ThemeFooterBlock::where(['theme_id' => $theme_id, 'footer' => $footer, 'layout' => $layout, 'col' => $col])->where('hidden', 0)->orderBy('position')->get();
+
+		return $blocks ?? [];
+	}
+}
+
+
+// show footer block 
+if (!function_exists('footer_block')) {
+	function footer_block($id)
+	{
+
+		$data = ['content' => null];
+		$block = ThemeFooterBlock::find($id);
+		if (!$block) return (object)$data;
+		if ($block->hidden == 1) return (object)$data;
+
+		$block_content = ThemeFooterBlockContent::where('footer_block_id', $id)->where('lang_id', Language::get_active_language()->id ?? null)->first();
+
+		$data = array('content' => $block_content->content ?? null, 'header' => $block_content->header ?? null, 'settings' => json_decode($block->settings) ?? null);
+
+		return (object)$data;
 	}
 }

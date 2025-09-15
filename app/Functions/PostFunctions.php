@@ -23,6 +23,7 @@ namespace App\Functions;
 
 use App\Models\Post;
 use App\Models\PostContent;
+use App\Models\PostType;
 use App\Models\PostTypeTaxonomy;
 use App\Models\PostTypeContent;
 use App\Models\PostTaxonomyRelation;

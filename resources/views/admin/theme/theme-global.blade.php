@@ -2,234 +2,312 @@
     @csrf
     @method('PUT')
 
+    <h5 class="fw-bold">{{ __('Default style') }}</h5>
+
+
     <div class="row">
-
-        <div class="col-12 col-md-6 col-lg-7">
-
-            <div class="card bg-light p-3 mb-3">
-
-                <h5 class="fw-bold">{{ __('Main navbar settings') }}</h5>
-                <small class="mb-3">{{ __('This navbar contain navigation links') }}</small>
-
-                <div class="col-12 col-xl-4 col-lg-6 col-md-12">
-                    <div class="form-group">
-                        <label>{{ __('Navigation layout') }}</label>
-                        <select class="form-select" name="tpl_navbar_layout" id="navbar_layout" onchange="showLayoutDiv()">
-                            <option @if (($config->tpl_navbar_layout ?? null) == 'default') selected @endif value="default">{{ __('Default (one row)') }}</option>
-                            <option @if (($config->tpl_navbar_layout ?? null) == '2rows') selected @endif value="2rows">{{ __('2 rows (row 1 for logo and row 2 for links)') }}</option>
-                        </select>
-                    </div>
-                </div>
-
-                <script>
-                    function showLayoutDiv() {
-                        var select = document.getElementById('navbar_layout');
-                        var value = select.options[select.selectedIndex].value;
-
-                        if (value == '2rows') {
-                            document.getElementById('hidden_div_layout').style.display = 'block';
-                        } else {
-                            document.getElementById('hidden_div_layout').style.display = 'none';
-                        }
-                    }
-                </script>
-
-                <div id="hidden_div_layout" style="display: @if (($config->tpl_navbar_layout ?? null) == '2rows') block @else none @endif">
-
-                    <div class="col-12 col-xl-3 col-lg-4 col-md-6">
-                        <div class="form-group">
-                            <label>{{ __('Logo align') }}</label>
-                            <select class="form-select" name="tpl_navbar_logo_align">
-                                <option @if (($config->tpl_navbar_logo_align ?? null) == 'text-center mx-auto') selected @endif value="text-center mx-auto">{{ __('Center') }}</option>
-                                <option @if (($config->tpl_navbar_logo_align ?? null) == 'float-start') selected @endif value="float-start">{{ __('Left') }}</option>
-                                <option @if (($config->tpl_navbar_logo_align ?? null) == 'float-end') selected @endif value="float-end">{{ __('Right') }}</option>
-                            </select>
-                            <div class="form-text">{{ __('Logo is on the first line') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-xl-3 col-lg-4 col-md-6">
-                        <div class="form-group">
-                            <label>{{ __('Links align') }}</label>
-                            <select class="form-select" name="tpl_navbar_links_align">
-                                <option @if (($config->tpl_navbar_links_align ?? null) == 'me-auto') selected @endif value="me-auto">{{ __('Left') }}</option>
-                                <option @if (($config->tpl_navbar_links_align ?? null) == 'me-auto ms-auto') selected @endif value="me-auto ms-auto">{{ __('Center') }}</option>
-                                <option @if (($config->tpl_navbar_links_align ?? null) == 'ms-auto') selected @endif value="ms-auto">{{ __('Right') }}</option>
-                            </select>
-                            <div class="form-text">{{ __('Links are on the second line') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-group mt-3">
-                            <div class="form-check form-switch">
-                                <input type="hidden" name="tpl_navbar_show_custom_text" value="">
-                                <input class="form-check-input" type="checkbox" id="tpl_navbar_show_custom_text" name="tpl_navbar_show_custom_text" @if ($config->tpl_navbar_show_custom_text ?? null) checked @endif>
-                                <label class="form-check-label" for="tpl_navbar_show_custom_text">{{ __('Add custom text on first row') }}</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <script>
-                        $('#tpl_navbar_show_custom_text').change(function() {
-                            select = $(this).prop('checked');
-                            if (select) {
-                                document.getElementById('hidden_div_navbar_custom_text').style.display = 'block';
-                            } else {
-                                document.getElementById('hidden_div_navbar_custom_text').style.display = 'none';
-                            }
-                        })
-                    </script>
-
-                    <div id="hidden_div_navbar_custom_text" style="display: @if ($config->tpl_navbar_show_custom_text ?? null) block @else none @endif" class="mt-2">
-                        <div class="form-group">
-                            <labeL>{{ __('Custom text') }}</labeL>
-                            <textarea rows="4" class="form-control" name="tpl_navbar_custom_text">{{ $config->tpl_navbar_custom_text ?? null }}</textarea>
-                            <div class="form-text">{{ __('You can add HTML code') }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12 col-xl-4 col-lg-6 col-md-12">
-                        <div class="form-group mb-3">
-                            <label class="form-check-label">{{ __('Spacing') }}</label>
-                            <select name="tpl_navbar_links_margin" class="form-select">
-                                <option value="">{{ __('Default spacing') }}</option>
-                                <option @if (($config->tpl_navbar_links_margin ?? null) == 'ms-2') selected @endif value="ms-2">{{ __('Add small spacing') }}</option>
-                                <option @if (($config->tpl_navbar_links_margin ?? null) == 'ms-3') selected @endif value="ms-3">{{ __('Add medium spacing') }}</option>
-                                <option @if (($config->tpl_navbar_links_margin ?? null) == 'ms-4') selected @endif value="ms-4">{{ __('Add large spacing') }}</option>
-                                <option @if (($config->tpl_navbar_links_margin ?? null) == 'ms-5') selected @endif value="ms-5">{{ __('Add extra large spacing') }}</option>
-                            </select>
-                            <div class="small text-muted">{{ __('Spacing between navigation links') }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="form-check form-switch">
-                        <input type='hidden' value='' name='tpl_navbar_shaddow'>
-                        <input class="form-check-input" type="checkbox" id="tpl_navbar_shaddow" name="tpl_navbar_shaddow" @if ($config->tpl_navbar_shaddow ?? null) checked @endif>
-                        <label class="form-check-label" for="tpl_navbar_shaddow">{{ __('Add shaddow under main navigation') }}</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="form-check form-switch">
-                        <input type='hidden' value='' name='tpl_navbar_hide_logo'>
-                        <input class="form-check-input" type="checkbox" id="tpl_navbar_hide_logo" name="tpl_navbar_hide_logo" @if ($config->tpl_navbar_hide_logo ?? null) checked @endif>
-                        <label class="form-check-label" for="tpl_navbar_hide_logo">{{ __('Hide logo') }}</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="form-check form-switch">
-                        <input type='hidden' value='' name='tpl_navbar_sticky'>
-                        <input class="form-check-input" type="checkbox" id="tpl_navbar_sticky" name="tpl_navbar_sticky" @if ($config->tpl_navbar_sticky ?? null) checked @endif>
-                        <label class="form-check-label" for="tpl_navbar_sticky">{{ __('Sticky navigation') }}</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="form-check form-switch">
-                        <input type='hidden' value='' name='tpl_navbar_hide_auth'>
-                        <input class="form-check-input" type="checkbox" id="tpl_navbar_hide_auth" name="tpl_navbar_hide_auth" @if ($config->tpl_navbar_hide_auth ?? null) checked @endif>
-                        <label class="form-check-label" for="tpl_navbar_hide_auth">{{ __('Hide authentification (login page)') }}</label>
-                    </div>
-                </div>
-
-                <div class="form-group mb-0">
-                    <div class="form-check form-switch">
-                        <input type='hidden' value='' name='tpl_navbar_hide_langs'>
-                        <input class="form-check-input" type="checkbox" id="tpl_navbar_hide_langs" name="tpl_navbar_hide_langs" @if ($config->tpl_navbar_hide_langs ?? null) checked @endif>
-                        <label class="form-check-label" for="tpl_navbar_hide_langs">{{ __('Hide language selector (if multiple languages are available)') }}</label>
-                    </div>
-                </div>
-
-                <hr>
-
-                <h5 class="fw-bold">{{ __('Notification top bar') }}</h5>
-                <small class="mb-3">{{ __('Add a top bar with text content. This can be useful if you have an important announcement that is visible at the top of the site.') }}</small>
-
-                <div class="form-group mb-3">
-                    <div class="form-check form-switch">
-                        <input type='hidden' value='' name='tpl_notification_navbar_show'>
-                        <input class="form-check-input" type="checkbox" id="tpl_notification_navbar_show" name="tpl_notification_navbar_show" @if ($config->tpl_notification_navbar_show ?? null) checked @endif>
-                        <label class="form-check-label" for="tpl_notification_navbar_show">{{ __('Show notiffication bar') }}</label>
-                    </div>
-                </div>
-
-                <script>
-                    $('#tpl_notification_navbar_show').change(function() {
-                        select = $(this).prop('checked');
-                        if (select)
-                            document.getElementById('hidden_div_notif').style.display = 'block';
-                        else
-                            document.getElementById('hidden_div_notif').style.display = 'none';
-                    })
-                </script>
-
-                <div id="hidden_div_notif" style="display: @if ($config->tpl_notification_navbar_show ?? null) block @else none @endif">
-
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>{{ __('Content') }}</label>
-                                <textarea class="form-control" name="tpl_notification_navbar_content" rows="3">{{ $config->tpl_notification_navbar_content ?? null }}</textarea>
-                                <div class="text-muted small">{{ __('HTML code is allowed.') }}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-xl-4 col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label>{{ __('Content align') }}</label>
-                                <select class="form-select" name="navbar2_content_align">
-                                    <option @if (($config->tpl_notification_navbar_content_align ?? null) == 'text-start') selected @endif value="text-start">{{ __('Left') }}</option>
-                                    <option @if (($config->tpl_notification_navbar_content_align ?? null) == 'text-center') selected @endif value="text-center">{{ __('Center') }}</option>
-                                    <option @if (($config->tpl_notification_navbar_content_align ?? null) == 'text-end') selected @endif value="text-end">{{ __('Right') }}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-xl-4 col-lg-6 col-md-6">
-                            <label>{{ __('Select style') }} [<a href="{{ route('admin.theme-styles.index') }}">{{ __('Manage styles') }}</a>]</label>
-                            <select name="tpl_notification_navbar_style_id" class="form-select">
-                                @foreach ($styles as $style)
-                                    <option @if (($config->tpl_notification_navbar_style_id ?? null) == $style->id) selected @endif value="{{ $style->id }}">{{ $style->label }}</option>
-                                @endforeach
-                            </select>
-                            <div class="text-muted small">{{ __('Style for notification bar (fonts, sizes, colors, background...)') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group mb-0">
-                        <div class="form-check form-switch">
-                            <input type='hidden' value='' name='tpl_notification_navbar_sticky'>
-                            <input class="form-check-input" type="checkbox" id="tpl_notification_navbar_sticky" name="tpl_notification_navbar_sticky" @if ($config->tpl_notification_navbar_sticky ?? null) checked @endif>
-                            <label class="form-check-label" for="tpl_notification_navbar_sticky">{{ __('Sticky bar') }}</label>
-                        </div>
-                        <div class="form-text">{{ __('Note: notification bar can be sticky only if main navbar navigation is not sticky') }}</div>
-                    </div>
-
-                </div>
-
-
-
-
+        <div class="col-sm-6 col-md-6 col-12">
+            <div class="form-group">
+                <label>{{ __('Font family') }}</label>
+                <select class="form-select" name="default_font_family_data">
+                    @foreach ($fonts as $font)
+                        <option @if (($theme_config->default_font_family_data ?? null) == $font->value.'|'.$font->import) selected @endif value="{{ $font->value.'|'.$font->import }}" style="font-size: 1.6em; font-family: {{ $font->value }};">[{{ $font->name }}]
+                            Almost before we knew it, we had left the ground.</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-
-
-        <div class="col-12 col-md-6 col-lg-5">
-
-            <div class="card bg-light p-3 pb-0 mb-3">
-
-
-            </div>
-
-        </div>
-
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">{{ __('Update template') }}</button>
+    <div class="fw-bold fs-5 mb-2">{{ __('Colors') }}</div>
+
+    <div class="row">
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_text_color" name="default_text_color" value="{{ $theme_config->default_text_color ?? config('pivlu.defaults.font_color') }}">
+                <label>{{ __('Main text color') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_text_color ?? config('pivlu.defaults.font_color')) }}</div>
+                <script>
+                    $('#default_text_color').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_link_color" name="default_link_color" value="{{ $theme_config->default_link_color ?? config('pivlu.defaults.link_color') }}">
+                <label>{{ __('Link color') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color ?? config('pivlu.defaults.link_color')) }}</div>
+                <script>
+                    $('#default_link_color').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_link_hover_color" name="default_link_hover_color" value="{{ $theme_config->default_link_hover_color ?? config('pivlu.defaults.link_color_hover') }}">
+                <label>{{ __('Link color on mouse hover') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_hover_color ?? config('pivlu.defaults.link_color_hover')) }}</div>
+                <script>
+                    $('#default_link_hover_color').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_link_color_underline" name="default_link_color_underline" value="{{ $theme_config->default_link_color_underline ?? config('pivlu.defaults.link_color_underline') }}">
+                <label>{{ __('Underline color') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline ?? config('pivlu.defaults.link_color_underline')) }}</div>
+                <script>
+                    $('#default_link_color_underline').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_link_color_underline_hover" name="default_link_color_underline_hover"
+                    value="{{ $theme_config->default_link_color_underline_hover ?? config('pivlu.defaults.link_color_underline_hover') }}">
+                <label>{{ __('Underline color on hover') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline_hover ?? config('pivlu.defaults.link_color_underline_hover')) }}</div>
+                <script>
+                    $('#default_link_color_underline_hover').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_caption_color" name="default_caption_color" value="{{ $theme_config->default_caption_color ?? 'grey' }}">
+                <label>{{ __('Caption text color') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_caption_color ?? 'grey') }}</div>
+                <script>
+                    $('#default_caption_color').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <input id="default_bg_color" name="default_bg_color" value="{{ $theme_config->default_bg_color ?? config('pivlu.defaults.bg_color') }}">
+                <label>{{ __('Background color') }}</label>
+                <div class="mt-1 small"> {{ strtoupper($theme_config->default_bg_color ?? config('pivlu.defaults.bg_color')) }}</div>
+                <script>
+                    $('#default_bg_color').spectrum({
+                        type: "color",
+                        showInput: true,
+                        showInitial: true,
+                        showAlpha: false,
+                        showButtons: false,
+                        allowEmpty: false,
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="fw-bold fs-5 mb-2">{{ __('Sizes') }}</div>
+
+    <div class="row">
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Text font size') }}</label>
+                <select class="form-select" name="default_font_size">
+                    @foreach ($font_sizes as $font_size)
+                        <option @if (($theme_config->default_font_size ?? null) == $font_size->value) selected @endif @if (!($theme_config->default_font_size ?? null) && $font_size->value == '1rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Heading 1 (h1) font size') }}</label>
+                <select class="form-select" name="default_h1_size">
+                    @foreach ($font_sizes as $font_size)
+                        <option @if (($theme_config->default_h1_size ?? null) == $font_size->value) selected @endif @if (!($theme_config->default_h1_size ?? null) && $font_size->value == '2rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Heading 2 (h2) font size') }}</label>
+                <select class="form-select" name="default_h2_size">
+                    @foreach ($font_sizes as $font_size)
+                        <option @if (($theme_config->default_h2_size ?? null) == $font_size->value) selected @endif @if (!($theme_config->default_h2_size ?? null) && $font_size->value == '1.5rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Heading 3 (h3) font size') }}</label>
+                <select class="form-select" name="default_h3_size">
+                    @foreach ($font_sizes as $font_size)
+                        <option @if (($theme_config->default_h3_size ?? null) == $font_size->value) selected @endif @if (!($theme_config->default_h3_size ?? null) && $font_size->value == '1.2rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Caption font size') }}</label>
+                <select class="form-select" name="default_caption_size">
+                    @foreach ($font_sizes as $font_size)
+                        <option @if (($theme_config->default_caption_size ?? null) == $font_size->value) selected @endif @if (!($theme_config->default_caption_size ?? null) && $font_size->value == '0.95rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="fw-bold fs-5 mb-2">{{ __('Font weights') }}</div>
+
+    <div class="row">
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Heading 1 (h1) font weight') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_h1_font_weight">
+                    <option @if (($theme_config->default_h1_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                    <option @if (($theme_config->default_h1_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Heading 2 (h2) font weight') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_h2_font_weight">
+                    <option @if (($theme_config->default_h2_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                    <option @if (($theme_config->default_h2_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Heading 3 (h3) font weight') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_h3_font_weight">
+                    <option @if (($theme_config->default_h3_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                    <option @if (($theme_config->default_h3_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Caption font style') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_caption_font_style">
+                    <option @if (($theme_config->default_caption_font_style ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                    <option @if (($theme_config->default_caption_font_style ?? null) == 'italic') selected @endif value="italic">{{ __('Italic') }}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="fw-bold fs-5 mb-2">{{ __('Links underline') }}</div>
+
+    <div class="row">
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Link decoration') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_link_decoration">
+                    <option @if (($theme_config->default_link_decoration ?? null) == 'none') selected @endif value="none">{{ __('None') }}</option>
+                    <option @if (($theme_config->default_link_decoration ?? null) == 'underline') selected @endif value="underline">{{ __('Underline') }}</option>
+                    <option @if (($theme_config->default_link_decoration ?? null) == 'dotted') selected @endif value="dotted">{{ __('Dotted') }}</option>
+                    <option @if (($theme_config->default_link_decoration ?? null) == 'dashed') selected @endif value="dashed">{{ __('Dashed') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Link decoration on hover') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_link_hover_decoration">
+                    <option @if (($theme_config->default_link_hover_decoration ?? null) == 'none') selected @endif value="none">{{ __('None') }}</option>
+                    <option @if (($theme_config->default_link_hover_decoration ?? null) == 'underline') selected @endif value="underline">{{ __('Underline') }}</option>
+                    <option @if (($theme_config->default_link_hover_decoration ?? null) == 'dotted') selected @endif value="dotted">{{ __('Dotted') }}</option>
+                    <option @if (($theme_config->default_link_hover_decoration ?? null) == 'dashed') selected @endif value="dashed">{{ __('Dashed') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Underline line thickness') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_link_underline_thickness">
+                    <option @if (($theme_config->default_link_underline_thickness ?? null) == 'auto') selected @endif value="auto">{{ __('Normal') }}</option>
+                    <option @if (($theme_config->default_link_underline_thickness ?? null) == '3px') selected @endif value="3px">{{ __('Bold') }}</option>
+                    <option @if (($theme_config->default_link_underline_thickness ?? null) == '6px') selected @endif value="6px">{{ __('Bolder') }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3 col-12">
+            <div class="form-group mb-4">
+                <label>{{ __('Underline offset') }}</label>
+                <select class="form-select col-md-6 col-lg-4 col-xl-3" name="default_link_underline_offset">
+                    <option @if (($theme_config->default_link_underline_offset ?? null) == 'auto') selected @endif value="auto">{{ __('Normal (no offset)') }}</option>
+                    <option @if (($theme_config->default_link_underline_offset ?? null) == '0.17em') selected @endif value="0.17em">{{ __('Small offset') }}</option>
+                    <option @if (($theme_config->default_link_underline_offset ?? null) == '0.35em') selected @endif value="0.35em">{{ __('Medium offset') }}</option>
+                    <option @if (($theme_config->default_link_underline_offset ?? null) == '0.6em') selected @endif value="0.6em">{{ __('Big offset') }}</option>
+                </select>
+                <div class="text-muted small">{{ __('Distance between link text and underline') }}</div>
+            </div>
+        </div>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary mt-3">{{ __('Update theme') }}</button>
 </form>

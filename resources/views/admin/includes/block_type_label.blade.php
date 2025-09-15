@@ -83,6 +83,14 @@
         <i class="bi bi-tags"></i> {{ __('Posts tags') }}
     @break
 
+    @case('post_section')
+        <i class="bi bi-distribute-vertical"></i> {{ __('Section') }}
+    @break
+
+    @case('post_toc')
+        <i class="bi bi-list-ol"></i> {{ __('Table of contents') }}
+    @break
+
     @default
         {{ $type }}
 @endswitch

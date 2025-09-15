@@ -1,5 +1,5 @@
 @if(($config->tpl_navbar_layout ?? null) == '2rows')
-@include("web.layouts.nav-2rows")
+@include("web.includes.menu.nav-2rows")
 @else
-@include("web.layouts.nav-default")
+@include("web.includes.menu.nav-default")
 @endif

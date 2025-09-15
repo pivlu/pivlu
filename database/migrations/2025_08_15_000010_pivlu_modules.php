@@ -32,13 +32,16 @@ return new class extends Migration
     {
         Schema::create('pivlu_modules', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);            
+            $table->string('name', 50);
             $table->string('slug', 50)->unique();
             $table->boolean('core')->default(false);
-            $table->string('status', 20)->default('inactive');            
+            $table->string('status', 20)->default('inactive');
             $table->text('description')->nullable();
             $table->string('icon')->nullable();
-            $table->timestamps();            
+            $table->unsignedBigInteger('post_type_id')->nullable();
+            $table->timestamps();
+
+            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->NullOnDelete();
         });
     }
 

@@ -30,6 +30,7 @@ use App\Models\PostType;
 use App\Models\PostTaxonomy;
 use App\Models\PostTaxonomyRelation;
 use App\Models\PostTypeTaxonomy;
+use App\Models\PostDocsSection;
 use App\Models\Block;
 use App\Models\BlockType;
 use App\Models\Language;
@@ -48,14 +49,13 @@ class PostController extends Controller
     {
         $post_type_id = $request->post_type_id;
         if (!$post_type_id) return redirect(route('admin'));
-        $this->check_post_type_exists($post_type_id);
+        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));        
 
         $post_type = PostType::with('default_language_content')->find($post_type_id);
 
         $search_terms = $request->search_terms;
         $search_status = $request->search_status;
         $search_taxonomy_ids = $request->search_taxonomy_ids ?? [];
-        //dd($search_taxonomy_ids);
         $search_sticky = $request->search_sticky;
 
         $posts = Post::with('user', 'taxonomies')->where('post_type_id', $post_type_id);
@@ -82,8 +82,11 @@ class PostController extends Controller
 
         $posts = $posts->orderByDesc('is_homepage')->orderByDesc('is_contactpage')->orderByDesc('id')->paginate(20);
 
+        if ($post_type->type == 'docs') $view_file = 'modules.docs.index';
+        else $view_file = 'index';
+
         return view('admin.index', [
-            'view_file' => 'admin.posts.index',
+            'view_file' => 'admin.posts.' . $view_file,
             'active_menu' => 'website',
             'active_submenu' => 'post_type_' . $post_type_id ?? null,
             'menu_section' => 'posts',
@@ -106,7 +109,7 @@ class PostController extends Controller
 
         $post_type_id = $request->post_type_id;
         if (!$post_type_id) return redirect(route('admin'));
-        $this->check_post_type_exists($post_type_id);
+        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
 
         $post_type = PostType::find($post_type_id);
 
@@ -130,8 +133,8 @@ class PostController extends Controller
     {
 
         $post_type_id = $request->post_type_id;
-        if (!$post_type_id) return redirect(route('admin2'));
-        $this->check_post_type_exists($post_type_id);
+        if (!$post_type_id) return redirect(route('admin'));
+        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
 
         $post = Post::create([
             'post_type_id' => $post_type_id,
@@ -195,7 +198,7 @@ class PostController extends Controller
      */
     public function show(Request $request)
     {
-        $post = Post::with('user', 'default_language_content')->where('id', $request->id);
+        $post = Post::with('user', 'default_language_content', 'post_type')->where('id', $request->id);
 
         $post = $post->first();
 
@@ -217,12 +220,11 @@ class PostController extends Controller
             $preview_urls[$lang->name] = PostContent::where(['post_id' => $post->id, 'lang_id' => $lang->id])->value('url');
         }
 
-
         // post taxonomies (array)
         $post_taxonomies_array = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_taxonomy_id')->toarray();
 
-
         if ($post->is_homepage == '1') $view_file = 'update-homepage';
+        elseif ($post->post_type->type == 'docs') $view_file = 'modules.docs.update';
         else $view_file = 'update';
 
         return view('admin.index', [
@@ -363,7 +365,7 @@ class PostController extends Controller
         if (!$post) return redirect(route('admin.posts.index'));
         if ($post->is_homepage == 1 || $post->is_contactpage == 1) return redirect(route('admin.posts.index'));
 
-        $this->check_post_type_exists($post->post_type_id);
+        if ((PostType::where('id', $post->post_type_id))->doesntExist()) return redirect(route('admin'));        
 
         Post::where('id', $request->id)->delete(); // soft delete
 
@@ -397,8 +399,16 @@ class PostController extends Controller
 
         $post_type = PostType::with('default_language_content')->find($post->post_type_id);
 
+        // DOCS module
+        if ($post_type->type == 'docs') {
+            $post_docs_sections = PostDocsSection::with('default_language_content')->where('post_id', $post->id)->orderBy('position')->get();
+        }
+        
+        if ($post->post_type->type == 'docs') $view_file = 'modules.docs.content';
+        else $view_file = 'content';
+
         return view('admin.index', [
-            'view_file' => 'admin.posts.content',
+            'view_file' => 'admin.posts.' . $view_file,
             'active_menu' => 'website',
             'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
@@ -406,7 +416,8 @@ class PostController extends Controller
 
             'post' => $post,
             'post_type' => $post_type ?? null,
-            'block_types' => BlockType::get_block_types()
+            'block_types' => BlockType::get_block_types(),
+            'post_docs_sections' => $post_docs_sections ?? null, // for DOCS module
         ]);
     }
 
@@ -419,8 +430,7 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        $type = $request->type ?? 'post'; // post type
-        $this->check_post_type_exists($type);
+        if ((PostType::where('id', $post->post_type_id))->doesntExist()) return redirect(route('admin'));        
 
         $last_pos = Block::where('post_id', $request->id)->orderByDesc('position')->value('position');
         $position = ($last_pos ?? 0) + 1;
@@ -477,11 +487,4 @@ class PostController extends Controller
         BlockFunctions::regenerate_post_blocks($request->id);
     }
 
-
-
-    public function check_post_type_exists($post_type_id)
-    {
-        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
-        return;
-    }
 }

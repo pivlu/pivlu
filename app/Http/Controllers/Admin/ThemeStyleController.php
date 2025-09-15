@@ -101,8 +101,8 @@ class ThemeStyleController extends Controller
             }
         }
 
-        // regenerate css file
-        //ThemeFunctions::generate_styles_css();
+        // regenerate custom styles css file
+        ThemeFunctions::generate_styles_css();
 
         return redirect(route('admin.theme-styles.show', ['id' => $style->id]))->with('success', 'created');
     }
@@ -175,12 +175,10 @@ class ThemeStyleController extends Controller
         ]);
 
 
-        exit;
+        // regenerate custom styles css file
+        ThemeFunctions::generate_styles_css();
 
-        // regenerate css file
-        TemplateConfig::generate_global_css('builder');
-
-        return redirect(route('admin.template.styles.show', ['style' => $request->style]))->with('success', 'updated');
+        return redirect(route('admin.theme-styles.show', ['id' => $request->id]))->with('success', 'updated');
     }
 
 
@@ -336,7 +334,7 @@ class ThemeStyleController extends Controller
      */
     public function destroy_custom(Request $request)
     {
-        
+
         $style = TemplateStyle::find($request->id);
         if (!$style) return redirect(route('admin.template.styles'));
 

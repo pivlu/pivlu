@@ -69,12 +69,12 @@
 
                 <tbody>
                     @foreach ($themes as $theme)
-                        <tr @if ($theme->is_default == 1) class="table-light" @endif>
+                        <tr @if ($theme->is_active == 1) class="table-light" @endif>
                             <td>
                                 <div class="float-end">
-                                    @if ($theme->is_default == 0)
-                                        <a href="{{ route('admin.themes.set-default', ['slug' => $theme->slug]) }}" class="btn btn-primary btn-lg ms-2"><i class="bi bi-check-square"></i>
-                                            {{ __('Set default') }}</a>
+                                    @if ($theme->is_active == 0)
+                                        <a href="{{ route('admin.themes.set-active', ['slug' => $theme->slug]) }}" class="btn btn-primary btn-lg ms-2"><i class="bi bi-check-square"></i>
+                                            {{ __('Set as active') }}</a>
                                     @endif
 
                                     <a class="btn btn-secondary btn-lg ms-2" target="_blank" href="{{ route('home', ['preview_theme' => $theme->slug]) }}"><i class="bi bi-box-arrow-up-right"></i>
@@ -86,7 +86,7 @@
 
                                 <div class="fw-bold fs-5">
                                     {{ $theme->label }}
-                                    @if ($theme->is_default == 1)
+                                    @if ($theme->is_active == 1)
                                     <span class="badge bg-success fs-6 fw-normal">{{ __('Active theme') }}</span>
                                     @endif
                                 </div>

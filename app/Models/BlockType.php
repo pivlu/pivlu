@@ -32,7 +32,8 @@ class BlockType extends Model
         'description',
         'position',
         'icon',
-        'core'
+        'core',
+        'allow_in_footer'
     ];
 
     protected $table = 'pivlu_block_types';

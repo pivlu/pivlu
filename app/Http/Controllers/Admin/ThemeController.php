@@ -85,7 +85,7 @@ class ThemeController extends Controller
         if (! $theme) return redirect(route('admin.themes.index'));
 
         $theme_tab = $request->theme_tab ?? 'homepage';
-        if (!in_array($theme_tab, ['homepage', 'global', 'nav', 'nav2', 'footer', 'posts', 'contact'])) $theme_tab = 'global';        
+        if (!in_array($theme_tab, ['homepage', 'global', 'nav', 'nav2', 'footer', 'posts', 'contact'])) $theme_tab = 'global';
 
         return view('admin.index', [
             'view_file' => 'admin.theme.show',
@@ -100,7 +100,7 @@ class ThemeController extends Controller
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
             'styles' => ThemeStyle::orderBy('label')->get(),
             'theme_config' => ThemeConfig::config($theme->id),
-            'block_types' => BlockType::get_block_types() // for homepage tab
+            'block_types' => BlockType::get_block_types(), // for homepage tab
         ]);
     }
 
@@ -122,6 +122,8 @@ class ThemeController extends Controller
         // request inputs WITHOUT files
         $inputs = $request->except($excepts);
         ThemeConfig::update_config($theme->id, $inputs);
+
+        if ($theme_tab == 'global') ThemeFunctions::generate_theme_css($theme->slug);
 
         /*
         // except files from request
@@ -154,24 +156,27 @@ class ThemeController extends Controller
 
 
     /**
-     * Set default template
+     * Set active template
      */
-    public function set_default(Request $request)
+    public function set_active(Request $request)
     {
         $slug = $request->slug;
         if (!$slug) return redirect(route('admin.themes.index'));
 
         Config::update_config('active_theme', $slug);
+        
+        Theme::where('slug', $slug)->update(['is_active' => 1]);
+        Theme::where('slug', '!=', $slug)->update(['is_active' => 0]);
 
-        // create template css file IF NOT EXISTS (do not overwrite if exists)
-        $template_css_file = "custom/$slug.css";
-        if (!file_exists($template_css_file)) {
-            $css_file = fopen($template_css_file, "w");
+        // create theme css file IF NOT EXISTS (do not overwrite if exists)
+        $theme_css_file = 'assets/css/themes/' . $slug . '.css';
+        if (!file_exists($theme_css_file)) {
+            $css_file = fopen($theme_css_file, "w");
             $write = " ";
             fwrite($css_file, $write);
             fclose($css_file);
 
-            ThemeConfig::generate_template_css($slug);
+            ThemeFunctions::generate_theme_css($slug);
         }
 
         return redirect(route('admin.themes.index'))->with('success', 'updated');

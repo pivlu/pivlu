@@ -32,7 +32,8 @@ class Module extends Model
         'slug',
         'status',
         'core',
-        'icon'
+        'icon',
+        'post_type_id'
     ];
 
     protected $table = 'pivlu_modules';

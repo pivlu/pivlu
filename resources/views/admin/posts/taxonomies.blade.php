@@ -122,7 +122,7 @@
 
                 <tbody>
                     @foreach ($post_taxonomies as $post_taxonomy)
-                        @include('admin.posts.loops.taxonomies-loop', $post_taxonomy)
+                        @include('admin.posts.includes.loops.taxonomies-loop', $post_taxonomy)
                     @endforeach
                 </tbody>
             </table>

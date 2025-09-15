@@ -32,12 +32,13 @@ return new class extends Migration
     {
         Schema::create('pivlu_post_types', function (Blueprint $table) {
             $table->id();
-            $table->string('type', 50);            
+            $table->string('type', 50);
             $table->boolean('show_in_admin_menu')->default(true);
             $table->boolean('internal_only')->default(false);
-            $table->string('admin_menu_icon', 200)->nullable();            
+            $table->string('admin_menu_icon', 200)->nullable();
             $table->boolean('core')->default(false);
             $table->boolean('active')->default(false);
+            $table->unsignedBigInteger('module_id')->nullable();
             $table->timestamps();
         });
     }

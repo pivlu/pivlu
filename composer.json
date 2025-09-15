@@ -7,7 +7,11 @@
         "ERP",
         "CMS",
         "CRM",
-        "Website buider"
+        "Website buider",
+        "Wordpress alternative",
+        "PHP",
+        "framework",
+        "Laravel"
     ],
     "license": "AGPL-3.0-or-later",
     "homepage": "https://pivlu.com",
@@ -48,7 +52,6 @@
             "app/Helpers/helpers.php"
         ]
     },
-    
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -86,7 +89,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "repositories": {        
-	
-    }
+    "repositories": {}
 }

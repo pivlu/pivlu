@@ -46,6 +46,8 @@ class Block extends Model
         return $this->belongsTo(BlockType::class, 'type_id');
     }
 
+    protected $appends = ['all_languages_contents'];
+
     /**
      * 
      * @return \Illuminate\Database\Eloquent\Relations\hasOne
@@ -55,5 +57,23 @@ class Block extends Model
         return $this->hasOne(BlockContent::class, 'block_id');
     }
 
-    
+    /**
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\hasOne
+     */
+    public function active_language_content()
+    {
+        return $this->hasOne(BlockContent::class, 'block_id')->where('lang_id', Language::get_active_language()->id);
+    }
+
+    public function getAllLanguagesContentsAttribute()
+    {
+        $all_language_contents = [];
+        $langs = Language::get_languages();
+        foreach ($langs as $lang) {
+            $content = BlockContent::where('lang_id', $lang->id)->where('block_id', $this->id)->first();
+            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'content' => $content->content ?? null, 'header' => $content->header ?? null];
+        }
+        return json_decode(json_encode($all_language_contents));
+    }
 }

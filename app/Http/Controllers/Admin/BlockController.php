@@ -27,7 +27,6 @@ use DB;
 use App\Models\Block;
 use App\Models\Language;
 use App\Models\ThemeStyle;
-use App\Models\Form;
 use App\Models\ThemeButton;
 use App\Functions\ThemeFunctions;
 use App\Functions\BlockFunctions;
@@ -56,9 +55,6 @@ class BlockController extends Controller
             ->orderByDesc('is_default')
             ->orderBy('status')
             ->get();
-
-        // forms (used in form block)
-        //$forms = Form::where('active', 1)->orderBy('label')->get();
 
         if ($request->referer) $referer = $request->referer;
         else $referer = request()->headers->get('referer');

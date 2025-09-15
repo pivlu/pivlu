@@ -26,6 +26,9 @@
 <link rel="stylesheet" href="{{ asset('assets/css/builder.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/css/blocks.css') }}" />
 
+<!-- Theme CSS File -->
+<link rel="stylesheet" href='{{ asset('assets/css/themes/'.($config->active_theme ?? 'default').'.css') }}' />
+
 <!-- Custom CSS File -->
 <link rel="stylesheet" href='{{ asset("assets/css/custom.css") }}' />
 

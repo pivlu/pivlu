@@ -27,8 +27,9 @@ return [
 
 
     // Default values for theme styles
-    'defaults' => [        
+    'defaults' => [
         "font_family" => "'Open Sans', sans-serif",
+        "font_family_data" => "'Open Sans', sans-serif|Open+Sans:wght@400;700",
         "font_size" => "1rem",
         "font_color" => "#3E3E3E",
         "font_color_light" => "#b9b9b9",
@@ -36,10 +37,14 @@ return [
         "h1_size" => "2rem",
         "h2_size" => "1.5rem",
         "h3_size" => "1.2rem",
-        "title_size" => "1.3rem",
+        "title_size" => "1.5rem",
+        "subtitle_size" => "1.2rem",
+        "caption_size" => "0.95rem",
 
         "bg_color_dark" => "#5F5F5F",
         "bg_color" => "#FFFFFF",
+        "footer_bg_color" => "#f3f6f4",
+        "footer2_bg_color" => "#eeeeee",
 
         "link_color" => "#1A94FF",
         "link_color_hover" => "#006DCD",
