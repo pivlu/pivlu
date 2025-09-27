@@ -86,7 +86,9 @@ class PostTaxonomyController extends Controller
         $post_taxonomy_id = $request->id;
 
         $post_taxonomy = PostTaxonomy::with('default_language_content')->find($post_taxonomy_id);
-        if (!$post_taxonomy) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
+        if (!$post_taxonomy) return redirect(route('admin'))->withErrors('Forbidden');
+
+        if ($request->user()->cannot('update', [PostTaxonomy::class, $post_taxonomy->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         $post_type_taxonomy = PostTypeTaxonomy::where(['id' => $post_taxonomy->post_type_taxonomy_id])->first();
 
@@ -118,6 +120,8 @@ class PostTaxonomyController extends Controller
         if (!$post_type_taxonomy) return redirect(route('admin.posts.index'));
 
         $post_type = PostType::find($post_type_taxonomy->post_type_id);
+
+        if ($request->user()->cannot('create', [PostTaxonomy::class, $post_type->id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         // position
         if (!($request->position ?? null)) {
@@ -185,8 +189,11 @@ class PostTaxonomyController extends Controller
      */
     public function update(Request $request)
     {
+
         $post_taxonomy = PostTaxonomy::with('default_language_content')->find($request->id);
-        if (!$post_taxonomy) return redirect(route('admin.posts.index'))->withErrors('Forbidden');
+        if (!$post_taxonomy) return redirect(route('admin'))->withErrors('Forbidden');
+
+        if ($request->user()->cannot('update', [PostTaxonomy::class, $post_taxonomy->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         // position
         if (!($request->position ?? null)) {
@@ -249,8 +256,11 @@ class PostTaxonomyController extends Controller
      */
     public function destroy(Request $request)
     {
+
         $post_taxonomy = PostTaxonomy::find($request->id);
         if (!$post_taxonomy) return redirect(route('admin.post-taxonomies.index', ['id' => $post_taxonomy->post_type_taxonomy_id]));
+
+        if ($request->user()->cannot('delete', [PostTaxonomy::class, $post_taxonomy->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         PostTaxonomyRelation::where('post_taxonomy_id', $request->id)->delete();
         PostTaxonomy::where('id', $request->id)->delete();

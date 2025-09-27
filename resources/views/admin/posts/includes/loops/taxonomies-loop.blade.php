@@ -10,7 +10,6 @@
         @endif
 
         @foreach ($post_taxonomy->all_languages_contents as $post_taxonomy_content)
-
             <div class="d-flex">
                 @for ($i = 2; $i < $loop->depth; $i++)
                     <div class="ms-5">
@@ -31,8 +30,7 @@
                     <div class="small">
                         <b>{{ __('URL') }}:</b>
                         @if ($post_taxonomy_content->slug)
-                            <a target="_blank"
-                                href="{{ route('home') }}/{{ $post_taxonomy_content->url_path ?? null }}">{{ route('home') }}/{{ $post_taxonomy_content->url_path ?? null }}</a>
+                            <a target="_blank" href="{{ route('home') }}/{{ $post_taxonomy_content->url_path ?? null }}">{{ route('home') }}/{{ $post_taxonomy_content->url_path ?? null }}</a>
                         @else
                             -
                         @endif
@@ -88,9 +86,12 @@
     <td>
         <div class="d-grid gap-2">
 
-            <a href="{{ route('admin.post-taxonomies.show', ['id' => $post_taxonomy->id]) }}" class="btn btn-primary btn-sm mb-2">{{ __('Manage category') }}</button>
+            @can('update', [App\Models\PostTaxonomy::class, $post_type->id])
+                <a href="{{ route('admin.post-taxonomies.show', ['id' => $post_taxonomy->id]) }}" class="btn btn-primary btn-sm mb-2">{{ __('Edit') }}</a>
+            @endcan
 
-                <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post_taxonomy->id }}" class="btn btn-danger btn-sm">{{ __('Delete category') }}</a>
+            @can('delete', [App\Models\PostTaxonomy::class, $post_type->id])
+                <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post_taxonomy->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                 <div class="modal fade confirm-{{ $post_taxonomy->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -99,7 +100,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                {{ __('Are you sure you want to delete this category? All posts from this item will be assigned to "Uncategorized".') }}
+                                {{ __('Are you sure you want to delete this taxonomy? All posts from this item taxonomy be assigned to "Uncategorized".') }}
                             </div>
                             <div class="modal-footer">
                                 <form method="POST" action="{{ route('admin.post-taxonomies.show', ['id' => $post_taxonomy->id, 'post_type_taxonomy_id' => $post_type_taxonomy->id]) }}">
@@ -112,6 +113,7 @@
                         </div>
                     </div>
                 </div>
+            @endcan
         </div>
     </td>
 </tr>

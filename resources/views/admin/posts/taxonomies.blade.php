@@ -22,7 +22,7 @@
 
     <div class="card-header">
 
-        <div class="row">          
+        <div class="row">
 
             <div class="col-12 col-sm-12 col-md-6 order-md-1 order-first">
                 <div class="card-title fw-bold">
@@ -37,14 +37,16 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    <span class="float-end"><button data-bs-toggle="modal" data-bs-target="#create-taxonomy" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
-                            @if ($post_type == 'post')
-                                {{ __('Create category') }}
-                            @else
-                                {{ __(json_decode($post_type_taxonomy->default_language_content->labels ?? null)->create ?? __('Create') ) }}
-                            @endif
-                        </button></span>
-                    @include('admin.posts.includes.modal-create-taxonomy')
+                    @can('create', [App\Models\PostTaxonomy::class, $post_type->id])
+                        <span class="float-end"><button data-bs-toggle="modal" data-bs-target="#create-taxonomy" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
+                                @if ($post_type == 'post')
+                                    {{ __('Create category') }}
+                                @else
+                                    {{ __(json_decode($post_type_taxonomy->default_language_content->labels ?? null)->create ?? __('Create')) }}
+                                @endif
+                            </button></span>
+                        @include('admin.posts.includes.modal-create-taxonomy')
+                    @endcan
                 </div>
             </div>
 
@@ -102,7 +104,7 @@
                     <a class="btn btn-light mb-2" href="{{ route('admin.post-taxonomies.index', ['id' => $post_type_taxonomy->id]) }}"><i class="bi bi-arrow-counterclockwise"></i></a>
                 </div>
 
-                <input type="hidden" name="id" value="{{ $post_type_taxonomy->id }}">                
+                <input type="hidden" name="id" value="{{ $post_type_taxonomy->id }}">
             </form>
         </section>
 

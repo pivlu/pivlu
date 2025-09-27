@@ -26,8 +26,8 @@ class TestAction
     }
 
 
-     public function test($string)
+    public function test($string)
     {
-          echo ('<div class="fw-bold">HOOOOOOOOKKKK</div>');
+        echo ('<div class="fw-bold">HOOOOOOOOKKKK</div>');
     }
 }

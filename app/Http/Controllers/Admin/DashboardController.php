@@ -42,9 +42,9 @@ class DashboardController extends Controller
         
         add_action('test_action', 'App\Listeners\TestAction@test', 20, 1);
 
-        do_action('test_action', 'text ttttsdasa');
+        //do_action('test_action', 'text ttttsdasa');
 
-        apply_filters('test_filter', 'olaa');
+        //apply_filters('test_filter', 'olaa');
 
         return view('admin.index', [
             'view_file' => 'admin.dashboard.index',

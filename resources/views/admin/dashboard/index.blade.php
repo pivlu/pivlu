@@ -15,7 +15,7 @@
             </div>
 
 
-            @doAction('test_action', 'hook')
+            {{--@doAction('test_action', 'hook')--}}
 
             <div class="card-body">
                 <div class="row">
