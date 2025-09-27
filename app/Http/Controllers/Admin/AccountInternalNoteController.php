@@ -37,6 +37,9 @@ class AccountInternalNoteController extends Controller
     public function index(Request $request)
     {
 
+        // CHECK PERMISSION - update accounts
+        if ($request->user()->cannot('update', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
+
         $account = User::withCount('internal_notes')->find($request->account_id);
         if (!$account) redirect(route('admin.accounts.index'));
 
@@ -61,6 +64,9 @@ class AccountInternalNoteController extends Controller
      */
     public function store(Request $request)
     {
+        // CHECK PERMISSION - update accounts
+        if ($request->user()->cannot('update', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
+
         $note = UserInternalNote::create([
             'note' => $request->note,
             'sticky' => $request->has('sticky') ? 1 : 0,
@@ -83,15 +89,18 @@ class AccountInternalNoteController extends Controller
      */
     public function destroy(Request $request)
     {
+        // CHECK PERMISSION - update accounts
+        if ($request->user()->cannot('update', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
+
         $note = UserInternalNote::find($request->note_id);
         if (!$note) return redirect(route('admin.accounts.internal-notes.index', ['account_id' => $request->account_id]));
 
         UserInternalNote::where('id', $request->note_id)->delete();
 
         if ($note->media_id) {
-            FileFunctions::delete_file($note->media_id);        
+            FileFunctions::delete_file($note->media_id);
         }
-        
+
         return redirect(route('admin.accounts.internal-notes.index', ['account_id' => $request->account_id]))->with('success', 'deleted');
     }
 }

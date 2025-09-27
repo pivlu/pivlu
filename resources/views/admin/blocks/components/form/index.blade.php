@@ -1,6 +1,3 @@
-@include('admin.includes.trumbowyg-assets')
-@include('admin.includes.color-picker')
-
 <div class="page-title">
     <div class="row">
         <div class="col-12">
@@ -64,7 +61,7 @@
                     <label class="form-check-label" for="active">{{ __('Active') }}</label>
                 </div>
                 <div class="form-text">{{ __('Only active blocks are displayed on website') }}</div>
-            </div>           
+            </div>
 
             <div class="form-group">
                 <input type="hidden" name="type" value="{{ $type }}">
@@ -103,13 +100,14 @@
                     <tr>
                         <th width="40"><i class="bi bi-arrow-down-up"></i></th>
                         <th>{{ __('Field details') }}</th>
-                        <th width="160">{{ __('Actions') }}</th>
+                        <th width="220">{{ __('Field type') }}</th>
+                        <th width="150">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
                 <tbody id="sortable">
                     @foreach ($form_fields as $field)
-                        <tr @if ($field->active == 0) class="bg-light" @endif id="item-{{ $field->id }}">
+                        <tr @if ($field->active == 0) class="table-light" @endif id="item-{{ $field->id }}">
 
                             <td class="movable">
                                 <i class="bi bi-arrow-down-up"></i>
@@ -118,77 +116,28 @@
                             <td>
 
                                 @if ($field->active == 0)
-                                    <span class="float-end"><button class="btn btn-warning btn-sm">{{ __('Inactive') }}</button></span>
+                                    <div class="float-end ms-1 badge bg-warning fw-normal">{{ __('Inactive') }}</div>
                                 @endif
 
-                                <h6>{{ __('Field type') }}: <b>
-                                        @switch($field->type)
-                                            @case('text')
-                                                {{ __('Text (one row)') }}
-                                            @break
+                                @if ($field->required == 1)
+                                    <div class="float-end ms-1 badge bg-secondary fw-normal">{{ __('Required') }}</div>
+                                @endif
 
-                                            @case('textarea')
-                                                {{ __('Textarea (multiple rows)') }}
-                                            @break
+                                @if ($field->is_default_name)
+                                    <div class="badge bg-info">{{ __('Name field') }}</div>
+                                @endif
+                                @if ($field->is_default_email)
+                                    <div class="badge bg-info">{{ __('Email field') }}</div>
+                                @endif
+                                @if ($field->is_default_subject)
+                                    <div class="badge bg-info">{{ __('Subject field') }}</div>
+                                @endif
+                                @if ($field->is_default_message)
+                                    <div class="badge bg-info">{{ __('Message field') }}</div>
+                                @endif
 
-                                            @case('select')
-                                                {{ __('Select from dropdown values (one selection)') }}
-                                            @break
+                                <div class="mb-1"></div>
 
-                                            @case('checkbox')
-                                                {{ __('Select multiple values') }}
-                                            @break
-
-                                            @case('file')
-                                                {{ __('Upload file') }}
-                                            @break
-
-                                            @case('email')
-                                                {{ __('Email') }}
-                                            @break
-
-                                            @case('number')
-                                                {{ __('Number (integer)') }}
-                                            @break
-
-                                            @case('month')
-                                                {{ __('Month') }}
-                                            @break
-
-                                            @case('date')
-                                                {{ __('Date (day / month / year)') }}
-                                            @break
-
-                                            @case('time')
-                                                {{ __('Time (hour / minute)') }}
-                                            @break
-
-                                            @case('datetime')
-                                                {{ __('Date and time') }}
-                                            @break
-
-                                            @case('color')
-                                                {{ __('Color') }}
-                                            @break
-
-                                            @default
-                                                {{ $field->type }}
-                                        @endswitch
-                                    </b>
-
-                                    @if ($field->is_default_name)
-                                        <span class="badge bg-info">{{ __('Name field') }}</span>
-                                    @endif
-                                    @if ($field->is_default_email)
-                                        <span class="badge bg-info">{{ __('Email field') }}</span>
-                                    @endif
-                                    @if ($field->is_default_subject)
-                                        <span class="badge bg-info">{{ __('Subject field') }}</span>
-                                    @endif
-                                    @if ($field->is_default_message)
-                                        <span class="badge bg-info">{{ __('Message field') }}</span>
-                                    @endif
-                                </h6>
 
                                 {{--
                                     @foreach (admin_languages() as $lang)
@@ -215,10 +164,61 @@
                                         <div class="mb-2"></div>
                                     @endforeach
                                     --}}
+                            </td>
 
-                                @if ($field->required)
-                                    <div class="text-info fw-bold">{{ __('Required field') }}</div>
-                                @endif
+                            <td>
+                                @switch($field->type)
+                                    @case('text')
+                                        {{ __('Text (one row)') }}
+                                    @break
+
+                                    @case('textarea')
+                                        {{ __('Textarea (multiple rows)') }}
+                                    @break
+
+                                    @case('select')
+                                        {{ __('Select from dropdown values (one selection)') }}
+                                    @break
+
+                                    @case('checkbox')
+                                        {{ __('Select multiple values') }}
+                                    @break
+
+                                    @case('file')
+                                        {{ __('Upload file') }}
+                                    @break
+
+                                    @case('email')
+                                        {{ __('Email') }}
+                                    @break
+
+                                    @case('number')
+                                        {{ __('Number (integer)') }}
+                                    @break
+
+                                    @case('month')
+                                        {{ __('Month') }}
+                                    @break
+
+                                    @case('date')
+                                        {{ __('Date (day / month / year)') }}
+                                    @break
+
+                                    @case('time')
+                                        {{ __('Time (hour / minute)') }}
+                                    @break
+
+                                    @case('datetime')
+                                        {{ __('Date and time') }}
+                                    @break
+
+                                    @case('color')
+                                        {{ __('Color') }}
+                                    @break
+
+                                    @default
+                                        {{ $field->type }}
+                                @endswitch
                             </td>
 
                             <td>

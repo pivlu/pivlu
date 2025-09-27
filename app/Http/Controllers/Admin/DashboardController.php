@@ -22,10 +22,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Auth;
 use App\Models\Media;
 use App\Models\User;
+use Auth;
 
 class DashboardController extends Controller
 {
@@ -40,12 +39,15 @@ class DashboardController extends Controller
         
         $media_count_files = Media::count();
         $media_size_total = Media::sum('size_mb');
+        
+        add_action('test_action', 'App\Listeners\TestAction@test', 20, 1);
 
-        if (Auth::user()->role == 'admin') $view = 'admin.dashboard.dashboard';
-        if (Auth::user()->role == 'internal') $view = 'admin.dashboard.dashboard-internal';
+        do_action('test_action', 'text ttttsdasa');
+
+        apply_filters('test_filter', 'olaa');
 
         return view('admin.index', [
-            'view_file' => $view,
+            'view_file' => 'admin.dashboard.index',
             'active_menu' => 'dashboard',
             'active_submenu' => 'summary',
             'active_tab' => 'summary',

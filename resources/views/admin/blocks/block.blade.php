@@ -93,7 +93,7 @@
                 <div class="form-text">{{ __('Hidden blocks are not displayed on website') }}</div>
             </div>
 
-            @if (!$is_simple_block ?? null)
+            @if (!($is_simple_block ?? null))
                 @if (!($block->block_type->type == 'slider'))
                     <div class="form-group">
                         <div class="form-check form-switch">

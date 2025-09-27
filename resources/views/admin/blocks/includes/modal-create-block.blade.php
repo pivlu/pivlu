@@ -39,7 +39,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                 <div class="modal-footer">
                     <input type="hidden" name="type" value="{{ $type }}">
-                    <button type="submit" class="btn btn-primary">{{ __('Create new block') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Create new component') }}</button>
                 </div>
 
             </form>

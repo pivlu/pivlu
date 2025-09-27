@@ -153,11 +153,11 @@
 
                                 <div class="fs-6">
                                     @if (!$message->read_at)
-                                    <span class="text-danger">[{{ __('Unread') }}]</span>: <a class="text-bold" href="{{ route('admin.contact.show', ['id' => $message->id]) }}"><b>{{ $message->subject }}
+                                    <span class="text-danger">[{{ __('Unread') }}]</span>: <a class="text-bold" href="{{ route('admin.forms.show', ['id' => $message->id]) }}"><b>{{ $message->subject }}
                                             ({{ $message->name }})
                                         </b></a>
                                     @else
-                                    <a href="{{ route('admin.contact.show', ['id' => $message->id]) }}">{{ $message->name }} ({{ $message->email }})</a>
+                                    <a href="{{ route('admin.forms.show', ['id' => $message->id]) }}">{{ $message->name }} ({{ $message->email }})</a>
                                     @endif
                                 </div>
 
@@ -188,10 +188,10 @@
                             <td>
 
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('admin.recycle_bin.single_action', ['module' => 'contact', 'id' => $message->id, 'return_to' => 'recycle_bin', 'action' => 'delete']) }}"
+                                    <a href="{{ route('admin.recycle_bin.single_action', ['module' => 'forms', 'id' => $message->id, 'return_to' => 'recycle_bin', 'action' => 'delete']) }}"
                                         class="btn btn-danger btn-sm mb-2">{{ __('Permanently delete') }}</a>
 
-                                    <a href="{{ route('admin.recycle_bin.single_action', ['module' => 'contact', 'id' => $message->id, 'return_to' => 'recycle_bin', 'action' => 'restore']) }}"
+                                    <a href="{{ route('admin.recycle_bin.single_action', ['module' => 'forms', 'id' => $message->id, 'return_to' => 'recycle_bin', 'action' => 'restore']) }}"
                                         class="btn btn-success btn-sm">{{ __('Restore') }}</a>
                                 </div>
 

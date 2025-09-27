@@ -88,4 +88,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserInternalNote::class);
     }
+
+    public function role_details()
+    {
+        return $this->belongsTo(Role::class, 'role', 'role');
+    }
 }

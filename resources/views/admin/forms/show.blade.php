@@ -133,29 +133,30 @@
                         {{ __('Flag as normal') }}</a>
                 @endif
 
-
-                <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $message->id }}" class="btn btn-danger btn-sm ms-2"><i class="bi bi-trash"></i> {{ __('Delete') }}</a>
-                <div class="modal fade confirm-{{ $message->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="ConfirmDeleteLabel">{{ __('Confirm delete') }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                {{ __('Are you sure you want to move this message to trash?') }}
-                            </div>
-                            <div class="modal-footer">
-                                <form method="GET" action="{{ route('admin.forms.to_trash', ['id' => $message->id]) }}">
-                                    {{ csrf_field() }}
-                                    {{ method_field('GET') }}
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
-                                    <button type="submit" class="btn btn-danger">{{ __('Yes. Move to trash') }}</button>
-                                </form>
+                @can('delete_forms_messages', App\Models\FormData::class)
+                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $message->id }}" class="btn btn-danger btn-sm ms-2"><i class="bi bi-trash"></i> {{ __('Delete') }}</a>
+                    <div class="modal fade confirm-{{ $message->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="ConfirmDeleteLabel">{{ __('Confirm delete') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ __('Are you sure you want to move this message to trash?') }}
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="GET" action="{{ route('admin.forms.to_trash', ['id' => $message->id]) }}">
+                                        {{ csrf_field() }}
+                                        {{ method_field('GET') }}
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                                        <button type="submit" class="btn btn-danger">{{ __('Yes. Move to trash') }}</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endcan
 
             </div>
 

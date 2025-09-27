@@ -4,27 +4,8 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.accounts.index', ['role' => $account->role]) }}">
-                            @switch($account->role)
-                                @case('admin')
-                                    {{ __('Administrator accounts') }}
-                                @break
-
-                                @case('user')
-                                    {{ __('Registered users') }}
-                                @break
-
-                                @case('internal')
-                                    {{ __('Internal accounts') }}
-                                @break
-
-                                @default
-                                    {{ $account->role }}
-                            @endswitch
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ __('Edit account') }}</li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.accounts.index') }}">{{ __('Accounts') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ __('Manage account') }}</li>
                 </ol>
             </nav>
         </div>
@@ -126,9 +107,9 @@
                             <label>{{ __('Role') }}</label>
                             <select name="role" class="form-select" required>
                                 <option value="">- {{ __('select') }} -</option>
-                                <option @if ($account->role == 'user') selected @endif value="user">{{ __('Registered user') }}</option>
-                                <option @if ($account->role == 'internal') selected @endif value="internal">{{ __('Internal account') }}</option>
-                                <option @if ($account->role == 'admin') selected @endif value="admin">{{ __('Administrator') }}</option>
+                                @foreach ($roles as $role)
+                                    <option @if ($account->role == $role->role) selected @endif value="{{ $role->role }}"> {{ $role->label ?? $role->role }} ({{ $role->role }})</option>
+                                @endforeach                                
                             </select>
                         </div>
                     </div>

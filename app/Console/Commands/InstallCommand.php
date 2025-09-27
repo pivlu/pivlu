@@ -95,7 +95,7 @@ class InstallCommand extends Command
 
         $this->line('Check default block types');
         SetupFunctions::check_default_block_types();
-        
+
         $this->line('Check default apps');
         SetupFunctions::check_default_apps();
 
@@ -113,6 +113,9 @@ class InstallCommand extends Command
 
         $this->line('Check website settings');
         SetupFunctions::check_default_website_settings();
+
+        $this->line('Check default roles and permissions');
+        SetupFunctions::check_default_roles_and_permissions();
 
         // Create the symbolic link 
         Artisan::call('storage:link');

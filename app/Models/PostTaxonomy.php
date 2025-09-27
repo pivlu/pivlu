@@ -29,6 +29,7 @@ class PostTaxonomy extends Model
     protected $fillable = [
         'post_type_taxonomy_id',
         'post_type_id',
+        'user_id',
         'parent_id',
         'tree_ids',
         'active',

@@ -572,17 +572,17 @@ class SetupFunctions
 
         Role::firstOrCreate(
             ['role' => 'editor'],
-            ['is_core' => 1, 'label' => 'Editor', 'description' => 'Editor: By dfault, editor can manage and publish all posts and pages, manage post types, moderate comments, but cannot access settings.']
+            ['is_core' => 1, 'label' => 'Editor', 'description' => 'Editor: Can manage and publish all posts and pages, manage post types, moderate comments, but cannot access settings settings.']
         );
 
         Role::firstOrCreate(
             ['role' => 'author'],
-            ['is_core' => 1, 'label' => 'Author', 'description' => 'Author: By default, author has the ability to create, edit, and publish their own items, but not those created by others.']
+            ['is_core' => 1, 'label' => 'Author', 'description' => 'Author: Has the ability to create, edit, and publish their own posts and pages, but not those created by others.']
         );
 
         Role::firstOrCreate(
             ['role' => 'contributor'],
-            ['is_core' => 1, 'label' => 'Contributor', 'description' => 'Contributor: By default, contributor can create and edit their own items but must submit them for approval by an Editor or Administrator to be published.']
+            ['is_core' => 1, 'label' => 'Contributor', 'description' => 'Contributor: Can create and edit their own posts but must submit them for approval by an Editor or Administrator to be published.']
         );
 
         Role::firstOrCreate(
@@ -594,31 +594,31 @@ class SetupFunctions
 
         // DEFAULT PERMISSIONS - POSTS TYPES            
         foreach ($post_types as $post_type) {
-            $perm_index = Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'index'],
+            $perm_access = Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'access'],
                 [
                     'is_core' => 1,
-                    'description' => 'Access to this section.',
+                    'description' => 'Have access to this section.',
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name,
                 ]
             );
 
-            $perm_view = Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'view'],
+            $perm_showOwn = Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'showOwn'],
                 [
                     'is_core' => 1,
-                    'description' => 'Permission to view their own content.',
+                    'description' => 'View their own articles.',
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name,
                 ]
             );
 
-            $perm_viewAny =  Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'viewAny'],
+            $perm_showAny =  Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'showAny'],
                 [
                     'is_core' => 1,
-                    'description' => 'Permissio to view any content, including those created by others.',
+                    'description' => 'View any article, including those created by others.',
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name
                 ]
@@ -634,11 +634,11 @@ class SetupFunctions
                 ]
             );
 
-            $perm_update = Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'update'],
+            $perm_updateOwn = Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'updateOwn'],
                 [
                     'is_core' => 1,
-                    'description' => 'Update their own content.',
+                    'description' => 'Update their own articles.',
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name
                 ]
@@ -648,17 +648,17 @@ class SetupFunctions
                 ['post_type_id' => $post_type->id ?? null, 'permission' => 'updateAny'],
                 [
                     'is_core' => 1,
-                    'description' => 'Update any content, including those created by others.',
+                    'description' => 'Update any article, including those created by others.',
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name
                 ]
             );
 
-            $perm_delete = Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'delete'],
+            $perm_deleteOwn = Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'deleteOwn'],
                 [
                     'is_core' => 1,
-                    'description' => 'Delete their own content.',
+                    'description' => 'Delete their own articles.',
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name
                 ]
@@ -668,15 +668,15 @@ class SetupFunctions
                 ['post_type_id' => $post_type->id ?? null, 'permission' => 'deleteAny'],
                 [
                     'is_core' => 1,
-                    'description' => 'Delete any content, including those created by others.',
+                    'description' => 'Delete any article, including those created by others.',
                     'attention' => 1,
                     'group_type' => 'posts',
                     'group_name' => $post_type->default_language_content->name
                 ]
             );
 
-            $perm_publish = Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'publish'],
+            $perm_publishOwn = Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'publishOwn'],
                 [
                     'is_core' => 1,
                     'description' => 'Publish their own articles.',
@@ -695,8 +695,8 @@ class SetupFunctions
                 ]
             );
 
-            $perm_update_published = Permission::firstOrCreate(
-                ['post_type_id' => $post_type->id ?? null, 'permission' => 'update_published'],
+            $perm_updateOwn_published = Permission::firstOrCreate(
+                ['post_type_id' => $post_type->id ?? null, 'permission' => 'updateOwn_published'],
                 [
                     'is_core' => 1,
                     'description' => 'Edit or unpublish own articles after they are published.',
@@ -780,20 +780,20 @@ class SetupFunctions
             );
 
 
-            $perm_index->update([
+            $perm_access->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [
-                            'switchCheck-' . $perm_view->id ?? null  => 'disabled',
-                            'switchCheck-' . $perm_viewAny->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_showOwn->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_showAny->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_create->id ?? null  => 'disabled',
-                            'switchCheck-' . $perm_update->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_updateOwn->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_updateAny->id ?? null  => 'disabled',
-                            'switchCheck-' . $perm_delete->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_deleteOwn->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_deleteAny->id ?? null  => 'disabled',
-                            'switchCheck-' . $perm_publish->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_publishOwn->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_publishAny->id ?? null  => 'disabled',
-                            'switchCheck-' . $perm_update_published->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_updateOwn_published->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_updateAny_published->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_create_taxonomies->id ?? null  => 'disabled',
                             'switchCheck-' . $perm_update_taxonomies->id ?? null  => 'disabled',
@@ -807,26 +807,25 @@ class SetupFunctions
                 )
             ]);
 
-
-            $perm_view->update([
+            $perm_showOwn->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                            'switchCheck-' . $perm_viewAny->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_showAny->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                         ]
                     ]
                 )
             ]);
 
-            $perm_viewAny->update([
+            $perm_showAny->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                            'switchCheck-' . $perm_view->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_showOwn->id ?? null  => 'disabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                         ]
                     ]
                 )
@@ -837,18 +836,18 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                         ]
                     ]
                 )
             ]);
 
-            $perm_update->update([
+            $perm_updateOwn->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                             'switchCheck-' . $perm_updateAny->id ?? null  => 'disabled',
                         ]
                     ]
@@ -860,19 +859,19 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                            'switchCheck-' . $perm_update->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_updateOwn->id ?? null  => 'disabled',
                         ]
                     ]
                 )
             ]);
 
-            $perm_delete->update([
+            $perm_deleteOwn->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                             'switchCheck-' . $perm_deleteAny->id ?? null  => 'disabled',
                         ]
                     ]
@@ -884,19 +883,19 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                            'switchCheck-' . $perm_delete->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_deleteOwn->id ?? null  => 'disabled',
                         ]
                     ]
                 )
             ]);
 
-            $perm_publish->update([
+            $perm_publishOwn->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                             'switchCheck-' . $perm_publishAny->id ?? null  => 'disabled',
                         ]
                     ]
@@ -908,19 +907,19 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                            'switchCheck-' . $perm_publish->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_publishOwn->id ?? null  => 'disabled',
                         ]
                     ]
                 )
             ]);
 
-            $perm_update_published->update([
+            $perm_updateOwn_published->update([
                 'actions' => json_encode(
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                             'switchCheck-' . $perm_updateAny_published->id ?? null  => 'disabled',
                         ]
                     ]
@@ -932,41 +931,8 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                            'switchCheck-' . $perm_update_published->id ?? null  => 'enabled',
-                        ]
-                    ]
-                )
-            ]);
-
-            $perm_create_taxonomies->update([
-                'actions' => json_encode(
-                    [
-                        'unchecked' => [],
-                        'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                        ]
-                    ]
-                )
-            ]);
-
-            $perm_update_taxonomies->update([
-                'actions' => json_encode(
-                    [
-                        'unchecked' => [],
-                        'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
-                        ]
-                    ]
-                )
-            ]);
-
-            $perm_delete_taxonomies->update([
-                'actions' => json_encode(
-                    [
-                        'unchecked' => [],
-                        'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_updateOwn_published->id ?? null  => 'disabled',
                         ]
                     ]
                 )
@@ -980,7 +946,7 @@ class SetupFunctions
                             'switchCheck-' . $perm_delete_comments->id ?? null  => 'disabled',
                         ],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                         ]
                     ]
                 )
@@ -991,7 +957,7 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                             'switchCheck-' . $perm_view_comments->id ?? null  => 'enabled',
                         ]
                     ]
@@ -1003,7 +969,7 @@ class SetupFunctions
                     [
                         'unchecked' => [],
                         'checked' => [
-                            'switchCheck-' . $perm_index->id ?? null  => 'enabled',
+                            'switchCheck-' . $perm_access->id ?? null  => 'enabled',
                             'switchCheck-' . $perm_view_comments->id ?? null  => 'enabled',
                         ]
                     ]
@@ -1183,8 +1149,8 @@ class SetupFunctions
 
         // Editor permissions
         $editor_perms = [
-            'index',
-            'viewAny',
+            'access',
+            'showAny',
             'create',
             'updateAny',
             'deleteAny',
@@ -1206,11 +1172,11 @@ class SetupFunctions
 
         // Author permissions
         $author_perms = [
-            'index',
-            'view',
+            'access',
+            'showOwn',
             'create',
-            'update',
-            'publish',
+            'updateOwn',
+            'publishOwn',
             'update_profile',
         ];
         foreach ($permissions as $permission) {
@@ -1219,10 +1185,10 @@ class SetupFunctions
 
         // Contributor permissions
         $contributor_perms = [
-            'index',
-            'view',
+            'access',
+            'showOwn',
             'create',
-            'update',
+            'updateOwn',
             'update_profile',
         ];
         foreach ($permissions as $permission) {

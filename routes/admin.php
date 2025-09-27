@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AjaxController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AccountInternalNoteController;
+use App\Http\Controllers\Admin\AccountRoleController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\BlockComponentController;
 use App\Http\Controllers\Admin\ConfigController;
@@ -37,7 +38,6 @@ use App\Http\Controllers\Admin\ModuleController;
 use App\Http\Controllers\Admin\PostTypeController;
 use App\Http\Controllers\Admin\PostTypeTaxonomyController;
 use App\Http\Controllers\Admin\PostController;
-use App\Http\Controllers\Admin\PostDocsController;
 use App\Http\Controllers\Admin\PostTaxonomyController;
 use App\Http\Controllers\Admin\RecycleBinController;
 use App\Http\Controllers\Admin\ThemeController;
@@ -56,7 +56,12 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
-    // Accounts    
+    // Roles and permissions
+    Route::resource('accounts/roles', AccountRoleController::class)->parameters(['roles' => 'role']);
+    //Route::get('accounts/roles/{role}', [AccountRoleController::class, 'permissions'])->where('role', '[a-zA-Z0-9_]+')->name('roles.permissions');
+    //Route::post('accounts/roles/{role}', [AccountController::class, 'update_permissions']);
+
+    // Accounts
     Route::resource('accounts', AccountController::class)->parameters(['accounts' => 'id']);
 
     Route::get('account/{id}/block', [AccountController::class, 'block'])->where('id', '[0-9]+')->name('account.block');
@@ -78,12 +83,6 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     Route::post('posts/{id}/content', [PostController::class, 'update_content'])->name('posts.content.new')->where('id', '[0-9]+');
     Route::delete('posts/{id}/content/delete/{block_id}', [PostController::class, 'delete_content'])->name('posts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
     Route::get('posts/{id}/delete-main-image', [PostController::class, 'delete_main_image'])->name('posts.delete_main_image')->where('id', '[0-9]+');
-
-    // Docs
-    Route::post('posts/{id}/docs-content', [PostDocsController::class, 'store'])->name('posts.docs-content-section.create')->where('id', '[0-9]+');
-    Route::get('posts/{id}/docs-content/{section_id}', [PostDocsController::class, 'show'])->name('posts.docs-content-section.show')->where(['id' => '[0-9]+', 'section_id' => '[0-9]+']);
-    Route::delete('posts/{id}/docs-content/{section_id}', [PostDocsController::class, 'destroy'])->name('posts.docs-content-section.delete')->where(['id' => '[0-9]+', 'section_id' => '[0-9]+']);
-    Route::post('posts/{id}/docs-sortable', [PostDocsController::class, 'sortable'])->name('posts.docs.sortable')->where('id', '[0-9]+');
 
     // Theme Menus
     Route::resource('appearance/theme-menus', ThemeMenuController::class)->parameters(['theme-menus' => 'id']);
@@ -161,15 +160,7 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
         // Modules
         Route::get('modules', [ModuleController::class, 'index'])->name('modules');
         Route::post('modules', [ModuleController::class, 'update']);
-
-        // Contact
-        Route::get('contact/fields', [ContactController::class, 'fields'])->name('contact.fields');
-        Route::post('contact/fields/add-field', [ContactController::class, 'add_field'])->name('contact.add_field');
-        Route::get('contact/fields/update-field/{field_id}', [ContactController::class, 'show_field'])->name('contact.show_field')->where('field_id', '[0-9]+');
-        Route::put('contact/fields/update-field/{field_id}', [ContactController::class, 'update_field'])->name('contact.update_field')->where('field_id', '[0-9]+');
-        Route::delete('contact/fields/delete-field/{field_id}', [ContactController::class, 'destroy_field'])->name('contact.delete_field')->where('field_id', '[0-9]+');
-        Route::post('contact/fields/sortable-fields', [ContactController::class, 'sortable_fields'])->name('contact.sortable_fields');
-
+        
         // Recycle Bin
         Route::get('recycle-bin', [RecycleBinController::class, 'index'])->name('recycle_bin');
         Route::get('recycle-bin/empty/{module}', [RecycleBinController::class, 'empty'])->name('recycle_bin.empty')->where('module', '[a-zA-Z0-9]+');

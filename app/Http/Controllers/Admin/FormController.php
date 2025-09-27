@@ -37,6 +37,9 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
+        // CHECK PERMISSION - view messages         
+        if ($request->user()->cannot('view_forms_messages', [FormData::class])) return redirect(route('admin'))->with('error', 'no_permission');
+
         $search_form_id = $request->search_form_id;
         $search_terms = $request->search_terms;
         $search_status = $request->search_status;
@@ -69,7 +72,7 @@ class FormController extends Controller
 
         $messages = $messages->orderByDesc('id')->paginate(25);
 
-        $count_messages_unread = FormData::whereNull('read_at')->whereNull('deleted_at')->count();
+        $count_messages_unread = FormData::whereNull('read_at')->count();
 
         return view('admin.index', [
             'view_file' => 'admin.forms.index',
@@ -92,7 +95,10 @@ class FormController extends Controller
     public function show(Request $request)
     {
 
-        $message = FormData::where('id', $request->id)->with('form')->first();
+        // CHECK PERMISSION - view messages         
+        if ($request->user()->cannot('view_forms_messages', [FormData::class])) return redirect(route('admin'))->with('error', 'no_permission');
+
+        $message = FormData::where('id', $request->id)->with('form')->withTrashed()->first();
         if (!$message) return redirect(route('admin.forms'));
 
         $form_block_component = BlockComponent::where(['id' => $message->block_component_id, 'type' => 'form'])->first();
@@ -116,65 +122,14 @@ class FormController extends Controller
 
 
     /**
-     * Display all messages from trash
-     */
-    public function trash(Request $request)
-    {
-        $search_form_id = $request->search_form_id;
-        $search_terms = $request->search_terms;
-        $search_status = $request->search_status;
-        $search_replied = $request->search_replied;
-        $search_important = $request->search_important;
-
-        $messages = FormData::with('form')->whereNotNull('deleted_at');
-
-        if ($search_form_id)
-            $messages = $messages->where('forms_data.form_id', $search_form_id);
-
-        if ($search_status == 'unread')
-            $messages = $messages->whereNull('forms_data.read_at');
-        if ($search_status == 'read')
-            $messages = $messages->whereNotNull('forms_data.read_at');
-
-        if ($search_replied == 'yes')
-            $messages = $messages->whereNotNull('forms_data.responded_at');
-        if ($search_replied == 'no')
-            $messages = $messages->whereNull('forms_data.responded_at');
-
-        if ($search_important == '1')
-            $messages = $messages->where('forms_data.is_important', 1);
-
-        if ($search_terms) $messages = $messages->where(function ($query) use ($search_terms) {
-            $query->where('name', 'like', "%$search_terms%")
-                ->orWhere('email', 'like', "%$search_terms%")
-                ->orWhere('subject', 'like', "%$search_terms%");
-        });
-
-        $messages = $messages->orderByDesc('id')->paginate(25);
-
-        return view('admin.index', [
-            'view_file' => 'forms.trash',
-            'active_menu' => 'website',
-            'active_submenu' => 'forms',
-            'search_form_id' => $search_form_id,
-            'search_terms' => $search_terms,
-            'search_status' => $search_status,
-            'search_replied' => $search_replied,
-            'search_important' => $search_important,
-            'messages' => $messages,
-        ]);
-    }
-
-    /**
      * Move message to trash
      */
     public function to_trash(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
+        // CHECK PERMISSION - delete messages         
+        if ($request->user()->cannot('delete_forms_messages', [FormData::class])) return redirect(route('admin'))->with('error', 'no_permission');
 
-        FormData::where('id', $request->id)->update(['deleted_at' => now()]);
-
+        FormData::where('id', $request->id)->delete(); // soft delete
 
         return redirect(route('admin.forms', ['pagenum' => $request->pagenum]))->with('success', 'moved_to_trash');
     }
@@ -185,9 +140,6 @@ class FormController extends Controller
      */
     public function multiple_action(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
         if (!$request->messages_checkbox) return redirect(route('admin.forms', ['pagenum' => $request->pagenum]));
 
         foreach ($request->messages_checkbox as $message_id) {
@@ -201,64 +153,14 @@ class FormController extends Controller
                 FormData::where('id', $message_id)->update(['is_important' => 1]);
             }
             if ($request->action == 'trash') {
-                FormData::where('id', $message_id)->update(['deleted_at' => now()]);
-            }
-            if ($request->action == 'restore') {
-                FormData::where('id', $message_id)->update(['deleted_at' => null]);
-            }
-            if ($request->action == 'delete') {
-                $message = FormData::where('id', $message_id)->with('form')->first();
-                if (!$message) continue;
-
-                // if field had file upload, delete file
-                $fields = FormFieldData::with('file')
-                    ->where('form_data_id', $message_id)
-                    ->get();
-                foreach ($fields as $field) {
-                    if ($field->file) {
-                        @unlink('uploads/' . $file->file);
-                        DriveFile::where('code', $field->code)->delete();
-                    }
-                }
+                // CHECK PERMISSION - delete messages         
+                if ($request->user()->cannot('delete_forms_messages', [FormData::class])) return redirect(route('admin'))->with('error', 'no_permission');
 
                 FormData::where('id', $message_id)->delete();
-                FormFieldData::where('form_data_id', $message_id)->delete();
             }
         }
 
-        if ($request->section == 'trash')
-            return redirect(route('admin.forms.trash', ['pagenum' => $request->pagenum]))->with('success', 'updated');
-        else
-            return redirect(route('admin.forms', ['pagenum' => $request->pagenum]))->with('success', 'updated');
-    }
-
-
-    /**
-     * Delete message
-     */
-    public function destroy(Request $request)
-    {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
-        $message = FormData::where('id', $request->id)->with('form')->first();
-        if (!$message) return redirect(route('admin.forms'));
-
-        // if field had file upload, delete file
-        $fields = FormFieldData::with('file')
-            ->where('form_data_id', $message->id)
-            ->get();
-        foreach ($fields as $field) {
-            if ($field->file) {
-                @unlink('uploads/' . $field->file->file);
-                DriveFile::where('code', $field->file->code)->delete();
-            }
-        }
-
-        FormData::where('id', $request->id)->delete();
-        FormFieldData::where('form_data_id', $request->id)->delete();
-
-        return redirect(route('admin.forms.trash', ['pagenum' => $request->pagenum]))->with('success', 'deleted');
+        return redirect(route('admin.forms', ['pagenum' => $request->pagenum]))->with('success', 'updated');
     }
 
 
@@ -267,9 +169,6 @@ class FormController extends Controller
      */
     public function mark(Request $request)
     {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
         if ($request->action == 'important') FormData::where('id', $request->id)->update(['is_important' => 1]);
 
         if ($request->action == 'not_important') FormData::where('id', $request->id)->update(['is_important' => 0]);
@@ -279,38 +178,5 @@ class FormController extends Controller
         if ($request->action == 'not_spam') FormData::where('id', $request->id)->update(['is_spam' => 0]);
 
         return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'updated');
-    }
-
-
-    /**
-     * Empty trash
-     */
-    public function empty_trash()
-    {
-        // disable action in demo mode:
-        if (config('app.demo_mode')) return redirect(route('admin'))->with('error', 'demo');
-
-        $messages = FormData::with('form')->whereNotNull('deleted_at')->get();
-
-        foreach ($messages as $message) {
-            $message = FormData::where('id', $message->id)->with('form')->first();
-            if (!$message) continue;
-
-            // if field had file upload, delete file
-            $fields = FormFieldData::with('file')
-                ->where('form_data_id', $message->id)
-                ->get();
-            foreach ($fields as $field) {
-                if ($field->file) {
-                    @unlink('uploads/' . $field->file->file);
-                    DriveFile::where('code', $field->file->code)->delete();
-                }
-            }
-
-            FormData::where('id', $message->id)->delete();
-            FormFieldData::where('form_data_id', $message->id)->delete();
-        }
-
-        return redirect(route('admin.forms.trash'))->with('success', 'empty_trash');
     }
 }

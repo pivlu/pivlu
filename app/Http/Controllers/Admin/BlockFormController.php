@@ -35,11 +35,11 @@ class BlockFormController extends Controller
      */
     public function add_field(Request $request)
     {        
-        $last_pos = FormField::where('form_id', $request->id)->orderByDesc('position')->value('position');
+        $last_pos = FormField::where('block_component_id', $request->id)->orderByDesc('position')->value('position');
         $position = ($last_pos ?? 0) + 1;
 
         $form_field = FormField::create([
-            'form_id' => $request->id,
+            'block_component_id' => $request->id,
             'type' => $request->type,
             'required' => $request->has('required') ? 1 : 0,
             'active' => $request->has('active') ? 1 : 0,
@@ -49,7 +49,7 @@ class BlockFormController extends Controller
 
         foreach (admin_languages() as $lang) {
             FormFieldContent::create([
-                'form_id' => $request->id,
+                'block_component_id' => $request->id,
                 'field_id' => $form_field->id,
                 'lang_id' => $lang->id,
                 'label' => $request['label_' . $lang->id],
@@ -76,7 +76,7 @@ class BlockFormController extends Controller
 
         foreach (admin_languages() as $lang) {
             FormFieldContent::updateOrCreate(
-                ['form_id' => $request->id, 'field_id' => $request->field_id, 'lang_id' => $lang->id],
+                ['block_component_id' => $request->id, 'field_id' => $request->field_id, 'lang_id' => $lang->id],
                 [
                     'label' => $request['label_' . $lang->id],
                     'info' => $request['info_' . $lang->id],
@@ -113,7 +113,7 @@ class BlockFormController extends Controller
         $records = $request->all();
 
         foreach ($records['item'] as $key => $value) {
-            FormField::where('form_id', $request->id)->where('id', $value)->update(['position' => $i]);
+            FormField::where('block_component_id', $request->id)->where('id', $value)->update(['position' => $i]);
             $i++;
         }
     }

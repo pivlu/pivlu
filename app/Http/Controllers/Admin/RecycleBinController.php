@@ -29,7 +29,8 @@ use App\Models\BlockContent;
 use App\Models\Post;
 use App\Models\PostType;
 use App\Models\FormData;
-use App\Models\Form;
+use App\Models\FormFieldData;
+use App\Models\BlockComponent;
 use Auth;
 
 class RecycleBinController extends Controller
@@ -112,7 +113,7 @@ class RecycleBinController extends Controller
             $search_replied = $request->search_replied;
             $search_important = $request->search_important;
 
-            $items = Post::with('user', 'default_language_content')->onlyTrashed();
+            $items = FormData::with('form')->onlyTrashed();
 
             if ($search_terms) $items = $items->where(function ($query) use ($search_terms) {
                 $query->where('name', 'like', "%$search_terms%")
@@ -139,7 +140,7 @@ class RecycleBinController extends Controller
 
             $items = $items->orderByDesc('id')->paginate(25);
 
-            $forms = Form::orderByDesc('is_contact_form')->orderBy('label')->orderByDesc('id')->get();
+            $forms = BlockComponent::where('type', 'form')->orderBy('label')->orderByDesc('id')->get();
         }
 
         return view('admin.index', [
@@ -199,7 +200,16 @@ class RecycleBinController extends Controller
 
         // FORMS
         if ($module == 'forms') {
-            if ($request->action == 'delete') FormData::where('id', $request->id)->forceDelete();
+            if ($request->action == 'delete') {
+                // if field had file upload, delete file
+                $fields = FormFieldData::with('media')->where('form_data_id', $request->id)->get();
+                foreach ($fields as $field) {
+                    if ($field->media)
+                        FileFunctions::delete_file($field->media->id);
+                }
+                FormFieldData::where('form_data_id', $request->id)->delete();
+                FormData::where('id', $request->id)->forceDelete();
+            }
             if ($request->action == 'restore') FormData::where('id', $request->id)->restore();
         }
 
@@ -259,7 +269,15 @@ class RecycleBinController extends Controller
         if ($module == 'forms') {
             if (is_array($request->items_checkbox)) {
                 foreach ($request->items_checkbox as $item_id) {
-                    if ($request->action == 'multiple_delete') FormData::where('id', $item_id)->forceDelete();
+                    if ($request->action == 'multiple_delete') {
+                        // if field had file upload, delete file
+                        $fields = FormFieldData::with('media')->where('form_data_id', $item_id)->get();
+                        foreach ($fields as $field) {
+                            if ($field->media)
+                                FileFunctions::delete_file($field->media->id);
+                        }
+                        FormData::where('id', $item_id)->forceDelete();
+                    }
                     if ($request->action == 'multiple_restore') FormData::where('id', $item_id)->restore();
                 }
             }

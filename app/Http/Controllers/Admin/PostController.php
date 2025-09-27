@@ -30,7 +30,6 @@ use App\Models\PostType;
 use App\Models\PostTaxonomy;
 use App\Models\PostTaxonomyRelation;
 use App\Models\PostTypeTaxonomy;
-use App\Models\PostDocsSection;
 use App\Models\Block;
 use App\Models\BlockType;
 use App\Models\Language;
@@ -47,9 +46,13 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
+
         $post_type_id = $request->post_type_id;
         if (!$post_type_id) return redirect(route('admin'));
-        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));        
+        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
+
+        // CHECK PERMISSION - view posts         
+        if ($request->user()->cannot('index', [Post::class, $post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         $post_type = PostType::with('default_language_content')->find($post_type_id);
 
@@ -59,6 +62,10 @@ class PostController extends Controller
         $search_sticky = $request->search_sticky;
 
         $posts = Post::with('user', 'taxonomies')->where('post_type_id', $post_type_id);
+
+        // CHECK PERMISSION - If user can see only own posts
+        if ($request->user()->cannot('viewAny', [Post::class, $post_type_id]))
+            $posts = $posts->where('user_id', Auth::user()->id);
 
         if ($search_status)
             $posts = $posts->where('status', $search_status);
@@ -81,12 +88,9 @@ class PostController extends Controller
             $posts = $posts->where('sticky', 1);
 
         $posts = $posts->orderByDesc('is_homepage')->orderByDesc('is_contactpage')->orderByDesc('id')->paginate(20);
-
-        if ($post_type->type == 'docs') $view_file = 'modules.docs.index';
-        else $view_file = 'index';
-
+        
         return view('admin.index', [
-            'view_file' => 'admin.posts.' . $view_file,
+            'view_file' => 'admin.posts.index',
             'active_menu' => 'website',
             'active_submenu' => 'post_type_' . $post_type_id ?? null,
             'menu_section' => 'posts',
@@ -110,6 +114,9 @@ class PostController extends Controller
         $post_type_id = $request->post_type_id;
         if (!$post_type_id) return redirect(route('admin'));
         if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
+
+        // CHECK PERMISSION - create post
+        if ($request->user()->cannot('create', [Post::class, $post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         $post_type = PostType::find($post_type_id);
 
@@ -135,6 +142,9 @@ class PostController extends Controller
         $post_type_id = $request->post_type_id;
         if (!$post_type_id) return redirect(route('admin'));
         if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
+
+        // CHECK PERMISSION - create post
+        if ($request->user()->cannot('create', [Post::class, $post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         $post = Post::create([
             'post_type_id' => $post_type_id,
@@ -162,14 +172,11 @@ class PostController extends Controller
                     $post_content_slug = $post_content_slug . '-' . $post->id;
             }
 
-            //$path = PostFunctions::get_post_url_path($request->id, $lang->id);
-
             PostContent::create([
                 'post_id' => $post->id,
                 'lang_id' => $lang->id,
                 'title' => $request->$title_key,
                 'slug' => $post_content_slug,
-                'url' => $path ?? null,
                 'summary' => $request->$summary_key,
                 'search_terms' => $request->$search_terms_key,
                 'meta_title' => $request->$meta_title_key,
@@ -206,6 +213,9 @@ class PostController extends Controller
 
         $post_type = PostType::find($post->post_type_id);
 
+        // CHECK PERMISSION - view posts                               
+        if ($request->user()->cannot('view', [$post, $post_type->id])) return redirect(route('admin'))->with('error', 'no_permission');
+
         $author_count_published_posts = Post::where('user_id', $post->user_id)->where('status', 'active')->count();
         $author_count_pending_posts = Post::where('user_id', $post->user_id)->where('status', 'pending')->count();
 
@@ -223,8 +233,7 @@ class PostController extends Controller
         // post taxonomies (array)
         $post_taxonomies_array = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_taxonomy_id')->toarray();
 
-        if ($post->is_homepage == '1') $view_file = 'update-homepage';
-        elseif ($post->post_type->type == 'docs') $view_file = 'modules.docs.update';
+        if ($post->is_homepage == '1') $view_file = 'update-homepage';        
         else $view_file = 'update';
 
         return view('admin.index', [
@@ -250,13 +259,16 @@ class PostController extends Controller
     /**
      * Update the specified resource     
      */
-    public function update(Request $request)
+    public function update(Request $request, Post $post)
     {
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts'));
 
         $post_type = PostType::find($post->post_type_id);
         if (!$post_type) return redirect(route('admin.posts'));
+
+        // CHECK PERMISSION - If user can see only own posts
+        if ($request->user()->cannot('update', [$post, $post_type->id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         Post::where('id', $request->id)->update([
             'status' => $request->status,
@@ -361,11 +373,13 @@ class PostController extends Controller
     public function destroy(Request $request)
     {
         $post = Post::find($request->id);
-
         if (!$post) return redirect(route('admin.posts.index'));
+
+        if ($request->user()->cannot('delete', [$post, $post->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
+
         if ($post->is_homepage == 1 || $post->is_contactpage == 1) return redirect(route('admin.posts.index'));
 
-        if ((PostType::where('id', $post->post_type_id))->doesntExist()) return redirect(route('admin'));        
+        if ((PostType::where('id', $post->post_type_id))->doesntExist()) return redirect(route('admin'));
 
         Post::where('id', $request->id)->delete(); // soft delete
 
@@ -380,6 +394,8 @@ class PostController extends Controller
     {
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
+
+        if ($request->user()->cannot('update', [$post, $post->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         if ($post->media_id) FileFunctions::delete_file($post->media_id);
 
@@ -397,18 +413,12 @@ class PostController extends Controller
         $post = Post::with('user', 'default_language_content')->find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
+        if ($request->user()->cannot('view', [$post, $post->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
+
         $post_type = PostType::with('default_language_content')->find($post->post_type_id);
 
-        // DOCS module
-        if ($post_type->type == 'docs') {
-            $post_docs_sections = PostDocsSection::with('default_language_content')->where('post_id', $post->id)->orderBy('position')->get();
-        }
-        
-        if ($post->post_type->type == 'docs') $view_file = 'modules.docs.content';
-        else $view_file = 'content';
-
         return view('admin.index', [
-            'view_file' => 'admin.posts.' . $view_file,
+            'view_file' => 'admin.posts.content',
             'active_menu' => 'website',
             'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
@@ -417,7 +427,6 @@ class PostController extends Controller
             'post' => $post,
             'post_type' => $post_type ?? null,
             'block_types' => BlockType::get_block_types(),
-            'post_docs_sections' => $post_docs_sections ?? null, // for DOCS module
         ]);
     }
 
@@ -430,7 +439,9 @@ class PostController extends Controller
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
 
-        if ((PostType::where('id', $post->post_type_id))->doesntExist()) return redirect(route('admin'));        
+        if ($request->user()->cannot('update', [$post, $post->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
+
+        if ((PostType::where('id', $post->post_type_id))->doesntExist()) return redirect(route('admin'));
 
         $last_pos = Block::where('post_id', $request->id)->orderByDesc('position')->value('position');
         $position = ($last_pos ?? 0) + 1;
@@ -456,6 +467,8 @@ class PostController extends Controller
     {
         $post = Post::find($request->id);
         if (!$post) return redirect(route('admin.posts.index'));
+
+        if ($request->user()->cannot('update', [$post, $post->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         Block::where('id', $request->block_id)->delete();
 
@@ -486,5 +499,4 @@ class PostController extends Controller
 
         BlockFunctions::regenerate_post_blocks($request->id);
     }
-
 }

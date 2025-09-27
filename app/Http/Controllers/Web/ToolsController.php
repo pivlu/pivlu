@@ -33,7 +33,7 @@ class ToolsController extends Controller
      */
     public function maintenance(Request $request)
     {
-        if (!(Config::config()->website_maintenance_enabled ?? null)) return redirect(route('home'));
+        if (!(Config::get_config('website_maintenance_enabled') ?? null)) return redirect(route('home'));
 
         return view('web.maintenance', []);
     }
@@ -48,7 +48,7 @@ class ToolsController extends Controller
             $block_reason = UserMeta::get_meta(Auth::user()->id, 'block_reason');
         }
 
-        return view('web.usre-blocked', ['block_reason' => $block_reason]);
+        return view('web.user-blocked', ['block_reason' => $block_reason]);
     }
 
 

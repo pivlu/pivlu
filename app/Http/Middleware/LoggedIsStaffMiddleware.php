@@ -37,21 +37,21 @@ class LoggedIsStaffMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-    {        
+    {
         if (Auth::user() ?? null) {
-            if (!(Auth::user()->role == 'admin' || Auth::user()->role == 'internal'))
-                return redirect('home');
-        } else return redirect('home');
+            if (!(Auth::user()->role == 'admin' || Auth::user()->role == 'editor' || Auth::user()->role == 'author' || Auth::user()->role == 'contributor'))
+                return redirect(route('home'));
+        } else return redirect(route('home'));
 
-        
+
         Facades\View::composer('*', function (View $view) {
             // get custom posts types (used in sidebar menu for admins and internals accounts)
-            $post_types = PostType::with('default_language_content', 'module')->where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderByDesc('id')->get();    
-            
-            $view->with('posts_types', $post_types ?? []);            
+            $post_types = PostType::with('default_language_content', 'module')->where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderByDesc('id')->get();
+
+            $view->with('posts_types', $post_types ?? []);
         });
 
-        
+
         return $next($request);
     }
 }

@@ -29,7 +29,7 @@
             <div class="col-12 col-sm-7 col-md-6 order-md-2 order-last">
                 <div class="float-end">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-block"><i
-                            class="bi bi-plus-circle"></i> {{ __('New block') }} ({{ $type }})</button>
+                            class="bi bi-plus-circle"></i> {{ __('New componnent') }} ({{ $type }})</button>
                     @include('admin.blocks.includes.modal-create-block')
                 </div>
             </div>
@@ -72,7 +72,7 @@
                         <th width="80">{{ __('Block ID') }}</th>
                         <th>{{ __('Block') }}</th>
                         <th width="350">{{ __('Shortcode') }}</th>
-                        <th width="160">{{ __('Actions') }}</th>
+                        <th width="200">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,10 +102,10 @@
                             <td>
                                 <div class="d-grid gap-2">
                                     <a href="{{ route('admin.block-components.block.show', ['type' => $item->type, 'id' => $item->id]) }}"
-                                        class="btn btn-primary btn-sm mb-2">{{ __('Manage block') }}</a>
+                                        class="btn btn-primary btn-sm mb-2">{{ __('Manage component') }}</a>
                                     
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $item->id }}"
-                                        class="btn btn-danger btn-sm">{{ __('Delete block') }}</a>
+                                        class="btn btn-danger btn-sm">{{ __('Delete component') }}</a>
                                     <div class="modal fade confirm-{{ $item->id }}" tabindex="-1" role="dialog"
                                         aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -118,7 +118,7 @@
                                                         aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    {{ __('Are you sure you want to delete this block?') }}
+                                                    {{ __('Are you sure you want to delete this block component?') }}
                                                 </div>
                                                 <div class="modal-footer">
                                                     <form method="POST"

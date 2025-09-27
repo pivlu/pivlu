@@ -1,20 +1,21 @@
+@if ($error_message = Session::get('error'))
+    <div class="alert alert-danger">
+        @if ($error_message == 'no_permission')
+            {{ __('Error. You do not have permission for this action.') }}
+        @endif
+    </div>
+@endif
+
 <div class="row">
 
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-
-                <div class="row">
-
-                    <div class="col-12">
-
-                        <h4 class="card-title">{{ __('Dashboard') }}</h4>
-                    </div>
-
-                </div>
-
+                <h4 class="card-title">{{ __('Dashboard') }}</h4>
             </div>
 
+
+            @doAction('test_action', 'hook')
 
             <div class="card-body">
                 <div class="row">
@@ -123,7 +124,7 @@
                         <i class="bi bi-info-circle"></i> {{ __('Website is in maintenance mode.') }}
                     </div>
                 @endif
-                
+
                 <div class="mt-2">
                     <a class="fw-bold" href="{{ route('admin.config', ['tab' => 'website']) }}">{{ __('Change website status') }}</a>
                 </div>
@@ -132,7 +133,7 @@
         </div>
 
 
-        
+
     </div>
 
 </div>

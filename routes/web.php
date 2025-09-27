@@ -30,20 +30,18 @@ use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\FormController;
 
 Route::get('/account', function () {
-    if (Auth::user()) {
-        if (Auth::user()->role == 'admin' || Auth::user()->role == 'internal') return redirect(route('admin'));
-        if (Auth::user()->role == 'user') return redirect(route('user'));
-    } else return redirect(route('login'));
-})->name('account')->withoutMiddleware('CheckWebsiteMiddleware'); // IMPORTANT !!! Add ->withoutMiddleware('CheckWebsiteMiddleware') to avoid 'to many redirects' error
+    if (Auth::user()) return redirect(route('admin'));
+    else return redirect(route('login'));
+})->name('account')->withoutMiddleware([CheckWebsiteMiddleware::class]); // IMPORTANT !!! Add ->withoutMiddleware() to avoid 'to many redirects' error
 
 // Web maintenance
-Route::get('maintenance-mode', [ToolsController::class, 'maintenance'])->name('maintenance')->withoutMiddleware('CheckWebsiteMiddleware'); // IMPORTANT !!! Add ->withoutMiddleware('CheckWebsiteMiddleware') to avoid 'to many redirects' error
+Route::get('maintenance-mode', [ToolsController::class, 'maintenance'])->name('maintenance')->withoutMiddleware([CheckWebsiteMiddleware::class]); // IMPORTANT !!! Add ->withoutMiddleware() to avoid 'to many redirects' error
 
 // Web New Account Invitation
 Route::get('action/invite', [ToolsController::class, 'account_invitation']);
 Route::post('action/invite', [ToolsController::class, 'account_invitation_submit']);
 
- // Submit form
+// Submit form
 Route::put('/form-submit/{id}', [FormController::class, 'submit'])->name('form.submit')->where(['id' => '[0-9]+']);
 
 

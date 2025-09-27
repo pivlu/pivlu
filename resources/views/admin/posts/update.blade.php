@@ -207,12 +207,13 @@
                         @endif
 
                     </div>
-
-
+                    
                     <div class="form-group col-md-6 col-12">
                         <label>{{ __('Publish status') }} </label>
                         <select class="form-select form-select-lg" name="status">
-                            <option @if ($post->status == 'published') selected @endif value="published">{{ __('Published') }}</option>
+                            @can('publish', [App\Models\Post::class, $post, $post_type->id])
+                                <option @if ($post->status == 'published') selected @endif value="published">{{ __('Published') }}</option>
+                            @endcan
                             <option @if ($post->status == 'draft') selected @endif value="draft">{{ __('Save as draft') }}</option>
                         </select>
                         <div class="form-text">{{ __('Only published items are displayed on website') }}</div>

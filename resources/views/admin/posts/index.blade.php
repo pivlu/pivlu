@@ -30,9 +30,11 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    <a href="{{ route('admin.posts.create', ['post_type_id' => $post_type->id]) }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
-                        {{ __(json_decode($post_type->default_language_content->labels ?? null)->create ?? __('Add new item')) }}
-                    </a>
+                    @can('create', [App\Models\Post::class, $post_type->id])
+                        <a href="{{ route('admin.posts.create', ['post_type_id' => $post_type->id]) }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
+                            {{ __(json_decode($post_type->default_language_content->labels ?? null)->create ?? __('Add new item')) }}
+                        </a>
+                    @endcan
                 </div>
             </div>
 

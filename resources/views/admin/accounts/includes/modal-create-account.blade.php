@@ -6,48 +6,49 @@
                 @csrf
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">{{ __('Create account or contact') }}</h5>
+                    <h5 class="modal-title" id="modalLabel">{{ __('Create account') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body pt-0">
+                <div class="modal-body">
 
-                    <div class="row bg-light mb-3 pt-3">
-                        <div class="fw-bold mb-2">
-                            {!! __('<b class="text-danger"><u>Internal</u></b> accounts are staff accounts (for your employees) who have access to some apps and plugins.') !!}..
-                            <div class="mb-1"></div>
-                            {!! __('<b class="text-danger"><u>Registered users</u></b> can login into own accounts and have access to some public apps') !!}. <a href="{{ route('admin.config', ['tab' => 'apps']) }}">{{ __('Manage website modules') }}</a>.
-                            <div class="mb-1"></div>
-                            {!! __('<b class="text-danger"><u>Administrators</u></b> have full access to all modules and configurations. Be careful to add only trusted persons as administrators') !!}.
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="form-label">{{ __('Account type (role)') }}</label>
+                            <select name="role" class="form-select" required onchange="showDiv(this)">
+                                <option value="">- {{ __('select') }} -</option>
+                                @foreach ($roles as $role)
+                                    @if (!($role->role == 'admin' && Auth::user()->role != 'admin'))
+                                        <option value="{{ $role->role }}"> {{ $role->label ?? $role->role }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
                         </div>
 
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="form-label">{{ __('Account type (role)') }}</label>
-                                <select name="role" class="form-select" required onchange="showDiv(this)">
-                                    <option value="">- {{ __('select') }} -</option>
-                                    <option value="user">{{ __('Registered user') }}</option>
-                                    <option value="internal">{{ __('Internal account') }}</option>
-                                    <option value="admin">{{ __('Administrator') }}</option>
-                                </select>
-                            </div>
-
-                            <script>
-                                function showDiv(element) {
-                                    var option = element.value;
-                                    if (option == 'contact') {
-                                        document.getElementById('account_data').style.display = 'none';
-                                        document.getElementsByClassName("password_class")[0].removeAttribute("required");
-                                    }
-                                    if (option != 'contact') {
-                                        document.getElementById('account_data').style.display = 'block';
-                                    }
+                        <script>
+                            function showDiv(element) {
+                                var option = element.value;
+                                if (option == 'contact') {
+                                    document.getElementById('account_data').style.display = 'none';
+                                    document.getElementsByClassName("password_class")[0].removeAttribute("required");
                                 }
-                            </script>
-
-                        </div>
-
+                                if (option != 'contact') {
+                                    document.getElementById('account_data').style.display = 'block';
+                                }
+                            }
+                        </script>
                     </div>
+
+                    <div class="small mb-2">
+                        @foreach ($roles as $role)
+                            @if (!($role->role == 'admin' && Auth::user()->role != 'admin'))
+                                <b>{{ $role->label ?? $role->role }}</b> - {{ $role->description }}
+                            @endif
+                            <br>
+                        @endforeach
+                    </div>
+
+                    <hr>
 
                     <div class="row">
                         <div class="col-lg-6">
@@ -83,7 +84,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12">                            
+                        <div class="col-12">
                             <div class="form-group">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="customSwitch2" name="email_verified_at">

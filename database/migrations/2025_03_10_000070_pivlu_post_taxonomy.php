@@ -34,6 +34,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_type_taxonomy_id')->nullable();
             $table->unsignedBigInteger('post_type_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->integer('parent_id')->nullable();
             $table->string('tree_ids', 250)->nullable();
             $table->boolean('active')->default(false);
@@ -44,9 +45,10 @@ return new class extends Migration
             $table->integer('count_tree_posts')->nullable();
             $table->timestamps();
 
-            $table->foreign('media_id')->references('id')->on('pivlu_media')->cascadeOnDelete();            
-            $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullOnDelete();   
-            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();   
+            $table->foreign('media_id')->references('id')->on('pivlu_media')->cascadeOnDelete();
+            $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullOnDelete();
+            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

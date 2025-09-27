@@ -26,8 +26,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Http\Request;
 use App\Http\Middleware\LoggedMiddleware;
 use App\Http\Middleware\ThemeMiddleware;
-use App\Http\Middleware\LoggedIsStaffMiddleware;
-use App\Http\Middleware\LoggedIsUserMiddleware;
 use App\Http\Middleware\CheckWebsiteMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -38,9 +36,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         using: function () {
 
-            Route::middleware(['web', 'auth', 'verified', 'LoggedMiddleware', 'LoggedIsStaffMiddleware'])->group(base_path('routes/admin.php'));
-            Route::middleware(['web', 'auth', 'verified', 'LoggedMiddleware', 'LoggedIsUserMiddleware'])->group(base_path('routes/user.php'));
-            Route::middleware(['web', 'ThemeMiddleware', 'CheckWebsiteMiddleware', 'LoggedMiddleware'])->group(base_path('routes/web.php'));
+            Route::middleware(['web', 'auth', 'verified', 'LoggedMiddleware'])->group(base_path('routes/admin.php'));
+            Route::middleware(['web', 'ThemeMiddleware', 'LoggedMiddleware', 'CheckWebsiteMiddleware'])->group(base_path('routes/web.php'));
             Route::middleware(['api'])->group(base_path('routes/api.php'));
         }
     )
@@ -48,11 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'LoggedMiddleware' => LoggedMiddleware::class,
             'ThemeMiddleware' => ThemeMiddleware::class,
-            'LoggedIsStaffMiddleware' => LoggedIsStaffMiddleware::class,
-            'LoggedIsUserMiddleware' => LoggedIsUserMiddleware::class,
             'CheckWebsiteMiddleware' => CheckWebsiteMiddleware::class,
         ]);
-        
+
 
         $middleware->validateCsrfTokens(except: [
             'logout',

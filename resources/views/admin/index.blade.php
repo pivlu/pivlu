@@ -6,14 +6,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - {{ Auth::user()->name }}</title>
+    <title>
+        @if (Auth::user()->role == 'admin')
+            Admin
+        @else
+            {{ __('Account') }}
+        @endif - {{ Auth::user()->name }}
+    </title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/bootstrap-5.3.7/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/bootstrap-icons-1.13.1/bootstrap-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendor/perfect-scrollbar/perfect-scrollbar.css') }}">    
+    <link rel="stylesheet" href="{{ asset('assets/vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}" type="image/x-icon">
 
@@ -29,11 +35,7 @@
 <body>
     <div id="app">
 
-        @if (Auth::user()->role == 'admin')
-            @include('admin.sidebar-admin')
-        @elseif(Auth::user()->role == 'internal')
-            @include('admin.sidebar-internal')
-        @endif
+        @include('admin.sidebar')
 
         <div id="main" class='layout-navbar'>
 

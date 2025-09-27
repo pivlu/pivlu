@@ -27,10 +27,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Models\UserInternalNote;
-use App\Models\UserPermission;
 use App\Models\User;
 use App\Models\UserMeta;
+use App\Models\Role;
 use App\Functions\HelperFunctions;
 use App\Functions\FileFunctions;
 use Auth;
@@ -43,22 +42,21 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
+        // CHECK PERMISSION - view accounts
+        if ($request->user()->cannot('view', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
 
         $search_terms = $request->search_terms;
         $search_blocked = $request->search_blocked;
         $search_email_verified = $request->search_email_verified;
-        $openmodal = $request->openmodal; // for automatic open modal to create account
+        $search_role = $request->search_role;
+        $openmodal = $request->openmodal; // for automatic open modal to create account        
 
-        $role = $request->role;
-        if (!($role == 'admin' || $role == 'internal' || $role == 'user')) $role = 'internal';
-        if ($role == 'admin' && Auth::user()->role != 'admin') return redirect(route('admin.accounts.index')); // only admins can see admins
-
-        $accounts = User::orderByDesc('id');
+        $accounts = User::with('role_details')->orderByDesc('id');
 
         if (isset($search_blocked)) $accounts = $accounts->whereNotNull('blocked_at');
         if ($search_email_verified == '1') $accounts = $accounts->whereNotNull('email_verified_at');
         if ($search_email_verified == '0') $accounts = $accounts->whereNull('email_verified_at');
-        if ($role) $accounts = $accounts->where('role', $role);
+        if ($search_role) $accounts = $accounts->where('role', $search_role);
 
         if ($search_terms) $accounts = $accounts->where(function ($query) use ($search_terms) {
             $query->where('users.name', 'like', "%$search_terms%")
@@ -66,18 +64,22 @@ class AccountController extends Controller
                 ->orWhere('users.username', 'like', "%$search_terms%");
         });
 
+        // Only admins can see admin accounts
+        if (Auth::user()->role != 'admin') $accounts = $accounts->where('role', '!=', 'admin');
+
         $accounts = $accounts->paginate(20);
 
         return view('admin.index', [
-            'view_file' => 'admin.accounts.index-' . $role,
-            'active_menu' => 'users',
-            'active_submenu' => 'users.' . $role,
+            'view_file' => 'admin.accounts.index',
+            'active_menu' => 'accounts',
+            'active_submenu' => 'accounts',
             'search_terms' => $search_terms,
             'search_blocked' => $search_blocked,
             'search_email_verified' => $search_email_verified,
+            'search_role' => $search_role,
             'accounts' => $accounts,
             'openmodal' => $openmodal,
-            'role' => $role,
+            'roles' => Role::all(),
         ]);
     }
 
@@ -87,19 +89,25 @@ class AccountController extends Controller
      */
     public function show(Request $request)
     {
+        // CHECK PERMISSION - view accounts
+        if ($request->user()->cannot('update', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
 
         $account = User::withCount('internal_notes')->find($request->id);
         if (!$account) return redirect(route('admin.accounts.index'));
 
+        // Only admins can see admin accounts
+        if (Auth::user()->role != 'admin' && $account->role == 'admin') return redirect(route('admin.accounts.index'));
+
         $block_reason = UserMeta::get_meta($account->id, 'block_reason');
-        
+
         return view('admin.index', [
             'view_file' => 'admin.accounts.show',
-            'active_menu' => 'users',
-            'active_submenu' => 'users.' . $account->role,
+            'active_menu' => 'accounts',
+            'active_submenu' => 'accounts',
             'account' => $account,
             'block_reason' => $block_reason ?? null,
             'menu_section' => 'details',
+            'roles' => Role::all(),
         ]);
     }
 
@@ -109,6 +117,9 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
+        // CHECK PERMISSION - create accounts
+        if ($request->user()->cannot('create', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
+
         // only admins can set admin role
         if ($request->role == 'admin' && Auth::user()->role != 'admin') return redirect(route('admin.accounts.index'));
 
@@ -122,10 +133,13 @@ class AccountController extends Controller
                 'email',
                 'max:255',
                 Rule::unique(User::class),
-            ],            
+            ],
             'password' => 'required|min:8',
-            'role' => 'required|in:admin,internal,user',
+            'role' => 'required',
         ]);
+
+        // check if role exists
+        if (Role::where('role', $request->role)->doesntExist()) return redirect(route('admin.accounts.show', ['id' => $request->id]));
 
         if ($validator->fails()) return redirect(route('admin.accounts.index'))->withErrors($validator)->withInput();
 
@@ -153,6 +167,8 @@ class AccountController extends Controller
      */
     public function update(Request $request)
     {
+        // CHECK PERMISSION - update accounts
+        if ($request->user()->cannot('update', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
 
         // only admins can set admin role
         if ($request->role == 'admin' && Auth::user()->role != 'admin') return redirect(route('admin.accounts.index'));
@@ -162,7 +178,7 @@ class AccountController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'role' => 'required|in:admin,internal,user',
+            'role' => 'required',
             'email' => [
                 'required',
                 'email',
@@ -175,6 +191,9 @@ class AccountController extends Controller
                 Rule::unique('users')->ignore($user),
             ],
         ]);
+
+        // check if role exists
+        if (Role::where('role', $request->role)->doesntExist()) return redirect(route('admin.accounts.show', ['id' => $request->id]));
 
         if ($validator->fails()) return redirect(route('admin.accounts.show', ['id' => $request->id]))->withErrors($validator)->withInput();
 
@@ -220,13 +239,17 @@ class AccountController extends Controller
      */
     public function destroy(Request $request)
     {
-        $user = User::find($request->id);
-        if(! $user) return redirect(route('admin.accounts.index'));
+        // CHECK PERMISSION - delete accounts
+        if ($request->user()->cannot('delete', User::class)) return redirect(route('admin'))->with('error', 'no_permission');
+
+        $account = User::find($request->id);
+        if (! $account) return redirect(route('admin.accounts.index'));
+
+        // Only admins can delete another admin
+        if (Auth::user()->role != 'admin' && $account->role == 'admin') return redirect(route('admin.accounts.index'));
 
         User::find($request->id)->delete(); // soft delete
 
         return redirect(route('admin.accounts.index', ['role' => $request->role]))->with('success', 'deleted');
     }
-
-
 }

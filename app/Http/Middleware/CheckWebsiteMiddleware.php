@@ -36,11 +36,12 @@ class CheckWebsiteMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-
+        
         // CHECK WEBSITE MAINTENANCE (redirect to maintenance page for non admins)
-        if ((Config::config()->website_maintenance_enabled ?? null)) {
+        if ((Config::get_config('website_maintenance_enabled') ?? null)) {
             if (!(Auth::user()->role ?? null) == 'admin') return redirect(route('maintenance'));
         }
+
 
         // CHECK WEBSITE DISABLED (redirect to auth)
         if (Config::get_config('website_disabled') ?? null) return redirect(route('account'));

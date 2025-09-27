@@ -25,9 +25,11 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    <a href="{{ route('admin.recycle_bin.module', ['module' => 'forms']) }}" class="btn btn-secondary me-2"><i class="bi bi-trash"></i> {{ __('Trash') }}</a>
+                    @if (Auth::user()->role == 'admin')
+                        <a href="{{ route('admin.recycle_bin.module', ['module' => 'forms']) }}" class="btn btn-secondary me-2"><i class="bi bi-trash"></i> {{ __('Trash') }}</a>
 
-                    <a href="{{ route('admin.block-components.type', ['type' => 'form']) }}" class="btn btn-primary me-1"><i class="bi bi-gear"></i> {{ __('Manage forms') }}</a>
+                        <a href="{{ route('admin.block-components.type', ['type' => 'form']) }}" class="btn btn-primary me-1"><i class="bi bi-gear"></i> {{ __('Manage forms') }}</a>
+                    @endif
                 </div>
             </div>
 
@@ -151,7 +153,7 @@
                                                 <a href="{{ route('admin.forms.show', ['id' => $message->id]) }}">{{ $message->name }} ({{ $message->email }})</a>
                                             @endif
                                         </div>
-                                        
+
                                         <div class="text-muted small">
                                             {{ date_locale($message->created_at, 'datetime') }}
                                             <br>
@@ -188,9 +190,11 @@
 
                                     <td>
 
-                                        <div class="d-grid gap-2">
-                                            <a href="{{ route('admin.forms.to_trash', ['id' => $message->id]) }}" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
-                                        </div>
+                                        @can('delete_forms_messages', App\Models\FormData::class)
+                                            <div class="d-grid gap-2">
+                                                <a href="{{ route('admin.forms.to_trash', ['id' => $message->id]) }}" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                        @endcan
 
                                     </td>
 
@@ -209,7 +213,9 @@
                                 <option value="">- {{ __('With selected:') }} -</option>
                                 <option value="read">{{ __('Mark as read') }}</option>
                                 <option value="unread">{{ __('Mark as unread') }}</option>
-                                <option value="trash">{{ __('Move to trash') }}</option>
+                                @can('delete_forms_messages', App\Models\FormData::class)
+                                    <option value="trash">{{ __('Move to trash') }}</option>
+                                @endcan
                                 <option value="important">{{ __('Mask as important') }}</option>
                             </select>
                         </div>
