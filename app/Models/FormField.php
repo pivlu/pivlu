@@ -28,7 +28,7 @@ use App\Models\FormFieldContent;
 class FormField extends Model
 {
     protected $fillable = [
-        'block_component_id',
+        'form_id',
         'type',
         'required',
         'col_md',

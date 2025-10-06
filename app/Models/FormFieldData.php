@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 class FormFieldData extends Model
 {
     protected $fillable = [
-        'block_component_id',
+        'form_id',
         'form_data_id',
         'field_id',
         'value',

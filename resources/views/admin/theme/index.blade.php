@@ -15,14 +15,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
-
     <div class="card-header">
-
-        <div class="float-end">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#create-theme" class="btn btn-primary"><i class="bi bi-plus-circle"></i> {{ __('Create new theme') }}</a>
-            @include('admin.theme.includes.modal-create-theme')
-        </div>
 
         <div class="card-title">
             {{ __('Themes') }}

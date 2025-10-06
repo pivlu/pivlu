@@ -41,7 +41,7 @@ class PostTypeController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.post-types.index',
-            'active_menu' => 'website',
+            'active_menu' => 'config',
             'active_submenu' => 'post-types',
             'post_types' => $post_types,
         ]);
@@ -58,7 +58,7 @@ class PostTypeController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.post-types.show',
-            'active_menu' => 'website',
+            'active_menu' => 'config',
             'active_submenu' => 'post-types',
             'post_type' => $post_type,
         ]);

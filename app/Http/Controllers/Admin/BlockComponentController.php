@@ -40,8 +40,8 @@ class BlockComponentController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.blocks.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'blocks',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'components',
         ]);
     }
 
@@ -57,8 +57,8 @@ class BlockComponentController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.blocks.type',
-            'active_menu' => 'website',
-            'active_submenu' => 'blocks',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'components',
             'type' => $type,
             'items' => $items,
         ]);
@@ -84,8 +84,8 @@ class BlockComponentController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.blocks.components.' . $type . '.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'blocks',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'components',
             'type' => $type,
             'block' => $block,
             'settings' => json_decode($block->settings),

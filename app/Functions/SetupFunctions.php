@@ -31,14 +31,14 @@ use App\Models\PostTypeTaxonomyContent;
 use App\Models\Language;
 use App\Models\Block;
 use App\Models\BlockType;
-use App\Models\Module;
 use App\Models\Theme;
 use App\Models\ThemeButton;
 use App\Models\ThemeStyle;
 use App\Models\ThemeMenu;
 use App\Models\ThemeMenuItem;
 use App\Models\ThemeMenuContent;
-use App\Models\BlockComponent;
+use App\Models\Form;
+use App\Models\FormDataStatus;
 use App\Models\FormField;
 use App\Models\FormFieldContent;
 use App\Models\Role;
@@ -170,76 +170,6 @@ class SetupFunctions
         }
 
 
-        // Add contact form, if not exists
-        if (BlockComponent::where(['type' => 'form'])->doesntExist()) {
-            $contact_form_component = BlockComponent::create([
-                'label' => 'Contact form',
-                'active' => 1,
-                'type' => 'form',
-            ]);
-
-            // insert NAME field
-            $field_name = FormField::create([
-                'block_component_id' => $contact_form->id,
-                'type' => 'text',
-                'required' => 1,
-                'col_md' => 6,
-                'active' => 1,
-                'position' => 0,
-                'protected' => 1,
-                'is_default_name' => 1
-            ]);
-            foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
-            }
-
-            // insert EMAIL field
-            $field_email = FormField::create([
-                'block_component_id' => $contact_form->id,
-                'type' => 'email',
-                'required' => 1,
-                'col_md' => 6,
-                'active' => 1,
-                'position' => 1,
-                'protected' => 1,
-                'is_default_email' => 1
-            ]);
-            foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
-            }
-
-            // insert SUBJECT field
-            $field_subject = FormField::create([
-                'block_component_id' => $contact_form->id,
-                'type' => 'text',
-                'required' => 1,
-                'col_md' => 12,
-                'active' => 1,
-                'position' => 2,
-                'protected' => 1,
-                'is_default_subject' => 1
-            ]);
-            foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
-            }
-
-            // insert MESSAGE field
-            $field_message = FormField::create([
-                'block_component_id' => $contact_form->id,
-                'type' => 'textarea',
-                'required' => 1,
-                'col_md' => 12,
-                'active' => 1,
-                'position' => 3,
-                'protected' => 1,
-                'is_default_message' => 1
-            ]);
-            foreach (admin_languages() as $lang) {
-                FormFieldContent::create(['block_component_id' => $contact_form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
-            }
-        }
-
-
         // Add contact page, if not exists
         if (Post::where(['is_contactpage' => 1])->doesntExist()) {
             $contactpage_post = Post::create([
@@ -268,6 +198,90 @@ class SetupFunctions
             $contact_block_form->update(['settings' => serialize($block_settings)]);
 
             $contactpage_post->update(['blocks' => serialize(['id' => $contact_block_form->id, 'type_id' =>  $form_block_type->id, 'type' => 'form'])]);
+        }
+    }
+
+
+    public static function check_form()
+    {
+        // add default dorms messages statuses (new and closed)
+        FormDataStatus::firstOrCreate(
+            ['is_new' => 1],
+            ['label' => 'New', 'description' => 'This is the default status for new messages.', 'color' => '#14a151']
+        );
+        FormDataStatus::firstOrCreate(
+            ['is_closed' => 1],
+            ['label' => 'Closed', 'description' => 'This message is mark as closed. No future action is needed.', 'color' => '#1a1a1a']
+        );
+
+       
+
+        // Add a contact form, if no form exists
+        if (Form::doesntExist()) {
+            $contact_form = Form::create([
+                'label' => 'Contact form',
+                'active' => 1,
+            ]);
+
+            // insert NAME field
+            $field_name = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 0,
+                'protected' => 1,
+                'is_default_name' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
+            }
+
+            // insert EMAIL field
+            $field_email = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'email',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 1,
+                'protected' => 1,
+                'is_default_email' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
+            }
+
+            // insert SUBJECT field
+            $field_subject = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 2,
+                'protected' => 1,
+                'is_default_subject' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
+            }
+
+            // insert MESSAGE field
+            $field_message = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'textarea',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 3,
+                'protected' => 1,
+                'is_default_message' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
+            }
         }
     }
 
@@ -538,22 +552,6 @@ class SetupFunctions
                 'menu_id' => $menu->id,
                 'item_id' => $menu_item->id,
                 'label' => 'Home'
-            ]);
-        }
-    }
-
-
-    // Add default apps, if not exists
-    public static function check_default_apps()
-    {
-        if (Module::where('slug', 'docs')->doesntExist()) {
-            Module::create([
-                'name' => 'Docs / Knowledge Base',
-                'description' => 'Add a knowledge base on your website.',
-                'slug' => 'docs',
-                'icon' => '<i class="bi-question-circle"></i>',
-                'core' => 1,
-                'status' => 'disabled',
             ]);
         }
     }

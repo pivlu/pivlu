@@ -30,7 +30,8 @@ class FormData extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'block_component_id',
+        'form_id',
+        'status_id',
         'source_lang_id',
         'name',
         'email',
@@ -39,11 +40,11 @@ class FormData extends Model
         'ip',
         'geo',
         'referer',
-        'created_at',
         'read_at',
         'responded_at',
         'is_important',
         'is_spam',
+        'status_changed_by_user_id',
     ];
 
     protected $table = 'pivlu_form_data';
@@ -52,13 +53,23 @@ class FormData extends Model
 
     public function form(): BelongsTo
     {
-        return $this->BelongsTo(BlockComponent::class, 'block_component_id');
+        return $this->BelongsTo(Form::class, 'form_id');
+    }
+
+    public function status(): BelongsTo
+    {
+        return $this->BelongsTo(FormDataStatus::class, 'status_id');
+    }
+
+    public function statur_changes_by_user(): BelongsTo
+    {
+        return $this->BelongsTo(User::class, 'status_changed_by_user_id');
     }
 
     public function getGeoDataAttribute()
     {
-        $geo = $this->geo;        
-        
+        $geo = $this->geo;
+
         return json_decode($geo);
     }
 }

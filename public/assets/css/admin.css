@@ -964,9 +964,8 @@ label,
 }
 
 .sidebar-wrapper .menu {
-    font-weight: 600;
     margin-top: 0;
-    padding: 0 1rem
+    padding: 0 0.8rem
 }
 
 .sidebar-wrapper .menu .sidebar-title {
@@ -985,7 +984,7 @@ label,
     display: block;
     display: flex;
     font-size: 1rem;
-    padding: .5rem 0.5rem;
+    padding: .4rem 0.4rem;
     text-decoration: none;
     transition: all .5s;
     font-weight: 400;
@@ -1008,7 +1007,7 @@ label,
 
 .sidebar-wrapper .menu .sidebar-item {
     list-style: none;
-    margin-top: .5rem;
+    margin-top: .2rem;
     position: relative
 }
 

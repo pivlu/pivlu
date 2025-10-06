@@ -44,9 +44,8 @@ class ThemeController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'themes',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'templates',
             'themes' => $themes,
         ]);
     }
@@ -89,9 +88,8 @@ class ThemeController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.show',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'themes',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'templates',
             'theme' => $theme,
             'theme_tab' => $theme_tab,
 
@@ -164,7 +162,7 @@ class ThemeController extends Controller
         if (!$slug) return redirect(route('admin.themes.index'));
 
         Config::update_config('active_theme', $slug);
-        
+
         Theme::where('slug', $slug)->update(['is_active' => 1]);
         Theme::where('slug', '!=', $slug)->update(['is_active' => 0]);
 

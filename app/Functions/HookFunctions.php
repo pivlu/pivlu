@@ -3,11 +3,7 @@
 namespace App\Functions;
 
 /**
- * Class Hooks
- * 
  * This class provides functionality to manage hooks (actions and filters) 
- * within a Laravel application. It allows adding, removing, and executing hooks,
- * similar to the WordPress hook system.
  */
 
 class HookFunctions

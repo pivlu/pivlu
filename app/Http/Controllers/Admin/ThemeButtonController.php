@@ -39,9 +39,8 @@ class ThemeButtonController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.buttons.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'buttons',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'buttons',
             'buttons' => $buttons,
         ]);
     }
@@ -92,9 +91,8 @@ class ThemeButtonController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.buttons.show',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'buttons',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'buttons',        
             'button' => $button,
             'data' => json_decode($button->data),
         ]);

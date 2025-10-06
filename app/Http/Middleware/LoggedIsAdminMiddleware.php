@@ -37,7 +37,7 @@ class LoggedIsAdminMiddleware
     {
 
         if (Auth::user() ?? null) {
-            if (Auth::user()->role != 'admin') return redirect(route('home'));
+            if (Auth::user()->role != 'admin') return redirect(route('admin'));
         } else return redirect(route('home'));
 
         return $next($request);

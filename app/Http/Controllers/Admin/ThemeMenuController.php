@@ -42,9 +42,8 @@ class ThemeMenuController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.menus.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'menus',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'menus',
             'menus' => $menus,
         ]);
     }
@@ -84,9 +83,8 @@ class ThemeMenuController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.menus.show',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'menus',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'menus',
             'menu' => $menu,
             'links' => $links,
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
@@ -108,7 +106,6 @@ class ThemeMenuController extends Controller
 
         return redirect(route('admin.theme-menus.index'))->with('success', 'deleted');
     }
-
 
 
     // Store menu link
@@ -159,7 +156,6 @@ class ThemeMenuController extends Controller
     }
 
 
-
     // Update menu link
     public function update_item(Request $request)
     {
@@ -207,7 +203,6 @@ class ThemeMenuController extends Controller
 
         return redirect(route('admin.theme-menus.show', ['id' => $menu->id]))->with('success', 'updated');
     }
-
 
 
     public function delete_item(Request $request)

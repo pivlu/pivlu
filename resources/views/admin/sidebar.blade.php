@@ -44,67 +44,64 @@
                     </li>
                 @endcan
 
-                <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'website') active @endif">
-                    <a href="#" class='sidebar-link'>
-                        <i class="bi bi-globe"></i>
-                        <span>{{ __('Website content') }}</span>
-                    </a>
-                    <ul class="submenu @if (($active_menu ?? null) == 'website') active @endif">
+                @foreach ($posts_types as $sidebar_post_type)
+                    @if ($sidebar_post_type->active != 0)
+                        @can('index', [App\Models\Post::class, $sidebar_post_type->id])
+                            <li class="sidebar-item @if (($active_menu ?? null) == 'post_type_' . $sidebar_post_type->id) active @endif">
+                                <a href="{{ route('admin.posts.index', ['post_type_id' => $sidebar_post_type->id]) }}" class='sidebar-link'>
+                                    {!! $sidebar_post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
 
-                        @foreach ($posts_types as $sidebar_post_type)
-                            @if ($sidebar_post_type->active != 0)
-                                @can('index', [App\Models\Post::class, $sidebar_post_type->id])
-                                    <li class="submenu-item @if (($active_submenu ?? null) == 'post_type_' . $sidebar_post_type->id) active @endif">
-                                        <a href="{{ route('admin.posts.index', ['post_type_id' => $sidebar_post_type->id]) }}">
-                                            {!! $sidebar_post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
-                                            @if ($sidebar_post_type->type == 'page')
-                                                <span>{{ __('Pages') }}</span>
-                                            @else
-                                                <span>{{ $sidebar_post_type->default_language_content->name }}</span>
-                                            @endif
-                                        </a>
-                                    </li>
-                                @endcan
-                            @endif
-                        @endforeach
-
-                        @can('view_forms_messages', [App\Models\FormData::class])
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'forms') active @endif">
-                            <a href="{{ route('admin.forms') }}"><i class="bi bi-envelope-arrow-up"></i> {{ __('Forms messages') }}</a>
-                        </li>
+                                    @if ($sidebar_post_type->type == 'page')
+                                        <span>{{ __('Pages') }}</span>
+                                    @else
+                                        <span>{{ $sidebar_post_type->default_language_content->name }}</span>
+                                    @endif
+                                </a>
+                            </li>
                         @endcan
-                    </ul>
-                </li>
-               
+                    @endif
+                @endforeach
+
+                @can('view_forms_messages', [App\Models\FormData::class])
+                    <li class="sidebar-item @if (($active_menu ?? null) == 'forms') active @endif">
+                        <a href="{{ route('admin.forms') }}" class='sidebar-link'>
+                            <i class="bi bi-envelope-arrow-up"></i> <span>{{ __('Forms') }}</span>
+                        </a>
+                    </li>
+                @endcan
 
                 <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'appearance') active @endif">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-easel"></i>
-                        <span>{{ __('Website theme') }}</span>
+                        <span>{{ __('Website appearance') }}</span>
                     </a>
-                    <ul class="submenu @if (($active_menu ?? null) == 'config') active @endif">
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'modules') active @endif">
-                            <a href="{{ route('admin.modules') }}"><i class="bi bi-plugin"></i> {{ __('Templates') }}</a>
+                    <ul class="submenu @if (($active_menu ?? null) == 'appearance') active @endif">
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'templates') active @endif">
+                            <a href="{{ route('admin.themes.index') }}"><i class="bi bi-plugin"></i> {{ __('Templates') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'website') active @endif">
-                            <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-menu-down"></i> {{ __('Website menus') }}</a>
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'menus') active @endif">
+                            <a href="{{ route('admin.theme-menus.index') }}"><i class="bi bi-menu-down"></i> {{ __('Website menus') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
-                            <a href="{{ route('admin.post-types.index') }}"><i class="bi bi-menu-up"></i> {{ __('Website footer') }}</a>
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'footer') active @endif">
+                            <a href="{{ route('admin.theme-footer') }}"><i class="bi bi-menu-up"></i> {{ __('Website footer') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'components') active @endif">
                             <a href="{{ route('admin.block-components') }}"><i class="bi bi-bounding-box"></i> {{ __('Block components') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
-                            <a href="{{ route('admin.post-types.index') }}"><i class="bi bi-palette"></i> {{ __('Block styles') }}</a>
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'styles') active @endif">
+                            <a href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Block styles') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'buttons') active @endif">
                             <a href="{{ route('admin.theme-buttons.index') }}"><i class="bi bi-palette"></i> {{ __('Buttons') }}</a>
+                        </li>
+
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'custom-code') active @endif">
+                            <a href="{{ route('admin.theme-buttons.index') }}"><i class="bi bi-code-square"></i> {{ __('Custom code') }}</a>
                         </li>
                     </ul>
                 </li>
@@ -120,12 +117,14 @@
                             <a href="{{ route('admin.modules') }}"><i class="bi bi-plugin"></i> {{ __('Plugins') }}</a>
                         </li>
 
-                        <li class="submenu-item @if (($active_submenu ?? null) == 'website') active @endif">
-                            <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
-                        </li>
+                        @if (Auth::user()->role == 'admin')
+                            <li class="submenu-item @if (($active_submenu ?? null) == 'website') active @endif">
+                                <a href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
+                            </li>
+                        @endif
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'post-types') active @endif">
-                            <a href="{{ route('admin.post-types.index') }}"><i class="bi bi-check2-square"></i> {{ __('Manage post types') }}</a>
+                            <a href="{{ route('admin.post-types.index') }}"><i class="bi bi-check2-square"></i> {{ __('Manage content types') }}</a>
                         </li>
                     </ul>
                 </li>

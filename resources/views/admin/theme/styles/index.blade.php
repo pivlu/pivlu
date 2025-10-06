@@ -4,7 +4,8 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.theme-styles.index') }}">{{ __('Styles') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.themes.index') }}">{{ __('Appearance') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.theme-styles.index') }}">{{ __('Block styles') }}</a></li>
                 </ol>
             </nav>
         </div>
@@ -14,15 +15,13 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
-
     <div class="card-header">
         <div class="float-end">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-style"><i class="bi bi-plus-circle"></i> {{ __('Create style') }}</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-style"><i class="bi bi-plus-circle"></i> {{ __('Create block style') }}</button>
             @include('admin.theme.styles.includes.modal-create-style')
         </div>
 
-        <h4 class="card-title">{{ __('Theme styles') }} ({{ $styles->total() ?? 0 }})</h4>
+        <h4 class="card-title">{{ __('Block styles') }} ({{ $styles->total() ?? 0 }})</h4>
     </div>
 
 

@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('pivlu_form_field_data', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('block_component_id');
+            $table->unsignedBigInteger('form_id');
             $table->unsignedBigInteger('form_data_id');
             $table->unsignedBigInteger('field_id');
             $table->mediumText('value')->nullable();
             $table->timestamps();
 
-            $table->foreign('block_component_id')->references('id')->on('pivlu_block_components')->cascadeOnDelete();
+            $table->foreign('form_id')->references('id')->on('pivlu_forms')->cascadeOnDelete();
             $table->foreign('form_data_id')->references('id')->on('pivlu_form_data')->cascadeOnDelete();
             $table->foreign('field_id')->references('id')->on('pivlu_form_fields')->cascadeOnDelete();
         });

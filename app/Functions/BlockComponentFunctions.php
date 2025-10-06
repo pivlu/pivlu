@@ -29,8 +29,6 @@ class BlockComponentFunctions
 {
 
 
-
-
     public static function update_block_component($id, $request)
     {
         $block = BlockComponent::find($id);

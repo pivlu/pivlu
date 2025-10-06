@@ -23,19 +23,200 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
-use App\Models\BlockComponent;
+use App\Models\Form;
 use App\Models\FormData;
-use App\Models\DriveFile;
+use App\Models\FormField;
 use App\Models\FormFieldData;
+use App\Models\FormConfig;
 
 class FormController extends Controller
 {
 
     /**
+     * Show all forms
+     */
+    public function index()
+    {
+
+        $forms = Form::orderByDesc('active')->orderByDesc('label')->paginate(25);
+
+        return view('admin.index', [
+            'view_file' => 'admin.forms.index',
+            'active_menu' => 'forms',
+            'forms' => $forms,
+        ]);
+    }
+
+    /**
+     * Show form
+     */
+    public function show(Request $request)
+    {
+        $form = Form::find($request->id);
+        if (!$form) return redirect(route('admin.forms.config'));
+
+        $fields = FormField::where('form_id', $request->id)->orderByDesc('active')->orderBy('position')->get();        
+
+        return view('admin.index', [
+            'view_file' => 'admin.forms.show',
+            'active_menu' => 'forms',
+            'form' => $form,
+            'fields' => $fields ?? null,
+            'fields_size' => FormConfig::get_config($request->id, 'fields_size'),
+            'confirmation_type' => FormConfig::get_config($request->id, 'confirmation_type'),
+            'confirmation_title' => FormConfig::get_config($request->id, 'confirmation_title'),
+            'confirmation_message' => FormConfig::get_config($request->id, 'confirmation_message'),
+            'confirmation_css_class' => FormConfig::get_config($request->id, 'confirmation_css_class'),
+            'google_recaptcha' => FormConfig::get_config($request->id, 'google_recaptcha'),
+            'honeypot_name' => FormConfig::get_config($request->id, 'honeypot_name'),
+        ]);
+    }
+
+
+
+    /**
+     * Update form
+     */
+    public function update(Request $request)
+    {        
+        $validator = Validator::make($request->all(), [
+            'label' => 'required',
+        ]);
+
+        if ($validator->fails()) return redirect(route('admin.forms.config'))->withErrors($validator)->withInput();
+
+        if (Form::where(['label' => $request->label])->where('id', '!=', $request->id)->exists()) return redirect(route('admin.forms.config'))->with('error', 'duplicate');
+
+        Form::where('id', $request->id)->update([
+            'label' => $request->label,
+            'active' => $request->has('active') ? 1 : 0,
+        ]);
+
+        FormConfig::update_config($request->id, 'fields_size', $request->fields_size);
+        FormConfig::update_config($request->id, 'confirmation_type', $request->confirmation_type);
+        FormConfig::update_config($request->id, 'confirmation_title', $request->confirmation_title);
+        FormConfig::update_config($request->id, 'confirmation_message', $request->confirmation_message);
+        FormConfig::update_config($request->id, 'confirmation_css_class', $request->confirmation_css_class);
+
+        FormConfig::update_config($request->id, 'google_recaptcha', $request->has('google_recaptcha') ? 1 : null);
+        FormConfig::update_config($request->id, 'honeypot_name', $request->honeypot_name);
+
+        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'updated');
+    }
+
+
+    /**
+     * Remove form
+     */
+    public function destroy(Request $request)
+    {
+        $form = Form::find($request->id);
+        if (!$form) return redirect(route('admin.forms.config'));        
+
+        // check if exists messages        
+        if (FormData::where('form_id', $request->id)->exists()) return redirect(route('admin.forms.config'))->with('error', 'exists_data');
+
+        Form::where('id', $request->id)->delete();
+
+        return redirect(route('admin.forms.config'))->with('success', 'deleted');
+    }
+
+
+    /**
+     * Add form field 
+     */
+    public function add_field(Request $request)
+    {
+        $last_pos = FormField::where('form_id', $request->id)->orderByDesc('position')->value('position');
+        $position = ($last_pos ?? 0) + 1;
+
+        $form_field = FormField::create([
+            'form_id' => $request->id,
+            'type' => $request->type,
+            'required' => $request->has('required') ? 1 : 0,
+            'active' => $request->has('active') ? 1 : 0,
+            'col_md' => $request->col_md ?? 12,
+            'position' => $position,
+        ]);
+
+        foreach (admin_languages() as $lang) {
+            FormFieldContent::create([
+                'form_id' => $request->id,
+                'field_id' => $form_field->id,
+                'lang_id' => $lang->id,
+                'label' => $request['label_' . $lang->id],
+                'info' => $request['info_' . $lang->id],
+                'dropdowns' => $request['dropdowns_' . $lang->id] ?? null
+            ]);
+        }
+
+        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'created');
+    }
+
+
+    /**
+     * Update form field 
+     */
+    public function update_field(Request $request)
+    {
+        FormField::where('id', $request->field_id)->update([
+            'type' => $request->type,
+            'required' => $request->has('required') ? 1 : 0,
+            'active' => $request->has('active') ? 1 : 0,
+            'col_md' => $request->col_md ?? 12,
+        ]);
+
+        foreach (admin_languages() as $lang) {
+            FormFieldContent::updateOrCreate(
+                ['form_id' => $request->id, 'field_id' => $request->field_id, 'lang_id' => $lang->id],
+                [
+                    'label' => $request['label_' . $lang->id],
+                    'info' => $request['info_' . $lang->id],
+                    'dropdowns' => $request['dropdowns_' . $lang->id] ?? null
+                ]
+            );
+        }
+
+        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'updated');
+    }
+
+
+    /**
+     * Remove form field
+     */
+    public function destroy_field(Request $request)
+    {
+        if (FormField::where('id', $request->field_id)->value('protected') == 1) return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('error', 'protected');
+
+        FormFieldContent::where('field_id', $request->field_id)->delete();
+        FormFieldData::where('field_id', $request->field_id)->delete();
+        FormField::where('id', $request->field_id)->delete();
+
+        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'deleted');
+    }
+
+
+    /**
+     * Ajax sortable
+     */
+    public function sortable(Request $request)
+    {
+        $i = 0;
+        $records = $request->all();
+
+        foreach ($records['item'] as $key => $value) {
+            FormField::where('form_id', $request->id)->where('id', $value)->update(['position' => $i]);
+            $i++;
+        }
+    }
+
+
+    /**
      * Display all messages
      */
-    public function index(Request $request)
+    public function messages(Request $request)
     {
         // CHECK PERMISSION - view messages         
         if ($request->user()->cannot('view_forms_messages', [FormData::class])) return redirect(route('admin'))->with('error', 'no_permission');
@@ -75,9 +256,8 @@ class FormController extends Controller
         $count_messages_unread = FormData::whereNull('read_at')->count();
 
         return view('admin.index', [
-            'view_file' => 'admin.forms.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'forms',
+            'view_file' => 'admin.forms.messages',
+            'active_menu' => 'forms',
             'search_form_id' => $search_form_id,
             'search_terms' => $search_terms,
             'search_status' => $search_status,
@@ -92,7 +272,7 @@ class FormController extends Controller
     /**
      * Show message     
      */
-    public function show(Request $request)
+    public function show_message(Request $request)
     {
 
         // CHECK PERMISSION - view messages         
@@ -101,20 +281,21 @@ class FormController extends Controller
         $message = FormData::where('id', $request->id)->with('form')->withTrashed()->first();
         if (!$message) return redirect(route('admin.forms'));
 
-        $form_block_component = BlockComponent::where(['id' => $message->block_component_id, 'type' => 'form'])->first();
+        $form = Form::find($message->form_id);
+        if (!$form) return redirect(route('admin.forms.config'));
+
         FormData::where('id', $request->id)->update(['read_at' => now()]);
 
         $fields = FormFieldData::with('field', 'media')
-            ->where('block_component_id', $form_block_component->id)
+            ->where('form_id', $form->id)
             ->where('form_data_id', $message->id)
             ->get();
 
         return view('admin.index', [
-            'view_file' => 'admin.forms.show',
-            'active_menu' => 'website',
-            'active_submenu' => 'forms',
+            'view_file' => 'admin.forms.message',
+            'active_menu' => 'forms',
             'message' => $message,
-            'form_block_component' => $form_block_component,
+            'form' => $form,
             'fields' => $fields,
             'geo' => json_decode($message->geo),
         ]);
@@ -124,7 +305,7 @@ class FormController extends Controller
     /**
      * Move message to trash
      */
-    public function to_trash(Request $request)
+    public function message_to_trash(Request $request)
     {
         // CHECK PERMISSION - delete messages         
         if ($request->user()->cannot('delete_forms_messages', [FormData::class])) return redirect(route('admin'))->with('error', 'no_permission');
@@ -138,7 +319,7 @@ class FormController extends Controller
     /**
      * Action for multiple messages selected
      */
-    public function multiple_action(Request $request)
+    public function messages_multiple_action(Request $request)
     {
         if (!$request->messages_checkbox) return redirect(route('admin.forms', ['pagenum' => $request->pagenum]));
 
@@ -167,7 +348,7 @@ class FormController extends Controller
     /**
      * Mark message (important, normal...)
      */
-    public function mark(Request $request)
+    public function message_mark(Request $request)
     {
         if ($request->action == 'important') FormData::where('id', $request->id)->update(['is_important' => 1]);
 

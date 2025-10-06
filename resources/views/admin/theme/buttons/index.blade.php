@@ -4,7 +4,8 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.theme-buttons.index') }}">{{ __('Theme buttons') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.themes.index') }}">{{ __('Appearance') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.theme-buttons.index') }}">{{ __('Buttons') }}</a></li>
                 </ol>
             </nav>
         </div>
@@ -14,8 +15,6 @@
 
 
 <div class="card">
-
-    @include('admin.theme.includes.menu-themes')
 
     <div class="card-header">
 

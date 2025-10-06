@@ -40,8 +40,8 @@ class ConfigController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.config.' . $tab,
-            'active_menu' => 'website',
-            'active_submenu' => 'config',
+            'active_menu' => 'config',
+            'active_submenu' => 'website',
             'active_tab' => $tab,
             'seo_module' => $seo_module ?? null,
             'seo_configs' => $seo_configs ?? null,

@@ -95,10 +95,7 @@ class InstallCommand extends Command
 
         $this->line('Check default block types');
         SetupFunctions::check_default_block_types();
-
-        $this->line('Check default apps');
-        SetupFunctions::check_default_apps();
-
+        
         $this->line('Check default button');
         SetupFunctions::check_default_button();
 
@@ -113,6 +110,9 @@ class InstallCommand extends Command
 
         $this->line('Check website settings');
         SetupFunctions::check_default_website_settings();
+
+        $this->line('Check website default form and statuses');
+        SetupFunctions::check_form();
 
         $this->line('Check default roles and permissions');
         SetupFunctions::check_default_roles_and_permissions();

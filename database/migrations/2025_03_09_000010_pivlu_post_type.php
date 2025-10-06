@@ -38,7 +38,7 @@ return new class extends Migration
             $table->string('admin_menu_icon', 200)->nullable();
             $table->boolean('core')->default(false);
             $table->boolean('active')->default(false);
-            $table->unsignedBigInteger('module_id')->nullable();
+            $table->unsignedBigInteger('plugin_id')->nullable();
             $table->timestamps();
         });
     }

@@ -133,18 +133,19 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
 
     // Form block component
-    Route::post('forms/config/{id}/add-field', [BlockFormController::class, 'add_field'])->name('forms.config.add_field')->where('id', '[0-9]+');
-    Route::put('forms/config/{id}/update-field/{field_id}', [BlockFormController::class, 'update_field'])->name('forms.config.update_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
-    Route::delete('forms/config/{id}/delete-field/{field_id}', [BlockFormController::class, 'destroy_field'])->name('forms.config.delete_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
-    Route::post('forms/config/{id}/sortable', [BlockFormController::class, 'sortable'])->name('forms.config.sortable')->where('id', '[0-9]+');
+    Route::get('forms/config', [FormController::class, 'index'])->name('forms.config');
+    Route::get('forms/config/{id}', [FormController::class, 'show'])->name('forms.config.show')->where('id', '[0-9]+');
+    Route::put('forms/config/{id}', [FormController::class, 'update'])->where('id', '[0-9]+');
+    Route::post('forms/config/{id}/add-field', [FormController::class, 'add_field'])->name('forms.config.add_field')->where('id', '[0-9]+');
+    Route::put('forms/config/{id}/update-field/{field_id}', [FormController::class, 'update_field'])->name('forms.config.update_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
+    Route::delete('forms/config/{id}/delete-field/{field_id}', [FormController::class, 'destroy_field'])->name('forms.config.delete_field')->where('id', '[0-9]+')->where('field_id', '[0-9]+');
+    Route::post('forms/config/{id}/sortable', [FormController::class, 'sortable'])->name('forms.config.sortable')->where('id', '[0-9]+');
 
-    Route::get('forms', [FormController::class, 'index'])->name('forms');
-    Route::get('forms/{id}', [FormController::class, 'show'])->name('forms.show')->where('id', '[0-9]+');
-    Route::get('forms/{id}/delete', [FormController::class, 'destroy'])->name('forms.delete')->where('id', '[0-9]+');
-    Route::get('forms/{id}/to-trash', [FormController::class, 'to_trash'])->name('forms.to_trash')->where('id', '[0-9]+');
-    Route::get('forms/{id}/mark', [FormController::class, 'mark'])->name('forms.mark')->where('id', '[0-9]+');
-    Route::post('forms/multiple-action', [FormController::class, 'multiple_action'])->name('forms.multiple_action');
-    Route::delete('forms/empty-trash', [FormController::class, 'empty_trash'])->name('forms.empty_trash');
+    Route::get('forms', [FormController::class, 'messages'])->name('forms');
+    Route::get('forms/{id}', [FormController::class, 'show_message'])->name('forms.show')->where('id', '[0-9]+');
+    Route::get('forms/{id}/to-trash', [FormController::class, 'message_to_trash'])->name('forms.to_trash')->where('id', '[0-9]+');
+    Route::get('forms/{id}/mark', [FormController::class, 'message_mark'])->name('forms.mark')->where('id', '[0-9]+');
+    Route::post('forms/multiple-action', [FormController::class, 'messages_multiple_action'])->name('forms.multiple_action');
 
 
     //  admin role only

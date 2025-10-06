@@ -55,7 +55,7 @@ class PostController extends Controller
         if ($request->user()->cannot('index', [Post::class, $post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
 
         $post_type = PostType::with('default_language_content')->find($post_type_id);
-
+        
         $search_terms = $request->search_terms;
         $search_status = $request->search_status;
         $search_taxonomy_ids = $request->search_taxonomy_ids ?? [];

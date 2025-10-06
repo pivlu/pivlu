@@ -66,7 +66,7 @@ class LoggedMiddleware
 
             Facades\View::composer('*', function (View $view) {
                 // get custom posts types (used in backend sidebar)
-                $post_types = PostType::with('default_language_content', 'module')->where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderByDesc('id')->get();
+                $post_types = PostType::with('default_language_content', 'plugin')->where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderByDesc('id')->get();
                 $view->with('posts_types', $post_types ?? []);
 
                 $view->with('languages', Language::get_languages()); // active and inactive

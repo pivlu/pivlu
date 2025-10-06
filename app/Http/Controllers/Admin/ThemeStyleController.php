@@ -42,9 +42,8 @@ class ThemeStyleController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.styles.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'styles',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'styles',
             'styles' => $styles,
         ]);
     }
@@ -119,10 +118,8 @@ class ThemeStyleController extends Controller
 
         return view('admin.index', [
             'view_file' => 'admin.theme.styles.show',
-            'active_menu' => 'website',
-            'active_submenu' => 'appearance',
-            'nav_tab' => 'styles',
-            'style' => $style,
+            'active_menu' => 'appearance',
+            'active_submenu' => 'styles','style' => $style,
             'fonts' => ThemeFunctions::fonts(),
             'font_sizes' => ThemeFunctions::font_sizes(),
         ]);

@@ -136,6 +136,13 @@
                                 <input class="form-control" name="label_search_{{ $content->lang_id }}" type="text" value="{{ json_decode($content->labels ?? null)->search ?? '-' }}" />
                             </div>
                         </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>{{ __('Label popular') }}</label>
+                                <input class="form-control" name="label_popular_{{ $content->lang_id }}" type="text" value="{{ json_decode($content->labels ?? null)->popular ?? '-' }}" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 

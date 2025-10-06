@@ -14,7 +14,6 @@
                 <h4 class="card-title">{{ __('Dashboard') }}</h4>
             </div>
 
-
             {{--@doAction('test_action', 'hook')--}}
 
             <div class="card-body">
@@ -32,7 +31,7 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ route('admin.accounts.index', ['role' => 'user']) }}">{{ __('Registered users') }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.accounts.index', ['role' => 'internal']) }}">{{ __('Internal accounts') }}</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.accounts.index', ['role' => 'internal']) }}">{{ __('Internal accounts') }}</a></li>                                    
                                     <li><a class="dropdown-item" href="{{ route('admin.accounts.index', ['role' => 'admin']) }}">{{ __('Administrator accounts') }}</a></li>
                                 </ul>
                             </div>

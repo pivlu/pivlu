@@ -14,8 +14,6 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
-
     <div class="card-header">
 
 

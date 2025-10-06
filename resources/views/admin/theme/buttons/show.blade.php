@@ -6,7 +6,8 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.theme-buttons.index') }}">{{ __('Theme buttons') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.themes.index') }}">{{ __('Appearance') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.theme-buttons.index') }}">{{ __('Buttons') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $button->label }}</li>
                 </ol>
             </nav>
@@ -17,10 +18,7 @@
 
 
 <div class="card">
-
-    @include('admin.theme.includes.menu-themes')
-
-
+    
     <div class="card-body">
 
         <div class="mb-2 fs-5">{{ __('Edit button') }}: <b>{{ $button->label }}</b></div>
