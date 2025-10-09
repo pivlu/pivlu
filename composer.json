@@ -27,8 +27,7 @@
         "laravel/fortify": "^1.26",
         "laravel/framework": "^12.0",
         "league/flysystem-aws-s3-v3": "^3.0",
-        "nesbot/carbon": "^3.8",
-        "pivlu/pivlu": "^2.0",     
+        "nesbot/carbon": "^3.8",             
         "pivlu/theme-blogger-one": "^1.0",
         "pulkitjalan/ip-geolocation": "^8.1"        
     },
