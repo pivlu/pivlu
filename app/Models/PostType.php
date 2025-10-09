@@ -34,7 +34,8 @@ class PostType extends Model
         'admin_menu_icon',
         'active',
         'core',
-        'plugin_id'
+        'plugin_id',
+        'custom_theme'
     ];
 
     protected $appends = ['all_languages_contents'];

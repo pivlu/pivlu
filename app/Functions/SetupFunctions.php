@@ -214,7 +214,7 @@ class SetupFunctions
             ['label' => 'Closed', 'description' => 'This message is mark as closed. No future action is needed.', 'color' => '#1a1a1a']
         );
 
-       
+
 
         // Add a contact form, if no form exists
         if (Form::doesntExist()) {
@@ -448,13 +448,11 @@ class SetupFunctions
     public static function check_default_theme()
     {
 
-        if (Theme::where('is_default', 1)->doesntExist()) {
+        if (Theme::where('is_active', 1)->doesntExist()) {
             Theme::create([
-                'is_default' => 1,
+                'is_active' => 1,
                 'label' => 'Default theme',
-                'slug' => 'default_theme',
-                'is_builder' => 1,
-                'style_id' => ThemeStyle::where('is_default', 1)->value('id'),
+                'slug' => 'pivlu_default',
                 'menu_id' => ThemeMenu::where('is_default', 1)->value('id'),
             ]);
         }
@@ -1235,4 +1233,5 @@ class SetupFunctions
             if (in_array($permission->permission, $registered_perms)) RolePermission::firstOrCreate(['role_id' => $role_registered->id, 'permission_id' => $permission->id]);
         }
     }
+
 }

@@ -35,7 +35,7 @@ class PostTypeController extends Controller
     /**
      * Display all resources
      */
-    public function index(Request $request)
+    public function index()
     {
         $post_types = PostType::orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->paginate(25);
 
@@ -70,11 +70,16 @@ class PostTypeController extends Controller
      */
     public function store(Request $request)
     {
+        $type = Str::slug($request->$type, '_');
+        $type = substr($type, 0, 25);
+        if (PostType::where(['type' => $type])->exists()) return redirect(route('admin.post-types.index'))->with('error', 'duplicate');
+
         $post_type = PostType::create([
             'admin_menu_icon' => $request->admin_menu_icon,
             'active' => $request->has('active') ? 1 : 0,
             'show_in_admin_menu' => $request->has('show_in_admin_menu') ? 1 : 0,
             'internal_only' => $request->has('internal_only') ? 1 : 0,
+            'custom_theme' => $request->custom_theme,
         ]);
 
         foreach (admin_languages() as $lang) {
@@ -87,6 +92,7 @@ class PostTypeController extends Controller
             $label_delete_key = 'label_delete_' . $lang->id;
             $label_all_key = 'label_all_' . $lang->id;
             $label_search_key = 'label_search_' . $lang->id;
+            $label_featured_key = 'label_featured_' . $lang->id;
 
             $labels = array(
                 'singular' => $request->$label_singular_key ?? $request->$name_key ?? null,
@@ -96,6 +102,7 @@ class PostTypeController extends Controller
                 'delete' => $request->$label_delete_key ?? 'Delete ' . $request->$name_key,
                 'all' => $request->$label_all_key ?? 'All ' . $request->$name_key,
                 'search' => $request->$label_search_key ?? 'Search ' . $request->$name_key,
+                'featured' => $request->$label_featured_key ?? 'Featured ' . $request->$name_key,
             );
 
             $slug = $request->$slug_key ?? Str::slug($request->$name_key, '-');
@@ -128,6 +135,7 @@ class PostTypeController extends Controller
             'active' => $request->has('active') ? 1 : 0,
             'show_in_admin_menu' => $request->has('show_in_admin_menu') ? 1 : 0,
             'internal_only' => $request->has('internal_only') ? 1 : 0,
+            'custom_theme' => $request->custom_theme,
         ]);
 
         foreach (admin_languages() as $lang) {
@@ -142,6 +150,7 @@ class PostTypeController extends Controller
             $label_delete_key = 'label_delete_' . $lang->id;
             $label_all_key = 'label_all_' . $lang->id;
             $label_search_key = 'label_search_' . $lang->id;
+            $label_featured_key = 'label_featured_' . $lang->id;
 
             $labels = array(
                 'singular' => $request->$label_singular_key ?? $request->$name_key ?? null,
@@ -151,6 +160,7 @@ class PostTypeController extends Controller
                 'delete' => $request->$label_delete_key ?? 'Delete ' . $request->$name_key,
                 'all' => $request->$label_all_key ?? 'All ' . $request->$name_key,
                 'search' => $request->$label_search_key ?? 'Search ' . $request->$name_key,
+                'featured' => $request->$label_featured_key ?? 'Featured ' . $request->$name_key,
             );
 
             $slug = $request->$slug_key ?? Str::slug($request->$name_key, '-');
@@ -164,8 +174,8 @@ class PostTypeController extends Controller
                     'slug' => $slug,
                     'labels' => json_encode($labels),
                 ]
-            );     
-            
+            );
+
             if ($original_slug != $slug) PostFunctions::regenerate_post_taxonomies_url_path_for_this_type($post_type_id = $request->id);
         }
 

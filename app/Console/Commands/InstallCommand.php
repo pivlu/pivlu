@@ -95,7 +95,7 @@ class InstallCommand extends Command
 
         $this->line('Check default block types');
         SetupFunctions::check_default_block_types();
-        
+
         $this->line('Check default button');
         SetupFunctions::check_default_button();
 

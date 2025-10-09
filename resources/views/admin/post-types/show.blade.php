@@ -74,7 +74,10 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>{{ __('Custom URL slug') }} ({{ __('optional') }})</label>
-                                <input class="form-control" name="slug_{{ $content->lang_id }}" type="text" value="{{ $content->slug }}" />
+                                <div class="input-group">
+                                    <span class="input-group-text" id="addon-slug">{{ config('app.url') }}/</span>
+                                    <input class="form-control" name="slug_{{ $content->lang_id }}" type="text" value="{{ $content->slug }}" />
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -138,6 +141,13 @@
                                 <input class="form-control" name="label_search_{{ $content->lang_id }}" type="text" value="{{ json_decode($content->labels ?? null)->search ?? '-' }}" />
                             </div>
                         </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>{{ __('Label featured') }}</label>
+                                <input class="form-control" name="label_featured_{{ $content->lang_id }}" type="text" value="{{ json_decode($content->labels ?? null)->featured ?? '-' }}" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -150,10 +160,22 @@
 
 
             @if (!($post_type->type == 'page' || $post_type->type == 'post'))
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>{{ __('Icon code (admin)') }} ({{ __('optional') }})</label>
-                        <input class="form-control" name="admin_menu_icon" type="text" value="{{ $post_type->admin_menu_icon }}" />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Icon code (admin)') }} ({{ __('optional') }})</label>
+                            <input class="form-control" name="admin_menu_icon" type="text" value="{{ $post_type->admin_menu_icon }}" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Custom template') }} ({{ __('optional') }})</label>
+                            <input class="form-control" name="custom_theme" type="text" value="{{ $post_type->custom_theme }}" />
+                            <div class="text-muted small">
+                                {{ __('The template name. Example: "pivlu_default". If set, the content of this post type (posts, pages, categories, tags, taxonomies...) will use this template. Leave empty to use active template.') }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -100,7 +100,7 @@ class UpdateCommand extends Command
 
         $this->line('Check default roles and permissions');
         SetupFunctions::check_default_roles_and_permissions();
-
+        
         // Create the symbolic link 
         Artisan::call('storage:link');
 

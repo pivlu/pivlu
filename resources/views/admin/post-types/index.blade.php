@@ -43,7 +43,7 @@
         @if ($message = Session::get('error'))
             <div class="alert alert-danger">
                 @if ($message == 'duplicate')
-                    {{ __('Error. There is another post type with the same name or url.') }}
+                    {{ __('Error. There is another post type with the same identificator or url.') }}
                 @endif
             </div>
         @endif
@@ -113,6 +113,10 @@
                                     {{ __('Created') }}: {{ date_locale($post_type->created_at, 'datetime') }}
                                     @if ($post_type->updated_at)
                                         | {{ __('Updated') }}: {{ date_locale($post_type->updated_at, 'datetime') }}
+                                    @endif
+
+                                    @if ($post_type->custom_theme)
+                                        <div>{{ __('Custom theme') }}: <b>{{ $post_type->custom_theme ?? null }}</b></div>
                                     @endif
                                 </span>
                             </td>

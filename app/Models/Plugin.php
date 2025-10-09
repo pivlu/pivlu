@@ -29,9 +29,10 @@ class Plugin extends Model
     protected $fillable = ['name', 'slug', 'status', 'description', 'icon', 'post_type_id'];
 
     protected $table = 'pivlu_plugins';
-    
+
     public function post_type()
     {
         return $this->belongsTo(PostType::class, 'post_type_id');
     }
+    
 }
