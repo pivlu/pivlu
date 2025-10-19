@@ -1,5 +1,7 @@
 # Pivlu
-Open source CMS (Content Management System) and Website Builder. Pivlu is an WordPress alternative, written in PHP and using the Laravel framework.
+**Open source CMS (Content Management System) and Website Builder.** 
+
+Pivlu is an WordPress alternative, written in PHP and using the Laravel framework.
 
 ## Installation
 
