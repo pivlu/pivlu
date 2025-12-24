@@ -3334,7 +3334,7 @@
             "dist": {
                 "type": "path",
                 "url": "../pivlu-cms",
-                "reference": "e9c10d8802b76bb081fdbd637b233a7f2b1f48e8"
+                "reference": "e6a2ab00bbdb8ad9e71d3d580235b7f9bc316a9c"
             },
             "require": {
                 "fakerphp/faker": "^1.24",
