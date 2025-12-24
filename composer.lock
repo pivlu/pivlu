@@ -3349,7 +3349,7 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Pivlu\\Cms\\CmsServiceProvider"
+                        "Pivlu\\Cms\\PivluServiceProvider"
                     ]
                 }
             },
