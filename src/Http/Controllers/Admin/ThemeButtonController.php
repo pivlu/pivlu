@@ -1,0 +1,136 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Functions\ThemeFunctions;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use App\Models\ThemeButton;
+
+class ThemeButtonController extends Controller
+{
+
+    /**
+     * Show all resources
+     */
+    public function index()
+    {
+        $buttons = ThemeButton::orderByDesc('is_default')->orderBy('label')->paginate(25);
+
+        return view('admin.index', [
+            'view_file' => 'admin.theme.buttons.index',
+            'nav_section' => 'website',
+            'active_menu' => 'themes',
+            'nav_tab' => 'buttons',
+            'buttons' => $buttons,
+        ]);
+    }
+
+
+    /**
+     * Create resource
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'label' => 'required',
+        ]);
+
+        if ($validator->fails()) return redirect(route('admin.theme-buttons.index'))->withErrors($validator)->withInput();
+
+        if (ThemeButton::where('label', $request->label)->exists()) return redirect(route('admin.theme-buttons.index'))->with('error', 'duplicate');
+
+        $data = [
+            'bg_color' => null,
+            'border_color' => null,
+            'font_color' => null,
+            'bg_color_hover' => null,
+            'border_color_hover' => null,
+            'font_color_hover' => null,
+            'shadow' => null,
+            'rounded' => null,
+            'font_weight' => null
+        ];
+
+        $button = ThemeButton::create([
+            'label' => $request->label,
+            'data' => json_encode($data),
+        ]);
+
+        return redirect(route('admin.theme-buttons.show', ['id' => $button->id]))->with('success', 'created');
+    }
+
+
+    /**
+     * Show resource
+     */
+    public function show(Request $request)
+    {
+
+        $button = ThemeButton::find($request->id);
+        if (!$button) return redirect(route('admin.theme-buttons.index'));
+
+        return view('admin.index', [
+            'view_file' => 'admin.theme.buttons.show',
+            'nav_section' => 'website',
+            'active_menu' => 'themes',
+            'nav_tab' => 'buttons',
+            'button' => $button,
+            'data' => json_decode($button->data),
+        ]);
+    }
+
+
+    /**
+     * Update button style
+     */
+    public function update(Request $request)
+    {
+        $button = ThemeButton::find($request->id);
+        if (!$button) return redirect(route('admin.theme-buttons.index'));
+
+        if (ThemeButton::where('label', $request->label)->where('id', '!=', $request->id)->exists())
+            $label = $button->label;
+        else
+            $label = $request->label;
+
+        $data = [
+            'bg_color' => $request->bg_color,
+            'border_color' => $request->border_color,
+            'font_color' => $request->font_color,
+            'bg_color_hover' => $request->bg_color_hover,
+            'border_color_hover' => $request->border_color_hover,
+            'font_color_hover' => $request->font_color_hover,
+            'shadow' => $request->has('shadow') ? $request->shadow_style : null,
+            'rounded' => $request->rounded,
+            'font_weight' => $request->font_weight
+        ];
+
+        ThemeButton::where('id', $request->id)->update([
+            'label' => $label,
+            'data' => json_encode($data),
+        ]);
+
+        // regenerate css file
+        ThemeFunctions::generate_styles_css();
+
+        return redirect(route('admin.theme-buttons.show', ['id' => $request->id]))->with('success', 'updated');
+    }
+
+
+    /**
+     * Remove the specified resource
+     */
+    public function destroy(Request $request)
+    {
+        $button = ThemeButton::find($request->id);
+        if (!$button) return redirect(route('admin.theme-buttons.index'));
+
+        if ($button->is_default == 1) return redirect(route('admin.theme-buttons.index'));
+
+        ThemeButton::where('id', $request->id)->delete();
+
+        return redirect(route('admin.theme-buttons.index'))->with('success', 'deleted');
+    }
+}

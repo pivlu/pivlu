@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@&display=swap');
+ .style_1 { color: #3E3E3E !important; font-weight: normal !important; font-size: 1em !important; text-align: left !important;  } .style_1 .title {font-size: 2.2em !important; font-weight: normal !important; line-height:1.3 } .style_1 .subtitle { font-size: 1.8em !important; font-weight: normal !important; line-height:1.3 } .style_1 .caption { font-style: normal; color: grey !important; font-size: 0.95em !important; } .style_1 a { color: #1A94FF; text-decoration: none !important; -webkit-text-decoration-color: black !important; text-decoration-color: black !important; font-weight: normal; text-decoration-thickness: auto !important; 
+                text-underline-offset: underline !important; } .style_1 a:hover { color: #006DCD; 
+                text-decoration: underline !important; 
+                -webkit-text-decoration-color: black !important; 
+                text-decoration-color: black !important;                
+                text-decoration-thickness: auto !important;
+                text-underline-offset: underline !important; } .style_1 .btn a { color: inherit !important; } .style_2 { color: #3E3E3E !important; font-weight: normal !important; font-size: 1em !important; text-align: left !important;  } .style_2 .title {font-size: 2.2em !important; font-weight: normal !important; line-height:1.3 } .style_2 .subtitle { font-size: 1.8em !important; font-weight: normal !important; line-height:1.3 } .style_2 .caption { font-style: normal; color: grey !important; font-size: 0.95em !important; } .style_2 a { color: #1A94FF; text-decoration: none !important; -webkit-text-decoration-color: black !important; text-decoration-color: black !important; font-weight: normal; text-decoration-thickness: auto !important; 
+                text-underline-offset: underline !important; } .style_2 a:hover { color: #006DCD; 
+                text-decoration: underline !important; 
+                -webkit-text-decoration-color: black !important; 
+                text-decoration-color: black !important;                
+                text-decoration-thickness: auto !important;
+                text-underline-offset: underline !important; } .style_2 .btn a { color: inherit !important; } .btn_1, a .btn_1, .style_nav .btn_1, .style_nav a .btn_1 {
+                background-color: #40A6FF !important; 
+                color: #FFFFFF !important;
+                border-color: #40A6FF !important;
+                font-weight: normal !important;
+                text-decoration: none !important;
+                border-radius: 0 !important;
+            } .btn_1:hover, .style_nav .btn_1:hover {
+                background-color: #1A94FF  !important;
+                color: #f4f7f8 !important;
+                border-color: #1A94FF !important;
+                font-weight: normal !important;
+                text-decoration: none !important; } .btn_1 a, a .btn_1 {
+                color: #FFFFFF  !important;       
+                font-weight: normal !important;         
+                text-decoration: none !important; }.btn_1 a:hover, a:hover .btn_1 {
+                color: #f4f7f8  !important;
+                text-decoration: none !important; }

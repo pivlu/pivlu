@@ -1,0 +1,410 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;    
+}
+
+/* force scrollbar, for Masonry */
+html { overflow-y: scroll; }
+
+@media (min-width: 1400px) {
+    .container,
+    .container-lg,
+    .container-md,
+    .container-sm,
+    .container-xl,
+    .container-xxl {
+        max-width: 1500px;
+    }
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex-shrink: 0;
+    padding-top: 0;
+}
+
+p {
+    margin-top: 0rem;
+    margin-bottom: 0em;
+}
+
+p:not(:last-child) {
+    margin-bottom: 1em !important;
+}
+
+h1 {
+    margin-bottom: 25px;
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+h3 {
+    margin-bottom: 10px;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -120px;
+    visibility: hidden;
+}
+
+blockquote {
+    font-style: italic;
+    color: #868e96;
+}
+
+hr {
+    color: #ccc;
+}
+
+.form-group {
+    margin-bottom: 0.9rem;
+}
+
+.head {
+    min-height: 550px;
+    padding: 30px 0;
+    margin-bottom: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.caption {
+    display: block;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+section {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.listing-box {
+    margin-bottom: 0;
+}
+
+.listing-box img {
+    width: 100vw;
+    height: 20vh;
+    object-fit: cover;
+    overflow: hidden;    
+}
+
+.listing-box p {
+    margin-bottom: 15px;
+}
+
+.listing-box .title {
+    font-size: 1.2em;
+    font-weight: 600;
+    line-height: 1.3em;
+    margin-bottom: 10px;
+}
+
+.listing-box .summary {
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
+.listing-box .meta {
+    font-size: 0.9em;
+}
+
+.listings-bo .avatar {
+    max-height: 30px;
+    max-width: 30px;
+}
+
+.post .meta {
+    font-weight: 300;
+    font-size: 0.9em;
+    color: rgb(177, 177, 177);
+}
+
+.post .tags {
+    display: inline-block;
+}
+
+.comment-form-wrap {
+    clear: both;
+}
+
+.comment-list {
+    padding: 0;
+    margin: 0;
+}
+
+.comment-list li {
+    padding: 0;
+    float: left;
+    width: 100%;
+    clear: both;
+    list-style: none;
+}
+
+.comment-list li .comment-body .author {
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1em;
+    margin-bottom: 0;
+}
+
+.comment-list li .comment-body .comment {
+    font-size: 1em;
+    margin-top: 10px;
+    line-height: 1.4em;
+}
+
+.comment-list li .comment-body .meta {
+    font-size: 0.9em;
+    color: rgb(155, 155, 155);
+}
+
+.heading {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.heading .title {
+    font-size: 1.5em;
+    line-height: 1.6em;
+    margin-bottom: 0px
+}
+
+p.first-paragraph::first-letter {
+    font-weight: 700;
+    font-size: 2em;
+    color: #000;
+}
+
+ol,
+ul {
+    line-height: 1.6em;
+}
+
+.footer ol,
+.footer ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    line-height: 1.6em;
+}
+
+.mt-10 {
+    margin-top: 100px;
+}
+
+.avatar-small {
+    max-width: 25px;
+    max-height: 25px;
+    margin-right: 5px;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .navbar-expand-lg .navbar-nav .nav-link {
+        padding-right: .7rem;
+        padding-left: .7rem;
+    }
+}
+
+.custom_shadow {
+    box-shadow: 0.2rem 0.3rem 0.4rem rgba(0, 0, 0, 0.315)!important;
+}
+
+.btn-custom {
+    border: none;
+    border-radius: 0 !important;
+    text-decoration: none;
+}
+
+.dropdown-menu {
+    padding: 0;
+    margin: 0;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+.dropdown-menu {
+    margin-top: 0.75rem !important;
+}
+
+.dropdown-menu li {
+    padding: 0;
+}
+
+.img-shaddow {
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+}
+
+.navbar1 {
+    margin-bottom: 40px;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    background-color: transparent !important;
+}
+
+.carousel-control-next,
+.carousel-control-prev {
+    width: 50px !important;
+}
+
+.avatar {
+    max-width: 25px;
+    max-height: 25px;
+}
+
+.accordion-button:not(.collapsed) {
+    color: inherit;
+}
+
+.builder-block {
+    background-color: #eef6fb;
+    padding: 10px;
+    min-height: 60px;
+    display: block;
+    width: 100%;
+    border-style: dashed;
+    border-color: #9fb5cf;
+    margin-bottom: 20px;
+}
+
+.builder-block:hover {
+    cursor: move;
+}
+
+.input-hidden {
+    position: absolute;
+    left: -9999px;
+}
+
+.footer-heading-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.footer-heading-description {
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+
+.navbar-nav, .nav-link { --bs-nav-link-color:unset, color: unset !important; }
+
+.btn a { color: inherit; }
+
+.text-shadow {
+    text-shadow: 2px 2px #f1f1f1;
+}
+
+.post-main-img-tight {    
+    max-height: 60vh;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.post-main-img-tighter {    
+    max-height: 45vh;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.post-main-img-slim {
+    max-height: 35vh;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.post-main-img-full-width img {
+    width: 100% !important;    
+}
+
+.img-zoom {
+    overflow: hidden;
+}
+
+.img-zoom img:hover {
+    transform: scale(1.1);
+}
+
+.img-zoom img {
+    transition: transform .5s ease;
+}
+
+.text-clamp-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+            line-clamp: 2; 
+    -webkit-box-orient: vertical;
+ }
+
+ .text-clamp-3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+            line-clamp: 3; 
+    -webkit-box-orient: vertical;
+ }
+
+ .text-clamp-4 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* number of lines to show */
+            line-clamp: 4; 
+    -webkit-box-orient: vertical;
+ }
+
+ .text-clamp-5 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5; /* number of lines to show */
+            line-clamp: 5; 
+    -webkit-box-orient: vertical;
+ }
+
+ .text-clamp-6 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 6; /* number of lines to show */
+            line-clamp: 6; 
+    -webkit-box-orient: vertical;
+ }
+
+ .text-clamp-10 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 10; /* number of lines to show */
+            line-clamp: 10; 
+    -webkit-box-orient: vertical;
+ }
+ 
