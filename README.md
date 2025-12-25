@@ -23,7 +23,7 @@ One of the main advantages of Pivlu is that the most important functionalities a
 ## Quick Start Installation
 If you have composer installed, run this in your terminal to create a fresh project in a directory named "myprivlu".
 
-```composer create-project pivlu/pivlu mypivlu```
+```composer create-project pivlu/skeleton mypivlu```
 
 After creating the project, go to your project folder and install Pivlu CMS from command line..
 
@@ -36,4 +36,4 @@ This command will create database tables, setup website, copy the assets files a
 > [!NOTE]
 > **This repository contains the code for the core Pivlu CMS.**
 > 
-> If you want to create a new project, the code for a fresh Pivlu project can be found here: [Pivlu repository](https://github.com/pivlu/pivlu).
+> If you want to create a new project, the code for a fresh Pivlu project can be found here: [Pivlu repository](https://github.com/pivlu/skeleton).
