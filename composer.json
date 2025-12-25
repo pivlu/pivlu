@@ -9,7 +9,7 @@
         "laravel",
         "php"
     ],
-    "license": "GPL-3.0",
+    "license": "AGPL-3.0-or-later",
     "homepage": "https://pivlu.com",
     "require": {
         "php": "^8.2",
@@ -88,7 +88,7 @@
             "php-http/discovery": true
         }
     },
-     "repositories": [
+    "repositories": [
         {
             "type": "path",
             "url": "../pivlu-cms"
