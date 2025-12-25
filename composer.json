@@ -1,6 +1,6 @@
 {
-   "name": "pivlu/cms",
-   "description": "Pivlu CMS.",
+   "name": "pivlu/pivlu",
+   "description": "Pivlu: Open source CMS and Website Builder.",
    "type": "library",
    "version": "2.0.0",
    "authors": [
