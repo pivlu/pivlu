@@ -15,12 +15,12 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
         <div class="float-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-style"><i class="bi bi-plus-circle"></i> {{ __('Create block style') }}</button>
-            @include('admin.theme.styles.includes.modal-create-style')
+            @include('pivlu::admin.theme.styles.includes.modal-create-style')
         </div>
 
         <h4 class="card-title">{{ __('Block styles') }} ({{ $styles->total() ?? 0 }})</h4>

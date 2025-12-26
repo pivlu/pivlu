@@ -1,9 +1,9 @@
 <?php
 
-namespace Pivlu\Cms\Http\Controllers\Admin;
+namespace Pivlu\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Pivlu\Cms\Models\User;
+use Pivlu\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller

@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/blocks.css') }}" />
 
 <!-- Custom CSS File -->
-<link rel="stylesheet" href='{{ asset("custom/themes/$active_theme->slug.css") }}' />
+<link rel="stylesheet" href='{{ asset("custom/themes/$active_theme->code.css") }}' />
 <link rel="stylesheet" href='{{ asset('custom/styles.css') }}' />
 
 <!-- jQuery -->

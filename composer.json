@@ -22,7 +22,7 @@
    },
    "autoload": {
       "psr-4": {
-         "Pivlu\\Cms\\": "src/"
+         "Pivlu\\": "src/"
       },
       "files": [
          "src/Helpers/helpers.php"
@@ -31,7 +31,7 @@
    "extra": {
       "laravel": {
          "providers": [
-            "Pivlu\\Cms\\PivluServiceProvider"
+            "Pivlu\\Providers\\PivluServiceProvider"
          ]
       }
    },

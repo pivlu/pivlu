@@ -1,5 +1,5 @@
-@include('admin.includes.import-fonts')
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.import-fonts')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -20,7 +20,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-body">
 
@@ -343,9 +343,9 @@
                         <div class="row mt-3">
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <input id="text_color" name="text_color" value="{{ $item->text_color ?? config('pivlu.defaults.font_color') }}">
+                                    <input id="text_color" name="text_color" value="{{ $item->text_color ?? config('pivlu.pivlu.defaults.font_color') }}">
                                     <label>{{ __('Text color') }}</label>
-                                    <div class="mt-1 small"> {{ strtoupper($item->text_color ?? config('pivlu.defaults.font_color')) }}</div>
+                                    <div class="mt-1 small"> {{ strtoupper($item->text_color ?? config('pivlu.pivlu.defaults.font_color')) }}</div>
                                     <script>
                                         $('#text_color').spectrum({
                                             type: "color",
@@ -363,7 +363,7 @@
                                 <div class="form-group mb-4">
                                     <input id="caption_color" name="caption_color" value="{{ $item->caption_color ?? 'grey' }}">
                                     <label>{{ __('Caption text color') }}</label>
-                                    <div class="mt-1 small"> {{ strtoupper($item->caption_color ?? config('pivlu.defaults.link_color_underline_hover')) }}</div>
+                                    <div class="mt-1 small"> {{ strtoupper($item->caption_color ?? config('pivlu.pivlu.defaults.link_color_underline_hover')) }}</div>
                                     <script>
                                         $('#caption_color').spectrum({
                                             type: "color",
@@ -381,9 +381,9 @@
                         <div class="row mt-3">
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <input id="link_color" name="link_color" value="{{ $item->link_color ?? config('pivlu.defaults.link_color') }}">
+                                    <input id="link_color" name="link_color" value="{{ $item->link_color ?? config('pivlu.pivlu.defaults.link_color') }}">
                                     <label>{{ __('Link color') }}</label>
-                                    <div class="mt-1 small"> {{ strtoupper($item->link_color ?? config('pivlu.defaults.link_color')) }}</div>
+                                    <div class="mt-1 small"> {{ strtoupper($item->link_color ?? config('pivlu.pivlu.defaults.link_color')) }}</div>
                                     <script>
                                         $('#link_color').spectrum({
                                             type: "color",
@@ -399,9 +399,9 @@
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <input id="link_hover_color" name="link_hover_color" value="{{ $item->link_hover_color ?? config('pivlu.defaults.link_color_hover') }}">
+                                    <input id="link_hover_color" name="link_hover_color" value="{{ $item->link_hover_color ?? config('pivlu.pivlu.defaults.link_color_hover') }}">
                                     <label>{{ __('Link color on mouse hover') }}</label>
-                                    <div class="mt-1 small"> {{ strtoupper($item->link_hover_color ?? config('pivlu.defaults.link_color_hover')) }}</div>
+                                    <div class="mt-1 small"> {{ strtoupper($item->link_hover_color ?? config('pivlu.pivlu.defaults.link_color_hover')) }}</div>
                                     <script>
                                         $('#link_hover_color').spectrum({
                                             type: "color",
@@ -417,9 +417,9 @@
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <input id="link_underline_color" name="link_underline_color" value="{{ $item->link_underline_color ?? config('pivlu.defaults.link_color_underline') }}">
+                                    <input id="link_underline_color" name="link_underline_color" value="{{ $item->link_underline_color ?? config('pivlu.pivlu.defaults.link_color_underline') }}">
                                     <label>{{ __('Underline color') }}</label>
-                                    <div class="mt-1 small"> {{ strtoupper($item->link_underline_color ?? config('pivlu.defaults.link_color_underline')) }}</div>
+                                    <div class="mt-1 small"> {{ strtoupper($item->link_underline_color ?? config('pivlu.pivlu.defaults.link_color_underline')) }}</div>
                                     <script>
                                         $('#link_underline_color').spectrum({
                                             type: "color",
@@ -435,9 +435,9 @@
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <input id="link_underline_color_hover" name="link_underline_color_hover" value="{{ $item->link_underline_color_hover ?? config('pivlu.defaults.link_color_underline_hover') }}">
+                                    <input id="link_underline_color_hover" name="link_underline_color_hover" value="{{ $item->link_underline_color_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover') }}">
                                     <label>{{ __('Underline color on hover') }}</label>
-                                    <div class="mt-1 small"> {{ strtoupper($item->link_underline_color_hover ?? config('pivlu.defaults.link_color_underline_hover')) }}</div>
+                                    <div class="mt-1 small"> {{ strtoupper($item->link_underline_color_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover')) }}</div>
                                     <script>
                                         $('#link_underline_color_hover').spectrum({
                                             type: "color",

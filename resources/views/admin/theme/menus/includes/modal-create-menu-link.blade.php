@@ -87,11 +87,12 @@ debug_backtrace() || die('Direct access not permitted');
                                     <input class="form-control" name="label_{{ $lang->id }}" type="text" required value="{{ $link->label ?? null }}" />
                                 </div>
                             </div>
+
+                            @if (count(admin_languages()) > 1 && !$loop->last)
+                                <hr>
+                            @endif
                         @endforeach
 
-                        @if (count(admin_languages()) > 1 && !$loop->last)
-                            <hr>
-                        @endif
 
                         <div class="col-12">
                             <hr>

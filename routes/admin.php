@@ -38,6 +38,7 @@ use Pivlu\Cms\Http\Controllers\Admin\PostTaxonomyController;
 use Pivlu\Cms\Http\Controllers\Admin\PluginController;
 use Pivlu\Cms\Http\Controllers\Admin\TrashController;
 use Pivlu\Cms\Http\Controllers\Admin\ThemeController;
+use Pivlu\Cms\Http\Controllers\Admin\ThemeFooterController;
 use Pivlu\Cms\Http\Controllers\Admin\ThemeHomepageController;
 use Pivlu\Cms\Http\Controllers\Admin\ThemeButtonController;
 use Pivlu\Cms\Http\Controllers\Admin\ThemeMenuController;

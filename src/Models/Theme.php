@@ -1,6 +1,6 @@
 <?php
 
-namespace Pivlu\Cms\Models;
+namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,7 +8,7 @@ class Theme extends Model
 {
     protected $fillable = [
         'label',
-        'slug',
+        'code',
         'vendor_name',
         'theme_name',
         'style_id',

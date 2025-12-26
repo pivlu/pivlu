@@ -1,11 +1,11 @@
 <?php
 
-namespace Pivlu\Cms\Actions\Fortify;
+namespace Pivlu\Actions\Fortify;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
-use Pivlu\Cms\Models\User;
+use Pivlu\Models\User;
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {

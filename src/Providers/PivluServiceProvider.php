@@ -1,21 +1,22 @@
 <?php
 
-namespace Pivlu\Cms;
+namespace Pivlu\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
-use Pivlu\Cms\Providers\FortifyServiceProvider;
-use Pivlu\Cms\Console\Commands\InstallCommand;
-use Pivlu\Cms\Console\Commands\UpdateCommand;
-use Pivlu\Cms\Console\Commands\CreateSamplePostsCommand;
-use Pivlu\Cms\Http\Middleware\CheckWebsiteMiddleware;
-use Pivlu\Cms\Http\Middleware\LoggedIsInternalMiddleware;
-use Pivlu\Cms\Http\Middleware\LoggedMiddleware;
-use Pivlu\Cms\Http\Middleware\LoggedIsAdminMiddleware;
-use Pivlu\Cms\Http\Middleware\LoggedIsRegisteredMiddleware;
-use Pivlu\Cms\Http\Middleware\ThemeMiddleware;
+use Pivlu\Providers\FortifyServiceProvider;
+use Pivlu\Console\Commands\InstallCommand;
+use Pivlu\Console\Commands\UpdateCommand;
+use Pivlu\Console\Commands\CreateSamplePostsCommand;
+use Pivlu\Http\Middleware\CheckWebsiteMiddleware;
+use Pivlu\Http\Middleware\LoggedIsInternalMiddleware;
+use Pivlu\Http\Middleware\LoggedMiddleware;
+use Pivlu\Http\Middleware\LoggedIsAdminMiddleware;
+use Pivlu\Http\Middleware\LoggedIsRegisteredMiddleware;
+use Pivlu\Http\Middleware\ThemeMiddleware;
+use Pivlu\Models\Module;
 
 class PivluServiceProvider extends ServiceProvider
 {
@@ -41,24 +42,24 @@ class PivluServiceProvider extends ServiceProvider
 
       // Publish configuration file.
       $this->publishes([
-         __DIR__ . '/../config/pivlu.php' => config_path('pivlu/pivlu.php'),
-         __DIR__ . '/../config/blocks.php' => config_path('pivlu/blocks.php'),
+         __DIR__ . '/../../config/pivlu.php' => config_path('pivlu/pivlu.php'),
+         __DIR__ . '/../../config/blocks.php' => config_path('pivlu/blocks.php'),
       ], 'config');
 
       // Register routes.
       $this->registerRoutes();
 
       // Register views.
-      $this->loadViewsFrom(__DIR__ . '/../resources/views', 'pivlu');
+      $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'pivlu');
 
       // Publish assets.
       $this->publishes([
-         __DIR__ . '/../resources/assets/' => public_path('assets'),
+         __DIR__ . '/../../resources/assets/' => public_path('assets'),
       ], 'assets'); // <- The tag ("assets") is defined here will be used in `php artisan vendor:publish --tag=assets` command.
 
       // Publish migrations.
       $this->publishes([
-         __DIR__ . '/../database/migrations' => database_path('migrations'),
+         __DIR__ . '/../../database/migrations' => database_path('migrations'),
       ], 'migrations');  // <- The tag ("migrations") is defined here will be used in `php artisan vendor:publish --tag=migrations` command.
 
       /*
@@ -80,7 +81,7 @@ class PivluServiceProvider extends ServiceProvider
 
 
    public function register()
-   {
+   {      
       $this->app->register(FortifyServiceProvider::class);
       //$this->app->register(PermissionServiceProvider::class);
 
@@ -92,11 +93,11 @@ class PivluServiceProvider extends ServiceProvider
    protected function registerRoutes()
    {
       Route::group($this->routeAdminConfiguration(), function () {
-         $this->loadRoutesFrom(__DIR__ . '/../routes/admin.php');
+         $this->loadRoutesFrom(__DIR__ . '/../../routes/admin.php');
       });
 
       Route::group($this->routeWebConfiguration(), function () {
-         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');
       });
    }
 

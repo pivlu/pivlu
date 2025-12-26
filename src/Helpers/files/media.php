@@ -20,8 +20,8 @@
  */
 
 use Illuminate\Support\Facades\Storage;
-use Pivlu\Cms\Models\Media;
-use Pivlu\Cms\Models\Language;
+use Pivlu\Models\Media;
+use Pivlu\Models\Language;
 
 // Return image url
 if (!function_exists('image')) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Pivlu\Cms\Http\Auth;
+namespace Pivlu\Http\Auth;
 
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 

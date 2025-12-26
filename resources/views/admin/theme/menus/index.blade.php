@@ -15,7 +15,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
 
@@ -28,7 +28,7 @@
             <div class="col-12 col-sm-7 col-md-6 order-md-2 order-last">
                 <div class="float-end">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-menu"><i class="bi bi-plus-circle"></i> {{ __('Create menu') }}</button>
-                    @include('admin.theme.menus.includes.modal-create-menu')
+                    @include('pivlu::admin.theme.menus.includes.modal-create-menu')
                 </div>
             </div>
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace Pivlu\Cms\Actions\Fortify;
+namespace Pivlu\Actions\Fortify;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
-use Pivlu\Cms\Functions\HelperFunctions;
-use Pivlu\Cms\Models\User;
-use Pivlu\Cms\Models\Config;
+use Pivlu\Functions\HelperFunctions;
+use Pivlu\Models\User;
+use Pivlu\Models\Config;
 
 class CreateNewUser implements CreatesNewUsers
 {

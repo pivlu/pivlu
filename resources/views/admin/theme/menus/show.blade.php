@@ -2,7 +2,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
 
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -23,13 +23,13 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
 
         <div class="float-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-menu-link"><i class="bi bi-plus-circle"></i> {{ __('Add link') }}</button>
-            @include('admin.theme.menus.includes.modal-create-menu-link')
+            @include('pivlu::admin.theme.menus.includes.modal-create-menu-link')
         </div>
 
         <h4 class="card-title">{{ __('Menu links') }} - <b>{{ $menu->label }}</b></h4>
@@ -113,7 +113,7 @@
                                         @if ($lang->is_default == 1)
                                             <a target="_blank" href="{{ route('home') }}">{{ route('home') }}</a>
                                         @else
-                                            <a target="_blank" href="{{ route('locale.home', ['locale' => $lang->code]) }}">{{ route('locale.home', ['locale' => $lang->code]) }}</a>
+                                            <a target="_blank" href="{{ route('locale.home', ['lang' => $lang->code]) }}">{{ route('locale.home', ['lang' => $lang->code]) }}</a>
                                         @endif
                                     @endif
 
@@ -151,7 +151,7 @@
                                 <div class="d-grid gap-2">
 
                                     <button data-bs-toggle="modal" data-bs-target="#update-menu-link-{{ $link->id }}" class="btn btn-primary btn-sm mb-2">{{ __('Update link') }}</button>
-                                    @include('admin.theme.menus.includes.modal-update-menu-link')
+                                    @include('pivlu::admin.theme.menus.includes.modal-update-menu-link')
 
 
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $link->id }}" class="btn btn-danger btn-sm">{{ __('Delete link') }}</a>

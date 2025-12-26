@@ -5,7 +5,7 @@
                 <div class="mb-4 text-center">
                     <a class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#addBlock1"><i class="bi bi-plus-circle"></i>
                         {{ __('Add content block') }}</a>
-                    @include('admin.theme.footers.includes.modal-add-footer-block', ['col' => 1])
+                    @include('pivlu::admin.theme.footers.includes.modal-add-footer-block', ['col' => 1])
                 </div>
 
                 @foreach (footer_blocks($footer->id, $destination, $col = 1) as $block)
@@ -36,7 +36,7 @@
                             </div>
                         </div>
                         <b>
-                            @include('admin.includes.block_type_label', ['type' => $block->block_type->type])
+                            @include('pivlu::admin.includes.block_type_label', ['type' => $block->block_type->type])
                         </b>
                         @if ($block->updated_at)
                             <div class="small text-muted">{{ __('Updated at') }}: {{ date_locale($block->updated_at, 'datetime') }}</div>
@@ -53,7 +53,7 @@
                 <div class="mb-4 text-center">
                     <a class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#addBlock2"><i class="bi bi-plus-circle"></i>
                         {{ __('Add content block') }}</a>
-                    @include('admin.theme.footers.includes.modal-add-footer-block', ['col' => 2])
+                    @include('pivlu::admin.theme.footers.includes.modal-add-footer-block', ['col' => 2])
                 </div>
 
                 @foreach (footer_blocks($footer->id, $destination, $col = 2) as $block)
@@ -84,7 +84,7 @@
                             </div>
                         </div>
                         <b>
-                            @include('admin.includes.block_type_label', ['type' => $block->block_type->type])
+                            @include('pivlu::admin.includes.block_type_label', ['type' => $block->block_type->type])
                         </b>
                         @if ($block->updated_at)
                             <div class="small text-muted">{{ __('Updated at') }}: {{ date_locale($block->updated_at, 'datetime') }}</div>

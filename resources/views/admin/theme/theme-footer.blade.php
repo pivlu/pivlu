@@ -6,7 +6,7 @@
         <div class="col-12 col-lg-4 col-md-6">
             <div class="form-group">
                 <label>{{ __('Select footer') }} <br>
-                    <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-menu-up"></i> {{ __('Manage footers') }}</a>
+                    <a target="_blank" href="{{ route('admin.theme-footers.index') }}"><i class="bi bi-menu-up"></i> {{ __('Manage footers') }}</a>
                     <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
                 </label>
                 <select class="form-select" id="footer_id" name="footer_id">
@@ -89,7 +89,7 @@
     <div id="hidden_div_style_footer2" style="display: @if (isset($theme_config->footer2_use_custom_style)) block @else none @endif" class="mt-2">
         <div class="form-group col-lg-4 col-md-6 mb-3">
             <label>{{ __('Select style form secondary footer') }} <br>
-                <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Add new style') }}</a>
+                <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
                 <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
             </label>
             <select class="form-select" id="footer2_style_id" name="footer2_style_id">

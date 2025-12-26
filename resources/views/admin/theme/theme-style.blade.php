@@ -201,9 +201,9 @@
                 <div class="row">
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_text_color" name="default_text_color" value="{{ $theme_config->default_text_color ?? config('pivlu.defaults.font_color') }}">
+                            <input id="default_text_color" name="default_text_color" value="{{ $theme_config->default_text_color ?? config('pivlu.pivlu.defaults.font_color') }}">
                             <label>{{ __('Main text color') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_text_color ?? config('pivlu.defaults.font_color')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_text_color ?? config('pivlu.pivlu.defaults.font_color')) }}</div>
                             <script>
                                 $('#default_text_color').spectrum({
                                     type: "color",
@@ -219,9 +219,9 @@
 
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_link_color" name="default_link_color" value="{{ $theme_config->default_link_color ?? config('pivlu.defaults.link_color') }}">
+                            <input id="default_link_color" name="default_link_color" value="{{ $theme_config->default_link_color ?? config('pivlu.pivlu.defaults.link_color') }}">
                             <label>{{ __('Link color') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color ?? config('pivlu.defaults.link_color')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color ?? config('pivlu.pivlu.defaults.link_color')) }}</div>
                             <script>
                                 $('#default_link_color').spectrum({
                                     type: "color",
@@ -237,9 +237,9 @@
 
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_link_hover_color" name="default_link_hover_color" value="{{ $theme_config->default_link_hover_color ?? config('pivlu.defaults.link_color_hover') }}">
+                            <input id="default_link_hover_color" name="default_link_hover_color" value="{{ $theme_config->default_link_hover_color ?? config('pivlu.pivlu.defaults.link_color_hover') }}">
                             <label>{{ __('Link color on mouse hover') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_hover_color ?? config('pivlu.defaults.link_color_hover')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_hover_color ?? config('pivlu.pivlu.defaults.link_color_hover')) }}</div>
                             <script>
                                 $('#default_link_hover_color').spectrum({
                                     type: "color",
@@ -255,9 +255,9 @@
 
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_link_color_underline" name="default_link_color_underline" value="{{ $theme_config->default_link_color_underline ?? config('pivlu.defaults.link_color_underline') }}">
+                            <input id="default_link_color_underline" name="default_link_color_underline" value="{{ $theme_config->default_link_color_underline ?? config('pivlu.pivlu.defaults.link_color_underline') }}">
                             <label>{{ __('Underline color') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline ?? config('pivlu.defaults.link_color_underline')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline ?? config('pivlu.pivlu.defaults.link_color_underline')) }}</div>
                             <script>
                                 $('#default_link_color_underline').spectrum({
                                     type: "color",
@@ -274,9 +274,9 @@
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
                             <input id="default_link_color_underline_hover" name="default_link_color_underline_hover"
-                                value="{{ $theme_config->default_link_color_underline_hover ?? config('pivlu.defaults.link_color_underline_hover') }}">
+                                value="{{ $theme_config->default_link_color_underline_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover') }}">
                             <label>{{ __('Underline color on hover') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline_hover ?? config('pivlu.defaults.link_color_underline_hover')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover')) }}</div>
                             <script>
                                 $('#default_link_color_underline_hover').spectrum({
                                     type: "color",
@@ -310,9 +310,9 @@
 
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_bg_color" name="default_bg_color" value="{{ $theme_config->default_bg_color ?? config('pivlu.defaults.bg_color') }}">
+                            <input id="default_bg_color" name="default_bg_color" value="{{ $theme_config->default_bg_color ?? config('pivlu.pivlu.defaults.bg_color') }}">
                             <label>{{ __('Background color') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_bg_color ?? config('pivlu.defaults.bg_color')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_bg_color ?? config('pivlu.pivlu.defaults.bg_color')) }}</div>
                             <script>
                                 $('#default_bg_color').spectrum({
                                     type: "color",

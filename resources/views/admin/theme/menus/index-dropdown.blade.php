@@ -27,13 +27,13 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
 
         <div class="float-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-menu-link"><i class="bi bi-plus-circle"></i> {{ __('Add link') }}</button>
-            @include('admin.theme.menus.includes.modal-create-menu-link')
+            @include('pivlu::admin.theme.menus.includes.modal-create-menu-link')
         </div>
 
         <h4 class="card-title">{{ __('Dropdown links') }} </h4>
@@ -141,7 +141,7 @@
                                 <div class="d-grid gap-2">
 
                                     <button data-bs-toggle="modal" data-bs-target="#update-menu-link-dropdown-{{ $link->id }}" class="btn btn-primary btn-sm mb-2">{{ __('Update link') }}</button>
-                                    @include('admin.theme.menus.includes.modal-update-menu-link-dropdown')
+                                    @include('pivlu::admin.theme.menus.includes.modal-update-menu-link-dropdown')
 
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $link->id }}" class="btn btn-danger btn-sm">{{ __('Delete link') }}</a>
                                     <div class="modal fade confirm-{{ $link->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">

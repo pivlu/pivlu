@@ -1,6 +1,6 @@
 <?php
 
-namespace Pivlu\Cms\Http\Auth;
+namespace Pivlu\Http\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;

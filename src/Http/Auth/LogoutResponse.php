@@ -1,6 +1,6 @@
 <?php
 
-namespace Pivlu\Cms\Http\Auth;
+namespace Pivlu\Http\Auth;
 
 use Illuminate\Http\JsonResponse;
 use Laravel\Fortify\Contracts\LogoutResponse as LogoutResponseContract;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Pivlu\Cms\Actions\Fortify;
+namespace Pivlu\Actions\Fortify;
 
 use Illuminate\Validation\Rules\Password;
 

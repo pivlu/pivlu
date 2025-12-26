@@ -1,11 +1,11 @@
 <?php
 
-namespace Pivlu\Cms\Providers;
+namespace Pivlu\Providers;
 
-use Pivlu\Cms\Actions\Fortify\CreateNewUser;
-use Pivlu\Cms\Actions\Fortify\ResetUserPassword;
-use Pivlu\Cms\Actions\Fortify\UpdateUserPassword;
-use Pivlu\Cms\Actions\Fortify\UpdateUserProfileInformation;
+use Pivlu\Actions\Fortify\CreateNewUser;
+use Pivlu\Actions\Fortify\ResetUserPassword;
+use Pivlu\Actions\Fortify\UpdateUserPassword;
+use Pivlu\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;

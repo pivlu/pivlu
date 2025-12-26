@@ -17,7 +17,11 @@
 
         <div class="sidebar-menu">
             <ul class="menu">
-
+                {{--
+                @include('pivlu::admin.includes.sidebar-sections')
+                @include('pivlu::admin.includes.sidebar-menu-'.($nav_section ?? 'dashboard'))          
+                --}}
+                
                 <li class="sidebar-item @if (($active_menu ?? null) == 'dashboard') active @endif">
                     <a href="{{ route('admin') }}" class='sidebar-link'>
                         <i class="bi bi-grid-fill"></i>

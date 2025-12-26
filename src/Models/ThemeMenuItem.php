@@ -1,6 +1,6 @@
 <?php
 
-namespace Pivlu\Cms\Models;
+namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

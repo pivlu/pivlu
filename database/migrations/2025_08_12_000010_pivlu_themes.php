@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pivlu_themes', function (Blueprint $table) {
             $table->id();
             $table->string('label', 100);
+            $table->char('code', 16)->unique();
             $table->string('vendor_name', 100);
             $table->string('theme_name', 100);
             $table->unsignedBigInteger('style_id')->nullable();

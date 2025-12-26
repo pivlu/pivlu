@@ -16,7 +16,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
         <div class="row">
@@ -48,25 +48,25 @@
         @endif
         @if ($destination == 'primary')
             @if (($footer->footer_columns ?? null) == '1')
-                @include('admin.theme.footers.includes.edit-footer-1-col', ['destination' => 'primary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-1-col', ['destination' => 'primary'])
             @elseif (($footer->footer_columns ?? null) == '2')
-                @include('admin.theme.footers.includes.edit-footer-2-cols', ['destination' => 'primary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-2-cols', ['destination' => 'primary'])
             @elseif (($footer->footer_columns ?? null) == '3')
-                @include('admin.theme.footers.includes.edit-footer-3-cols', ['destination' => 'primary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-3-cols', ['destination' => 'primary'])
             @elseif (($footer->footer_columns ?? null) == '4')
-                @include('admin.theme.footers.includes.edit-footer-4-cols', ['destination' => 'primary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-4-cols', ['destination' => 'primary'])
             @endif
         @endif
 
         @if ($destination == 'secondary')
             @if (($footer->footer2_columns ?? null) == '1')
-                @include('admin.theme.footers.includes.edit-footer-1-col', ['destination' => 'secondary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-1-col', ['destination' => 'secondary'])
             @elseif (($footer->footer2_columns ?? null) == '2')
-                @include('admin.theme.footers.includes.edit-footer-2-cols', ['destination' => 'secondary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-2-cols', ['destination' => 'secondary'])
             @elseif (($footer->footer2_columns ?? null) == '3')
-                @include('admin.theme.footers.includes.edit-footer-3-cols', ['destination' => 'secondary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-3-cols', ['destination' => 'secondary'])
             @elseif (($footer->footer2_columns ?? null) == '4')
-                @include('admin.theme.footers.includes.edit-footer-4-cols', ['destination' => 'secondary'])
+                @include('pivlu::admin.theme.footers.includes.edit-footer-4-cols', ['destination' => 'secondary'])
             @endif
         @endif
 

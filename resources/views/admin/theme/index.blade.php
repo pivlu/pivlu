@@ -76,7 +76,7 @@
                                             {{ __('Set as active') }}</a>
                                     @endif
 
-                                    <a class="btn btn-secondary btn-lg ms-2" target="_blank" href="{{ route('home', ['preview_theme' => $theme->id]) }}"><i class="bi bi-box-arrow-up-right"></i>
+                                    <a class="btn btn-secondary btn-lg ms-2" target="_blank" href="{{ route('home', ['preview_theme' => $theme->code]) }}"><i class="bi bi-box-arrow-up-right"></i>
                                         {{ __('Preview') }}</a>
 
                                     <a href="{{ route('admin.themes.show', ['id' => $theme->id]) }}" class="btn btn-success btn-lg ms-2"><i class="bi bi-pencil-square"></i>
