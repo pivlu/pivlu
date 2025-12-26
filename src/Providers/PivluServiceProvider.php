@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Pivlu\Providers\FortifyServiceProvider;
+use Pivlu\Providers\ViewServiceProvider;
 use Pivlu\Console\Commands\InstallCommand;
 use Pivlu\Console\Commands\UpdateCommand;
 use Pivlu\Console\Commands\CreateSamplePostsCommand;
-use Pivlu\Http\Middleware\CheckWebsiteMiddleware;
+use Pivlu\Http\Middleware\WebsiteMiddleware;
 use Pivlu\Http\Middleware\LoggedIsInternalMiddleware;
 use Pivlu\Http\Middleware\LoggedMiddleware;
 use Pivlu\Http\Middleware\LoggedIsAdminMiddleware;
 use Pivlu\Http\Middleware\LoggedIsRegisteredMiddleware;
-use Pivlu\Http\Middleware\ThemeMiddleware;
 use Pivlu\Models\Module;
 
 class PivluServiceProvider extends ServiceProvider
@@ -33,12 +33,11 @@ class PivluServiceProvider extends ServiceProvider
       Paginator::useBootstrapFive();
 
       // Register our package's middlewares.
-      $this->app['router']->aliasMiddleware('check_website.middleware', CheckWebsiteMiddleware::class);
-      $this->app['router']->aliasMiddleware('logged_is_internal.middleware', LoggedIsInternalMiddleware::class);
-      $this->app['router']->aliasMiddleware('logged_is_admin.middleware', LoggedIsAdminMiddleware::class);
-      $this->app['router']->aliasMiddleware('logged.middleware', LoggedMiddleware::class);
-      $this->app['router']->aliasMiddleware('logged_is_registered.middleware', LoggedIsRegisteredMiddleware::class);
-      $this->app['router']->aliasMiddleware('theme.middleware', ThemeMiddleware::class);
+      $this->app['router']->aliasMiddleware('website_middleware', WebsiteMiddleware::class);
+      $this->app['router']->aliasMiddleware('logged_middleware', LoggedMiddleware::class);
+      $this->app['router']->aliasMiddleware('logged_is_internal_middleware', LoggedIsInternalMiddleware::class);
+      $this->app['router']->aliasMiddleware('logged_is_admin_middleware', LoggedIsAdminMiddleware::class);
+      $this->app['router']->aliasMiddleware('logged_is_registered_middleware', LoggedIsRegisteredMiddleware::class);
 
       // Publish configuration file.
       $this->publishes([
@@ -53,21 +52,10 @@ class PivluServiceProvider extends ServiceProvider
       $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'pivlu');
 
       // Publish assets.
-      $this->publishes([
-         __DIR__ . '/../../resources/assets/' => public_path('assets'),
-      ], 'assets'); // <- The tag ("assets") is defined here will be used in `php artisan vendor:publish --tag=assets` command.
+      $this->publishes([__DIR__ . '/../../resources/assets/' => public_path('assets')], 'assets'); // <- The tag ("assets") is defined here will be used in `php artisan vendor:publish --tag=assets` command.
 
       // Publish migrations.
-      $this->publishes([
-         __DIR__ . '/../../database/migrations' => database_path('migrations'),
-      ], 'migrations');  // <- The tag ("migrations") is defined here will be used in `php artisan vendor:publish --tag=migrations` command.
-
-      /*
-      // Publish views.
-      $this->publishes([
-         __DIR__ . '/resources/views' => resource_path('views/vendor/pivlu/cms'),
-      ], 'views');  // <- The tag ("views") is defined here will be used in `php artisan vendor:publish --tag=views` command.
-      */
+      $this->publishes([__DIR__ . '/../../database/migrations' => database_path('migrations')], 'migrations');  // <- The tag ("migrations") is defined here will be used in `php artisan vendor:publish --tag=migrations` command.
 
       if ($this->app->runningInConsole()) {
          // Register commands.
@@ -81,11 +69,12 @@ class PivluServiceProvider extends ServiceProvider
 
 
    public function register()
-   {      
+   {
       $this->app->register(FortifyServiceProvider::class);
-      //$this->app->register(PermissionServiceProvider::class);
+      $this->app->register(ViewServiceProvider::class);
 
       // Merge configuration.
+      $this->mergeConfigFrom(__DIR__ . '/../../config/core.php', 'pivlu_core');
       //$this->mergeConfigFrom(__DIR__ . '/config/pivlu/pivlu.php','pivlu');
       //$this->mergeConfigFrom(__DIR__ . '/config/permission.php','permission');
    }
@@ -104,14 +93,14 @@ class PivluServiceProvider extends ServiceProvider
    protected function routeAdminConfiguration()
    {
       return [
-         'middleware' => ['web', 'auth', 'verified', 'logged.middleware', 'logged_is_internal.middleware'],
+         'middleware' => ['web', 'auth', 'verified', 'logged_middleware', 'logged_is_internal_middleware'],
       ];
    }
 
    protected function routeWebConfiguration()
    {
       return [
-         'middleware' => ['web', 'logged.middleware', 'theme.middleware', 'check_website.middleware'],
+         'middleware' => ['web', 'logged.middleware', 'website_middleware'],
       ];
    }
 }

@@ -14,6 +14,7 @@
                 <h4 class="card-title">{{ __('Dashboard') }}</h4>
             </div>
 
+            >> {{ dd(config('pivlu_core.test')) }}
             {{--@doAction('test_action', 'hook')--}}
 
             <div class="card-body">

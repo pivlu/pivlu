@@ -197,7 +197,7 @@
                                 @endphp
 
                                 <div class="fw-bold">
-                                    @can('update', Pivlu\Cms\Models\User::class)
+                                    @can('update', Pivlu\Models\User::class)
                                         <a href="{{ route('admin.accounts.show', ['id' => $account->id]) }}">{{ $account->name }}</a>
                                     @else
                                         {{ $account->name }}
@@ -241,11 +241,11 @@
                             <td>
                                 <div class="d-grid gap-2">
 
-                                    @can('update', Pivlu\Cms\Models\User::class)
+                                    @can('update', Pivlu\Models\User::class)
                                         <a class="btn btn-primary btn-sm" href="{{ route('admin.accounts.show', ['id' => $account->id]) }}">{{ __('Manage account') }}</a>
                                     @endcan
 
-                                    @can('delete', Pivlu\Cms\Models\User::class)
+                                    @can('delete', Pivlu\Models\User::class)
                                         @if (Auth::user()->id != $account->id)
                                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $account->id }}" class="btn btn-danger btn-sm">{{ __('Delete account') }}</a>
                                             <div class="modal fade confirm-{{ $account->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">

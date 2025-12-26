@@ -23,28 +23,20 @@ namespace Pivlu\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades;
-use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 use Pivlu\Models\Config;
-use Pivlu\Models\ThemeConfig;
-use Pivlu\Models\ThemeConfigLang;
-use Pivlu\Models\ConfigLang;
-use Pivlu\Models\Language;
-use Pivlu\Functions\ThemeFunctions;
+use Auth;
 
-class ThemeMiddleware
+class WebsiteMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-
-        // Language
+        // Website language
         $lang = $request->segment(1);
 
         if (strlen($lang) === 2 && Language::where(['code' => $lang, 'status' => 'active'])->exists()) {
@@ -52,30 +44,13 @@ class ThemeMiddleware
             setlocale(LC_ALL, $lang);
         }
 
-        Facades\View::composer('*', function (View $view) {
-            $view->with('theme_path', 'themes/' . Config::get_config('active_theme') ?? 'builder');
+        // CHECK WEBSITE MAINTENANCE (redirect to maintenance page for non admins)
+        if ((Config::get_config('website_maintenance_enabled') ?? null)) {
+            if (!(Auth::user()->role ?? null) == 'admin') return redirect(route('maintenance'));
+        }
 
-            $view->with('active_theme', ThemeFunctions::get_active_theme());
-
-            // general config
-            $config = Config::config();
-            $view->with('tpl_config', $config);
-
-            // config depending on language
-            $config_lang = ConfigLang::config();
-            $view->with('tpl_config_locale', $config_lang);
-
-            // active theme config
-            $theme_config = ThemeConfig::config();
-            $view->with('tpl_theme_config', $theme_config);
-
-            // active theme config lang
-            $theme_config_lang = ThemeConfigLang::config();
-            $view->with('tpl_theme_config_locale', $theme_config_lang);
-
-            // Language details
-            $view->with('tpl_locale', Language::get_active_language());            
-        });
+        // CHECK WEBSITE DISABLED (redirect to auth)
+        if (Config::get_config('website_disabled') ?? null) return redirect(route('account'));
 
         return $next($request);
     }

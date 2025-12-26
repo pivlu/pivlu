@@ -15,17 +15,17 @@
                         <div class="form-group">
                             <label>{{ __('Homepage content source') }}</label>
                             <select class="form-select" name="homepage_source">
-                                <option @if (Pivlu\Cms\Models\ThemeConfig::get_config($theme->id, 'homepage_source') == 'manual') selected @endif value="manual">{{ __('Manually build homepage (using blocks)') }}</option>
+                                <option @if (Pivlu\Models\ThemeConfig::get_config($theme->id, 'homepage_source') == 'manual') selected @endif value="manual">{{ __('Manually build homepage (using blocks)') }}</option>
                                 <optgroup label="{{ __('Redirect to post type') }}">
                                     @foreach ($homepage_content_sources_post_types as $homepage_content_sources_post_type)
-                                        <option @if (Pivlu\Cms\Models\ThemeConfig::get_config($theme->id, 'homepage_source') == 'post_type_' . $homepage_content_sources_post_type->type) selected @endif value="post_type_{{ $homepage_content_sources_post_type->type }}">
+                                        <option @if (Pivlu\Models\ThemeConfig::get_config($theme->id, 'homepage_source') == 'post_type_' . $homepage_content_sources_post_type->type) selected @endif value="post_type_{{ $homepage_content_sources_post_type->type }}">
                                             {{ $homepage_content_sources_post_type->default_language_content->name }}
                                         </option>
                                     @endforeach
                                 </optgroup>
                                 <optgroup label="{{ __('Redirect to plugin') }}">
                                     @foreach ($homepage_content_sources_plugins as $homepage_content_sources_plugin)
-                                        <option @if (Pivlu\Cms\Models\ThemeConfig::get_config($theme->id, 'homepage_source') == 'module_' . $homepage_content_sources_plugin->slug) selected @endif value="module_{{ $homepage_content_sources_plugin->slug }}">{{ $homepage_content_sources_plugin->name }}</option>
+                                        <option @if (Pivlu\Models\ThemeConfig::get_config($theme->id, 'homepage_source') == 'module_' . $homepage_content_sources_plugin->slug) selected @endif value="module_{{ $homepage_content_sources_plugin->slug }}">{{ $homepage_content_sources_plugin->name }}</option>
                                     @endforeach
                                 </optgroup>
                             </select>
@@ -42,7 +42,7 @@
                                     ({{ $lang->name }})
                                 @endif
                         </label>
-                        <input type="text" class="form-control" name="homepage_meta_title_{{ $lang->id }}" value="{{ Pivlu\Cms\Models\ThemeConfigLang::get_config($theme->id, $lang->id, 'homepage_meta_title') }}">
+                        <input type="text" class="form-control" name="homepage_meta_title_{{ $lang->id }}" value="{{ Pivlu\Models\ThemeConfigLang::get_config($theme->id, $lang->id, 'homepage_meta_title') }}">
                     </div>
 
                     <div class="form-group">
@@ -54,7 +54,7 @@
                                 @endif
                         </label>
                         <input type="text" class="form-control" name="homepage_meta_description_{{ $lang->id }}"
-                            value="{{ Pivlu\Cms\Models\ThemeConfigLang::get_config($theme->id, $lang->id, 'homepage_meta_description') }}">
+                            value="{{ Pivlu\Models\ThemeConfigLang::get_config($theme->id, $lang->id, 'homepage_meta_description') }}">
                     </div>
 
                     @if (count(admin_languages()) > 1 && !$loop->last)

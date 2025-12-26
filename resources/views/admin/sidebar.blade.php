@@ -31,7 +31,7 @@
 
                 @foreach ($sidebar_post_types as $sidebar_post_type)
                     @if ($sidebar_post_type->active != 0)
-                        @can('index', [Pivlu\Cms\Models\Post::class, $sidebar_post_type->id])
+                        @can('index', [Pivlu\Models\Post::class, $sidebar_post_type->id])
                             <li class="sidebar-item @if (($active_menu ?? null) == 'post_type_' . $sidebar_post_type->id) active @endif">
                                 <a class="sidebar-link" href="{{ route('admin.posts.index', ['post_type_id' => $sidebar_post_type->id]) }}">
                                     {!! $sidebar_post_type->admin_menu_icon ?? '<i class="bi bi-file-text"></i>' !!}
@@ -47,7 +47,7 @@
                     @endif
                 @endforeach
 
-                @can('view', Pivlu\Cms\Models\User::class)
+                @can('view', Pivlu\Models\User::class)
                     <li class="sidebar-item has-sub @if (($active_menu ?? null) == 'accounts') active @endif">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-person-bounding-box"></i>

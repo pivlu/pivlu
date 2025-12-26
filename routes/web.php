@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 
-use Pivlu\Cms\Http\Controllers\Web\HomeController;
-use Pivlu\Cms\Http\Controllers\Web\ContentController;
-use Pivlu\Cms\Http\Controllers\Web\ToolsController;
-use Pivlu\Cms\Http\Controllers\Web\ProfileController;
+use Pivlu\Http\Controllers\Web\HomeController;
+use Pivlu\Http\Controllers\Web\ContentController;
+use Pivlu\Http\Controllers\Web\ToolsController;
+use Pivlu\Http\Controllers\Web\ProfileController;
 
 Route::get('/account', function () {
     if (Auth::user()) return redirect(route('admin'));
