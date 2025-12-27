@@ -36,6 +36,10 @@ use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeMenu;
 use Pivlu\Models\ThemeMenuItem;
 use Pivlu\Models\ThemeMenuContent;
+use Pivlu\Models\Form;
+use Pivlu\Models\FormDataStatus;
+use Pivlu\Models\FormField;
+use Pivlu\Models\FormFieldContent;
 use Pivlu\Functions\HelperFunctions;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -164,9 +168,108 @@ class SetupFunctions
                 'title' => 'Contact',
                 'slug' => 'contact'
             ]);
+
+            $contact_block_form = Block::create([
+                'type' => 'form',
+                'post_id' => $contact_page_post->id,
+                'source' => 'posts',
+                'label' => 'Contact form',
+                'position' => 1,
+                'user_id' => $admin_user->id
+            ]);
+
+            $contact_form = Form::first();
+
+            $block_settings = array('form_id' => $contact_form->id);
+            $contact_block_form->update(['settings' => serialize($block_settings)]);
+
+            $contact_page_post->update(['blocks' => serialize(['id' => $contact_block_form->id, 'type' => 'form'])]);
         }
     }
 
+
+    public static function check_form()
+    {
+        // add default dorms messages statuses (new and closed)
+        FormDataStatus::firstOrCreate(
+            ['is_new' => 1],
+            ['label' => 'New', 'description' => 'This is the default status for new messages.', 'color' => '#14a151']
+        );
+        FormDataStatus::firstOrCreate(
+            ['is_closed' => 1],
+            ['label' => 'Closed', 'description' => 'This message is mark as closed. No future action is needed.', 'color' => '#1a1a1a']
+        );
+
+
+
+        // Add a contact form, if no form exists
+        if (Form::doesntExist()) {
+            $contact_form = Form::create([
+                'label' => 'Contact form',
+                'active' => 1,
+            ]);
+
+            // insert NAME field
+            $field_name = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 0,
+                'protected' => 1,
+                'is_default_name' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
+            }
+
+            // insert EMAIL field
+            $field_email = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'email',
+                'required' => 1,
+                'col_md' => 6,
+                'active' => 1,
+                'position' => 1,
+                'protected' => 1,
+                'is_default_email' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
+            }
+
+            // insert SUBJECT field
+            $field_subject = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'text',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 2,
+                'protected' => 1,
+                'is_default_subject' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
+            }
+
+            // insert MESSAGE field
+            $field_message = FormField::create([
+                'form_id' => $contact_form->id,
+                'type' => 'textarea',
+                'required' => 1,
+                'col_md' => 12,
+                'active' => 1,
+                'position' => 3,
+                'protected' => 1,
+                'is_default_message' => 1
+            ]);
+            foreach (admin_languages() as $lang) {
+                FormFieldContent::create(['form_id' => $contact_form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
+            }
+        }
+    }
 
     public static function check_default_block_types()
     {

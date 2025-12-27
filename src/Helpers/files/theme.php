@@ -25,6 +25,7 @@ use Pivlu\Models\Language;
 use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\Theme;
+use Pivlu\Models\ThemeFooter;
 
 // Website general settings
 if (!function_exists('get_site_info')) {
@@ -188,7 +189,7 @@ if (!function_exists('footer')) {
 		if (! $active_theme) return [];
 
 		$footer = ThemeFooter::find($active_theme->footer_id ?? null);
-
+		
 		if (! $footer) $footer = ThemeFooter::where('is_default', 1)->first();
 
 		return $footer;

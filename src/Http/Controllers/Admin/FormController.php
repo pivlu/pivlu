@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Validator;
 use Pivlu\Models\Form;
 use Pivlu\Models\FormData;
 use Pivlu\Models\FormField;
+use Pivlu\Models\FormFieldContent;
 use Pivlu\Models\FormFieldData;
 use Pivlu\Models\FormConfig;
 
@@ -42,10 +43,10 @@ class FormController extends Controller
 
         $forms = Form::orderByDesc('active')->orderByDesc('label')->paginate(25);
 
-        return view('admin.index', [
+        return view('pivlu::admin.index', [
             'view_file' => 'admin.forms.index',
-            'nav_section' => 'website',
             'active_menu' => 'forms',
+            'active_submenu' => 'forms',
             'forms' => $forms,
         ]);
     }
@@ -58,9 +59,9 @@ class FormController extends Controller
         $form = Form::find($request->id);
         if (!$form) return redirect(route('admin.forms.config'));
 
-        $fields = FormField::where('form_id', $request->id)->orderByDesc('active')->orderBy('position')->get();        
+        $fields = FormField::where('form_id', $request->id)->orderByDesc('active')->orderBy('position')->get();
 
-        return view('admin.index', [
+        return view('pivlu::admin.index', [
             'view_file' => 'admin.forms.show',
             'nav_section' => 'website',
             'active_menu' => 'forms',
@@ -77,12 +78,63 @@ class FormController extends Controller
     }
 
 
+    /**
+     * Create form
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'label' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect(route('admin.forms.config'))
+                ->withErrors($validator)
+                ->withInput();
+        }     
+
+        if (Form::where(['label' => $request->label])->where('id', '!=', $request->id)->exists()) return redirect(route('admin.forms.config'))->with('error', 'duplicate');
+
+        $form = Form::create([
+            'label' => $request->label,
+            'active' => $request->has('active') ? 1 : 0,
+        ]);        
+
+        $langs = admin_languages();
+
+        // insert NAME field
+        $field_name = FormField::create(['form_id' => $form->id, 'type' => 'text', 'required' => 1, 'col_md' => 6, 'active' => 1, 'position' => 0, 'protected' => 1, 'is_default_name' => 1]);
+        foreach ($langs as $lang) {
+            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_name->id, 'lang_id' => $lang->id, 'label' => 'Name']);
+        }
+
+        // insert EMAIL field
+        $field_email = FormField::create(['form_id' => $form->id, 'type' => 'email', 'required' => 1, 'col_md' => 6, 'active' => 1, 'position' => 1, 'protected' => 1, 'is_default_email' => 1]);
+        foreach ($langs as $lang) {
+            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_email->id, 'lang_id' => $lang->id, 'label' => 'Email']);
+        }
+
+        // insert SUBJECT field
+        $field_subject = FormField::create(['form_id' => $form->id, 'type' => 'text', 'required' => 1, 'col_md' => 12, 'active' => 1, 'position' => 2, 'protected' => 1, 'is_default_subject' => 1]);
+        foreach ($langs as $lang) {
+            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_subject->id, 'lang_id' => $lang->id, 'label' => 'Subject']);
+        }
+
+        // insert MESSAGE field
+        $field_message = FormField::create(['form_id' => $form->id, 'type' => 'textarea', 'required' => 1, 'col_md' => 12, 'active' => 1, 'position' => 3, 'protected' => 1, 'is_default_message' => 1]);
+        foreach ($langs as $lang) {
+            FormFieldContent::create(['form_id' => $form->id, 'field_id' => $field_message->id, 'lang_id' => $lang->id, 'label' => 'Message']);
+        }
+
+        return redirect(route('admin.forms.config'))->with('success', 'created');
+    }
+
 
     /**
      * Update form
      */
     public function update(Request $request)
-    {        
+    {
         $validator = Validator::make($request->all(), [
             'label' => 'required',
         ]);
@@ -115,7 +167,7 @@ class FormController extends Controller
     public function destroy(Request $request)
     {
         $form = Form::find($request->id);
-        if (!$form) return redirect(route('admin.forms.config'));        
+        if (!$form) return redirect(route('admin.forms.config'));
 
         // check if exists messages        
         if (FormData::where('form_id', $request->id)->exists()) return redirect(route('admin.forms.config'))->with('error', 'exists_data');
@@ -257,7 +309,7 @@ class FormController extends Controller
 
         $count_messages_unread = FormData::whereNull('read_at')->count();
 
-        return view('admin.index', [
+        return view('pivlu::admin.index', [
             'view_file' => 'admin.forms.messages',
             'nav_section' => 'website',
             'active_menu' => 'forms',
@@ -294,7 +346,7 @@ class FormController extends Controller
             ->where('form_data_id', $message->id)
             ->get();
 
-        return view('admin.index', [
+        return view('pivlu::admin.index', [
             'view_file' => 'admin.forms.message',
             'nav_section' => 'website',
             'active_menu' => 'forms',

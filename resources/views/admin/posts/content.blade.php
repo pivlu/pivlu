@@ -17,7 +17,7 @@
 
 <div class="card">
 
-    @include('admin.posts.includes.menu-post')
+    @include('pivlu::admin.posts.includes.menu-post')
 
     <div class="card-header">
 
@@ -134,7 +134,7 @@
                             @endif
 
                             <b>
-                                @include('admin.includes.block_type_label', ['type' => $block->block_type->type])
+                                @include('pivlu::admin.includes.block_type_label', ['type' => $block->block_type->type])
                             </b>
 
                             <div class="small text-muted">
@@ -149,7 +149,7 @@
             </div>
         </div>
 
-        @include('admin.includes.modal-add-content-block', ['module' => 'posts', 'content_id' => $post->id])
+        @include('pivlu::admin.includes.modal-add-content-block', ['module' => 'posts', 'content_id' => $post->id])
 
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

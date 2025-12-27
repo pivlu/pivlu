@@ -112,7 +112,7 @@
                                 @if ($lang->is_default == 1)
                                     <a target="_blank" href="{{ route('home') }}">{{ route('home') }}</a>
                                 @else
-                                    <a target="_blank" href="{{ route('locale.home', ['locale' => $lang->code]) }}">{{ route('locale.home', ['locale' => $lang->code]) }}</a>
+                                    <a target="_blank" href="{{ route('locale.home', ['lang' => $lang->code]) }}">{{ route('locale.home', ['lang' => $lang->code]) }}</a>
                                 @endif
 
                                 <div class="small text-muted mt-1">

@@ -5,7 +5,7 @@
     <title>{{ $post->meta_title ?? $post->title }}</title>
     <meta name="description" content="{{ $post->meta_description ?? ($post->summary ?? strip_tags(substr($post->content, 0, 300))) }}">
 
-    @include('web.global.head')
+    @include('pivlu::web.global.head')
 
     <meta property="og:title" content="{{ $post->title }}" />
     @if ($post->image)
@@ -32,31 +32,31 @@
     <!-- Start Main Content -->
     <div class="content">
 
-        @include('web.global.navigation')
+        @include('pivlu::web.global.navigation')
 
-        @include('web.includes.posts-search')
+        @include('pivlu::web.includes.posts-search')
 
         @if (($layout_top ?? null) == 1)
-            @include('web.layouts.layout-top')
+            @include('pivlu::web.layouts.layout-top')
         @endif
 
         @if (($layout_sidebar ?? null) == 'left')
-            @include('web.layouts.layout-sidebar-left-posts-post')
+            @include('pivlu::web.layouts.layout-sidebar-left-posts-post')
         @elseif (($layout_sidebar ?? null) == 'right')
-            @include('web.layouts.layout-sidebar-right-posts-post')
+            @include('pivlu::web.layouts.layout-sidebar-right-posts-post')
         @else
             <div class="container-xxl mt-4 style_posts">
-                @include('web.includes.post-item')
+                @include('pivlu::web.includes.post-item')
             </div>
         @endif       
 
         @if (($layout_bottom ?? null) == 1)
-            @include('web.layouts.layout-bottom')
+            @include('pivlu::web.layouts.layout-bottom')
         @endif
     </div>
     <!-- End Main Content -->
 
-    @include('web.global.footer')
+    @include('pivlu::web.global.footer')
 
     @if (!($config->posts_likes_disabled ?? null))
         <script>

@@ -4,7 +4,7 @@
             <div class="fw-bold fs-5">{{ __('Bottom content') }}</div>
             <a class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#addBlock-bottom"><i class="bi bi-plus-circle"></i>
                 {{ __('Add content block') }}</a>
-            @include('admin.theme.layouts.includes.modal-create-layout-block', ['section' => 'bottom'])
+            @include('pivlu::admin.theme.layouts.includes.modal-create-layout-block', ['section' => 'bottom'])
         </div>
 
         @foreach (layout_blocks($item->id, 'bottom', $show_hidden = 1) as $block)
@@ -44,7 +44,7 @@
                 @endif
 
                 <b>
-                    @include('admin.includes.block_type_label', ['type' => $block->type])
+                    @include('pivlu::admin.includes.block_type_label', ['type' => $block->type])
                 </b>
 
                 @if ($block->updated_at)

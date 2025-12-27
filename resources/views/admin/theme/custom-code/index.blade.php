@@ -16,7 +16,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
         <h4 class="card-title">{{ __('Custom code') }}</h4>

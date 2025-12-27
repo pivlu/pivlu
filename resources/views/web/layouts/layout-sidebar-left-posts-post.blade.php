@@ -8,14 +8,14 @@
                 @endphp
 
                 <div class="section" id="layout-block-{{ $block->id }}" @if ($layout->bg_color_sidebar) style="background-color: {{ $layout->bg_color_sidebar }}" @endif>
-                    @include('web.includes.blocks-switch', ['is_layout' => 1])
+                    @include('pivlu::web.includes.blocks-switch', ['is_layout' => 1])
                 </div>
             @endforeach
         </div>
 
         <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 col-12">
             <div class="style_posts mt-4">
-                @include('web.includes.post-item')
+                @include('pivlu::web.includes.post-item')
             </div>
         </div>
     </div>

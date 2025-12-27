@@ -46,5 +46,5 @@
 @endif
 
 
-@include('web.includes.posts-listing')
+@include('pivlu::web.includes.posts-listing')
 {{ $posts->links() }}

@@ -1,5 +1,5 @@
-@include('admin.includes.trumbowyg-assets')
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.trumbowyg-assets')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -53,7 +53,7 @@
 <div class="card">
 
     <div class="card-header">
-        <h4 class="card-title">@include('admin.includes.block_type_label', ['type' => $block->block_type->type]) - {{ __('Manage block content') }}</h4>
+        <h4 class="card-title">@include('pivlu::admin.includes.block_type_label', ['type' => $block->block_type->type]) - {{ __('Manage block content') }}</h4>
     </div>
 
     <div class="card-body">
@@ -164,7 +164,7 @@
 
             <hr>
 
-            @include("admin.blocks.types.{$block->block_type->type}")
+            @include("pivlu::admin.blocks.types.{$block->block_type->type}")
 
             <div class="form-group">
                 <input type="hidden" name="referer" value="{{ $referer }}">
@@ -182,7 +182,7 @@
 @if ($block->block_type->type == 'gallery')
     </div>
     <div class="col-md-7">
-        @include('admin.blocks.includes.items-gallery')
+        @include('pivlu::admin.blocks.includes.items-gallery')
     </div>
     </div>
 @endif
@@ -191,7 +191,7 @@
 @if ($block->block_type->type == 'card')
     </div>
     <div class="col-md-7">
-        @include('admin.blocks.includes.items-card')
+        @include('pivlu::admin.blocks.includes.items-card')
     </div>
     </div>
 @endif
@@ -199,7 +199,7 @@
 @if ($block->block_type->type == 'slider')
     </div>
     <div class="col-md-7">
-        @include('admin.blocks.includes.items-slider')
+        @include('pivlu::admin.blocks.includes.items-slider')
     </div>
     </div>
 @endif

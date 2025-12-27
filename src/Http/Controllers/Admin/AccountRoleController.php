@@ -48,7 +48,7 @@ class AccountRoleController extends Controller
         $roles = Role::withCount('users', 'permissions')->where('role_group', 'internal')->orderBy('id')->get();
 
         return view('pivlu::admin.index', [
-            'view_file' => 'admin.accounts.roles',
+            'view_file' => 'admin.accounts.roles',            
             'active_menu' => 'accounts',
             'active_submenu' => 'roles',
             'roles' => $roles,
@@ -74,8 +74,8 @@ class AccountRoleController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.accounts.role',
-            'active_menu' => 'accounts',
-            'active_submenu' => 'roles',
+            'nav_section' => 'accounts',
+            'active_menu' => 'roles',
             'role' => $role,
             'role_permissions_ids' => $role_permissions_ids,
             'all_permissions' => $all_permissions,

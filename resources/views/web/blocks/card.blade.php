@@ -34,7 +34,7 @@
 
     <div class="block">
 
-        @include('web.includes.block-header')
+        @include('pivlu::web.includes.block-header')
 
         @if (count($block_content) > 0)
             <div class="container-xxl">

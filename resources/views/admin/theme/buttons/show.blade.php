@@ -1,4 +1,4 @@
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -19,7 +19,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-body">
 

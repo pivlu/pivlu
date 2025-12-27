@@ -1,5 +1,5 @@
-@include('admin.includes.trumbowyg-assets')
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.trumbowyg-assets')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -17,7 +17,7 @@
 
 <div class="card">
 
-    @include('admin.blocks.includes.menu-blocks')
+    @include('pivlu::admin.blocks.includes.menu-blocks')
 
     <div class="card-header">
 
@@ -30,7 +30,7 @@
                 <div class="float-end">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-block"><i
                             class="bi bi-plus-circle"></i> {{ __('New componnent') }} ({{ $type }})</button>
-                    @include('admin.blocks.includes.modal-create-block')
+                    @include('pivlu::admin.blocks.includes.modal-create-block')
                 </div>
             </div>
 

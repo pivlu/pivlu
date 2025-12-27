@@ -27,24 +27,10 @@ use Pivlu\Http\Controllers\Admin\AjaxController;
 use Pivlu\Http\Controllers\Admin\AccountController;
 use Pivlu\Http\Controllers\Admin\AccountInternalNoteController;
 use Pivlu\Http\Controllers\Admin\AccountRoleController;
-use Pivlu\Http\Controllers\Admin\BlockController;
+use Pivlu\Http\Controllers\Admin\AccountInvitationController;
 use Pivlu\Http\Controllers\Admin\ConfigController;
 use Pivlu\Http\Controllers\Admin\DashboardController;
-use Pivlu\Http\Controllers\Admin\LangController;
-use Pivlu\Http\Controllers\Admin\PostTypeController;
-use Pivlu\Http\Controllers\Admin\PostTypeTaxonomyController;
-use Pivlu\Http\Controllers\Admin\PostController;
-use Pivlu\Http\Controllers\Admin\PostTaxonomyController;
-use Pivlu\Http\Controllers\Admin\PluginController;
 use Pivlu\Http\Controllers\Admin\TrashController;
-use Pivlu\Http\Controllers\Admin\ThemeController;
-use Pivlu\Http\Controllers\Admin\ThemeFooterController;
-use Pivlu\Http\Controllers\Admin\ThemeHomepageController;
-use Pivlu\Http\Controllers\Admin\ThemeButtonController;
-use Pivlu\Http\Controllers\Admin\ThemeMenuController;
-use Pivlu\Http\Controllers\Admin\ThemeMenuDropdownController;
-use Pivlu\Http\Controllers\Admin\ThemeStyleController;
-use Pivlu\Http\Middleware\LoggedIsAdminMiddleware;
 
 Route::get('account/admin', [DashboardController::class, 'index'])->name('admin');
 
@@ -57,6 +43,11 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
     //Route::get('accounts/roles/{role}', [AccountRoleController::class, 'permissions'])->where('role', '[a-zA-Z0-9_]+')->name('roles.permissions');
     //Route::post('accounts/roles/{role}', [AccountController::class, 'update_permissions']);
 
+    Route::get('accounts/invitations', [AccountInvitationController::class, 'index'])->name('accounts.invitations');
+    Route::post('accounts/send-invitation', [AccountInvitationController::class, 'send'])->name('accounts.send_invitation');
+    Route::post('accounts/resend-invitation', [AccountInvitationController::class, 'resend'])->name('accounts.resend_invitation');
+    Route::delete('accounts/delete-invitation', [AccountInvitationController::class, 'destroy'])->name('accounts.delete_invitation');
+
     // Accounts
     Route::resource('accounts', AccountController::class)->parameters(['accounts' => 'id']);
 
@@ -68,80 +59,16 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
 
     Route::resource('accounts.internal-notes', AccountInternalNoteController::class)->parameters(['accounts' => 'account_id', 'internal-notes' => 'note_id'])->shallow();
 
-    // Posts
-    Route::resource('post-types', PostTypeController::class)->parameters(['post-types' => 'id']);
-    Route::resource('post-type-taxonomies', PostTypeTaxonomyController::class)->parameters(['post-type-taxonomies' => 'id']);
-    Route::resource('post-taxonomies', PostTaxonomyController::class)->parameters(['post-taxonomies' => 'id']);
-
-    Route::resource('posts', PostController::class)->parameters(['posts' => 'id']);
-    Route::post('posts/{id}/sortable', [PostController::class, 'sortable'])->name('posts.sortable')->where('id', '[0-9]+');
-    Route::get('posts/{id}/content', [PostController::class, 'content'])->name('posts.content')->where('id', '[0-9]+');
-    Route::post('posts/{id}/content', [PostController::class, 'update_content'])->name('posts.content.new')->where('id', '[0-9]+');
-    Route::delete('posts/{id}/content/delete/{block_id}', [PostController::class, 'delete_content'])->name('posts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
-    Route::get('posts/{id}/delete-main-image', [PostController::class, 'delete_main_image'])->name('posts.delete_main_image')->where('id', '[0-9]+');
-
-    // Theme Menus
-    Route::resource('appearance/theme-menus', ThemeMenuController::class)->parameters(['theme-menus' => 'id']);
-    Route::post('appearance/theme-menu/{menu_id}/item/create', [ThemeMenuController::class, 'store_item'])->name('theme-menus.item.create')->where('menu_id', '[0-9]+');
-    Route::put('appearance/theme-menu/item/update/{item_id}', [ThemeMenuController::class, 'update_item'])->name('theme-menus.item.update')->where('item_id', '[0-9]+');
-    Route::delete('appearance/theme-menu/item/delete/{item_id}', [ThemeMenuController::class, 'delete_item'])->name('theme-menus.item.delete')->where('item_id', '[0-9]+');
-    Route::post('appearance/theme-menu/{menu_id}/items/sortable', [ThemeMenuController::class, 'sortable'])->name('theme-menus.items.sortable')->where('menu_id', '[0-9]+');
-
-    Route::get('appearance/theme-menu/{parent_id}/dropdown', [ThemeMenuDropdownController::class, 'index'])->name('theme-menu.dropdown')->where(['parent_id' => '[0-9]+']);
-    Route::post('appearance/theme-menu/{parent_id}/dropdown', [ThemeMenuDropdownController::class, 'store'])->where(['parent_id' => '[0-9]+']);
-    Route::put('appearance/theme-menu/{parent_id}/dropdown/update/{item_id}', [ThemeMenuDropdownController::class, 'update'])->name('theme-menu.dropdown.update')->where(['parent_id' => '[0-9]+', 'item_id' => '[0-9]+']);
-    Route::delete('appearance/theme-menu/{parent_id}/dropdown/delete/{item_id}', [ThemeMenuDropdownController::class, 'destroy'])->name('theme-menu.dropdown.delete')->where(['parent_id' => '[0-9]+', 'item_id' => '[0-9]+']);
-    Route::post('appearance/theme-menu/{parent_id}dropdown/sortable', [ThemeMenuDropdownController::class, 'sortable'])->name('theme-menu.dropdown.sortable')->where(['parent_id' => '[0-9]+']);
-
-    // Theme Footers
-    Route::resource('appearance/theme-footers', ThemeFooterController::class)->parameters(['theme-footers' => 'id']);
-    Route::get('appearance/theme-footers/{id}/{destination}/content', [ThemeFooterController::class, 'content'])->name('theme-footers.content')->where(['id' => '[0-9]+', 'destination' => '[a-z]+']);
-
-    //Route::get('appearance/theme-footer', [ThemeFooterController::class, 'index'])->name('theme-footer');
-    //Route::put('appearance/theme/{slug}/footer', [ThemeFooterController::class, 'update'])->name('theme-footer.update')->where(['slug' => '[a-z0-9_-]+']);
-
-    Route::post('appearance/theme-footers/{footer_id}/{destination}/content', [ThemeFooterController::class, 'update_content'])->where(['footer_id' => '[0-9]+', 'destination' => '[a-z0-9_-]+']);
-    Route::post('appearance/theme-footers/{footer_id}/{destination}/{col}/sortable', [ThemeFooterController::class, 'sortable'])->name('theme-footer.sortable')->where(['footer_id' => '[0-9]+', 'destination' => '[a-z0-9_-]+', 'col' => '[0-9]+']);
-    Route::delete('appearance/theme-footers/{footer_id}/delete/{block_id}', [ThemeFooterController::class, 'delete_content'])->name('theme-footer.content.delete')->where(['footer_id' => '[0-9]+', 'block_id' => '[0-9]+']);
-    Route::get('appearance/theme-footers/{footer_id}/footer-block/{block_id}', [ThemeFooterController::class, 'block'])->name('theme-footer.block')->where(['footer_id' => '[0-9]+', 'block_id' => '[0-9]+']);
-    Route::put('appearance/theme-footers/{footer_id}/footer-block/{block_id}', [ThemeFooterController::class, 'block_update'])->where(['footer_id' => '[0-9]+', 'block_id' => '[0-9]+']);
-
-    // Themes
-    Route::resource('appearance/themes', ThemeController::class)->parameters(['themes' => 'id']);
-    Route::get('appearance/theme-set-active/{id}', [ThemeController::class, 'set_active'])->name('themes.set-active')->where('id', '[0-9]+');
-    Route::put('appearance/themes/{id}/{template_part}/update-template-part', [ThemeController::class, 'update_template_part'])->name('themes.update-template-part')->where(['id', '[0-9]+', 'template_part', '[a-zA-Z0-9_-]+']);
-
-    Route::post('appearance/theme/{id}/update-homepage-block', [ThemeHomepageController::class, 'update_block'])->name('theme.homepage.blocks.store')->where('id', '[0-9]+');
-    Route::delete('appearance/theme/{id}/delete-homepage-block', [ThemeHomepageController::class, 'delete_block'])->name('theme.homepage.blocks.delete')->where('id', '[a-zA-Z0-9_-]+');
-    Route::post('appearance/theme/sortable-homepage-blocks/{theme_id}', [ThemeHomepageController::class, 'sortable_blocks'])->name('theme.homepage.blocks.sortable')->where('theme_id', '[0-9]+');
-    Route::post('appearance/theme/{id}/update-logo', [ThemeController::class, 'update_logo'])->name('theme.logo')->where('id', '[0-9]+');
-    
-
-    // Theme Styles
-    Route::resource('appearance/theme-styles', ThemeStyleController::class)->parameters(['theme-styles' => 'id']);
-    Route::get('preview-style/{id}', [ThemeStyleController::class, 'preview_style'])->name('preview-style')->where('id', '[a-z0-9_-]+');
-
-    // Theme Buttons
-    Route::resource('appearance/theme-buttons', ThemeButtonController::class)->parameters(['theme-buttons' => 'id']);
-
-    // Theme custom code
-    Route::get('appearance/theme-custom-code', [ThemeController::class, 'custom_code'])->name('theme-custom-code');
-    Route::post('appearance/theme-custom-code', [ThemeController::class, 'update_custom_code']);
-    
-
-    //  admin role only
-    Route::middleware(LoggedIsAdminMiddleware::class)->group(function () {
-        // Languages
-        Route::resource('languages', LangController::class)->parameters(['languages' => 'id']);
-
+    //  admins only
+    Route::middleware('logged_is_admin')->group(function () {
         // Config
         Route::get('config/{tab}', [ConfigController::class, 'index'])->name('config')->where(['tab' => '[a-zA-Z0-9_-]+']);
         Route::post('config', [ConfigController::class, 'update_config'])->name('config.update');
         Route::post('config-lang', [ConfigController::class, 'update_config_lang'])->where(['tab' => '[a-zA-Z0-9_-]+'])->name('config-lang.update');
 
-        // Plugins
-        Route::get('plugins', [PluginController::class, 'index'])->name('plugins');
-        Route::post('plugins', [PluginController::class, 'update']);
+        // Modules
+        Route::get('modules', [ModuleController::class, 'index'])->name('modules');
+        Route::post('modules', [ModuleController::class, 'update']);
 
         // Trash
         Route::get('trash', [TrashController::class, 'index'])->name('trash');
@@ -150,26 +77,6 @@ Route::prefix('account/admin')->name('admin.')->group(function () {
         Route::get('trash/single-action/{module}/{id}', [TrashController::class, 'single_action'])->name('trash.single_action')->where('module', '[a-zA-Z0-9]+')->where('id', '[0-9]+');
         Route::get('trash/{module}', [TrashController::class, 'module'])->name('trash.module')->where('module', '[a-zA-Z0-9]+');
     });
-
-    // Blocks routes
-    Route::resource('blocks', BlockController::class)->parameters(['blocks' => 'id']);
-    Route::post('block-items/{type}/{block_id}', [BlockController::class, 'store_item'])->name('block.store-item')->where(['type' => '[a-zA-Z0-9]+', 'block_id' => '[0-9]+']);
-    Route::put('block-items/{type}/{block_id}', [BlockController::class, 'update_item'])->name('block.update-item')->where(['type' => '[a-zA-Z0-9]+', 'block_id' => '[0-9]+']);
-    Route::post('block-items/{type}/{block_id}/sortable', [BlockController::class, 'sortable_items'])->name('block.sortable-items')->where(['type' => '[a-zA-Z0-9]+', 'block_id' => '[0-9]+']);
-    Route::delete('block-items/{type}/{block_id}/{code}/delete', [BlockController::class, 'destroy_item'])->name('block.delete-item')->where(['type' => '[a-zA-Z0-9]+', 'block_id' => '[0-9]+', 'code' => '[0-9]+']);
-
-
-    // Template layouts
-    Route::resource('appearance/layouts', ThemeLayoutController::class)->names(['index' => 'theme.layouts', 'create' => 'theme.layouts.create', 'show' => 'theme.layouts.show'])->parameters(['layouts' => 'id']);
-    Route::post('appearance/layouts/{id}/sortable', [ThemeLayoutController::class, 'sortable'])->name('theme.layouts.sortable')->where('id', '[0-9]+');
-    Route::post('appearance/layouts/{id}/update', [ThemeLayoutController::class, 'update'])->name('theme.layouts.update')->where('id', '[0-9]+');
-
-    Route::get('appearance/layouts/{id}/content', [ThemeLayoutController::class, 'content'])->name('theme.layouts.content')->where(['id' => '[0-9]+']);
-    Route::post('appearance/layouts/{id}/content', [ThemeLayoutController::class, 'update_content'])->name('theme.layouts.content.new')->where('id', '[0-9]+');
-    Route::delete('appearance/layouts/{id}/content/delete/{block_id}', [ThemeLayoutController::class, 'delete_content'])->name('theme.layouts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
-    Route::get('appearance/layouts/block/{id}', [ThemeLayoutController::class, 'block'])->name('theme.layouts.block')->where('id', '[0-9]+');
-    Route::put('appearance/layouts/block/{id}', [ThemeLayoutController::class, 'block_update'])->where('id', '[0-9]+');
-
 
     // Other routes
     Route::get('ajax/{source}', [AjaxController::class, 'index'])->name('ajax')->where('source', '[a-z0-9_-]+');

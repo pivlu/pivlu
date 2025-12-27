@@ -95,8 +95,8 @@ class PostController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.posts.index',
-            'nav_section' => 'website',
-            'active_menu' => 'post_type_' . $post_type_id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type_id ?? null,
             'menu_section' => 'posts',
             'search_terms' => $search_terms,
             'search_status' => $search_status,
@@ -127,8 +127,8 @@ class PostController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.posts.create',
-            'nav_section' => 'website',
-            'active_menu' => 'post_type_' . $post_type_id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type_id ?? null,
             'post_type_id' => $post_type_id,
             'post_type' => $post_type ?? null,
 
@@ -240,8 +240,8 @@ class PostController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.posts.show',
-            'nav_section' => 'website',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'details',
             'post' => $post,
@@ -418,8 +418,8 @@ class PostController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.posts.content',
-            'nav_section' => 'website',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => 'posts',
             'post_menu_tab' => 'content',
 

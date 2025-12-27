@@ -12,7 +12,7 @@
         <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
     @endif
 
-    @include('admin.blocks.includes.block-header')
+    @include('pivlu::admin.blocks.includes.block-header')
 
     @php
         $block_content = json_decode($lang_content->content);

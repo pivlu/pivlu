@@ -21,6 +21,6 @@
     @endphp
 
     <div class="section @if ($block_settings->style_id ?? null) style_{{ $block_settings->style_id }} @endif" id="block-{{ $block->id }}">
-        @include('web.includes.blocks-switch', ['is_layout' => 0])
+        @include('pivlu::web.includes.blocks-switch', ['is_layout' => 0])
     </div>
 @endforeach

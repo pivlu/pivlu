@@ -86,11 +86,11 @@
     <td>
         <div class="d-grid gap-2">
 
-            @can('update', [App\Models\PostTaxonomy::class, $post_type->id])
+            @can('update', [Pivlu\Models\PostTaxonomy::class, $post_type->id])
                 <a href="{{ route('admin.post-taxonomies.show', ['id' => $post_taxonomy->id]) }}" class="btn btn-primary btn-sm mb-2">{{ __('Edit') }}</a>
             @endcan
 
-            @can('delete', [App\Models\PostTaxonomy::class, $post_type->id])
+            @can('delete', [Pivlu\Models\PostTaxonomy::class, $post_type->id])
                 <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post_taxonomy->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                 <div class="modal fade confirm-{{ $post_taxonomy->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -121,7 +121,7 @@
 @if (count($post_taxonomy->children) > 0)
 
     @foreach ($post_taxonomy->children as $post_taxonomy)
-        @include('admin.posts.includes.loops.taxonomies-loop', $post_taxonomy)
+        @include('pivlu::admin.posts.includes.loops.taxonomies-loop', $post_taxonomy)
     @endforeach
 
 @endif

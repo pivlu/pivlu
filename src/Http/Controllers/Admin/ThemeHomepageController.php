@@ -22,7 +22,7 @@
 namespace Pivlu\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use Pivlu\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Pivlu\Functions\BlockFunctions;
 use Pivlu\Models\Theme;
 use Pivlu\Models\Block;
@@ -36,7 +36,7 @@ class ThemeHomepageController extends Controller
      */
     public function update_block(Request $request)
     {
-        $theme = Theme::where('slug', $request->slug)->first();
+        $theme = Theme::find($request->id);
         if (!$theme) return redirect(route('admin.themes.index'));
 
         $last_pos = Block::where(['is_homepage_block' => 1, 'theme_id' => $theme->id])->orderByDesc('position')->value('position');

@@ -50,8 +50,8 @@ class ThemeController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.index',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'themes',
             'themes' => $themes,
         ]);
@@ -124,8 +124,8 @@ class ThemeController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.show',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'themes',
             'theme' => $theme,
             'theme_tab' => $theme_tab,

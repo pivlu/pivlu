@@ -17,7 +17,7 @@
 
 <div class="card">
 
-    @include('admin.posts.includes.menu-post')
+    @include('pivlu::admin.posts.includes.menu-post')
 
     <div class="card-header">
         

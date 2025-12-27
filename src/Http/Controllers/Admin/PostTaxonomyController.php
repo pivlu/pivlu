@@ -64,8 +64,8 @@ class PostTaxonomyController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.posts.taxonomies',
-            'nav_section' => 'website',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => $post_type_taxonomy->id ?? null,
             'count_taxonomies' => $count_taxonomies,
             'search_terms' => $search_terms,
@@ -98,8 +98,8 @@ class PostTaxonomyController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.posts.show-taxonomy',
-            'nav_section' => 'website',
-            'active_menu' => 'post_type_' . $post_type->id ?? null,
+            'active_menu' => 'website',
+            'active_submenu' => 'post_type_' . $post_type->id ?? null,
             'menu_section' => $post_type_taxonomy->id ?? null,
             'post_type_taxonomy_terms' => PostFunctions::get_post_type_taxonomies($post_type->id),
 

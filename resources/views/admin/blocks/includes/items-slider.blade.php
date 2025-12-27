@@ -9,7 +9,7 @@
             <div class="col-12 col-sm-7 col-md-6 order-md-2 order-last">
                 <div class="float-end">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-item"><i class="bi bi-plus-circle"></i> {{ __('Add new slide') }}</button>
-                    @include('admin.blocks.includes.modal-create-slider-item')
+                    @include('pivlu::admin.blocks.includes.modal-create-slider-item')
                 </div>
             </div>
         </div>

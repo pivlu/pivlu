@@ -40,8 +40,8 @@ class ThemeStyleController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.styles.index',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'styles',
             'styles' => $styles,
         ]);
@@ -98,8 +98,8 @@ class ThemeStyleController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.styles.show',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'styles',
             'style' => $style,
             'item' => $item,
@@ -114,7 +114,7 @@ class ThemeStyleController extends Controller
         $style = ThemeStyle::find($request->id);
         if (! $style) return redirect(route('admin.theme-styles.index'));
 
-        return view('admin.preview-style', [
+        return view('pivlu::admin.preview-style', [
             'style' => $style,
         ]);
     }

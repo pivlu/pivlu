@@ -19,12 +19,14 @@ return new class extends Migration
             $table->string('theme_name', 100);
             $table->unsignedBigInteger('style_id')->nullable();
             $table->unsignedBigInteger('menu_id')->nullable();
+            $table->unsignedBigInteger('footer_id')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('is_builder')->default(true);
             $table->timestamps();
             
             $table->foreign('style_id')->references('id')->on('pivlu_theme_styles')->nullOnDelete();
             $table->foreign('menu_id')->references('id')->on('pivlu_theme_menus')->nullOnDelete();
+            $table->foreign('footer_id')->references('id')->on('pivlu_theme_footers')->nullOnDelete();
         });
     }
 

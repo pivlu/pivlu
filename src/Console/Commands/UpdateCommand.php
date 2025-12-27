@@ -74,11 +74,11 @@ class UpdateCommand extends Command
         Artisan::call('vendor:publish --tag=migrations');
 
         $this->line('Update database tables');
-        Artisan::call('migrate');
+        Artisan::call('migrate --force');
 
         $this->line('Setup default language');
         SetupFunctions::check_default_language();
-        
+
         $this->line('Check default roles and permissions');
         SetupFunctions::check_default_roles_and_permissions();
 
@@ -104,7 +104,7 @@ class UpdateCommand extends Command
             ]);
             $admin_user->assignRole('admin');
         }
-        
+
         $this->line('Check default block types');
         SetupFunctions::check_default_block_types();
 
@@ -116,6 +116,12 @@ class UpdateCommand extends Command
 
         $this->line('Check default menu');
         SetupFunctions::check_default_menu();
+
+        $this->line('Check default theme');
+        SetupFunctions::check_default_theme();
+
+        $this->line('Check website default form and statuses');
+        SetupFunctions::check_form();
 
         $this->line('Check website settings');
         SetupFunctions::check_default_website_settings();

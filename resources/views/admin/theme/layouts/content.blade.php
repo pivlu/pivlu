@@ -1,4 +1,4 @@
-@include('admin.includes.trumbowyg-assets')
+@include('pivlu::admin.includes.trumbowyg-assets')
 
 <div class="page-title">
     <div class="row">
@@ -19,7 +19,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
         <div class="row">
@@ -69,7 +69,7 @@
         @endif
 
         @if ($item->has_top_section == '1')
-            @include('admin.theme.layouts.includes.edit-layout-top')
+            @include('pivlu::admin.theme.layouts.includes.edit-layout-top')
             <div class="mb-5"></div>
         @endif
 
@@ -77,7 +77,7 @@
         @if ($item->sidebar == 'left')
             <div class="row">
                 <div class="col-md-6 col-lg-5">
-                    @include('admin.theme.layouts.includes.edit-layout-sidebar')
+                    @include('pivlu::admin.theme.layouts.includes.edit-layout-sidebar')
                 </div>
 
                 <div class="col-md-6 col-lg-7">
@@ -102,14 +102,14 @@
                 </div>
 
                 <div class="col-md-6 col-lg-5">
-                    @include('admin.theme.layouts.includes.edit-layout-sidebar')
+                    @include('pivlu::admin.theme.layouts.includes.edit-layout-sidebar')
                 </div>
             </div>
             <div class="mb-5"></div>
         @endif
 
         @if ($item->has_bottom_section == '1')
-            @include('admin.theme.layouts.includes.edit-layout-bottom')
+            @include('pivlu::admin.theme.layouts.includes.edit-layout-bottom')
         @endif
 
     </div>

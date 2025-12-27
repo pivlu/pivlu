@@ -23,7 +23,7 @@
         $block_content = json_decode($lang_content->content);        
     @endphp
 
-    @include('admin.blocks.includes.block-header')
+    @include('pivlu::admin.blocks.includes.block-header')
 
     <div class="row">
         <div class="form-group col-md-3 col-sm-6">

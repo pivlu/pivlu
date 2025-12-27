@@ -284,7 +284,7 @@
                     <div class="form-group col-md-6 col-12">
                         <label>{{ __('Publish status') }} </label>
                         <select class="form-select form-select-lg" name="status">
-                            @can('publish', [App\Models\Post::class, $post, $post_type->id])
+                            @can('publish', [Pivlu\Models\Post::class, $post, $post_type->id])
                                 <option @if ($post->status == 'published') selected @endif value="published">{{ __('Published') }}</option>
                             @endcan
                             <option @if ($post->status == 'draft') selected @endif value="draft">{{ __('Save as draft') }}</option>

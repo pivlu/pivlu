@@ -7,7 +7,7 @@
     <title>{{ $tag->tag }}</title>
     <meta name="description" content="{{ $tag->tag }}">
 
-    @include('web.global.head')
+    @include('pivlu::web.global.head')
 </head>
 
 <body class="style_global">
@@ -15,9 +15,9 @@
     <!-- Start Main Content -->
     <div class="content">
 
-        @include('web.global.navigation')
+        @include('pivlu::web.global.navigation')
 
-        @include('web.includes.posts-search')
+        @include('pivlu::web.includes.posts-search')
 
         <div class="container-xxl mt-4 style_posts">
 
@@ -39,7 +39,7 @@
                 {!! $tag->tag ?? null !!} ({{ $posts->total() }} {{ __('items') }})
             </div>
 
-            @include('web.includes.posts-listing', ['listing_section' => 'tags'])            
+            @include('pivlu::web.includes.posts-listing', ['listing_section' => 'tags'])            
 
             {{ $posts->links() }}
         </div>
@@ -47,7 +47,7 @@
     </div>
     <!-- End Main Content -->
 
-    @include('web.global.footer')
+    @include('pivlu::web.global.footer')
 
 </body>
 

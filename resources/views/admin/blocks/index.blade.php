@@ -1,5 +1,5 @@
-@include('admin.includes.trumbowyg-assets')
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.trumbowyg-assets')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -17,7 +17,7 @@
 
 <div class="card">
 
-    @include('admin.blocks.includes.menu-blocks')
+    @include('pivlu::admin.blocks.includes.menu-blocks')
 
     <div class="card-body">
 

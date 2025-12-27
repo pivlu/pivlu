@@ -117,6 +117,9 @@ class InstallCommand extends Command
         $this->line('Check default theme');
         SetupFunctions::check_default_theme();
         
+        $this->line('Check website default form and statuses');
+        SetupFunctions::check_form();
+        
         $this->line('Check website settings');
         SetupFunctions::check_default_website_settings();
 

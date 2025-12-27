@@ -25,6 +25,8 @@ use Pivlu\Models\Config;
 use Pivlu\Models\Block;
 use Pivlu\Models\BlockContent;
 use Pivlu\Models\ThemeFooterBlock;
+use Pivlu\Models\ThemeLayoutBlock;
+use Pivlu\Models\ThemeLayoutBlockContent;
 
 
 // Get blocks for homepage

@@ -11,7 +11,7 @@
     @if ($config->favicon ?? null)
         <link rel="shortcut icon" href="{{ image($config->favicon) }}">
     @else
-        <link rel="shortcut icon" href="{{ config('nura.cdn') }}/img/favicon.png">
+        <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
     @endif
 
     <!-- Bootstrap CSS-->
@@ -39,7 +39,7 @@
     <!-- Start Main Content -->
     <div class="content">
 
-        @include('web.global.navigation')
+        @include('pivlu::web.global.navigation')
 
         <div class="container-xxl">
 
@@ -69,7 +69,7 @@
     <!-- End Main Content -->
 
 
-    @include('web.global.footer')
+    @include('pivlu::web.global.footer')
 
 </body>
 

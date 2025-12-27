@@ -4,6 +4,6 @@
 {{ $level = $level + 1 }}	
 @foreach($cat->active_children as $cat)
 	
-	@include('admin.posts.includes.loops.active-categories-edit-select-loop', $cat)
+	@include('pivlu::admin.posts.includes.loops.active-categories-edit-select-loop', $cat)
 	@endforeach
 @endif

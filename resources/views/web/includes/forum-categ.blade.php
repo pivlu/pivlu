@@ -37,7 +37,7 @@
 </nav>
 
 @if ($has_subcategories ?? null)
-    @include('web.includes.forum-subcategories')
+    @include('pivlu::web.includes.forum-subcategories')
 @endif
 
 @if ($categ_topics->total() > 0)

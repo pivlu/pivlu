@@ -21,7 +21,7 @@
 
     <div class="card-body">
 
-        @include('admin.accounts.includes.menu-account')
+        @include('pivlu::admin.accounts.includes.menu-account')
         <div class="mb-3"></div>
 
         @if ($errors->any())
@@ -50,7 +50,7 @@
 
         <div class="float-end">
             <a class="btn btn-primary mb-3" href="#" data-bs-toggle="modal" data-bs-target="#add-account-note"><i class="bi bi-plus-square" aria-hidden="true"></i> {{ __('Create internal note') }}</a>
-            @include('admin.accounts.includes.modal-create-account-note')
+            @include('pivlu::admin.accounts.includes.modal-create-account-note')
         </div>
 
         <div class="table-responsive-md">

@@ -1,4 +1,4 @@
-@include('admin.includes.color-picker')
+@include('pivlu::admin.includes.color-picker')
 
 <div class="page-title">
     <div class="row">
@@ -18,7 +18,7 @@
 
 <div class="card">
 
-    @include('admin.theme.includes.menu-themes')
+    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
 
@@ -31,7 +31,7 @@
             <div class="col-12 col-sm-7 col-md-6 order-md-2 order-last">
                 <div class="float-end">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-layout"><i class="bi bi-plus-circle"></i> {{ __('Create layout') }}</button>
-                    @include('admin.theme.layouts.includes.modal-create-layout')
+                    @include('pivlu::admin.theme.layouts.includes.modal-create-layout')
                 </div>
             </div>
 
@@ -136,7 +136,7 @@
                             <td>
                                 <div class="d-grid gap-2">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#update-{{ $layout->id }}" class="btn btn-primary btn-sm mb-2">{{ __('Update') }}</a>
-                                    @include('admin.theme.layouts.includes.modal-update-layout')
+                                    @include('pivlu::admin.theme.layouts.includes.modal-update-layout')
 
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $layout->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
                                 </div>

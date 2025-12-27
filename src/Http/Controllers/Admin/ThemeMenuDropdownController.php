@@ -43,7 +43,7 @@ class ThemeMenuDropdownController extends Controller
 
         $links = ThemeMenuItem::where(['menu_id' => $menu->id, 'parent_id' => $request->parent_id])->orderBy('position')->get();
 
-        return view('admin.index', [
+        return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.menus.index-dropdown',
             'active_menu' => 'website',
             'active_submenu' => 'themes',

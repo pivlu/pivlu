@@ -6,20 +6,16 @@
                     <i class="bi bi-globe"></i> {{ __('Website') }}
                 @break
 
-                @case('workspaces')
-                    <i class="bi bi-person-workspace"></i> {{ __('Workspaces') }}
-                @break
-
-                @case('tickets')
-                    <i class="bi bi-ticket"></i> {{ __('Support tickets') }}
-                @break
-
                 @case('accounts')
                     <i class="bi bi-people"></i> {{ __('Accounts') }}
                 @break
 
                 @case('trash')
                     <i class="bi bi-trash"></i> {{ __('Trash') }}
+                @break
+
+                @case('settings')
+                    <i class="bi bi-gear"></i> {{ __('Settings') }}
                 @break
 
                 @default
@@ -29,15 +25,13 @@
         <ul class="dropdown-menu w-100">
             <li><a class="dropdown-item" href="{{ route('admin') }}"><i class="bi bi-grid"></i> <span>{{ __('Dashboard') }}</span></a></li>
             <li><a class="dropdown-item" href="{{ route('admin.website.dashboard') }}"><i class="bi bi-globe"></i> <span>{{ __('Website') }}</span></a></li>
-            <li><a class="dropdown-item" href="{{ route('admin.workspaces.index') }}"><i class="bi bi-person-workspace"></i> <span>{{ __('Workspaces') }}</span></a></li>
-            <li><a class="dropdown-item" href="{{ route('admin.tickets') }}"><i class="bi bi-ticket"></i> <span>{{ __('Support tickets') }}</span></a></li>
             <li>
                 <hr class="dropdown-divider">
             </li>
             <li><a class="dropdown-item" href="{{ route('admin.accounts.index') }}"><i class="bi bi-people"></i> <span>{{ __('Accounts') }}</span></a></li>
-            <li><a class="dropdown-item" href="{{ route('admin') }}"><i class="bi bi-gear"></i> <span>{{ __('Settings') }}</span></a></li>
+            <li><a class="dropdown-item" href="{{ route('admin.config', ['tab' => 'general']) }}"><i class="bi bi-gear"></i> <span>{{ __('Settings') }}</span></a></li>
             <li><a class="dropdown-item" href="{{ route('admin.trash') }}"><i class="bi bi-trash"></i> <span>{{ __('Trash') }}</span></a></li>
-            <li><a class="dropdown-item" href="{{ route('admin') }}"><i class="bi bi-person"></i> <span>{{ __('My account') }}</span></a></li>
+            <li><a class="dropdown-item" href="{{ route('admin.accounts.show', ['id' => Auth::user()->id]) }}"><i class="bi bi-person"></i> <span>{{ __('My account') }}</span></a></li>
         </ul>
     </div>
 </li>

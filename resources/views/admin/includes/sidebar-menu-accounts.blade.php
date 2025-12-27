@@ -6,7 +6,7 @@
 </li>
 
 <li class="sidebar-item @if (($active_menu ?? null) == 'roles') active @endif">
-    <a href="{{ route('admin.accounts.roles') }}" class='sidebar-link'>
+    <a href="{{ route('admin.roles.index') }}" class='sidebar-link'>
         <i class="bi bi-person-fill-lock"></i>
         <span>{{ __('Roles and permissions') }}</span>
     </a>

@@ -41,9 +41,9 @@ class PostTypeController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.post-types.index',
-            'nav_section' => 'website',
             'active_menu' => 'config',
-            'active_submenu' => 'post-types',
+            'active_submenu' => 'website',
+            'active_tab' => 'post-types',
             'post_types' => $post_types,
         ]);
     }
@@ -59,9 +59,9 @@ class PostTypeController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.post-types.show',
-            'nav_section' => 'website',
             'active_menu' => 'config',
-            'active_submenu' => 'post-types',
+            'active_submenu' => 'website',
+            'active_tab' => 'post-types',
             'post_type' => $post_type,
         ]);
     }

@@ -28,6 +28,9 @@ use Pivlu\Models\Block;
 use Pivlu\Models\BlockContent;
 use Pivlu\Models\Post;
 use Pivlu\Models\PostType;
+use Pivlu\Models\Form;
+use Pivlu\Models\FormData;
+use Pivlu\Models\FormFieldData;
 
 class TrashController extends Controller
 {
@@ -35,7 +38,7 @@ class TrashController extends Controller
     {
         $rbAccountsCount = User::onlyTrashed()->count();
         $rbPostsCount = Post::onlyTrashed()->count();
-        //$rbFormsCount = FormData::onlyTrashed()->count();
+        $rbFormsCount = FormData::onlyTrashed()->count();
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.trash.index',
@@ -133,7 +136,7 @@ class TrashController extends Controller
 
             $items = $items->orderByDesc('id')->paginate(25);
 
-            $forms = BlockComponent::where('type', 'form')->orderBy('label')->orderByDesc('id')->get();
+            $forms = Form::orderBy('label')->orderByDesc('id')->get();
         }
 
         return view('pivlu::admin.index', [

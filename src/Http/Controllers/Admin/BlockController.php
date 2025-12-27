@@ -23,14 +23,13 @@ namespace Pivlu\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use DB;
 use Pivlu\Models\Block;
 use Pivlu\Models\Language;
 use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeButton;
+use Pivlu\Models\Form;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\BlockFunctions;
-use Pivlu\Models\BlockComponent;
 
 class BlockController extends Controller
 {
@@ -42,42 +41,27 @@ class BlockController extends Controller
     public function show(Request $request)
     {
 
-        $block = Block::with('block_type')->find($request->id);
+        $block = Block::with('block_type', 'default_language_content')->find($request->id);
         if (!$block) return redirect(route('admin'));
-
-        $content_langs = DB::table('pivlu_languages')
-            ->select(
-                'pivlu_languages.*',
-                DB::raw('(SELECT content FROM pivlu_blocks_content WHERE pivlu_blocks_content.lang_id = pivlu_languages.id AND block_id = ' . $block->id . ') as block_content'),
-                DB::raw('(SELECT header FROM pivlu_blocks_content WHERE pivlu_blocks_content.lang_id = pivlu_languages.id AND block_id = ' . $block->id . ') as block_header')
-            )
-            ->where('status', '!=', 'disabled')
-            ->orderByDesc('is_default')
-            ->orderBy('status')
-            ->get();
 
         if ($request->referer) $referer = $request->referer;
         else $referer = request()->headers->get('referer');
 
-        if ($block->block_type->plugin ?? null) $view_file = 'forms::admin.blocks.' . $block->block_type->type;
-        else $view_file = 'admin.blocks.block';
-
-        return view('admin.index', [
-            'view_file' => $view_file,
+        return view('pivlu::admin.index', [
+            'view_file' => 'admin.blocks.block',
             'active_menu' => 'website',
             'active_submenu' => $block->module,
             'block' => $block,
-            'content_langs' => $content_langs,
+            'content_array' => json_decode($block->content->content ?? null, true) ?? [],
             'langs' => Language::get_languages(),
             'referer' => $referer,
             'font_sizes' => ThemeFunctions::font_sizes(),
             'styles' => ThemeStyle::orderBy('label')->get(),
-            'components_form' =>  BlockComponent::where('type', 'form')->orderByDesc('id')->get(),
-            'components_gallery' =>  BlockComponent::where('type', 'gallery')->orderByDesc('active')->orderBy('label')->get(),
-            'components_slider' =>  BlockComponent::where('type', 'slider')->orderByDesc('active')->orderBy('label')->get(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
+            'forms' => Form::where('active', 1)->orderBy('label')->get(), // forms (used in form block)
         ]);
     }
+
 
 
     /**

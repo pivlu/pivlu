@@ -3,7 +3,7 @@
 @if (count($post_taxonomy_item->children) > 0)
 
 	@foreach($post_taxonomy_item->children as $post_taxonomy_item)	
-	@include('admin.posts.includes.loops.taxonomies-add-select-loop', $post_taxonomy_item)
+	@include('pivlu::admin.posts.includes.loops.taxonomies-add-select-loop', $post_taxonomy_item)
 	@endforeach
 
 @endif

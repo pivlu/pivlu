@@ -7,7 +7,7 @@
     <title>{{ $user->name }}</title>
     <meta name="description" content="{{ $user->name }} - {{ __('profile page') }}">
 
-    @include('web.global.head')
+    @include('pivlu::web.global.head')
 </head>
 
 <body class="style_global">
@@ -15,7 +15,7 @@
     <!-- Start Main Content -->
     <div class="content">
 
-        @include('web.global.navigation')
+        @include('pivlu::web.global.navigation')
 
         <div class="container-xxl mt-5">
 
@@ -92,7 +92,7 @@
     </div>
     <!-- End Main Content -->
 
-    @include('web.global.footer')
+    @include('pivlu::web.global.footer')
 
 </body>
 

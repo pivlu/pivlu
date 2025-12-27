@@ -43,8 +43,8 @@ class ThemeFooterController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.footers.index',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'footers',
             'footers' => $footers,
         ]);
@@ -87,8 +87,8 @@ class ThemeFooterController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.footers.show',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'footers',
             'footer' => $footer,
         ]);
@@ -153,8 +153,8 @@ class ThemeFooterController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.footers.content',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'footers',
             'footer' => $footer,
             'destination' => $destination,

@@ -42,8 +42,8 @@ class ThemeMenuController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.menus.index',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'website',
+            'active_submenu' => 'themes',
             'nav_tab' => 'menus',
             'menus' => $menus,
         ]);

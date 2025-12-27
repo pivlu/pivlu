@@ -8,7 +8,7 @@
                 @endphp
 
                 <div class="section mb-3" id="footer-block-{{ $block->id }}">
-                    @include('web.includes.footer-blocks-switch')
+                    @include('pivlu::web.includes.footer-blocks-switch')
                 </div>
             @endforeach
         </div>

@@ -1,7 +1,8 @@
 <nav class="nav nav-tabs mb-2" id="myTab" role="tablist">
-    <a class="nav-item nav-link @if ($active_tab == 'website') active @endif" href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
-    <a class="nav-item nav-link @if ($active_tab == 'langs') active @endif" href="{{ route('admin.languages.index') }}"><i class="bi bi-flag"></i> {{ __('Language and locale') }}</a>
-    <a class="nav-item nav-link @if ($active_tab == 'registration') active @endif" href="{{ route('admin.config', ['tab' => 'registration']) }}"><i class="bi bi-person-plus-fill"></i> {{ __('Registration') }}</a>
+    <a class="nav-item nav-link @if (($active_tab ?? null) == 'website') active @endif" href="{{ route('admin.config', ['tab' => 'website']) }}"><i class="bi bi-gear"></i> {{ __('Website settings') }}</a>
+    <a class="nav-item nav-link @if (($active_tab ?? null) == 'post-types') active @endif" href="{{ route('admin.post-types.index') }}"><i class="bi bi-check2-square"></i> {{ __('Post types') }}</a>
+    <a class="nav-item nav-link @if (($active_tab ?? null) == 'langs') active @endif" href="{{ route('admin.languages.index') }}"><i class="bi bi-flag"></i> {{ __('Language and locale') }}</a>
+    <a class="nav-item nav-link @if (($active_tab ?? null) == 'registration') active @endif" href="{{ route('admin.config', ['tab' => 'registration']) }}"><i class="bi bi-person-plus-fill"></i> {{ __('Registration') }}</a>
 </nav>
 
 @if (($config->website_disabled ?? null) || ($config->website_maintenance_enabled ?? null))

@@ -59,7 +59,7 @@
                 $block_extra = unserialize($block['extra']);
             @endphp
             <div class="section @if ($block_extra['style_id'] ?? null) style_{{ $block_extra['style_id'] }} @endif" id="block-{{ $block['id'] }}">
-                @include('web.includes.blocks-switch')
+                @include('pivlu::web.includes.blocks-switch')
             </div>
         @endforeach
     </div>
@@ -150,7 +150,7 @@
 
     @if (($config->posts_comments_enabled ?? null) && !($post->disable_comments ?? null))
         @if ($config->posts_comments_enabled ?? null)
-            @include('web.includes.post-comments')
+            @include('pivlu::web.includes.post-comments')
         @endif
         @if ($config->posts_comments_fb_enabled ?? null)
             <div class="fb-comments" data-href="{{ $post->url }}" data-width="100%" data-numposts="10"></div>

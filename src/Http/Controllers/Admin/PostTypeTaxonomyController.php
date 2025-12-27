@@ -48,9 +48,9 @@ class PostTypeTaxonomyController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.post-types.taxonomies',
-            'nav_section' => 'website',
             'active_menu' => 'config',
-            'active_submenu' => 'post-types',
+            'active_submenu' => 'website',
+            'active_tab' => 'post-types',
             'post_type' => $post_type,
             'post_type_taxonomies' => $post_type_taxonomies,
         ]);
@@ -74,9 +74,9 @@ class PostTypeTaxonomyController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.post-types.show-taxonomy',
-            'nav_section' => 'website',
             'active_menu' => 'config',
-            'active_submenu' => 'post-types',
+            'active_submenu' => 'website',
+            'active_tab' => 'post-types',
             'post_type_taxonomy' => $post_type_taxonomy,
             'post_type' => $post_type,
         ]);

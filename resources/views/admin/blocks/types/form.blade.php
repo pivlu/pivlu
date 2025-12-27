@@ -54,7 +54,7 @@
         $block_content = json_decode($lang_content->content);
     @endphp
 
-    @include('admin.blocks.includes.block-header')
+    @include('pivlu::admin.blocks.includes.block-header')
 
     <div class="form-group col-md-3 col-sm-6 mt-2">
         <label>{{ __('Submit button text') }}</label>

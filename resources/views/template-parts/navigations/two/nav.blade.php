@@ -1,6 +1,6 @@
-<div class="style_{{ App\Models\ThemeConfig::get_template_part_config_for_active_theme('nav', 'nav2_style_id') }}">
+<div class="style_{{ Pivlu\Models\ThemeConfig::get_template_part_config_for_active_theme('nav', 'nav2_style_id') }}">
     @if (($tpl_theme_config->logo_align ?? null) == 'text-center mx-auto')
-        <div class="container-xxl d-flex justify-content-center style_{{ App\Models\ThemeConfig::get_template_part_config_for_active_theme('nav', 'nav2_style_id') }}">
+        <div class="container-xxl d-flex justify-content-center style_{{ Pivlu\Models\ThemeConfig::get_template_part_config_for_active_theme('nav', 'nav2_style_id') }}">
             <div class="row">
                 <div class="logo align-center mt-2 mb-2">
                     @if (!($tpl_theme_config->tpl_navbar_hide_logo ?? null))

@@ -62,7 +62,7 @@
                     @endif
 
                     <div class="float-end ms-3">
-                        @can('create', App\Models\User::class)
+                        @can('create', Pivlu\Models\User::class)
                             <a class="btn btn-primary" href="#" id="createAccount" data-bs-toggle="modal" data-bs-target="#create-account">
                                 <i class="bi bi-plus-circle"></i> {{ __('Create account') }}
                             </a>

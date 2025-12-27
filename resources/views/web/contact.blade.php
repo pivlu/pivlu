@@ -6,7 +6,7 @@
     <title>{{ $config_lang->contact_meta_title ?? 'Contact' }}</title>
     <meta name="description" content="{{ $config_lang->contact_meta_description ?? 'Contact' }}">
 
-    @include('web.global.head')
+    @include('pivlu::web.global.head')
 
     @if ($config->contact_form_recaptcha ?? null)
         <script src="https://www.google.com/recaptcha/api.js"></script>
@@ -21,7 +21,7 @@
 
     <!-- Start Main Content -->
     <div class="content">
-        @include('web.global.navigation')
+        @include('pivlu::web.global.navigation')
 
         @if ($config->contact_map_enabled ?? null)
             @if ($config->contact_map_address ?? null)
@@ -180,7 +180,7 @@
     </div>
     <!-- End Main Content -->
 
-    @include('web.global.footer')
+    @include('pivlu::web.global.footer')
 
 </body>
 

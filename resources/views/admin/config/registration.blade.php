@@ -44,7 +44,7 @@
             </div>
         @endif
 
-        <form method="post">
+        <form method="post"  action="{{ route('admin.config.update') }}">
             @csrf
 
             <div class="row">

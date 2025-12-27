@@ -3,7 +3,7 @@
 @if (count($categ->active_children) > 0)
 
 	@foreach($categ->active_children as $categ)
-	@include('admin.posts.includes.loops.categories-add-select-loop', $categ)
+	@include('pivlu::admin.posts.includes.loops.categories-add-select-loop', $categ)
 	@endforeach
 
 @endif

@@ -28,7 +28,7 @@
                                         {{ __('Are you sure you want to remove this block from this post? Block content will be deleted.') }}
                                     </div>
                                     <div class="modal-footer">
-                                        <form method="POST" action="{{ route('admin.theme.homepage.blocks.delete', ['slug' => $theme->slug, 'block_id' => $block->id]) }}">
+                                        <form method="POST" action="{{ route('admin.theme.homepage.blocks.delete', ['id' => $theme->id, 'block_id' => $block->id]) }}">
                                             {{ csrf_field() }}
                                             {{ method_field('DELETE') }}
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>

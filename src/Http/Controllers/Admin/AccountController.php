@@ -80,7 +80,6 @@ class AccountController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.accounts.index',
-            'nav_section' => 'accounts',
             'active_menu' => 'accounts',
             'active_submenu' => 'accounts',
             'search_terms' => $search_terms,
@@ -216,10 +215,6 @@ class AccountController extends Controller
 
         if ($validator->fails()) return redirect(route('admin.accounts.show', ['id' => $request->id]))->withErrors($validator)->withInput();
 
-        if ($request->has('email_verified_at'))
-            if ($user->email_verified_at) $email_verified_at = $user->email_verified_at;
-            else $email_verified_at = now();
-        else $email_verified_at = null;
 
         User::where('id', $request->id)->update([
             'role_group' => $request->role_group,
@@ -227,8 +222,15 @@ class AccountController extends Controller
             'username' => Str::slug($request->username, '.'),
             'email' => $request->email,
             'blocked_at' => $request->has('blocked_at') ? now() : null,
-            'email_verified_at' => $email_verified_at,
         ]);
+
+        if ($request->id != Auth::user()->id) {
+            if ($request->has('email_verified_at'))
+                if ($user->email_verified_at) $email_verified_at = $user->email_verified_at;
+                else $email_verified_at = now();
+            else $email_verified_at = null;
+            User::where('id', $request->id)->update(['email_verified_at' => $email_verified_at]);
+        }
 
         // roles
         if ($request->role_group == 'internal') {

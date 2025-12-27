@@ -1,7 +1,7 @@
 <div class="container-xxl">
     <div class="block">
 
-        @include('web.includes.block-header')
+        @include('pivlu::web.includes.block-header')
 
         @if ($session_msg = Session::get('success'))
             <div class="alert alert-success my-3">

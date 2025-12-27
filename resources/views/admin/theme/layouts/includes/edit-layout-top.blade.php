@@ -4,7 +4,7 @@
             <div class="fw-bold fs-5">{{ __('Top content') }}</div>
             <a class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#addBlock-top"><i class="bi bi-plus-circle"></i>
                 {{ __('Add content block') }}</a>
-            @include('admin.theme.layouts.includes.modal-create-layout-block', ['section' => 'top'])
+            @include('pivlu::admin.theme.layouts.includes.modal-create-layout-block', ['section' => 'top'])
         </div>
 
         @foreach (layout_blocks($item->id, 'top', $show_hidden = 1) as $block)
@@ -44,7 +44,7 @@
                 @endif
 
                 <b>
-                    @include('admin.includes.block_type_label', ['type' => $block->type])
+                    @include('pivlu::admin.includes.block_type_label', ['type' => $block->type])
                 </b>
 
                 @if ($block->updated_at)

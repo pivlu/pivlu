@@ -4,6 +4,6 @@
     @endphp
 
     <div class="section" id="footer-block-{{ $block->id }}">
-        @include('web.includes.footer-blocks-switch')
+        @include('pivlu::web.includes.footer-blocks-switch')
     </div>
 @endforeach

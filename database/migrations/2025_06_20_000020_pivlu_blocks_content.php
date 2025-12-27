@@ -30,7 +30,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_blocks_content', function (Blueprint $table) {
+        Schema::create('pivlu_block_content', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('block_id');
             $table->unsignedBigInteger('lang_id')->nullable();
@@ -47,6 +47,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_blocks_content');
+        Schema::dropIfExists('pivlu_block_content');
     }
 };

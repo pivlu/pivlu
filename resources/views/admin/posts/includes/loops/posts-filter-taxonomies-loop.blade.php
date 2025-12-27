@@ -7,6 +7,6 @@
 
 @if (count($taxonomy_item->children) > 0)
     @foreach ($taxonomy_item->children as $taxonomy_item)
-        @include('admin.posts.includes.loops.posts-filter-taxonomies-loop', $taxonomy_item)
+        @include('pivlu::admin.posts.includes.loops.posts-filter-taxonomies-loop', $taxonomy_item)
     @endforeach
 @endif

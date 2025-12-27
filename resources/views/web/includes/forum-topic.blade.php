@@ -57,9 +57,9 @@
         href="{{ route('profile', ['username' => $topic->author->username]) }}">{{ $topic->author->name }}</a></div>
 
 <div class="card card-forum mb-4">
-    @include('web.includes.forum-topic-header')
+    @include('pivlu::web.includes.forum-topic-header')
 
-    @include('web.includes.forum-topic-body')
+    @include('pivlu::web.includes.forum-topic-body')
 </div>
 
 <div class="mb-3"></div>
@@ -67,10 +67,10 @@
 @foreach ($posts as $post)
     <div class="card card-forum mb-4">
 
-        @include('web.includes.forum-post-header')
+        @include('pivlu::web.includes.forum-post-header')
 
         <div class="card-body @if ($post->count_best_answer > 0 && $loop->index == 0) forum-post-best-answer @endif">
-            @include('web.includes.forum-post-body')
+            @include('pivlu::web.includes.forum-post-body')
         </div>
     </div>
 @endforeach

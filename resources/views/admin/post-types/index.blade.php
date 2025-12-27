@@ -14,6 +14,8 @@
 
 <div class="card">
 
+    @include('pivlu::admin.config.includes.menu-config-website')
+
     <div class="card-header">
 
         <div class="float-end">
@@ -25,8 +27,6 @@
             {{ __('Post types') }}
         </div>
     </div>
-
-
 
     <div class="card-body">
 
@@ -164,7 +164,8 @@
                                                         {{ __('Are you sure you want to move this custom post type to trash?') }}
 
                                                         <div class="mt-2 fw-bold">
-                                                            <i class="bi bi-info-circle"></i> {{ __('The content items of this post type will be moved to trash. You can recover them or permanently delete from trash section.') }}
+                                                            <i class="bi bi-info-circle"></i>
+                                                            {{ __('The content items of this post type will be moved to trash. You can recover them or permanently delete from trash section.') }}
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">

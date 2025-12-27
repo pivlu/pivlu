@@ -10,7 +10,7 @@
                 $footer_columns = $footer->footer_columns ?? 1;
             @endphp
 
-            @include("web.layouts.footer-{$footer_columns}-col", ['destination' => 'primary'])
+            @include("pivlu::web.layouts.footer-{$footer_columns}-col", ['destination' => 'primary'])
         </div>
     </div>
 
@@ -23,7 +23,7 @@
                     $footer2_columns = $footer->footer2_columns ?? 1;
                 @endphp
 
-                @include("web.layouts.footer-{$footer2_columns}-col", ['destination' => 'secondary'])
+                @include("pivlu::web.layouts.footer-{$footer2_columns}-col", ['destination' => 'secondary'])
             </div>
         </div>
     @endif
@@ -53,7 +53,7 @@
         $popup_content = str_replace(["\r", "\n", '<br>'], '', $popup_content);
 
     @endphp
-    <script src="{{ config('nura.cdn') }}/js/cookies.js"></script>
+    <script src="{{ asset('assets/js/cookies.js') }}"></script>
     <script>
         var options = {
             title: '{{ $config->$popup_title_key ?? __('Accept terms') }}',

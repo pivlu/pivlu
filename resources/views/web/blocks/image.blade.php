@@ -1,7 +1,7 @@
 @if ($block_content ?? null)
     <div class="block text-center">
 
-        @include('web.includes.block-header')
+        @include('pivlu::web.includes.block-header')
 
         @if ($block_content->media_id ?? null)
             @if ($block_content->url)

@@ -4,7 +4,7 @@
             <div class="fw-bold fs-5">{{ __('Sidebar content') }}</div>
             <a class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#addBlock-sidebar"><i class="bi bi-plus-circle"></i>
                 {{ __('Add content block') }}</a>
-            @include('admin.theme.layouts.includes.modal-create-layout-sidebar-block', ['section' => 'sidebar'])
+            @include('pivlu::admin.theme.layouts.includes.modal-create-layout-sidebar-block', ['section' => 'sidebar'])
         </div>
 
         @foreach (layout_blocks($item->id, 'sidebar', $show_hidden = 1) as $block)
@@ -44,7 +44,7 @@
                 @endif
 
                 <b>
-                    @include('admin.includes.block_type_label', ['type' => $block->type])
+                    @include('pivlu::admin.includes.block_type_label', ['type' => $block->type])
                 </b>
 
                 @if ($block->updated_at)

@@ -37,7 +37,7 @@
 
             <div class="col-12 col-sm-12 col-md-6 order-md-2 order-last">
                 <div class="float-end">
-                    @can('create', [App\Models\PostTaxonomy::class, $post_type->id])
+                    @can('create', [Pivlu\Models\PostTaxonomy::class, $post_type->id])
                         <span class="float-end"><button data-bs-toggle="modal" data-bs-target="#create-taxonomy" class="btn btn-primary"><i class="bi bi-plus-circle"></i>
                                 @if ($post_type == 'post')
                                     {{ __('Create category') }}

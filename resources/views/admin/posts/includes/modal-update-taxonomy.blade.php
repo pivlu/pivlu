@@ -85,7 +85,7 @@ debug_backtrace() || die('Direct access not permitted');
                                         <option value="">{{ __('Root (no parent)') }}</option>
 
                                         @foreach ($items as $taxonomy_item)
-                                            @include('admin.posts.includes.loops.taxonomies-add-select-loop', $taxonomy_item)
+                                            @include('pivlu::admin.posts.includes.loops.taxonomies-add-select-loop', $taxonomy_item)
                                         @endforeach
                                     </select>
                                 </div>
