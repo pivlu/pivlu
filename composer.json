@@ -2,7 +2,6 @@
    "name": "pivlu/pivlu",
    "description": "Pivlu: Open source CMS and Website Builder.",
    "type": "library",
-   "version": "2.1.0",
    "authors": [
       {
          "name": "Chimilevschi Iosif-Gabriel",
