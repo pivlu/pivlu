@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostTypeTaxonomyContent extends Model
 {
@@ -41,5 +42,35 @@ class PostTypeTaxonomyContent extends Model
     public function post_type_taxonomy()
     {
         return $this->belongsTo(PostTypeTaxonomy::class, 'post_type_taxonomy_id');
+    }
+
+    public function url(): Attribute
+    {
+        $post_type_taxonomy = PostTypeTaxonomy::find($this->post_type_taxonomy_id);
+        if (!$post_type_taxonomy) return new Attribute(
+            get: fn() => null
+        );
+
+        $post_type = PostType::find($post_type_taxonomy->post_type_id);        
+        if (!$post_type) return new Attribute(
+            get: fn() => null
+        );
+
+        $lang = Language::find($this->lang_id);
+
+        $post_type_slug = PostTypeContent::where(['post_type_id' => $post_type->id, 'lang_id' => $this->lang_id])->value('slug');
+
+        if ($post_type_slug && $this->slug) {
+            if ($lang->is_default == 0) {
+                $return = route('locale.level2', ['lang' => $lang->code, 'slug1' => $post_type_slug, 'slug2' => $this->slug]) ?? null;
+            } else
+                $return = route('level2', ['slug1' => $post_type_slug, 'slug2' => $this->slug]) ?? null;
+        } else {
+            $return = null;
+        }
+
+        return new Attribute(
+            get: fn() =>  $return
+        );
     }
 }

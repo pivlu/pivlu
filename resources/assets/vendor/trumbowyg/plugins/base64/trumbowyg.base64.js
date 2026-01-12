@@ -48,6 +48,12 @@
                 errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
                 errInvalidImage: 'Ugyldig billedfil.'
             },
+            de: {
+                base64: 'Bild als base64',
+                file: 'Datei',
+                errFileReaderNotSupported: 'FileReader ist nicht in deinem Browser unterstützt.',
+                errInvalidImage: 'Ungültige Bilddatei.'
+            },
             et: {
                 base64: 'Pilt base64 formaadis',
                 file: 'Fail',
@@ -158,6 +164,7 @@
                                         if (isValidImage(e.target.result)) {
                                             trumbowyg.execCmd('insertImage', fReader.result, false, true);
                                             $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
+                                            trumbowyg.syncCode();
                                             trumbowyg.closeModal();
                                         } else {
                                             trumbowyg.addErrorOnModalField(

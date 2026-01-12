@@ -71,6 +71,10 @@
         <i class="bi bi-search"></i> {{ __('Search form') }}
     @break
 
+    @case('include')
+        <i class="bi bi-file-earmark-plus"></i> {{ __('Include file') }}
+    @break
+
     @case('posts')
         <i class="bi bi-card-checklist"></i> {{ __('Posts') }}
     @break

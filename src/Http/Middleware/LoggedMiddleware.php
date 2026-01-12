@@ -62,21 +62,7 @@ class LoggedMiddleware
             }
 
             // Update last activity
-            User::where('id', Auth::user()->id)->update(['last_activity_at' => now()]);
-
-            Facades\View::composer('*', function (View $view) {
-                // get custom posts types (used in backend sidebar)
-                $post_types = PostType::with('default_language_content')->where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderByDesc('id')->get();
-                $view->with('posts_types', $post_types ?? []);
-
-                $view->with('languages', Language::get_languages()); // active and inactive
-                $view->with('active_languages', Language::get_active_languages()); // active languages
-                $view->with('active_language', Language::get_active_language()); // active language
-
-                // general config
-                $config = Config::config();
-                $view->with('config', $config);
-            });
+            User::where('id', Auth::user()->id)->update(['last_activity_at' => now()]);           
         } 
 
         return $next($request);

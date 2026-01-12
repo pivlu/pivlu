@@ -59,41 +59,7 @@ class PostFunctions
         }
     }
 
-
-    public static function get_post_url($post_id, $lang_id)
-    {
-        $post = Post::with('post_type')->find($post_id);
-        if (!$post) return null;
-
-        $post_content = PostContent::where(['post_id' => $post_id, 'lang_id' => $lang_id])->first();
-        if (!$post_content) return null;
-
-        // PAGE TYPE
-        if ($post->post_type->type == 'page') {
-            // check if page is child of another page
-            $parent_id = Post::where('id', $post_id)->value('parent_id');
-
-            if ($parent_id) {
-                $parent_slug = PostContent::where(['post_id' => $parent_id, 'lang_id' => $lang_id])->value('slug');
-                if (! $parent_slug) return null;
-                $url = $parent_slug . '/' . $post_content->slug;
-            } else {
-                $slug = PostContent::where(['post_id' => $post_id, 'lang_id' => $lang_id])->value('slug');
-                if (! $slug) return null;
-                $url = $slug;
-            }
-        } else {
-            $type_slug = PostTypeContent::where(['post_type_id' => $post->post_type->id, 'lang_id' => $lang_id])->value('slug');
-            if (! $type_slug) return null;
-            $url = $type_slug . '/' . $post_content->slug;
-        }
-
-        $lang = Language::find($lang_id);
-        if ($lang->is_default == 0) $url = $lang->code . '/' . $url;
-
-        return route('home') . '/' . $url ?? null;
-    }
-
+   
 
     public static function get_post_taxonomy_url_path($post_taxonomy_id, $lang_id)
     {

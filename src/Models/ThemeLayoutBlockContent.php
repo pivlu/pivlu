@@ -28,7 +28,7 @@ class ThemeLayoutBlockContent extends Model
     protected $fillable = [
         'block_id',
         'lang_id',
-        'content',
+        'data',
         'header',
     ];
 

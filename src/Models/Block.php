@@ -22,20 +22,33 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
-class Block extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Enums\Fit;
+
+class Block extends Model implements HasMedia
 {
+    use InteractsWithMedia;
 
     protected $fillable = [
         'type_id',
         'label',
         'settings',
         'post_id',
+        'media_id',
         'is_homepage_block',
         'theme_id',
+        'footer_id',
         'position',
         'hidden',
         'user_id',
+        'footer_col',
+        'footer_destination',
+        'footer_layout',
+        'layout_section',
     ];
 
     protected $table = 'pivlu_blocks';
@@ -46,10 +59,7 @@ class Block extends Model
         return $this->belongsTo(BlockType::class, 'type_id');
     }
 
-    protected $appends = ['all_languages_contents'];
-
-    /**
-     * 
+    /**      
      * @return \Illuminate\Database\Eloquent\Relations\hasOne
      */
     public function content()
@@ -58,7 +68,15 @@ class Block extends Model
     }
 
     /**
-     * 
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function block_items()
+    {
+        return $this->hasMany(BlockItem::class, 'block_id')->with('active_language_content')->orderBy('position');
+    }
+
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\hasOne
      */
     public function active_language_content()
@@ -71,14 +89,109 @@ class Block extends Model
         return $this->hasOne(BlockContent::class, 'block_id')->where('lang_id', Language::get_default_language()->id);
     }
 
-    public function getAllLanguagesContentsAttribute()
+
+
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
+
+        $block = Block::find($this->id);
+        if (! $block) return new Attribute(
+            get: fn() =>  null
+        );
+
+        // If this is a post block and post type has not multilingual content, then get only default language
+        if ($block->post_id) {            
+            $post_type_id = Post::find($block->post_id)->post_type_id ?? null;
+            $post_type = PostType::find($post_type_id);
+            if ($post_type->multilingual_content == 0) {
+                $langs = Language::where('is_default', 1)->get(); // get only default language - must be an array with one language
+            }
+        }
+
         foreach ($langs as $lang) {
             $content = BlockContent::where('lang_id', $lang->id)->where('block_id', $this->id)->first();
-            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'content' => $content->content ?? null, 'header' => $content->header ?? null];
+            $data = json_decode($content->data ?? null);
+            $header = json_decode($content->header ?? null);
+            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'media_id' => $content->media_id ?? null, 'data' => $data, 'header' => $header];
         }
-        return json_decode(json_encode($all_language_contents));
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
+    }
+
+
+
+    /**
+     * Register the media collections.
+     *
+     * @return void
+     */
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('block_media')
+            ->singleFile()
+            ->withResponsiveImages()
+            ->useFallbackUrl(asset('assets/img/no-image.png'))
+            ->useFallbackUrl(asset('assets/img/no-image-thumb.png'), 'thumb')
+            ->useFallbackPath(public_path('/assets/img/no-image.png'))
+            ->useFallbackPath(public_path('/assets/img/no-image-thumb.png'), 'thumb');
+    }
+
+    /**
+     * Register the media conversions.
+     *
+     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media|null  $media
+     * @return void
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('large')
+            ->fit(Fit::Contain, 1200, 800)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->quality(80)
+            ->optimize()
+            ->nonQueued();
+
+        $this->addMediaConversion('small')
+            ->fit(Fit::Contain, 600, 400)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('square')
+            ->fit(Fit::Fill, 1000, 1000)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('small_square')
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->fit(Fit::FillMax, 350, 350)
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb_square')
+            ->format('webp')
+            //->keepOriginalImageFormat()
+            ->fit(Fit::FillMax, 150, 150)
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb')
+            ->format('webp')
+            //->keepOriginalImageFormat()
+            ->fit(Fit::Max, 150, 150)
+            ->nonQueued();
+
+        $this->addMediaConversion('crop')
+            ->format('webp')
+            //->keepOriginalImageFormat()
+            ->fit(Fit::Crop, 350, 350)
+            ->nonQueued();
     }
 }

@@ -50,6 +50,9 @@
         @if ($message == 'deleted')
             {{ __('Deleted') }}
         @endif
+        @if ($message == 'created')
+            {{ __('Created') }}
+        @endif
     </div>
 @endif
 
@@ -62,6 +65,12 @@
 @if ($post->deleted_at)
     <div class="text-danger fw-bold mb-2">
         {{ __('This item is in the Trash.') }}
+    </div>
+@endif
+
+@if ($post->status != 'published')
+    <div class="bg-light p-2 mb-3">
+        <div class="fw-bold text-danger"><i class="bi bi-exclamation-circle"></i> {{ __('Not published') }}</div>
     </div>
 @endif
 
@@ -147,147 +156,13 @@
 
                 <div class="card-body">
 
-                    @foreach ($content_langs as $lang)
-                        @if (count($content_langs) > 1)
-                            <div class="fw-bold fs-5">{!! flag($lang->code, 'circle') !!} {{ $lang->name }}</div>
-                        @endif
-
-                        <div class="form-group">
-                            <label>
-                                {{ __(json_decode($post_type->default_language_content->labels ?? null)->singular ?? null) }} {{ __('title') }}
-                            </label>
-                            <input type="text" class="form-control" name="title_{{ $lang->id }}" value="{{ $lang->post_content['title'] ?? null }}" @if ($lang->is_default == 1) required @endif />
-                        </div>
-
-                        <div class="form-group">
-                            <label>{{ __('Summary') }}</label>
-                            <textarea rows="3" class="form-control" name="summary_{{ $lang->id }}">{{ $lang->post_content['summary'] ?? null }}</textarea>
-                        </div>
-
-                        <div class="mb-1">
-                            <a class="btn btn-secondary btn-sm" data-bs-toggle="collapse" href="#collapseSettings_{{ $lang->id }}" role="button" aria-expanded="false"
-                                aria-controls="collapseControls_{{ $lang->id }}">
-                                {{ __('More settings') }} <i class="bi bi-chevron-down"></i>
-                            </a>
-                        </div>
-
-                        <div class="collapse" id="collapseSettings_{{ $lang->id }}">
-                            @if ($post_type->type != 'page')
-                                <div class="form-group">
-                                    <label>{{ __('Search terms') }} ({{ __('separated by comma') }})</label>
-                                    <input type="text" class="form-control" name="search_terms_{{ $lang->id }}" aria-describedby="searchHelp" value="{{ $lang->post_content['search_terms'] ?? null }}">
-                                    <small id="searchHelp" class="form-text text-muted">
-                                        {{ __("Search terms don't appear on website but they are used to find this item in search form") }}
-                                        <br>
-                                        <i class="bi bi-info-circle"></i> {{ __("Note: you don't need to add terms which are in the title or tags") }}
-                                    </small>
-                                </div>
-                            @endif
-
-                            <div class="form-group">
-                                <label>{{ __('Custom Meta title') }}</label>
-                                <input type="text" class="form-control" name="meta_title_{{ $lang->id }}" aria-describedby="metaTitleHelp" value="{{ $lang->post_content['meta_title'] ?? null }}">
-                                <small id="metaTitleHelp" class="form-text text-muted">
-                                    {{ __('Leave empty to auto generate meta title based on title') }}
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label>{{ __('Custom Meta description') }}</label>
-                                <input type="text" class="form-control" name="meta_description_{{ $lang->id }}" aria-describedby="metaDescHelp" value="{{ $lang->post_content['meta_description'] ?? null }}">
-                                <small id="metaDescHelp" class="form-text text-muted">
-                                    {{ __('Leave empty to auto generate meta description based on summary') }}
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label>{{ __('Custom slug') }}</label>
-                                <input type="text" class="form-control" name="slug_{{ $lang->id }}" aria-describedby="slugHelp" value="{{ $lang->post_content['slug'] ?? null }}">
-                                <small id="slugHelp" class="form-text text-muted">
-                                    {{ __('Leave empty to auto generate slug based on title') }}
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label>{{ __('Custom template file') }}</label>
-                                <input type="text" class="form-control" name="custom_tpl_file" aria-describedby="tplHelp" value="{{ $post->custom_tpl_file }}">
-                                <small id="tplHelp" class="form-text text-muted">
-                                    {{ __('Leave empty to use default') }}
-                                </small>
-                            </div>
-                        </div>
-
-                        @if (count(languages()) > 1 && !$loop->last)
-                            <hr>
-                        @endif
-                    @endforeach
-
-                    @if ($post_type->type != 'page')
-                        <hr>
-
-                        <div class="form-group">
-                            <label for="formFile" class="form-label">{{ __('Change main image') }} ({{ __('optional') }})</label>
-                            <input class="form-control" type="file" id="formFile" name="image">
-                            <div class="text-muted small">{{ __('Image file') }}. {{ __('Maximum image size') }}: {{ (int) (config('pivlu.uploads_image_max_size') ?? 5120) / 1024 }} MB</div>
-
-                            @if ($post->media_id)
-                                <div class="mt-3"></div>
-                                <div class="float-start me-2"><img style="max-width:25px; height:auto;" src="{{ image($post->media_id, 'thumb_square') }}" /></div>
-
-                                <a target="_blank" href="{{ image($post->media_id) }}">{{ __('Large') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'square') }}">{{ __('Square') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'small') }}">{{ __('Small') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'thumb') }}">{{ __('Thumb') }}</a> |
-                                <a target="_blank" href="{{ image($post->media_id, 'thumb_square') }}">{{ __('Thumb square') }}</a>
-                                | <a class="text-danger" href="{{ route('admin.posts.delete_main_image', ['id' => $post->id]) }}">{{ __('Delete image') }}</a>
-                            @endif
-                        </div>
-                    @endif
-                </div>
-
-            </div>
-
-
-
-            <div class="card">
-
-                <div class="card-body">
-
-                    <div class="float-end">
-
-                        @if ($post->status != 'published')
-                            <div class="btn btn-warning btn-sm float-end ms-2">{{ __('Not published') }}</div>
-                        @endif
-
-                        @if (count(admin_languages()) > 1)
-                            <div class="dropdown float-end">
-                                <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ __('Preview') }}
-                                </button>
-                                <ul class="dropdown-menu">
-                                    @foreach ($preview_urls as $lang_name => $preview_url)
-                                        @if ($preview_url)
-                                            <li><a class="dropdown-item" target="_blank" href="{{ route('home') }}/{{ $preview_url }}">{{ $lang_name }}</a></li>
-                                        @else
-                                            <li class="dropdown-item" target="_blank" href="#">{{ $lang_name }} <span class="text-danger">{{ __('Not set') }}</span></li>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @else
-                            <a target="_blank" href="{{ route('home') }}/{{ $post_type->slug }}/{{ $post->slug }}" class="btn btn-sm btn-secondary"><i class="bi bi-box-arrow-up-right"></i>
-                                {{ __('Preview') }}</a>
-                        @endif
-
-                    </div>
-
-                    <div class="form-group col-md-6 col-12">
+                    <div class="form-group col-md-6 col-12 col-lg-4">
                         <label>{{ __('Publish status') }} </label>
                         <select class="form-select form-select-lg" name="status">
                             @can('publish', [Pivlu\Models\Post::class, $post, $post_type->id])
                                 <option @if ($post->status == 'published') selected @endif value="published">{{ __('Published') }}</option>
                             @endcan
-                            <option @if ($post->status == 'draft') selected @endif value="draft">{{ __('Save as draft') }}</option>
+                            <option @if ($post->status == 'draft') selected @endif value="draft">{{ __('Draft') }}</option>
                         </select>
                         <div class="form-text">{{ __('Only published items are displayed on website') }}</div>
                     </div>
@@ -333,7 +208,7 @@
                                         value="{{ get_existing_taxonomies_list($post->id, $taxonomy_term->id) }}">
 
                                     @php
-                                        $tax_list_array = get_taxonomies_list($taxonomy_term->taxonomy);
+                                        $tax_list_array = get_taxonomies_list($taxonomy_term->id);
                                     @endphp
 
                                     <script>
@@ -344,12 +219,12 @@
                                                     enforceWhitelist: true,
                                                     tagTextProp: 'name',
                                                     whitelist: [
-                                                        @foreach ($tax_list_array as $key => $tax_list_item)
+                                                        @foreach ($tax_list_array as $tax_list_item)
                                                             {
-                                                                "id": {{ $key }},
-                                                                "value": "{!! $tax_list_item !!}",
+                                                                "id": {{ $tax_list_item['id'] }},
+                                                                "value": "{!! $tax_list_item['name'] !!}",
                                                             },
-                                                        @endforeach
+                                                        @endforeach                                                       
                                                     ],
                                                     dropdown: {
                                                         searchKeys: ['value'], // very important to set by which keys to search for suggesttions when typing
@@ -376,6 +251,114 @@
                 </div>
 
             </div>
+
+            <div class="card">
+
+                <div class="card-body">
+                    @foreach ($post->all_languages_contents as $lang_content)
+                        <div class="form-group">
+                            <label>
+                                {!! lang_label($lang_content, __('Title')) !!}
+                            </label>
+                            <input type="text" class="form-control" name="title_{{ $lang_content->lang_id }}" value="{{ $lang_content->title ?? null }}" @if ($lang_content->lang_id == $config->default_language->id) required @endif />
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ __('Summary') }}</label>
+                            <textarea rows="3" class="form-control" name="summary_{{ $lang_content->lang_id }}">{{ $lang_content->summary ?? null }}</textarea>
+                        </div>
+
+                        <div class="mb-1">
+                            <a class="btn btn-secondary btn-sm" data-bs-toggle="collapse" href="#collapseSettings_{{ $lang_content->lang_id }}" role="button" aria-expanded="false"
+                                aria-controls="collapseControls_{{ $lang_content->lang_id }}">
+                                {{ __('More settings') }} <i class="bi bi-chevron-down"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse" id="collapseSettings_{{ $lang_content->lang_id }}">
+                            @if ($post_type->type != 'page')
+                                <div class="form-group">
+                                    <label>{{ __('Search terms') }} ({{ __('separated by comma') }})</label>
+                                    <input type="text" class="form-control" name="search_terms_{{ $lang_content->lang_id }}" aria-describedby="searchHelp" value="{{ $lang_content->search_terms ?? null }}">
+                                    <small id="searchHelp" class="form-text text-muted">
+                                        {{ __("Search terms don't appear on website but they are used to find this item in search form") }}
+                                        <br>
+                                        <i class="bi bi-info-circle"></i> {{ __("Note: you don't need to add terms which are in the title or tags") }}
+                                    </small>
+                                </div>
+                            @endif
+
+                            <div class="form-group">
+                                <label>{{ __('Custom Meta title') }}</label>
+                                <input type="text" class="form-control" name="meta_title_{{ $lang_content->lang_id }}" aria-describedby="metaTitleHelp" value="{{ $lang_content->meta_title ?? null }}">
+                                <small id="metaTitleHelp" class="form-text text-muted">
+                                    {{ __('Leave empty to auto generate meta title based on title') }}
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>{{ __('Custom Meta description') }}</label>
+                                <input type="text" class="form-control" name="meta_description_{{ $lang_content->lang_id }}" aria-describedby="metaDescHelp"
+                                    value="{{ $lang_content->meta_description ?? null }}">
+                                <small id="metaDescHelp" class="form-text text-muted">
+                                    {{ __('Leave empty to auto generate meta description based on summary') }}
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>{{ __('Custom slug') }}</label>
+                                <input type="text" class="form-control" name="slug_{{ $lang_content->lang_id }}" aria-describedby="slugHelp" value="{{ $lang_content->slug ?? null }}">
+                                <small id="slugHelp" class="form-text text-muted">
+                                    {{ __('Leave empty to auto generate slug based on title') }}
+                                </small>
+                            </div>
+                        </div>
+
+                        @if (count(languages()) > 1 && !$loop->last)
+                            <hr>
+                        @endif
+                    @endforeach
+
+                    @if ($post_type->type != 'page')
+                        <hr>
+
+                        <div class="form-group">
+                            <label for="formFile" class="form-label">{{ __('Change main image') }} ({{ __('optional') }})</label>
+                            <input class="form-control" type="file" id="formFile" name="image">
+                            <div class="text-muted small">{{ __('Image file') }}. {{ __('Maximum image size') }}: {{ (int) (config('pivlu.uploads_image_max_size') ?? 5120) / 1024 }} MB</div>
+
+                            @if ($post->media_id)
+                                <div class="mt-3"></div>
+                                <div class="float-start me-2"><img style="max-width:25px; height:auto;" src="{{ post_image($post, 'thumb_square') }}" /></div>
+
+                                <a target="_blank" href="{{ post_image($post) }}">{{ __('Original') }}</a> |
+                                <a target="_blank" href="{{ post_image($post, 'large') }}">{{ __('Large') }}</a> |
+                                <a target="_blank" href="{{ post_image($post, 'square') }}">{{ __('Square') }}</a> |
+                                <a target="_blank" href="{{ post_image($post, 'small') }}">{{ __('Small') }}</a> |
+                                <a target="_blank" href="{{ post_image($post, 'thumb') }}">{{ __('Thumb') }}</a> |
+                                <a target="_blank" href="{{ post_image($post, 'thumb_square') }}">{{ __('Thumb square') }}</a>
+                                | <a class="text-danger" href="{{ route('admin.posts.delete_main_image', ['id' => $post->id]) }}">{{ __('Delete image') }}</a>
+                            @endif
+                        </div>
+                    @endif
+
+                    <div class="form-group">
+                        <label>{{ __('Custom template file') }}</label>
+                        <input type="text" class="form-control" name="custom_tpl_file" aria-describedby="tplHelp" value="{{ $custom_tpl_file ?? null }}">
+                        <small id="tplHelp" class="form-text text-muted">
+                            {{ __('Leave empty to use default') }}
+                        </small>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <button type="submit" class="btn btn-primary mt-3">
+                        {{ __(json_decode($post_type->default_language_content->labels ?? null)->update ?? __('Update')) }}
+                    </button>
+                </div>
+
+            </div>
+
 
         </form>
     </div>

@@ -25,25 +25,26 @@
                         @foreach ($form_fields as $field)
                             <div class="col-md-{{ $field->col_md ?? 12 }}">
                                 <div class="form-group">
-                                    <label class="block-form-label">{{ $field->label }}</label>
+                                    <label class="block-form-label" for="form_field_{{ $field->id }}">{{ $field->label }}</label>
 
                                     @php
                                         $arrayTypes = explode(',', 'text,email,file,number,month,date,time,datetime-local,color');
                                     @endphp
 
                                     @if (in_array($field->type, $arrayTypes))
-                                        <input type="{{ $field->type }}"
+                                        <input id="form_field_{{ $field->id }}" type="{{ $field->type }}"
                                             class="form-control block-form-control @if ($block_settings->field_size == 'lg') form-control-lg @endif @if ($block_settings->field_size == 'sm') form-control-sm @endif"
                                             name="{{ $field->id }}" @if ($field->required) required @endif @if ($field->type == 'color') style="width: 100px" @endif
                                             @if ($field->type == 'file') accept=".doc,.docx,.xml,.pdf,.txt,.zip,.gz,.rar,application/msword,audio/*,video/*,text/*,image/*" @endif>
                                     @elseif ($field->type == 'textarea')
-                                        <textarea class="form-control block-form-control" rows="4" name="{{ $field->id }}" @if ($field->required) required @endif></textarea>
+                                        <textarea id="form_field_{{ $field->id }}" class="form-control block-form-control" rows="4" name="{{ $field->id }}" @if ($field->required) required @endif></textarea>
                                     @elseif ($field->type == 'select')
                                         @php
                                             $field_options_array = explode(PHP_EOL, $field->dropdowns);
                                         @endphp
 
-                                        <select class="form-select block-form-control @if ($field->field_size == 'lg') form-control-lg @endif @if ($field->field_size == 'sm') form-control-sm @endif"
+                                        <select id="form_field_{{ $field->id }}"
+                                            class="form-select block-form-control @if ($field->field_size == 'lg') form-control-lg @endif @if ($field->field_size == 'sm') form-control-sm @endif"
                                             name="{{ $field->id }}" @if ($field->required) required @endif>
                                             <option value="">- {{ __('Select') }} -</option>
                                             @foreach ($field_options_array as $field_dropdown_name)

@@ -8,7 +8,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.themes.index') }}">{{ __('Website templates') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ $theme->label }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $theme->name }}</li>
                 </ol>
             </nav>
         </div>
@@ -18,7 +18,14 @@
 
 <div class="card">
     <div class="mb-3">
-        @include('pivlu::admin.theme.includes.menu-theme')
+        @if ($theme->is_builder == 1)
+            @include('pivlu::admin.theme.includes.menu-builder')
+        @else
+            @include('pivlu::admin.theme.includes.menu-theme')
+        @endif
+
+        {{-- @include($theme->vendor_name . '.' . $theme->package_name . '::admin.includes.menu-theme')    --}}
+
     </div>
 
     <div class="card-body">
@@ -37,10 +44,20 @@
             </div>
         @endif
 
-        @include('pivlu::admin.theme.theme-' . $theme_tab)        
+
+        @if ($theme->is_builder == 1)
+            @include('pivlu::admin.theme.theme-' . $theme_tab)
+        @else
+            @if (($theme_tab_settings['type'] ?? null) == 'json')
+                @include('pivlu::admin.theme.theme-settings-json', ['theme_tab_settings' => $theme_tab_settings])
+            @endif
+
+            @if (($theme_tab_settings['type'] ?? null) == 'view')
+                @include($theme->package->vendor_name . '.' . $theme->package->package_name . '::' . $theme_tab_settings['view_path'])
+            @endif
+        @endif
+
 
     </div>
 
 </div>
-
-

@@ -11,5 +11,16 @@
             {{ __(json_decode($post_type_taxonomy_term->default_language_content->labels ?? null)->plural ?? __('All items')) }}
         </a>
     @endforeach
-   
+
+    <div class="dropdown float-end">
+        <a class="nav-item nav-link dropdown-toggle float-end" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-gear"></i>
+        </a>
+        <ul class="dropdown-menu bg-secondary">
+            <li><a class="dropdown-item" href="{{ route('admin.post-types.show', ['id' => $post_type->id]) }}">{{ __('Settings') }}</a></li>
+            <li><a class="dropdown-item" href="{{ route('admin.post-type-taxonomies.index', ['post_type_id' => $post_type->id]) }}">{{ __('Manage taxonomies') }}</a></li>
+            
+        </ul>
+    </div>
+    
 </nav>

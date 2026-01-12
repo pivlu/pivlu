@@ -25,6 +25,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Pivlu\Models\Config;
+use Pivlu\Models\Language;
 use Auth;
 
 class WebsiteMiddleware

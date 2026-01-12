@@ -32,9 +32,25 @@ use Pivlu\Models\ThemeConfig;
 class BlockFunctions
 {
 
+    // Get active theme homepage blocks    
+    public static function get_active_theme_homepage_blocks()
+    {
+        $active_theme = ThemeFunctions::get_active_theme();
+        if (! $active_theme) return [];
+
+        $blocks = ThemeConfig::get_theme_config($active_theme->id, 'homepage_blocks') ?? [];       
+
+        $blocks = json_decode($blocks) ?? [];
+        
+        return $blocks;
+    }  
+
+
+
     /**
-     * Regenerate post blocks
+     * Regenerate blocks for a specific post
      *
+     * @param int $post_id The ID of the post to regenerate blocks for
      * @return null
      */
     public static function regenerate_post_blocks($post_id)
@@ -42,25 +58,23 @@ class BlockFunctions
         $post = Post::find($post_id);
         if (!$post) return null;
 
-        $blocks = Block::with('block_type')->where('post_id', $post_id)
-            ->where('hidden', 0)
-            ->orderBy('position')
-            ->get();
+        $blocks = Block::where(['post_id' => $post_id, 'hidden' => 0])->orderBy('position')->get();
 
         $blocks_array = [];
         foreach ($blocks as $block) {
-            $blocks_array[] = ['id' => $block->id, 'type_id' => $block->type_id, 'type' => $block->block_type->type, 'settings' => $block->settings];
+            array_push($blocks_array, $block->id);
         }
 
-        $post->update(['blocks' => json_encode($blocks_array, JSON_UNESCAPED_UNICODE)]);
+        $post->update(['blocks' => json_encode($blocks_array)]);
 
         return;
     }
 
 
     /**
-     * Regenerate homepage blocks
+     * Regenerate homepage blocks for a specific theme
      *
+     * @param int $theme_id The ID of the theme to regenerate homepage blocks for
      * @return null
      */
     public static function regenerate_homepage_blocks($theme_id)
@@ -74,17 +88,29 @@ class BlockFunctions
 
         $blocks_array = [];
         foreach ($blocks as $block) {
-            $blocks_array[] = ['id' => $block->id, 'type_id' => $block->type_id, 'type' => $block->block_type->type, 'settings' => $block->settings];
+            array_push($blocks_array, $block->id);
         }
 
-        ThemeConfig::update_config($theme_id, 'homepage_blocks', json_encode($blocks_array, JSON_UNESCAPED_UNICODE));
+        ThemeConfig::update_config($theme_id, 'homepage_blocks', json_encode($blocks_array));
 
         return;
     }
 
 
 
-
+    /**
+     * Update an existing block's settings and associated content based on its type.
+     *
+     * This method retrieves the block and its type, then applies updates to the block
+     * settings and/or related BlockContent records according to the incoming request
+     * data and the specific block type configuration.
+     *
+     * @param int   $id       The identifier of the block to be updated.
+     * @param int   $type_id  The identifier of the block type defining the block's structure and behavior.
+     * @param mixed $request  The request object or data array containing the new block settings and content.
+     *
+     * @return void
+     */
     public static function update_block($id, $type_id, $request)
     {
         $block = Block::find($id);
@@ -92,8 +118,6 @@ class BlockFunctions
 
         $block_type = BlockType::find($type_id);
         if (!$block_type) return;
-
-        $inputs = $request->except('_token');
 
         // EDITOR
         if ($block_type->type == 'editor') {
@@ -106,8 +130,8 @@ class BlockFunctions
         // Extra content HERO            
         if ($block_type->type == 'hero') {
             $block_settings = array(
+                'style_id' => ($request->use_custom_style ? $request->style_id : null),
                 'image_position' => $request->image_position,
-                'media_id' => $request->existing_image,
                 'cover_fixed' => null,
                 'cover_dark' => null,
                 'img_container_width' => $request->img_container_width,
@@ -126,11 +150,12 @@ class BlockFunctions
             if ($request->img_click) $block_settings['img_click'] = $request->img_click;
 
             if ($request->hasFile('image')) {
-                $media = FileFunctions::store_image($request->file('image'), $old_media_id = $request->existing_image);
+                $media = FileFunctions::store_file($block, $request->file('image'), 'block_media');
                 if ($media) {
-                    $block_settings['media_id'] = $media->id;
+                    $block->update(['media_id' => $media->id]);
                     $media->update(['post_id' => $block->post_id ?? null]);
-                }
+                } else
+                    $block->update(['media_id' => $request->existing_image ?? null]);
             }
         }
 
@@ -141,7 +166,6 @@ class BlockFunctions
                 'bg_style' => $request->bg_style,
                 'bg_color' => $request->bg_color ?? null,
                 'slider_id' => $request->slider_id ?? null,
-                'bg_media_id' => $request->existing_bg_media_id ?? null,
                 'cover_fixed' => $request->cover_fixed ?? null,
                 'cover_dark' => $request->cover_dark ?? null,
                 'delay_seconds' => $request->delay_seconds ?? null,
@@ -154,18 +178,27 @@ class BlockFunctions
                 'font_size_title' => $request->font_size_title ?? null,
                 'font_size_content' => $request->font_size_content ?? null,
                 'rounded_images' => $request->rounded_images ?? null,
+                'padding_y' => $request->padding_y ?? null
             );
 
-            $image = null;
             $media = null;
 
             // delete image (if checkbox is checked)
             if ($request->has('delete_bg_image')) {
-                $media_id_to_delete = $request->delete_bg_media_id;
-                FileFunctions::delete_file($media_id_to_delete);
-                $block_settings['bg_media_id'] = null;
+                FileFunctions::delete_file($block, 'block_media');
+                $block->update(['media_id' => null]);
             }
 
+            if ($request->hasFile('bg_image')) {
+                $media = FileFunctions::store_file($block, $request->file('bg_image'), 'block_media');
+                if ($media) {
+                    $block->update(['media_id' => $media->id]);
+                    $media->update(['post_id' => $block->post_id ?? null]);
+                } else
+                    $block->update(['media_id' => $request->existing_image ?? null]);
+            }
+
+            /*
             if ($request->hasFile('bg_image')) {
                 $media = FileFunctions::store_image($request->file('bg_image'), $old_media_id = $request->existing_bg_media_id);
                 if ($media) {
@@ -173,8 +206,8 @@ class BlockFunctions
                     $media->update(['post_id' => $block->post_id ?? null]);
                 }
             }
+                */
         }
-
 
         // Extra content ALERT            
         if ($block_type->type == 'alert') {
@@ -182,6 +215,12 @@ class BlockFunctions
             if ($request->alert_type) $block_settings['type'] = $request->alert_type;
         }
 
+        // Extra content LINKS            
+        if ($block_type->type == 'links') {
+            $block_settings = array('display_style' => null, 'new_tab' => null);
+            if ($request->display_style) $block_settings['display_style'] = $request->display_style;
+            if ($request->new_tab) $block_settings['new_tab'] = $request->new_tab;
+        }
 
         // Extra content VIDEO               
         if ($block_type->type == 'video') {
@@ -210,8 +249,8 @@ class BlockFunctions
                 'masonry_gutter' =>  $request->masonry_gutter ?? 0
             ];
         }
-
-        // Extra content CARDS        
+        if ($request->cols) $block_settings['cols'] = $request->cols;
+        $block_settings['icon_size'] = $request->icon_size ?? '2em';
         if ($block_type->type == 'card') {
             $block_settings = array('border_color' => null, 'no_border_radius' => null, 'card_bg_color' => null, 'bg_color_hover' => null, 'same_height' => null, 'horizontal' => null, 'img_full_width' => null, 'shadow' => null, 'cols' => null);
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
@@ -241,8 +280,11 @@ class BlockFunctions
 
             if ($request->use_avatar) {
                 if ($request->hasFile('avatar_media_id')) {
-                    $media = FileFunctions::store_image($request->file('avatar_media_id'), $old_media_id = $request->existing_avatar_media_id);
-                    if ($media) $block_settings['avatar_media_id'] = $media->id;
+                    $media = FileFunctions::store_file($block, $request->file('avatar_media_id'), 'block_media');
+                    if ($media) {
+                        $block->update(['media_id' => $media->id]);
+                    } else
+                        $block->update(['media_id' => $request->existing_avatar_media_id ?? null]);
                 }
             }
 
@@ -291,7 +333,10 @@ class BlockFunctions
 
         // UPDATE CONTENT
         foreach ($langs as $lang) {
-            $content = null;
+
+            $block_content = BlockContent::FirstOrCreate(['block_id' => $id, 'lang_id' => $lang->id]);
+
+            $data = null;
 
             $key_content = 'content_' . $lang->id;
             $key_add_header = 'add_header_' . $lang->id;
@@ -301,7 +346,8 @@ class BlockFunctions
             $key_title = 'title_' . $lang->id;
             $key_url = 'url_' . $lang->id;
             $key_existing_image = 'existing_image_' . $lang->id;
-            $key_embed = 'embed_' . $lang->id;
+            $data = HelperFunctions::clean_text($request->$key_header_content);
+            $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $data);
             $key_btn1_label = 'btn1_label_' . $lang->id;
             $key_btn1_url = 'btn1_url_' . $lang->id;
             $key_btn1_id = 'btn1_id_' . $lang->id;
@@ -312,46 +358,50 @@ class BlockFunctions
             $key_btn2_icon = 'btn2_icon_' . $lang->id;
 
             // EXTRA HEADER CONTENT
-            if ($block_type->type == 'form' || $block_type->type == 'gallery' || $block_type->type == 'card' || $block_type->type == 'editor' || $block_type->type == 'video' || $block_type->type == 'image') {
-                $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $request->$key_header_content);
+            if ($block_type->type == 'form' || $block_type->type == 'gallery' || $block_type->type == 'card' || $block_type->type == 'editor' || $block_type->type == 'video' || $block_type->type == 'image' || $block_type->type == 'map' || $block_type->type == 'links') {
+                $header_array = array('add_header' => $request->$key_add_header, 'title' => $request->$key_header_title, 'content' => $data = HelperFunctions::clean_text($request->$key_header_content));
                 $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
-                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['header' => $header_content]);
+                $block_content->update(['header' => $header_content]);
             }
 
 
             // EDITOR 
             if ($block_type->type == 'editor') {
-                $content = $request->$key_content;
-                $content = trim($content);
+                $data = $request->$key_content;
+                if (!str_contains($data, '<pre ')) $data = HelperFunctions::clean_text($data);
+                $data = json_encode(array('content' => $data), JSON_UNESCAPED_UNICODE);
             }
 
             // HERO
             if ($block_type->type == 'hero') {
-                $content = array('title' => $request->$key_title, 'content' => $request->$key_content, 'btn1_label' => $request->$key_btn1_label, 'btn1_url' => $request->$key_btn1_url, 'btn1_id' => $request->$key_btn1_id, 'btn1_icon' => $request->$key_btn1_icon, 'btn2_label' => $request->$key_btn2_label, 'btn2_id' => $request->$key_btn2_id, 'btn2_url' => $request->$key_btn2_url, 'btn2_icon' => $request->$key_btn2_icon);
-                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+                $data = array('title' => $request->$key_title, 'content' => $request->$key_content, 'btn1_label' => $request->$key_btn1_label, 'btn1_url' => $request->$key_btn1_url, 'btn1_id' => $request->$key_btn1_id, 'btn1_icon' => $request->$key_btn1_icon, 'btn2_label' => $request->$key_btn2_label, 'btn2_id' => $request->$key_btn2_id, 'btn2_url' => $request->$key_btn2_url, 'btn2_icon' => $request->$key_btn2_icon);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
             // CUSTOM
             if ($block_type->type == 'custom') {
-                $content = $request->$key_content;
+                $data = $request->$key_content;
+                $data = json_encode(array('content' => $data), JSON_UNESCAPED_UNICODE);
             }
 
             // VIDEO
             if ($block_type->type == 'video') {
-                $content = array('embed' => $request->$key_embed, 'caption' => $request->$key_caption);
-                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+                $data = array('embed' => $request->$key_embed, 'caption' => $request->$key_caption);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
             // IMAGE
             if ($block_type->type == 'image') {
-                $image = null;
-
                 if ($request->hasFile('image_' . $lang->id)) {
-                    $media = FileFunctions::store_image($request->file('image_' . $lang->id), $old_media_id = $request->$key_existing_image);
-                    if ($media) $media->update(['post_id' => $block->post_id]);
+                    $media = FileFunctions::store_file($block_content, $request->file('image_' . $lang->id), 'block_content_media');
+                    if ($media) {
+                        $block_content->update(['media_id' => $media->id]);
+                        $media->update(['post_id' => $block->post_id ?? null]);
+                    } else
+                        $block_content->update(['media_id' => $request->$key_existing_image]);
                 }
-                $content = array('media_id' => $media->id ?? $request->$key_existing_image, 'title' => $request->$key_title, 'caption' => $request->$key_caption, 'url' => $request->$key_url);
-                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+                $data = array('title' => $request->$key_title, 'caption' => $request->$key_caption, 'url' => $request->$key_url);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
 
@@ -359,8 +409,8 @@ class BlockFunctions
             if ($block_type->type == 'alert') {
                 $post_key_title = 'title_' . $lang->id;
                 $post_key_content = 'content_' . $lang->id;
-                $content_array = array('title' => $request->$post_key_title, 'content' => $request->$post_key_content);
-                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
+                $data = array('title' => $request->$post_key_title, 'content' => HelperFunctions::clean_text($request->$post_key_content));
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
             // POST SECTION
@@ -371,51 +421,44 @@ class BlockFunctions
                 if ($request->$slug_key) $slug = Str::slug($request->$slug_key, '-');
                 else $slug = Str::slug($request->$title_key, '-');
 
-                $content_array = array('title' => $request->$title_key, 'slug' => $slug);
-                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
+                $data_array = array('title' => $request->$title_key, 'slug' => $slug);
+                $data = json_encode($data_array, JSON_UNESCAPED_UNICODE);
             }
 
             // POST TABLE OF CONTENTS
             if ($block_type->type == 'post_toc') {
                 $title_key = 'title_' . $lang->id;
 
-                $content_array = array('title' => $request->$title_key);
-                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
+                $data = array('title' => $request->$title_key);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
             // BLOCKQUOTE
             if ($block_type->type == 'blockquote') {
                 $post_key_source = 'source_' . $lang->id;
                 $post_key_content = 'content_' . $lang->id;
-                $content_array = array('source' => $inputs["$post_key_source"], 'content' => $request->$post_key_content);
-                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
-            }
-
-            // MAP
-            if ($block_type->type == 'map') {
-                // Header data
-                $header_array = array('add_header' => $inputs['add_header_' . $lang->id] ?? null, 'title' =>  $inputs["header_title_$lang->id"] ?? null, 'content' =>  $inputs["header_content_$lang->id"] ?? null);
-                $header_content = json_encode($header_array, JSON_UNESCAPED_UNICODE);
+                $data_array = array('source' => $request->$post_key_source, 'content' => HelperFunctions::clean_text($request->$post_key_content));
+                $data = json_encode($data_array, JSON_UNESCAPED_UNICODE);
             }
 
             // FORM
             if ($block_type->type == 'form') {
                 $post_key_submit_text = 'button_submit_text_' . $lang->id;
-                $content_array = array('button_submit_text' => $request->$post_key_submit_text);
-                $content = json_encode($content_array, JSON_UNESCAPED_UNICODE);
+                $data = array('button_submit_text' => $request->$post_key_submit_text);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
             // INCLUDE
             if ($block_type->type == 'include') {
                 $key_tpl_file = 'tpl_file_' . $lang->id;
 
-                $content = array('tpl_file' => $request->$key_tpl_file);
-                $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+                $data = array('tpl_file' => $request->$key_tpl_file);
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE);
             }
 
 
-            if (! ($block_type->type == 'gallery' || $block_type->type == 'hero' || $block_type->type == 'slider' || $block_type->type == 'card'))
-                BlockContent::updateOrInsert(['block_id' => $id, 'lang_id' => $lang->id], ['content' => $content]);
+            if (! ($block_type->type == 'gallery' || $block_type->type == 'slider' || $block_type->type == 'card'))
+                $block_content->update(['data' => $data ?? null]);
         }
     }
 }

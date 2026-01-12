@@ -235,23 +235,16 @@ class TrashController extends Controller
 
 
         // POSTS
-        if ($module == 'posts') {
+        if ($module == 'posts') {            
             if (is_array($request->items_checkbox)) {
                 foreach ($request->items_checkbox as $item_id) {
+                    $item_id = intval($item_id);                
                     if ($request->action == 'multiple_delete') {
-                        $post = Post::find($item_id);
-                        if (!$post) return redirect(route('admin.trash'));
-
-                        // delete main image
-                        if ($post->image) DriveFile::delete_image($post->image);
+                        $post = Post::withTrashed()->find($item_id);                        
+                        if (!$post) continue;                       
 
                         // delete content blocks
-                        $blocks = Block::where('module', 'posts')->where('content_id', $item_id)->get();
-                        foreach ($blocks as $block) {
-                            Block::where('id', $block->id)->delete();
-                            BlockContent::where('block_id', $block->id)->delete();
-                        }
-
+                        Block::where('post_id', $item_id)->delete();                        
                         Post::where('id', $item_id)->forceDelete(); // delete post                                        
                     }
                     if ($request->action == 'multiple_restore') Post::where('id', $item_id)->restore();
@@ -263,13 +256,7 @@ class TrashController extends Controller
         if ($module == 'forms') {
             if (is_array($request->items_checkbox)) {
                 foreach ($request->items_checkbox as $item_id) {
-                    if ($request->action == 'multiple_delete') {
-                        // if field had file upload, delete file
-                        $fields = FormFieldData::with('media')->where('form_data_id', $item_id)->get();
-                        foreach ($fields as $field) {
-                            if ($field->media)
-                                FileFunctions::delete_file($field->media->id);
-                        }
+                    if ($request->action == 'multiple_delete') {                                                
                         FormData::where('id', $item_id)->forceDelete();
                     }
                     if ($request->action == 'multiple_restore') FormData::where('id', $item_id)->restore();

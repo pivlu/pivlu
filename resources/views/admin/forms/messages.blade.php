@@ -180,9 +180,9 @@
 
                                         @if ($message->geo_data->country_code ?? null)
                                             <div class="mt-2 text-muted small">
-                                                <img class="me-1" style="width: 20px; height: 20px;" src="{{ asset('assets//img/flags/circle/' . strtolower($message->geo_data->country_code) . '.svg') }}"
-                                                    alt="{{ $message->geo_data->country }}"> {{ $message->geo_data->city }},
-                                                {{ $message->geo_data->region_name }},
+                                                {!! flag(strtolower($message->geo_data->country_code)) !!}
+                                                {{ $message->geo_data->city }},
+                                                {{ $message->geo_data->state }} ({{ $message->geo_data->state_name }}),
                                                 {{ $message->geo_data->country }}
                                             </div>
                                         @endif

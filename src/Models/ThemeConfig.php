@@ -22,9 +22,15 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Enums\Fit;
 
-class ThemeConfig extends Model
+class ThemeConfig extends Model implements HasMedia
 {
+        use InteractsWithMedia;
+
     protected $table = 'pivlu_theme_config';
 
     protected $fillable = ['theme_id', 'template_part', 'name', 'value'];
@@ -467,8 +473,27 @@ class ThemeConfig extends Model
     }
 
 
-    public static function get_theme_config($theme = null, $name)
+    public static function get_theme_config($theme_id, $name)
     {
-        return ThemeConfig::where('theme', $theme)->where('name', $name)->value('value') ?? null;
+        return ThemeConfig::where(['theme_id' => $theme_id, 'name' => $name])->value('value') ?? null;
     }
+
+
+    /**
+     * Register the media collections.
+     *
+     * @return void
+     */
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('theme_config_media')
+            ->singleFile()
+            ->withResponsiveImages()
+            ->useFallbackUrl(asset('assets/img/no-image.png'))
+            ->useFallbackUrl(asset('assets/img/no-image-thumb.png'), 'thumb')
+            ->useFallbackPath(public_path('/assets/img/no-image.png'))
+            ->useFallbackPath(public_path('/assets/img/no-image-thumb.png'), 'thumb');
+    }
+
 }

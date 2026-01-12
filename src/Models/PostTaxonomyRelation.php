@@ -28,7 +28,7 @@ class PostTaxonomyRelation extends Model
     
     protected $table = 'pivlu_post_taxonomy_relations';
 
-    protected $fillable = ['post_id', 'taxonomy_id', 'post_type_taxonomy_id'];
+    protected $fillable = ['post_id', 'post_taxonomy_id', 'post_type_taxonomy_id'];
 
     public $timestamps = false;
 

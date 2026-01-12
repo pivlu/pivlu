@@ -1,18 +1,8 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
-
-<style>
-    .hide {
-        display: none !important;
-    }
-</style>
-
 <?php
 debug_backtrace() || die('Direct access not permitted');
 ?>
 <div class="modal fade custom-modal" tabindex="-1" role="dialog" aria-labelledby="updateLabel-{{ $link->id }}" aria-hidden="true" id="update-menu-link-{{ $link->id }}">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
             <form action="{{ route('admin.theme-menus.item.update', ['item_id' => $link->id]) }}" method="post">
@@ -37,6 +27,7 @@ debug_backtrace() || die('Direct access not permitted');
                                         <option @if ($link->type == 'dropdown') selected @endif value="dropdown">{{ __('Dropdown menu') }}</option>
                                     @endif
                                     <option @if ($link->type == 'page') selected @endif value="page">{{ __('Page') }}</option>
+                                    <option @if ($link->type == 'post_type') selected @endif value="post_type">{{ __('Post type (content type)') }}</option>
                                     <option @if ($link->type == 'custom') selected @endif value="custom">{{ __('Custom link') }}</option>
                                 </select>
                             </div>
@@ -48,55 +39,104 @@ debug_backtrace() || die('Direct access not permitted');
                                 var value = select.options[select.selectedIndex].value;
 
                                 if (value == 'custom') {
-                                    document.getElementById('hidden_div_custom_{{ $link->id }}').style.display = 'block';
+                                    @foreach (admin_languages() as $lang)
+                                        document.getElementById('hidden_div_custom_{{ $lang->id }}_{{ $link->id }}').style.display = 'block';
+                                    @endforeach
                                     document.getElementById('hidden_div_page_{{ $link->id }}').style.display = 'none';
+                                    document.getElementById('hidden_div_post_type_{{ $link->id }}').style.display = 'none';
                                 } else if (value == 'page') {
+                                    @foreach (admin_languages() as $lang)
+                                        document.getElementById('hidden_div_custom_{{ $lang->id }}_{{ $link->id }}').style.display = 'none';
+                                    @endforeach
                                     document.getElementById('hidden_div_page_{{ $link->id }}').style.display = 'block';
-                                    document.getElementById('hidden_div_custom_{{ $link->id }}').style.display = 'none';
+                                    document.getElementById('hidden_div_post_type_{{ $link->id }}').style.display = 'none';
+                                } else if (value == 'post_type') {
+                                    @foreach (admin_languages() as $lang)
+                                        document.getElementById('hidden_div_custom_{{ $lang->id }}_{{ $link->id }}').style.display = 'none';
+                                    @endforeach
+                                    document.getElementById('hidden_div_post_type_{{ $link->id }}').style.display = 'block';
+                                    document.getElementById('hidden_div_page_{{ $link->id }}').style.display = 'none';
                                 } else {
                                     document.getElementById('hidden_div_page_{{ $link->id }}').style.display = 'none';
-                                    document.getElementById('hidden_div_custom_{{ $link->id }}').style.display = 'none';
+                                    @foreach (admin_languages() as $lang)
+                                        document.getElementById('hidden_div_custom_{{ $lang->id }}_{{ $link->id }}').style.display = 'none';
+                                    @endforeach
+                                    document.getElementById('hidden_div_post_type_{{ $link->id }}').style.display = 'none';
                                 }
                             }
                         </script>
-
-                        <div id="hidden_div_custom_{{ $link->id }}" style="display: @if ($link->type == 'custom') block @else none @endif">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label>{{ __('URL') }}</label>
-                                    <input class="form-control" name="custom_url" type="text" value="{{ $link->value ?? null }}" />
-                                </div>
-                            </div>
-                        </div>
 
                         <div id="hidden_div_page_{{ $link->id }}" style="display: @if ($link->type == 'page') block @else none @endif" class="mb-4">
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>{{ __('Change page') }} ({{ __('optional') }})</label>
-                                    <select name="page_id" class="form-control select2_{{ $link->id }}">
-                                        <option value="{{ $link->value ?? null }}">
-                                            @if ($link->value)
-                                                {{ $link->type_page_data->title ?? null }}
-                                            @else
-                                                -
-                                            @endif
-                                        </option>
+                                    <select name="page_id" class="form-select">
+                                        @foreach ($pages as $page)
+                                            <option @if ($link->value == $page->id) selected @endif value="{{ $page->id }}">{{ $page->default_language_content->title }}
+                                                ({{ $page->default_language_content->url ?? null }})
+                                            </option>
+                                        @endforeach
                                     </select>
+                                    @if (count(admin_languages()) > 1)
+                                        <div class="form-text">{{ __('Default language links are displayed in this select. The website link will use the current language url.') }}</div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
 
-                        @foreach ($link->all_languages_contents as $content)
-                            @if (count(admin_languages()) > 1)
-                                <div class="fw-bold fs-5">{!! flag($content->lang_code, 'circle') !!} {{ $content->lang_name }}</div>
-                            @endif
+                        <div id="hidden_div_post_type_{{ $link->id }}" style="display: @if ($link->type == 'post_type') block @else none @endif" class="mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>{{ __('Post type (content type)') }}</label>
+                                    <select name="post_type_id" class="form-select">
+                                        <option value="">{{ __('Select a post type') }}</option>
+                                        @foreach ($post_types as $post_type)
+                                            <option @if ($link->value == $post_type->id) selected @endif value="{{ $post_type->id }}">
+                                                {{ $post_type->default_language_content->name ?? ($post_type->default_language_content->title ?? null) }}
+                                                ({{ $post_type->default_language_content->url ?? null }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if (count(admin_languages()) > 1)
+                                        <div class="form-text">{{ __('Default language links are displayed in this select. The website link will use the current language url.') }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        @foreach ($link->all_languages_contents as $lang_content)
+                            <div id="hidden_div_custom_{{ $lang_content->lang_id }}_{{ $link->id }}" style="display: @if ($link->type == 'custom') block @else none @endif">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>{!! lang_label($lang_content, __('URL')) !!}</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="url-addon-{{ $lang_content->lang_id }}_{{ $link->id }}">https://</span>
+                                            <input class="form-control" name="custom_url_{{ $lang_content->lang_id }}" type="text" value="{{ $lang_content->custom_url ?? null }}" aria-describedby="url-addon-{{ $lang_content->lang_id }}_{{ $link->id }}" />
+                                        </div>
+                                        <div class="form-text">{{ __('Full URL (e.g. "https://example.com/page")') }}</div>
+                                    </div>
+                                </div>
+                            </div>                            
 
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label>{{ __('Label') }}</label>
-                                    <input class="form-control" name="label_{{ $content->lang_id }}" type="text" value="{{ $content->label }}" required />
+                                    <label>{!! lang_label($lang_content, __('Label')) !!}</label>
+                                    <input class="form-control" name="label_{{ $lang_content->lang_id }}" type="text" value="{{ $lang_content->label ?? null }}" required />
+                                    <div class="form-text">{{ __('The title of the item on your custom menu.') }}</div>
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>{!! lang_label($lang_content, __('Description (optional)')) !!}</label>
+                                    <input class="form-control" name="description_{{ $lang_content->lang_id }}" type="text" value="{{ $lang_content->description ?? null }}" />
+                                    <div class="form-text">{{ __('The description will be displayed in the menu if the current theme supports it.') }}</div>
+                                </div>
+                            </div>
+
+                            @if (count(admin_languages()) > 1 && !$loop->last)
+                                <hr>
+                            @endif
                         @endforeach
 
                         <div class="col-12">
@@ -109,7 +149,7 @@ debug_backtrace() || die('Direct access not permitted');
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label class="form-check-label">{{ __('Link style') }}</label>
                                 <select name="btn_id" class="form-select">
@@ -121,12 +161,21 @@ debug_backtrace() || die('Direct access not permitted');
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
-                            <div class="form-group mb-3">
-                                <label class="form-check-label">{{ __('Icon code') }} ({{ __('optional') }})</label>
-                                <input class="form-control" name="icon" value="{{ $link->icon }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-check-label">{{ __('Icon code') }} ({{ __('optional') }})</label>
+                                    <input class="form-control" name="icon" value="{{ $link->icon ?? null }}">
+                                </div>
                             </div>
-                        </div>                       
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-check-label">{{ __('CSS classes') }} ({{ __('optional') }})</label>
+                                    <input class="form-control" name="css_classes" value="{{ $link->css_classes ?? null }}">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -141,26 +190,3 @@ debug_backtrace() || die('Direct access not permitted');
         </div>
     </div>
 </div>
-
-<script>
-    $(document).on('select2:open', () => {
-        document.querySelector('.select2-search__field').focus();
-    });
-
-    $(document).ready(function() {
-        $(".select2-search__field").focus();
-        $('.select2_{{ $link->id }}').select2({
-            dropdownParent: $('#update-menu-link-{{ $link->id }}'),
-            minimumInputLength: 2,
-            theme: "bootstrap-5",
-            allowClear: true,
-            placeholder: 'Search in pages label',
-            ajax: {
-                url: "{{ route('admin.ajax', ['source' => 'pages']) }}",
-                dataType: 'json',
-                delay: 20,
-                cache: true
-            }
-        });
-    });
-</script>

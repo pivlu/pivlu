@@ -188,7 +188,7 @@
                                     <span class="float-end ms-2 badge bg-danger">{{ __('DELETED') }}</span>
                                 @endif
 
-                                <span class="float-start me-3"><img style="max-width:70px; height:auto;" class="img-fluid rounded" src="{{ $account->getFirstMediaUrl('avatars') }}" /></span>
+                                <span class="float-start me-3"><img style="max-width:70px; height:auto;" class="img-fluid rounded" src="{{ avatar($account, 'large') }}" /></span>
 
                                 @php
                                     if ($account->last_activity_at) {

@@ -21,59 +21,68 @@
 
 use Pivlu\Models\Theme;
 use Pivlu\Models\Language;
-use Pivlu\Models\Config;
 use Pivlu\Models\Block;
 use Pivlu\Models\BlockContent;
+use Pivlu\Models\BlockItemContent;
 use Pivlu\Models\ThemeFooterBlock;
 use Pivlu\Models\ThemeLayoutBlock;
 use Pivlu\Models\ThemeLayoutBlockContent;
-
+use Pivlu\Models\ThemeFooter;
 
 // Get blocks for homepage
 if (!function_exists('homepage_blocks')) {
-	function homepage_blocks()
+	function homepage_blocks($theme_id, $show_hidden = null)
 	{
-		$active_theme = Theme::get_active_theme();
-		if (! $active_theme) return [];
+		$theme = Theme::find($theme_id);
+		if (! $theme) return [];
 
-		$blocks = Block::where(['theme_id' => $active_theme->id, 'is_homepage_block' => 1, 'hidden' => 0])->orderBy('position')->get();
+		$blocks_query = Block::with('active_language_content')->where(['theme_id' => $theme->id, 'is_homepage_block' => 1]);
+		if (! $show_hidden) $blocks_query = $blocks_query->where('hidden', 0);
+
+		$blocks = $blocks_query->orderBy('position')->get();
+
 		return $blocks ?? [];
 	}
 }
 
 
-// show content block 
+// show block
 if (!function_exists('block')) {
 	function block($id)
 	{
+		$data = ['data' => null];
+		$block = Block::with('active_language_content', 'block_items')->find($id);
 
-		$data = ['content' => null];
-		$block = Block::find($id);
+		return $block;
+
 		if (!$block) return (object)$data;
 		if ($block->hidden == 1) return (object)$data;
 
 		$block_content = BlockContent::where('block_id', $id)->where('lang_id', Language::get_active_language()->id ?? null)->first();
 
-		$data = array('content' => $block_content->content ?? null, 'header' => $block_content->header ?? null);
+		$data = array('data' => $block_content->data ?? null, 'header' => $block_content->header ?? null, 'items' => $block->block_items ?? null, 'content_object' => $block_content ?? null, 'settings' => json_decode($block->settings) ?? null);
 
 		return (object)$data;
 	}
 }
 
+// Get block content for a specific language
+if (!function_exists('block_content')) {
+	function block_content($block_id, $lang_id)
+	{
+		$item = BlockContent::where('block_id', $block_id)->where('lang_id', $lang_id)->first();
+
+		return $item;
+	}
+}
 
 if (!function_exists('get_block_content_item')) {
-	function get_block_content_item($block_id, $lang_id, $code)
+	function get_block_content_item($block_item_id, $lang_id)
 	{
-		$content = BlockContent::where('block_id', $block_id)->where('lang_id', $lang_id)->value('content');
-		$items = json_decode($content);
-		if (! $items) return null;
-		if (! $code) return null;
+		$item = BlockItemContent::where('block_item_id', $block_item_id)->where('lang_id', $lang_id)->first();
+		if (! $item) return;
 
-		foreach ($items as $item) {
-			if ($item->code == $code) return $item;
-		}
-
-		return;
+		return $item;
 	}
 }
 
@@ -82,11 +91,10 @@ if (!function_exists('get_block_content_item')) {
 if (!function_exists('footer_blocks')) {
 	function footer_blocks($footer_id, $destination, $col)
 	{
-		// get footer layout (number of columns)
-		if ($destination == 'primary') $layout = Config::get_config('tpl_footer_columns') ?? 1;
-		if ($destination == 'secondary') $layout = Config::get_config('tpl_footer2_columns') ?? 1;
-
-		$blocks = ThemeFooterBlock::with('block_type')->where(['footer_id' => $footer_id, 'destination' => $destination, 'col' => $col])->where('hidden', 0)->orderBy('position')->get();
+		$footer = ThemeFooter::find($footer_id);
+		if (! $footer) return [];
+		
+		$blocks = Block::with('block_type')->where(['footer_id' => $footer_id, 'footer_destination' => $destination, 'footer_col' => $col])->where('hidden', 0)->orderBy('position')->get();
 
 		return $blocks ?? [];
 	}

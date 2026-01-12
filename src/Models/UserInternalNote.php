@@ -54,6 +54,6 @@ class UserInternalNote extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this
-            ->addMediaCollection('user_notes');
+            ->addMediaCollection('user_notes_media');
     }
 }

@@ -24,6 +24,7 @@ namespace Pivlu\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class FormData extends Model
 {
@@ -49,8 +50,6 @@ class FormData extends Model
 
     protected $table = 'pivlu_form_data';
 
-    protected $appends = ['geo_data'];
-
     public function form(): BelongsTo
     {
         return $this->BelongsTo(Form::class, 'form_id');
@@ -66,10 +65,14 @@ class FormData extends Model
         return $this->BelongsTo(User::class, 'status_changed_by_user_id');
     }
 
-    public function getGeoDataAttribute()
+    public function geoData(): Attribute
     {
-        $geo = $this->geo;
+        $geo = $this->geo ?? null;
 
-        return json_decode($geo);
+        $return_data = json_decode($geo);
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 }

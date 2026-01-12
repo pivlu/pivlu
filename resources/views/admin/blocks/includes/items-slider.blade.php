@@ -21,11 +21,16 @@
     <div class="card-body">
 
         <div class="sortable" id="sortable_top">
-            @foreach ($content_array as $content_item)
-                <div class="builder-block movable" id="item-{{ $content_item['code'] }}">
+            @foreach ($block_items as $block_item)
+                @php
+                    $block_item_default_lang_content = $block_item->default_language_content;
+                    $block_item_content_data = json_decode($block_item_default_lang_content->data ?? null);
+                @endphp
 
-                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $content_item['code'] }}" class="btn btn-danger btn-sm float-end ms-2"><i class="bi bi-trash"></i></a>
-                    <div class="modal fade confirm-{{ $content_item['code'] }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
+                <div class="builder-block movable d-block" style="height: 120px" id="item-{{ $block_item['id'] ?? '-' }}">
+
+                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block_item['id'] ?? '-' }}" class="btn btn-danger btn-sm float-end ms-2"><i class="bi bi-trash"></i></a>
+                    <div class="modal fade confirm-{{ $block_item['id'] ?? '-' }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -36,7 +41,7 @@
                                     {{ __('Are you sure you want to delete this item?') }}
                                 </div>
                                 <div class="modal-footer">
-                                    <form method="POST" action="{{ route('admin.block.delete-item', ['type' => 'slider', 'block_id' => $block->id, 'code' => $content_item['code']]) }}">
+                                    <form method="POST" action="{{ route('admin.block.delete-item', ['block_item_id' => $block_item['id']]) }}">
                                         {{ csrf_field() }}
                                         {{ method_field('DELETE') }}
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
@@ -47,59 +52,55 @@
                         </div>
                     </div>
 
-                    <a href="#" data-bs-toggle="modal" data-bs-target=".update-{{ $content_item['code'] }}" class="btn btn-primary btn-sm float-end ms-2"><i class="bi bi-pencil-square"></i></a>
-                    <div class="modal fade update-{{ $content_item['code'] }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmUpdateLabel-{{ $content_item['code'] }}" aria-hidden="true">
+                    <a href="#" data-bs-toggle="modal" data-bs-target=".update-{{ $block_item['id'] ?? '-' }}" class="btn btn-primary btn-sm float-end ms-2"><i class="bi bi-pencil-square"></i></a>
+                    <div class="modal fade update-{{ $block_item['id'] ?? '-' }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmUpdateLabel-{{ $block_item['id'] ?? '-' }}" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
 
-                                <form method="post" enctype="multipart/form-data" action="{{ route('admin.block.update-item', ['type' => 'slider', 'block_id' => $block->id]) }}">
+                                <form method="post" action="{{ route('admin.block.update-item', ['type' => 'slider', 'block_id' => $block->id]) }}" enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')
 
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="ConfirmUpdateLabel-{{ $content_item['code'] }}">{{ __('Update') }}</h5>
+                                        <h5 class="modal-title" id="ConfirmUpdateLabel-{{ $block_item['id'] ?? '-' }}">{{ __('Update') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
+
                                     <div class="modal-body">
+
                                         @foreach (admin_languages() as $item_lang)
                                             @php
-                                                $item_data = get_block_content_item($block->id, $item_lang->id, $content_item['code']);
+                                                $block_item_content = get_block_content_item($block_item['id'], $item_lang->id) ?? null;
+                                                $block_item_data = json_decode($block_item_content->data ?? null);
                                             @endphp
 
-                                            <div class="form-group">
-                                                <label for="formFile_{{ $item_lang->id }}" class="form-label">{{ __('Change image') }} ({{ __('optional') }})</label>
+                                            @if ($block_item_content ?? null)
+                                                <div class="form-group mb-3">
+                                                    <a target="_blank" href="{{ $block_item_content->getFirstMediaUrl('block_item_media', 'large') }}">
+                                                        <img src="{{ $block_item_content->getFirstMediaUrl('block_item_media', 'thumb') }}" class="img-fluid rounded">
+                                                    </a>
+                                                </div>
+                                            @endif
+
+                                            <div class="form-group mb-3">
+                                                <label for="formFile_{{ $item_lang->id }}" class="form-label">{!! lang_label($item_lang, __('Change image')) !!}</label>
                                                 <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}">
                                             </div>
 
                                             <div class="form-group">
-                                                <label>{{ __('Title') }}
-                                                    @if (count(admin_languages()) > 1)
-                                                        - {!! flag($item_lang->code) !!} {{ $item_lang->name }}
-                                                    @endif
-                                                </label>
-                                                <input type="text" class="form-control" name="title_{{ $item_lang->id }}" value="{{ $item_data->title ?? null }}" />
+                                                <label>{!! lang_label($item_lang, __('Title')) !!}</label>
+                                                <input type="text" class="form-control" name="title_{{ $item_lang->id }}" value="{{ $block_item_data->title ?? null }}" />
                                             </div>
 
                                             <div class="form-group">
-                                                <label>{{ __('Content') }}
-                                                    @if (count(admin_languages()) > 1)
-                                                        - {!! flag($item_lang->code) !!} {{ $item_lang->name }}
-                                                    @endif
-                                                </label>
-                                                <textarea rows="4" class="form-control" name="content_{{ $item_lang->id }}">{{ $item_data->content ?? null }}</textarea>
+                                                <label>{!! lang_label($item_lang, __('Content')) !!}</label>
+                                                <textarea rows="4" class="form-control" name="content_{{ $item_lang->id }}">{{ $block_item_data->content ?? null }}</textarea>
                                             </div>
 
                                             <div class="form-group">
-                                                <label>{{ __('URL') }} ({{ __('optional') }})
-                                                    @if (count(admin_languages()) > 1)
-                                                        - {!! flag($item_lang->code) !!} {{ $item_lang->name }}
-                                                    @endif
-                                                </label>
-                                                <input type="text" class="form-control" name="url_{{ $item_lang->id }}" value="{{ $item_data->url ?? null }}">
+                                                <label class="mb-2">{!! lang_label($item_lang, __('URL (optional)')) !!}</label>
+                                                <input type="text" class="form-control" name="url_{{ $item_lang->id }}" value="{{ $block_item_data->url ?? null }}">
                                             </div>
-
-                                            <input type="hidden" name="media_id_{{ $item_lang->id }}" value="{{ $item_data->media_id ?? null }}">
-                                            <input type="hidden" name="code_{{ $item_lang->id }}" value="{{ $item_data->code ?? null }}">
 
                                             @if (count(admin_languages()) > 1 && !$loop->last)
                                                 <hr>
@@ -107,6 +108,7 @@
                                         @endforeach
                                     </div>
                                     <div class="modal-footer">
+                                        <input type="hidden" name="block_item_id" value="{{ $block_item['id'] ?? null }}">
                                         <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
                                     </div>
                                 </form>
@@ -114,25 +116,20 @@
                         </div>
                     </div>
 
-                    @if ($content_item['media_id'])
-                        <a target="_blank" href="{{ image($content_item['media_id']) }}"><img class="float-start me-2" style="width: 90px; height: 90px; background-color:white"
-                                src="{{ image($content_item['media_id'], 'thumb_square') }}" class="img-fluid mt-2"></a>
-                    @endif
+                    <a target="_blank" href="{{ $block_item_default_lang_content->getFirstMediaUrl('block_item_media', 'large') }}">
+                        <img class="float-start img-fluid me-2 rounded" style="width: 140px; max-height: 110px;" src="{{ $block_item_default_lang_content->getFirstMediaUrl('block_item_media', 'thumb') }}">
+                    </a>
 
-                    <div>
-                        <b>{{ __('Title') }}:</b> {{ $content_item['title'] ?? null }}
+                    <div class="line-clamp-1">
+                        <b>{{ __('Title') }}:</b> {{ $block_item_content_data->title ?? null }}
                     </div>
 
-                    <div>
-                        <b>{{ __('Content') }}:</b> {{ $content_item['content'] ?? '-' }}
+                    <div class="line-clamp-2 small">
+                        <b>{{ __('Content') }}:</b> {{ $block_item_content_data->content ?? '-' }}
                     </div>
 
-                    <div>
-                        <b>{{ __('URL') }}:</b> {{ $content_item['url'] ?? '-' }}
-                    </div>
-
-                    <div>
-                        <b>{{ __('Icon') }}:</b> {!! $content_item['icon'] ?? '-' !!}
+                    <div class="line-clamp-1 small">
+                        <b>{{ __('URL') }}:</b> {{ $block_item_content_data->url ?? '-' }}
                     </div>
 
                     <div class="clearfix"></div>

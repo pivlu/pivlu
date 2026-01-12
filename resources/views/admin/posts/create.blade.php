@@ -43,13 +43,13 @@
             <div class="p-3 bg-white">
 
                 @foreach (admin_languages() as $lang)
-                    @if (count(admin_languages()) > 1)
-                        <div class="fw-bold fs-5">{!! flag($lang->code, 'circle') !!} {{ $lang->name }}</div>
+                    @if ($post_type->multilingual_content == 0 && $lang->is_default != 1)
+                        @continue
                     @endif
 
                     <div class="form-group">
                         <label>
-                            {{ __(json_decode($post_type->default_language_content->labels ?? null)->singular ?? null) }} {{ __('title') }}
+                            {!! lang_label($lang, __('Title')) !!}
                         </label>
                         <input type="text" class="form-control" name="title_{{ $lang->id }}" maxlength="225" @if ($lang->is_default == 1) required @endif />
                     </div>
@@ -102,21 +102,21 @@
                                 {{ __('Leave empty to auto generate slug based on title') }}
                             </small>
                         </div>
-
                     </div>
 
-                    @if (count(languages()) > 1 && !$loop->last)
+                    @if (count(languages()) > 1 && !$loop->last && $post_type->multilingual_content == 1)
                         <hr>
                     @endif
                 @endforeach
 
                 <hr>
 
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="formFile" class="form-label">{{ __('Upload main image') }} ({{ __('optional') }})</label>
                     <input class="form-control" type="file" id="formFile" name="image" accept="image/*" />
                     <div class="text-muted small">{{ __('Image file') }}. {{ __('Maximum image size') }}: {{ (int) (config('pivlu.uploads_image_max_size') ?? 5120) / 1024 }} MB</div>
                 </div>
+
             </div>
         </div>
 
@@ -157,10 +157,11 @@
                             @else
                                 <label> {{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->plural ?? __('Select')) }}</label>
                                 <input type="text" class="form-control tagsinput" name="non-hierarchical-taxonomies[]" id="tags-{{ $taxonomy_term->id }}"
-                                    placeholder='{{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->search ?? 'Add ' . $taxonomy_term->name) }}'>
+                                    placeholder='{{ __(json_decode($taxonomy_term->default_language_content->labels ?? null)->search ?? 'Add ' . $taxonomy_term->name) }}'
+                                    aria-describedby="tagsHelp-{{ $taxonomy_term->id }}" />
 
                                 @php
-                                    $tax_list_array = get_taxonomies_list($taxonomy_term->taxonomy);
+                                    $tax_list_array = get_taxonomies_list($taxonomy_term->id);                                    
                                 @endphp
 
                                 <script>
@@ -171,10 +172,10 @@
                                                 enforceWhitelist: true,
                                                 tagTextProp: 'name',
                                                 whitelist: [
-                                                    @foreach ($tax_list_array as $key => $tax_list_item)
+                                                    @foreach ($tax_list_array as $tax_list_item)                                                        
                                                         {
-                                                            "id": {{ $key }},
-                                                            "value": "{!! $tax_list_item !!}",
+                                                            "id": {{ $tax_list_item['id'] }},
+                                                            "value": "{!! $tax_list_item['name'] !!}",
                                                         },
                                                     @endforeach
                                                 ],
@@ -192,7 +193,7 @@
                         </div>
                     </div>
                 @endforeach
-
+            
 
                 <div class="d-grid gap-2 my-3">
                     <a class="btn btn-secondary fw-bold" data-bs-toggle="collapse" href="#collapseSettings" role="button" aria-expanded="false" aria-controls="collapseExample">

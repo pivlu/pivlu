@@ -27,11 +27,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Pivlu\Models\Config;
 use Pivlu\Models\Theme;
-use Pivlu\Models\Plugin;
 use Pivlu\Models\Language;
 use Pivlu\Models\ThemeConfig;
 use Pivlu\Models\ThemeConfigLang;
-use Pivlu\Models\ThemeStyle;
+use Pivlu\Models\BlockStyle;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\ThemeFooter;
 use Pivlu\Models\ThemeMenu;
@@ -39,6 +38,7 @@ use Pivlu\Models\BlockType;
 use Pivlu\Models\PostType;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\FileFunctions;
+use Pivlu\Functions\HelperFunctions;
 
 class ThemeController extends Controller
 {
@@ -50,32 +50,39 @@ class ThemeController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.index',
-            'active_menu' => 'website',
+            'active_menu' => 'appearance',
             'active_submenu' => 'themes',
-            'nav_tab' => 'themes',
             'themes' => $themes,
         ]);
     }
 
 
     /**
-     * Store resource
+     * Store new theme builder template
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required|max:100',
         ]);
 
         if ($validator->fails()) return redirect(route('admin.themes.index'))->withErrors($validator)->withInput();
 
-        $slug = Str::slug($request->name, '_');
+        $slug = Str::slug($request->name, '-');
 
-        if (Theme::where('slug', $slug)->exists()) return redirect(route('admin.themes.index'))->with('error', 'duplicate');
+        if (Theme::where(['vendor_name' => 'pivlu', 'package_name' => $slug])->exists()) return redirect(route('admin.themes.index'))->with('error', 'duplicate');
 
-        Theme::create(['label' => $request->name, 'slug' => $slug]);
+        $theme = Theme::create([
+            'name' => $request->name,
+            'code' => HelperFunctions::generateRandomInteger(16),
+            'vendor_name' => 'pivlu',
+            'package_name' => $slug,
+            'views_hint' => 'pivlu',
+            'description' => 'A custom theme created via Theme Builder',
+            'is_builder' => 1,
+        ]);
 
-        return redirect(route('admin.themes.show', ['slug' => $slug]))->with('success', 'created');
+        return redirect(route('admin.themes.show', ['id' => $theme->id]))->with('success', 'created');
     }
 
 
@@ -85,28 +92,28 @@ class ThemeController extends Controller
      */
     public function show(Request $request)
     {
-        $theme = Theme::find($request->id)->first();
+        $theme = Theme::find($request->id);
         if (! $theme) return redirect(route('admin.themes.index'));
 
         $theme_tab = $request->theme_tab ?? 'general';
-        $accepted_tabs = ['general', 'home', 'style', 'nav', 'footer'];
+
+        $settings_json_path = base_path('vendor' . DIRECTORY_SEPARATOR . $theme->vendor_name . DIRECTORY_SEPARATOR . $theme->package_name .  DIRECTORY_SEPARATOR . 'settings.json');
+        if (file_exists($settings_json_path)) {
+            $theme_settings = $settings_json_path ? json_decode(file_get_contents($settings_json_path), true)['theme'] ?? null : null;
+            $theme_tab_settings = $theme_settings[str_replace('package_', '', $theme_tab)] ?? null;
+        }
+
 
         $post_types = PostType::orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->paginate(25);
         $post_types_tabs = [];
         foreach ($post_types as $post_type) {
-            array_push($accepted_tabs, $post_type->type);
             $post_types_tabs[$post_type->type] = $post_type->default_language_content->name;
         }
 
-        if (!in_array($theme_tab, $accepted_tabs)) $theme_tab = 'general';
         if (isset($post_types_tabs[$theme_tab])) {
             $post_type_tab = $post_types_tabs[$theme_tab];
             $theme_tab = 'post-type';
-        }
-
-        if ($theme_tab == 'general') {
-            $homepage_content_sources_post_types = PostType::where('type', '!=', 'page')->where('active', 1)->orderBy('id')->get();
-            $homepage_content_sources_plugins = Plugin::where('can_be_homepage_source', 1)->where('status', 'active')->orderBy('name')->get();
+            $tab_post_type = $request->post_type_type ?? 'page'; // to be used in view
         }
 
         if ($theme_tab == 'nav') {
@@ -122,30 +129,38 @@ class ThemeController extends Controller
             }
         }
 
+        if ($theme_tab == 'general') {
+            $logo_model = ThemeConfig::where(['theme_id' => $theme->id, 'name' => 'logo_media_id'])->first();
+            $favicon_model = ThemeConfig::where(['theme_id' => $theme->id, 'name' => 'favicon_media_id'])->first();
+        }
+
+
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.show',
-            'active_menu' => 'website',
+            'active_menu' => 'appearance',
             'active_submenu' => 'themes',
-            'nav_tab' => 'themes',
             'theme' => $theme,
             'theme_tab' => $theme_tab,
             'post_types_tabs' => $post_types_tabs,
             'post_type_tab' => $post_type_tab ?? null,
+            'tab_post_type' => $tab_post_type ?? null,
 
             'fonts' => ThemeFunctions::fonts(),
             'font_sizes' => ThemeFunctions::font_sizes(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
-            'styles' => ThemeStyle::orderByDesc('is_default')->orderBy('label')->get(),
+            'styles' => BlockStyle::orderByDesc('is_default')->orderBy('label')->get(),
             'footers' => ThemeFooter::orderByDesc('is_default')->orderBy('label')->get(),
             'menus' => ThemeMenu::orderByDesc('is_default')->orderBy('label')->get(),
             'theme_config' => ThemeConfig::config($theme->id),
 
-            'block_types' => BlockType::get_block_types(), // for homepage tab
+            'block_types' => BlockType::get_block_types($section = 'homepage'), // for homepage tab
 
             'nav_templates' => $nav_templates ?? null, // for nav tab
+            'logo_model' => $logo_model ?? null, // for general tab
+            'favicon_model' => $favicon_model ?? null, // for general tab
 
-            'homepage_content_sources_post_types' => $homepage_content_sources_post_types ?? null,
-            'homepage_content_sources_plugins' => $homepage_content_sources_plugins ?? null
+            'theme_settings' => $theme_settings ?? [],
+            'theme_tab_settings' => $theme_tab_settings ?? []
         ]);
     }
 
@@ -156,20 +171,14 @@ class ThemeController extends Controller
      */
     public function update(Request $request)
     {
-        $theme = Theme::find($request->id)->first();
+        $theme = Theme::find($request->id);
         if (! $theme) return redirect(route('admin.themes.index'));
 
         $theme_tab = $request->theme_tab;
 
-        $excepts = array('_token', '_method', 'theme_tab');
+        $excepts = array('_token', '_method', 'theme_tab', 'post_type_type');
 
-        if ($theme_tab == 'general') {
-            foreach (Language::get_languages() as $lang) {
-                ThemeConfigLang::update_config($theme->id, $lang->id, 'homepage_meta_title', $request['homepage_meta_title_' . $lang->id] ?? null);
-                ThemeConfigLang::update_config($theme->id, $lang->id, 'homepage_meta_description', $request['homepage_meta_description_' . $lang->id] ?? null);
-            }
-            ThemeConfig::update_config($theme->id, 'homepage_source', $request->homepage_source ?? null);
-        } else {
+        if ($theme_tab != 'general') {
             // request inputs WITHOUT files
             $inputs = $request->except($excepts);
             //dd($inputs);
@@ -184,7 +193,7 @@ class ThemeController extends Controller
             $theme->update(['menu_id' => $menu_id]);
         }
 
-        return redirect(route('admin.themes.show', ['id' => $theme->id, 'theme_tab' => $theme_tab]))->with('success', 'updated');
+        return redirect(route('admin.themes.show', ['id' => $theme->id, 'theme_tab' => $theme_tab, 'post_type_type' => $request->post_type_type ?? null]))->with('success', 'updated');
     }
 
 
@@ -193,7 +202,7 @@ class ThemeController extends Controller
      */
     public function update_template_part(Request $request)
     {
-        $theme = Theme::find($request->id)->first();
+        $theme = Theme::find($request->id);
         if (! $theme) return redirect(route('admin.themes.index'));
 
         $theme_tab = $request->theme_tab;
@@ -214,16 +223,16 @@ class ThemeController extends Controller
      */
     public function set_active(Request $request)
     {
-        $theme = Theme::find($request->id)->first();
+        $theme = Theme::find($request->id);
         if (! $theme) return redirect(route('admin.themes.index'));
 
         Config::update_config('active_theme', $theme->id);
 
         Theme::where('code', $theme->code)->update(['is_active' => 1]);
-        Theme::where('slug', '!=', $theme->cide)->update(['is_active' => 0]);
+        Theme::where('code', '!=', $theme->code)->update(['is_active' => 0]);
 
         // create theme css file IF NOT EXISTS (do not overwrite if exists)
-        $theme_css_file = 'assets/css/themes/' . $theme->code . '.css';
+        $theme_css_file = public_path('custom/themes/' . $theme->code . '.css');
         if (!file_exists($theme_css_file)) {
             $css_file = fopen($theme_css_file, "w");
             $write = " ";
@@ -243,18 +252,21 @@ class ThemeController extends Controller
     public function update_logo(Request $request)
     {
 
-        $theme = Theme::find($request->id)->first();
+        $theme = Theme::find($request->id);
         if (! $theme) return redirect(route('admin.themes.index'));
 
         // process Main logo image
         if ($request->hasFile('logo')) {
-            $validator = Validator::make($request->all(), [
-                'logo' => 'mimes:jpeg,jpg,png,gif',
-            ]);
+            $validator = Validator::make($request->all(), ['logo' => 'mimes:jpeg,jpg,png,gif']);
 
             if (!$validator->fails()) {
-                $media = FileFunctions::store_file($request->file('logo'));
+                $theme_config = ThemeConfig::firstOrCreate(['theme_id' => $theme->id, 'name' => 'logo_media_id'], ['value' => null]);
+
+                $media = FileFunctions::store_file($theme_config, $request->file('logo'), 'theme_config_media');
+
                 if ($media) ThemeConfig::update_config($theme->id, 'logo_media_id', $media->id);
+
+                Theme::update_meta($theme);
             }
         }
 
@@ -265,8 +277,13 @@ class ThemeController extends Controller
             $validator = Validator::make($request->all(), ['favicon' => 'mimes:jpeg,jpg,png,gif,ico']);
 
             if (!$validator->fails()) {
-                $media = FileFunctions::store_file($request->file('favicon'));
+                $theme_config = ThemeConfig::firstOrCreate(['theme_id' => $theme->id, 'name' => 'favicon_media_id'], ['value' => null]);
+
+                $media = FileFunctions::store_file($theme_config, $request->file('favicon'), 'theme_config_media');
+
                 if ($media) ThemeConfig::update_config($theme->id, 'favicon_media_id', $media->id);
+
+                Theme::update_meta($theme);
             }
         }
 

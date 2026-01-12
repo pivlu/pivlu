@@ -43,22 +43,14 @@
 </div>
 
 
-<h5 class="mb-3 mt-4">{{ __('Block content') }}:</h5>
-
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif
-
-    @php
-        $block_content = json_decode($lang_content->content);
-    @endphp
+    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Block content')) !!}</div>
 
     @include('pivlu::admin.blocks.includes.block-header')
 
     <div class="form-group col-md-3 col-sm-6 mt-2">
         <label>{{ __('Submit button text') }}</label>
-        <input class="form-control" type="text" name="button_submit_text_{{ $lang_content->lang_id }}" value="{{ $block_content->button_submit_text ?? __('Submit') }}">
+        <input class="form-control" type="text" name="button_submit_text_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->button_submit_text ?? __('Submit') }}">
     </div>
 
     <div class="mb-4"></div>

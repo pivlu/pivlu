@@ -28,40 +28,30 @@
         <label for="formFile" class="form-label">{{ __('Source avatar') }} ({{ __('optional') }})</label>
         <input class="form-control" type="file" id="formFile" name="avatar_media_id">
     </div>
-    @if ($block_settings->avatar_media_id ?? null)
+    @if ($block->media_id ?? null)
         <div class="mb-3">
-            <a target="_blank" href="{{ image($block_settings->avatar_media_id) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings->avatar_media_id) }}" class="img-fluid"></a>
-            <input type="hidden" name="existing_avatar_media_id" value="{{ $block_settings->avatar_media_id ?? null }}">
+            <a target="_blank" href="{{ first_media_url($block, 'block_media', 'large') }}"><img style="max-width: 300px; max-height: 100px;" src="{{ first_media_url($block, 'block_media', 'thumb') }}" class="img-fluid"></a>
+            <input type="hidden" name="existing_avatar_media_id" value="{{ $block->media_id ?? null }}">
         </div>
     @endif
 </div>
 
 
-<h5 class="mb-3">{{ __('Block content') }}:</h5>
-
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif
 
-    @php
-        $block_content = json_decode($lang_content->content);
-    @endphp
+<div class="fw-bold mb-2">{!! lang_label($lang_content, __('Block content')) !!}</div>
 
     <div class="form-group">
         <label>{{ __('Source') }} ({{ __('optional') }})</label>
-        <input class="form-control" type="text" name="source_{{ $lang_content->lang_id }}" value="{{ $block_content->source ?? null }}">
+        <input class="form-control" type="text" name="source_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->source ?? null }}">
     </div>
 
     <div class="form-group">
         <label>{{ __('Content') }}</label>
-        <textarea class="form-control" name="content_{{ $lang_content->lang_id }}">{{ $block_content->content ?? null }}</textarea>
+        <textarea class="form-control" name="content_{{ $lang_content->lang_id }}">{{ $lang_content->data->content ?? null }}</textarea>
         <div class="form-text">{{ __('HTML tags allowed') }}</div>
     </div>
 
     <div class="mb-4"></div>
 
-    @if (count(admin_languages()) > 1 && !$loop->last)
-        <hr>
-    @endif
 @endforeach

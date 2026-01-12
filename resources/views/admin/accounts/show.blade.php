@@ -60,9 +60,8 @@
 
         <div class="row mb-3">
             <div class="col-12">
-                @if ($account->avatar_media_id)
-                    <span class="float-start me-2"><img style="max-height:100px; width:auto;" src="{{ $account->getFirstMediaUrl('avatars') }}" /></span>
-                @endif
+                <span class="float-start me-2"><img style="max-height:100px; width:auto;" src="{{ avatar($account, 'large') }}" /></span>
+
                 {{ __('ID') }}: {{ strtoupper($account->id) }} | {{ __('Code') }}: {{ $account->code }} <br>
                 {{ __('Registered') }}: {{ date_locale($account->created_at, 'datetime') }} <br>
                 {{ __('Last activity') }}: @if ($account->last_activity_at)

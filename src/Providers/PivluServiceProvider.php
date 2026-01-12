@@ -37,7 +37,6 @@ use Pivlu\Http\Middleware\LoggedIsInternalMiddleware;
 use Pivlu\Http\Middleware\LoggedMiddleware;
 use Pivlu\Http\Middleware\LoggedIsAdminMiddleware;
 use Pivlu\Http\Middleware\LoggedIsRegisteredMiddleware;
-use Pivlu\Models\Module;
 use App;
 
 class PivluServiceProvider extends ServiceProvider
@@ -68,14 +67,7 @@ class PivluServiceProvider extends ServiceProvider
       $this->app['router']->aliasMiddleware('logged_is_internal', LoggedIsInternalMiddleware::class);
       $this->app['router']->aliasMiddleware('logged_is_admin', LoggedIsAdminMiddleware::class);
       $this->app['router']->aliasMiddleware('logged_is_registered', LoggedIsRegisteredMiddleware::class);
-
-      // Publish configuration file.
-      /*
-      $this->publishes([
-         __DIR__ . '/../../config/pivlu.php' => config_path('pivlu/pivlu.php'),
-      ], 'config');
-      */
-
+     
       // Register routes.
       $this->registerRoutes();
 
@@ -105,21 +97,21 @@ class PivluServiceProvider extends ServiceProvider
       $this->app->register(ViewServiceProvider::class);
 
       // Merge configuration.
-      $this->mergeConfigFrom(__DIR__ . '/../../config/pivlu.php', 'pivlu_core');
-      //$this->mergeConfigFrom(__DIR__ . '/config/pivlu/pivlu.php','pivlu');
-      //$this->mergeConfigFrom(__DIR__ . '/config/permission.php','permission');
+      $this->mergeConfigFrom(__DIR__ . '/../../config/pivlu.php', 'pivlu');
    }
 
    protected function registerRoutes()
    {
       Route::group($this->routeAdminConfiguration(), function () {
          $this->loadRoutesFrom(__DIR__ . '/../../routes/admin.php');
-         $this->loadRoutesFrom(__DIR__ . '/../../routes/modules/website/admin.php');
       });
 
       Route::group($this->routeWebConfiguration(), function () {
-         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');         
-         $this->loadRoutesFrom(__DIR__ . '/../../routes/modules/website/web.php');
+         $this->loadRoutesFrom(__DIR__ . '/../../routes/web.php');
+      });
+
+      Route::group($this->routeRegisteredConfiguration(), function () {
+        //
       });
    }
 
@@ -127,6 +119,7 @@ class PivluServiceProvider extends ServiceProvider
    {
       return [
          'middleware' => ['web', 'auth', 'verified', 'logged', 'logged_is_internal'],
+          'prefix' => 'account/admin/',      
       ];
    }
 
@@ -134,6 +127,14 @@ class PivluServiceProvider extends ServiceProvider
    {
       return [
          'middleware' => ['web', 'logged', 'website'],
+      ];
+   }
+
+   protected function routeRegisteredConfiguration()
+   {
+      return [
+         'middleware' => ['web', 'auth', 'verified', 'logged', 'logged_is_registered'],
+          'prefix' => 'account/user/',      
       ];
    }
 }

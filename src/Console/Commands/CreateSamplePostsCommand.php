@@ -68,7 +68,7 @@ class CreateSamplePostsCommand extends Command
         if (! ($number_of_posts > 1 && $number_of_posts <= 24)) $number_of_posts = 6;
 
         // Admin user_id
-        $admin_user_id = User::where(['role' => 'admin'])->orderByDesc('id')->value('id');
+        $admin_user_id = User::where(['role_group' => 'admin'])->orderByDesc('id')->value('id');
 
         // id for post type
         $post_type_post = PostType::where(['type' => 'post'])->first();

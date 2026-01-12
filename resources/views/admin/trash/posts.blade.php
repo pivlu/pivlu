@@ -142,14 +142,13 @@
                                     </td>
 
                                     <td>
-                                        <span class="float-start me-2"><img style="max-width:50px; height:auto;" class="rounded-circle" src="{{ avatar($item->user->avatar_media_id) }}" /></span>
+                                        <span class="float-start me-2"><img style="max-width:50px; height:auto;" class="rounded-circle" src="{{ avatar($item->user) }}" /></span>
                                         <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $item->user_id]) }}">{{ $item->user->name }}</a></b>
                                         <br>{{ $item->user->email }}
                                     </td>
 
 
                                     <td>
-
                                         <div class="d-grid gap-2">
                                             <a href="{{ route('admin.trash.single_action', ['module' => 'posts', 'id' => $item->id, 'return_to' => 'trash', 'action' => 'delete']) }}"
                                                 class="btn btn-danger btn-sm mb-2">{{ __('Permanently delete') }}</a>
@@ -157,7 +156,6 @@
                                             <a href="{{ route('admin.trash.single_action', ['module' => 'posts', 'id' => $item->id, 'return_to' => 'trash', 'action' => 'restore']) }}"
                                                 class="btn btn-success btn-sm">{{ __('Restore') }}</a>
                                         </div>
-
                                     </td>
 
                                 </tr>

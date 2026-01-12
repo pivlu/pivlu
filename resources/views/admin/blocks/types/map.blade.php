@@ -19,21 +19,17 @@
     </div>
 </div>
 
-<div class="form-group mb-0">
+<div class="form-group mb-3">
     <labeL>{{ __('Address') }}</labeL>
     <input class="form-control" type="text" name="address" value="{{ $block_settings->address ?? null }}">
-</div>
-<div class="form-text">
-    {{ __('Map will be centered automatic based on this address. Use complete address (country, region, city, street, code). Example: "Spain, Valencia, Av. de les Balears, 59".') }}
+    <div class="form-text">
+        {{ __('Map will be centered automatic based on this address. Use complete address (country, region, city, street, code). Example: "Spain, Valencia, Av. de les Balears, 59".') }}
+    </div>
 </div>
 
-
-<h5 class="mb-3 mt-4">{{ __('Block content') }}:</h5>
 
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif
+    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Block content')) !!}</div>
 
     @include('pivlu::admin.blocks.includes.block-header')
 

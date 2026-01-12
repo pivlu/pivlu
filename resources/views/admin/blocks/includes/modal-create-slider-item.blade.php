@@ -17,34 +17,50 @@ debug_backtrace() || die('Direct access not permitted');
 
                     @foreach (admin_languages() as $item_lang)
                         <div class="form-group">
-                            <label for="formFile_{{ $item_lang->id }}" class="form-label">{{ __('Slide image') }}</label>
-                            <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}">
+                            <label for="formFile_{{ $item_lang->id }}" class="form-label">{!! lang_label($item_lang, __('Slide image')) !!}</label>
+                            <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}" required>
+
+                            @if (count(admin_languages()) > 1)
+                                @if ($loop->first)
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckImages" name="use_image_for_all_languages" />
+                                        <label class="form-check-label" for="switchCheckImages">{{ __('Use this image for all languages') }}</label>
+                                    </div>
+
+                                    <script>
+                                        const checkbox = document.getElementById('switchCheckImages');
+                                        checkbox.addEventListener('change', function() {
+                                            if (this.checked) {
+                                                @foreach (admin_languages() as $other_lang)
+                                                    @if ($other_lang->id != $item_lang->id)
+                                                        document.getElementById('formFile_{{ $other_lang->id }}').disabled = true;
+                                                    @endif
+                                                @endforeach
+                                            } else {
+                                                @foreach (admin_languages() as $other_lang)
+                                                    @if ($other_lang->id != $item_lang->id)
+                                                        document.getElementById('formFile_{{ $other_lang->id }}').disabled = false;
+                                                    @endif
+                                                @endforeach
+                                            }
+                                        });
+                                    </script>
+                                @endif
+                            @endif
                         </div>
 
                         <div class="form-group">
-                            <label>{{ __('Title') }}
-                                @if (count(admin_languages()) > 1)
-                                    - {!! flag($item_lang->code) !!} {{ $item_lang->name }}
-                                @endif
-                            </label>
+                            <label>{!! lang_label($item_lang, __('Title')) !!}</label>
                             <input type="text" class="form-control" name="title_{{ $item_lang->id }}" />
                         </div>
 
                         <div class="form-group">
-                            <label>{{ __('Content') }}
-                                @if (count(admin_languages()) > 1)
-                                    - {!! flag($item_lang->code) !!} {{ $item_lang->name }}
-                                @endif
-                            </label>
+                            <label>{!! lang_label($item_lang, __('Content')) !!}</label>
                             <textarea rows="4" class="form-control" name="content_{{ $item_lang->id }}"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label>{{ __('URL') }} ({{ __('optional') }})
-                                @if (count(admin_languages()) > 1)
-                                    - {!! flag($item_lang->code) !!} {{ $item_lang->name }}
-                                @endif
-                            </label>
+                            <label class="mb-2">{!! lang_label($item_lang, __('URL (optional)')) !!}</label>
                             <input type="text" class="form-control" name="url_{{ $item_lang->id }}">
                         </div>
 

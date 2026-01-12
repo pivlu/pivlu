@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('new_tab')->default(false);
             $table->unsignedBigInteger('btn_id')->nullable();            
             $table->string('icon', 150)->nullable();
+            $table->string('css_classes', 250)->nullable();
             $table->timestamps();
 
             $table->foreign('menu_id')->references('id')->on('pivlu_theme_menus')->cascadeOnDelete();

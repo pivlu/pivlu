@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostType extends Model
 {
@@ -34,10 +35,9 @@ class PostType extends Model
         'admin_menu_icon',
         'active',
         'core',
+        'multilingual_content',
         'allow_block_type',
     ];
-
-    protected $appends = ['all_languages_contents'];
 
     protected $table = 'pivlu_post_types';
 
@@ -57,19 +57,35 @@ class PostType extends Model
         return $this->hasMany(PostTypeContent::class, 'post_type_id');
     }
 
-    public function getAllLanguagesContentsAttribute()
+    /*  Accessor for all languages contents  */
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
         foreach ($langs as $lang) {
             $content = PostTypeContent::where('lang_id', $lang->id)->where('post_type_id', $this->id)->first();
-            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'name' => $content->name ?? null, 'slug' => $content->slug ?? null, 'labels' => $content->labels ?? null];
+            $all_language_contents[] = [
+                'lang_id' => $lang->id,
+                'lang_name' => $lang->name,
+                'lang_code' => $lang->code,
+                'name' => $content->name ?? null,
+                'slug' => $content->slug ?? null,
+                'labels' => $content->labels ?? null,
+                'title' => $content->title ?? null,
+                'meta_title' => $content->meta_title ?? null,
+                'meta_description' => $content->meta_description ?? null,
+            ];
         }
-        return json_decode(json_encode($all_language_contents));
+
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 
 
-     public static function get_root_pages()
+    public static function get_root_pages()
     {
         $page_post_type = PostType::where('type', 'page')->first();
 
@@ -77,5 +93,4 @@ class PostType extends Model
 
         return $root_pages;
     }
-
 }

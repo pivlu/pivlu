@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class FormField extends Model
 {
@@ -41,14 +42,12 @@ class FormField extends Model
 
     protected $table = 'pivlu_form_fields';
 
-    protected $appends = ['all_languages_contents'];
-
     public function default_lang_field()
     {
         return $this->hasOne(FormFieldContent::class, 'field_id')->where('lang_id', Language::get_default_language()->id);
     }
 
-    public function getAllLanguagesContentsAttribute()
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
@@ -56,6 +55,11 @@ class FormField extends Model
             $content = FormFieldContent::where('lang_id', $lang->id)->where('field_id', $this->id)->first();
             $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'label' => $content->label ?? null, 'info' => $content->info ?? null, 'dropdowns' => $content->dropdowns ?? null];
         }
-        return json_decode(json_encode($all_language_contents));
+
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 }

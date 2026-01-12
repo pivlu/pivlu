@@ -35,22 +35,24 @@ return new class extends Migration
             $table->unsignedBigInteger('post_type_id')->nullable();
             $table->unsignedBigInteger('media_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->char('code', 16)->unique();
             $table->integer('parent_id')->nullable(); // used for 'page' type only
             $table->string('status', 20);
             $table->boolean('sticky')->default(false);
-            $table->integer('hits')->default(0);            
+            $table->integer('hits')->default(0);
             $table->integer('like_count')->default(0);
             $table->integer('comment_count')->default(0);
             $table->boolean('disable_comments')->default(false);
-            $table->boolean('disable_likes')->default(false);            
-            $table->mediumtext('blocks')->nullable();
+            $table->boolean('disable_likes')->default(false);
+            $table->text('blocks')->nullable();
             $table->string('identificator', 32)->unique()->nullable();
-            $table->boolean('is_ample')->default(false);
+            $table->boolean('is_sample')->default(false);
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
         });
     }
 

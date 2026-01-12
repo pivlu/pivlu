@@ -21,149 +21,8 @@
 
 namespace Pivlu\Functions;
 
-use Illuminate\Support\Str;
-use Storage;
-use Image;
-use File;
-use Auth;
-use Pivlu\Models\User;
-
 class FileFunctions
 {
-
-    /**
-     * Upload an image to the server. If the upload is successful, it returns the object of the new file.
-     * 
-     * @return object|null The object of uploaded image or null if the upload fails
-     */
-    public static function store_image($requestFile, $old_media_id = null)
-    {
-        if (!$requestFile) return false;
-
-        $uploadSuccessful = false;
-        $temp_path = 'temp-uploads';
-        $disk = config('pivlu.uploads_disk');
-        $image_quality = config('pivlu.uploads_image_quality') ?? 75;
-        $image_quality = (int)$image_quality;
-
-        $disk_path = now()->format('Ymd');
-
-        $extension = strtolower($requestFile->getClientOriginalExtension());
-        $original_name = $requestFile->getClientOriginalName();
-
-        // chech file size
-        $filesize = $requestFile->getSize(); // in bytes
-        $filesize_kb = round($filesize / 1024, 2); // in kB with 2 digits        
-        $filesize_mb = round($filesize / 1024 / 1024, 2); // in kB with 2 digits        
-        $image_max_size = config('pivlu.uploads_image_max_size') ?? 5120; // in kB
-        if ($filesize_kb > $image_max_size) return null;
-
-        // Check file extensions       
-        $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'tif', 'bmp'];
-        if (!in_array($extension, $validExtensions))  return null;
-
-        $originalNameRaw = $requestFile->getClientOriginalName();
-        $originalName =  str_replace(' ', '_', $originalNameRaw);
-
-        $newFilename = Str::random(12) . '-' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.webp';
-
-        if (!File::isDirectory($temp_path)) {
-            File::makeDirectory($temp_path, 0777, true, true);
-        }
-
-        // Save different image variants (main, thumbnail, square, rectangle)
-        $temp_pathLarge = "$temp_path/$newFilename";
-        $temp_pathSmall = "$temp_path/small_$newFilename";
-        $temp_pathSquare = "$temp_path/square_$newFilename";
-        $temp_pathThumb = "$temp_path/thumb_$newFilename";
-        $temp_pathThumbSquare = "$temp_path/thumb_square_$newFilename";
-
-        $disk_pathLarge = "$disk_path/$newFilename";
-        $disk_pathSmall = "$disk_path/small_$newFilename";
-        $disk_pathSquare = "$disk_path/square_$newFilename";
-        $disk_pathThumb = "$disk_path/thumb_$newFilename";
-        $disk_pathThumbSquare = "$disk_path/thumb_square_$newFilename";
-
-        // Saving the main image with a maintained aspect ratio
-        Image::read($requestFile)->scaleDown(1200, 800)->toWebp($image_quality)->save($temp_pathLarge);
-        $contents = @file_get_contents($temp_pathLarge);
-        Storage::disk($disk)->put($disk_pathLarge, $contents);
-        @unlink($temp_pathLarge); // delete temp file
-
-        // Saving a small image with a maintained aspect ratio
-        Image::read($requestFile)->scaleDown(600, 400)->toWebp($image_quality)->save($temp_pathSmall);
-        $contents = @file_get_contents($temp_pathSmall);
-        Storage::disk($disk)->put($disk_pathSmall, $contents);
-        @unlink($temp_pathSmall); // delete temp file
-
-        // Save a square version of the image        
-        Image::read($requestFile)->contain(1000, 1000, background: 'transparent', position: 'center')->toWebp($image_quality)->save($temp_pathSquare);
-        $contents = @file_get_contents($temp_pathSquare);
-        Storage::disk($disk)->put($disk_pathSquare, $contents);
-        @unlink($temp_pathSquare); // delete temp file
-
-        // Save a thumbnail version of the image
-        Image::read($requestFile)->coverDown(300, 300)->toWebp($image_quality)->save($temp_pathThumb);
-        $contents = @file_get_contents($temp_pathThumb);
-        Storage::disk($disk)->put($disk_pathThumb, $contents);
-        @unlink($temp_pathThumb); // delete temp file
-
-        // Save a thumbnail square version of the image        
-        Image::read($requestFile)->contain(300, 300, background: 'transparent', position: 'center')->toWebp($image_quality)->save($temp_pathThumbSquare);
-        $contents = @file_get_contents($temp_pathThumbSquare);
-        Storage::disk($disk)->put($disk_pathThumbSquare, $contents);
-        @unlink($temp_pathThumbSquare); // delete temp file
-
-        $media = Media::create([
-            'code' => strtoupper(Str::random(16)),
-            'filename' => $newFilename,
-            'original_name' => $original_name,
-            'folder' => $disk_path,
-            'disk' => $disk,
-            'user_id' => Auth::user()->id ?? null,
-            'mime_type' => 'image/webp',
-            'extension' => 'webp',
-            'size_mb' => $filesize_mb ?? null
-
-        ]);
-
-        $uploadSuccessful = true;
-
-
-        //dd($old_media);
-
-        // DELETE OLD IMAGE
-        if ($uploadSuccessful && $old_media_id) {
-
-            $old_media = Media::find($old_media_id);
-            if ($old_media) {
-                $old_image_disk = $old_media->disk ?? null;
-                $old_image_filename = $old_media->filename ?? null;
-                if ($old_media->folder) $old_image_filename = $old_media->folder . '/' . $old_image_filename;
-
-                Storage::disk($old_image_disk)->delete($old_image_filename); // delete large file
-
-                // Additionally delete all images created
-                $pathInfo = pathinfo($old_image_filename);
-                $pathSmall = "{$pathInfo['dirname']}/small_{$pathInfo['basename']}";
-                $pathSquare = "{$pathInfo['dirname']}/square_{$pathInfo['basename']}";
-                $pathThumb = "{$pathInfo['dirname']}/thumb_{$pathInfo['basename']}";
-                $pathThumbSquare = "{$pathInfo['dirname']}/thumb_square_{$pathInfo['basename']}";
-
-                Storage::disk($old_image_disk)->delete($pathSmall);
-                Storage::disk($old_image_disk)->delete($pathSquare);
-                Storage::disk($old_image_disk)->delete($pathThumb);
-                Storage::disk($old_image_disk)->delete($pathThumbSquare);
-
-                $old_media->delete();
-            }
-        }
-
-        return $media ?? null;
-    }
-
-
-
 
     /**
      * Upload file to the Storage
@@ -177,7 +36,7 @@ class FileFunctions
         if (!$model) return false;
         if (!$requestFile) return false;
         if (!$mediaCollection) return false;
-     
+
         $item = $model->addMedia($requestFile)->toMediaCollection($mediaCollection);
 
         return $item;
@@ -203,13 +62,33 @@ class FileFunctions
     }
 
 
+    /**
+     * Delete file from the Storage
+     * 
+     * @return bool True if the file was deleted, false otherwise
+     */
+    public static function delete_file($model, $mediaCollection = null)
+    {
+        if (! $model) return false;        
+        $mediaItem = $model->getFirstMedia($mediaCollection);
+        if( ! $mediaItem) return false;
+        $mediaItem->delete();
 
+        return true;
+    }
 
-    public static function delete_file($model)
+    /**
+     * Delete all files from a specific media collection
+     * 
+     * @return bool True if the files were deleted, false otherwise
+     */
+    public static function delete_files($model, $mediaCollection)
     {
         if (! $model) return false;
 
-        $model->delete();        
+        $mediaItems = $model->getMedia($mediaCollection);
+        foreach ($mediaItems as $mediaItem)
+            $mediaItem->delete();
 
         return true;
     }

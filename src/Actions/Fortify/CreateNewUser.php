@@ -35,7 +35,7 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        $code = HelperFunctions::generateRandomInteger(12);
+        $code = HelperFunctions::generateRandomInteger(16);
 
         $user = User::create([
             'code' => $code,

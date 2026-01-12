@@ -34,6 +34,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Image\Enums\Fit;
 use Spatie\Image\Enums\CropPosition;
 
+use Pivlu\Functions\HelperFunctions;
+
 class User extends Authenticatable implements HasMedia, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -67,6 +69,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'password',
         'remember_token',
     ];
+
 
     /**
      * Get the attributes that should be cast.

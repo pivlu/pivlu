@@ -24,12 +24,17 @@ namespace Pivlu\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Pivlu\Models\Block;
+use Pivlu\Models\Theme;
+use Pivlu\Models\BlockItem;
+use Pivlu\Models\BlockItemContent;
 use Pivlu\Models\Language;
-use Pivlu\Models\ThemeStyle;
+use Pivlu\Models\BlockStyle;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\Form;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\BlockFunctions;
+use Pivlu\Functions\FileFunctions;
+use Pivlu\Functions\HelperFunctions;
 
 class BlockController extends Controller
 {
@@ -47,21 +52,23 @@ class BlockController extends Controller
         if ($request->referer) $referer = $request->referer;
         else $referer = request()->headers->get('referer');
 
+        $block_items = BlockItem::with('contents', 'default_language_content')->where('block_id', $request->id)->orderBy('position')->orderByDesc('id')->get();
+
         return view('pivlu::admin.index', [
             'view_file' => 'admin.blocks.block',
             'active_menu' => 'website',
             'active_submenu' => $block->module,
             'block' => $block,
-            'content_array' => json_decode($block->content->content ?? null, true) ?? [],
+            'content_array' => json_decode($block->content->data ?? null, true) ?? [],
+            'block_items' => $block_items,
             'langs' => Language::get_languages(),
             'referer' => $referer,
             'font_sizes' => ThemeFunctions::font_sizes(),
-            'styles' => ThemeStyle::orderBy('label')->get(),
+            'styles' => BlockStyle::orderBy('label')->get(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
             'forms' => Form::where('active', 1)->orderBy('label')->get(), // forms (used in form block)
         ]);
     }
-
 
 
     /**
@@ -80,12 +87,216 @@ class BlockController extends Controller
 
         BlockFunctions::update_block($id, $block->type_id, $request);
 
-        BlockFunctions::regenerate_post_blocks($block->post_id);
+        if ($block->post_id) BlockFunctions::regenerate_post_blocks($block->post_id);
+
 
         if (($request->submit_return_to_block ?? null) == 'block') return redirect(route('admin.blocks.show', ['id' => $id, 'referer' => $referer ?? null]))->with('success', 'updated');
+        elseif ($block->footer_id) {
+            return redirect(route('admin.theme-footers.content', ['id' => $block->footer_id, 'destination' => $block->footer_destination]))->with('success', 'updated');
+        } 
+        elseif($block->theme_id && $block->is_homepage_block == 1) {            
+            return redirect(route('admin.themes.show', ['id' => $block->theme_id, 'theme_tab' => 'home']))->with('success', 'updated');
+        }
         elseif ($referer) return redirect($referer)->with('success', 'updated');
         else return redirect(route('admin.blocks'))->with('success', 'updated');
     }
+
+
+    /**
+     * Store block item (gallery image, slider item, ...)
+     */
+    public function store_item(Request $request)
+    {
+
+        $last_pos = BlockItem::where('block_id', $request->block_id)->orderByDesc('position')->value('position');
+        $position = ($last_pos ?? 0) + 1;
+
+        $block_item = BlockItem::create([
+            'block_id' => $request->block_id,
+            'position' => $position
+        ]);
+
+        // Create block item and its contents for each language        
+        foreach (Language::get_languages() as $lang) {
+
+            $key_image = 'image_' . $lang->id ?? null;
+            $key_title = 'title_' . $lang->id ?? null;
+            $key_content = 'content_' . $lang->id ?? null;
+            $key_caption = 'caption_' . $lang->id ?? null;
+            $key_url = 'url_' . $lang->id ?? null;
+            $key_icon = 'icon_' . $lang->id ?? null;
+
+            $block_item_content = BlockItemContent::create(['block_id' => $request->block_id, 'block_item_id' => $block_item->id, 'lang_id' => $lang->id]);
+
+            if ($request->hasFile($key_image)) {
+                $media = FileFunctions::store_file($block_item_content, $request->file($key_image), 'block_item_media');
+                if ($media) $block_item_content->update(['media_id' => $media->id]);
+            } elseif ($request->has('use_image_for_all_languages') && $lang->id != Language::get_default_language()->id) {
+                // copy media from default language
+                $default_lang_item_content = BlockItemContent::where(['block_item_id' => $block_item->id, 'lang_id' => Language::get_default_language()->id])->first();
+                if ($default_lang_item_content) {
+                    $media2 = $default_lang_item_content->getFirstMedia('block_item_media');
+                    if ($media2) {
+                        $copied_media = $default_lang_item_content->copyMedia($media2->getPath(), 'block_item_media')->preservingOriginal()->toMediaCollection('block_item_media');
+                        $copied_media->update(['model_id' => $block_item_content->id]);
+                        $block_item_content->update(['media_id' => $copied_media->id]);
+                    }
+                }
+            }
+
+            if ($request->type == 'gallery') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'caption' => $request->$key_caption ?? null,
+                    'url' => $request->$key_url ?? null
+                );
+            }
+            if ($request->type == 'card') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'content' => $request->$key_content ?? null,
+                    'url' => $request->$key_url ?? null,
+                    'icon' => $request->$key_icon ?? null
+                );
+            }
+            if ($request->type == 'slider') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'content' => $request->$key_content ?? null,
+                    'url' => $request->$key_url ?? null
+                );
+            }
+
+            if ($request->type == 'links') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'url' => $request->$key_url ?? null,
+                    'icon' => $request->$key_icon ?? null
+                );
+            }
+
+            $block_item_content->update(['data' => json_encode($data, JSON_UNESCAPED_UNICODE)]);
+        }
+
+        return redirect(route('admin.blocks.show', ['id' => $request->block_id, 'type' => $request->type, 'referer' => $request->referer ?? null]))->with('success', 'updated');
+    }
+
+
+    /**
+     * Update block item (gallery image, slider item, card item)
+     */
+    public function update_item(Request $request)
+    {
+        $block_item = BlockItem::find($request->block_item_id);
+
+        foreach (Language::get_languages() as $lang) {
+
+            $block_item_content = BlockItemContent::firstOrCreate(['block_id' => $request->block_id, 'block_item_id' => $block_item->id, 'lang_id' => $lang->id]);
+
+            // if block item has image uploaded
+            $key_image = 'image_' . $lang->id;
+            if ($request->hasFile($key_image)) {
+                // remove old media, if exists
+                $old_media = $block_item_content->getFirstMedia('block_item_media');
+                if ($old_media) {
+                    $block_item_content->deleteMedia($old_media);
+                }
+
+                $media = FileFunctions::store_file($block_item_content, $request->file($key_image), 'block_item_media');
+                if ($media) $block_item_content->update(['media_id' => $media->id]);
+            }
+
+            $key_image = 'image_' . $lang->id ?? null;
+            $key_title = 'title_' . $lang->id ?? null;
+            $key_content = 'content_' . $lang->id ?? null;
+            $key_caption = 'caption_' . $lang->id ?? null;
+            $key_url = 'url_' . $lang->id ?? null;
+            $key_icon = 'icon_' . $lang->id ?? null;
+
+            if ($request->type == 'gallery') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'caption' => $request->$key_caption ?? null,
+                    'url' => $request->$key_url ?? null
+                );
+            }
+            if ($request->type == 'card') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'content' => $request->$key_content ?? null,
+                    'url' => $request->$key_url ?? null,
+                    'icon' => $request->$key_icon ?? null
+                );
+            }
+            if ($request->type == 'slider') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'content' => $request->$key_content ?? null,
+                    'url' => $request->$key_url ?? null
+                );
+            }
+
+            if ($request->type == 'links') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'url' => $request->$key_url ?? null,
+                    'icon' => $request->$key_icon ?? null
+                );
+            }
+
+            $block_item_content->update(['data' => json_encode($data, JSON_UNESCAPED_UNICODE)]);
+        }
+
+        return redirect(route('admin.blocks.show', ['id' => $request->block_id, 'type' => $request->type, 'referer' => $request->referer ?? null]))->with('success', 'updated');
+    }
+
+
+    /**
+     * Store block item (gallery image, slider item, ...)
+     */
+    public function destroy_item(Request $request)
+    {
+        $block_item = BlockItem::find($request->block_item_id);
+
+        $block_item_contents = BlockItemContent::where('block_item_id', $block_item->id)->get();
+
+        foreach ($block_item_contents as $block_item_content) {
+            // delete media
+            $media = $block_item_content->getFirstMedia('block_item_media');
+            if ($media) {
+                $block_item_content->deleteMedia($media);
+            }
+
+            // delete block item content
+            $block_item_content->delete();
+        }
+        $block_item->delete();
+
+        return redirect(route('admin.blocks.show', ['id' => $block_item->block_id, 'referer' => $request->referer ?? null]))->with('success', 'updated');
+    }
+
+
+
+    /**
+     * Ajax sortable
+     */
+    public function sortable_items(Request $request)
+    {
+        $records = $request->all();
+
+        $block = Block::find($request->block_id);
+        if (!$block) return;
+
+        $i = 0;
+
+        foreach ($records['item'] as $key => $value) {
+            BlockItem::where('block_id', $request->block_id)->where('id', $value)->update(['position' => $i]);
+            $i++;
+        }
+
+        return;
+    }
+
 
 
     /**

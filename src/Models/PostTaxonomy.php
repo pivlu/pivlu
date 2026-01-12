@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostTaxonomy extends Model
 {
@@ -42,12 +43,18 @@ class PostTaxonomy extends Model
 
     protected $table = 'pivlu_post_taxonomies';
 
-    protected $appends = ['all_languages_contents'];
 
-    public function getAllLanguagesContentsAttribute()
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
+
+        // If this is a post block and post type has not multilingual content, then get only default language
+        $post_type = PostType::find($this->post_type_id);
+        if ($post_type->multilingual_content == 0) {
+            $langs = Language::where('is_default', 1)->get(); // get only default language - must be an array with one language
+        }
+        
         foreach ($langs as $lang) {
             $post_taxonomy_content = PostTaxonomyContent::with('post_taxonomy')->where('lang_id', $lang->id)->where('post_taxonomy_id', $this->id)->first();            
            
@@ -63,7 +70,12 @@ class PostTaxonomy extends Model
                 'url_path' => $post_taxonomy_content->url_path ?? null,
             ];
         }
-        return json_decode(json_encode($all_language_contents));
+        
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 
     public function post_type()

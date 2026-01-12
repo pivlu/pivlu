@@ -72,7 +72,7 @@
 
                                 <div class="text-muted mb-3">
 
-                                    <span class="float-start me-1"><img style="max-width:25px; height:auto;" class="img-fluid rounded rounded-circle" src="{{ avatar($note->author->avatar_media_id) }}" /></span>
+                                    <span class="float-start me-1"><img style="max-width:25px; height:auto;" class="img-fluid rounded rounded-circle" src="{{ avatar($note->author, 'thumb') }}" /></span>
 
                                     <b><a href="{{ route('admin.accounts.show', ['id' => $note->created_by_user_id]) }}">{{ $note->author->name }}</a></b> {{ __('at') }}
                                     {{ date_locale($note->created_at, 'datetime') }}
@@ -81,7 +81,8 @@
 
                                 @if ($note->media_id)
                                     <div class="mb-2"></div>
-                                    <a target="_blank" href="{{ $note->media->url }}"><i class="bi bi-link-45deg"></i> <b>{{ $note->media->original_name }}</b></a>
+                                    <a target="_blank" href="{{ $note->getFirstMediaUrl('user_notes_media') }}"><i class="bi bi-link-45deg"></i>
+                                        <b>{{ $note->getFirstMedia('user_notes_media')->file_name }}</b> ({{ $note->getFirstMedia('user_notes_media')->human_readable_size }})</a>
                                 @endif
                             </td>
 

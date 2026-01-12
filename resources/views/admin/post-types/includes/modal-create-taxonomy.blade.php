@@ -24,6 +24,7 @@ debug_backtrace() || die('Direct access not permitted');
                                 <div class="form-group">
                                     <label>{{ __('Name') }}</label>
                                     <input class="form-control" name="name_{{ $lang->id }}" type="text" required />
+                                    <div class="form-text">{{ __('Plural. E.g. "Categories"') }}</div>
                                 </div>
                             </div>
 
@@ -91,16 +92,22 @@ debug_backtrace() || die('Direct access not permitted');
                                             <input class="form-control" name="label_search_{{ $lang->id }}" type="text" />
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{ __('Label popular') }}</label>
+                                            <input class="form-control" name="label_popular_{{ $lang->id }}" type="text" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <hr>
+                        @if (count(languages()) > 1)
+                            <hr>
+                        @endif
                     @endforeach
 
-                    @if (count(languages()) > 1)
-                        <hr>
-                    @endif
 
                     <div class="row">
                         <div class="col-md-4">

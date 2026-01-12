@@ -1,4 +1,3 @@
-
 /* ===========================================================
  * trumbowyg.indent.js v1.0
  * Indent or Outdent plugin for Trumbowyg
@@ -8,7 +7,7 @@
  *          Website : https://github.com/Fabacks
  */
 
- (function ($) {
+(function ($) {
     'use strict';
 
     $.extend(true, $.trumbowyg, {
@@ -25,6 +24,10 @@
             by: {
                 indent: 'Водступ',
                 outdent: 'Выступ'
+            },
+            de: {
+                indent: 'Einzug vergrößern',
+                outdent: 'Einzug verkleinern'
             },
             et: {
                 indent: 'Taande suurendamine',
@@ -49,7 +52,7 @@
             tr: {
                 indent: 'Girinti',
                 outdent: 'Çıkıntı'
-            },
+            }
             // jshint camelcase:true
         }
     });

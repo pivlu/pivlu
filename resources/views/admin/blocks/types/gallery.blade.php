@@ -74,9 +74,8 @@
 </div>
 
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif
+    <label class="mb-2">{!! lang_label($lang_content, __('Header content')) !!}</label>
+
 
     @include('pivlu::admin.blocks.includes.block-header')
 

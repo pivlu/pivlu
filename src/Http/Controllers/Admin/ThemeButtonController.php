@@ -39,8 +39,8 @@ class ThemeButtonController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.buttons.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'themes',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'buttons',
             'nav_tab' => 'buttons',
             'buttons' => $buttons,
         ]);
@@ -92,8 +92,8 @@ class ThemeButtonController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.buttons.show',
-            'active_menu' => 'website',
-            'active_submenu' => 'themes',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'buttons',
             'nav_tab' => 'buttons',
             'button' => $button,
             'data' => json_decode($button->data),

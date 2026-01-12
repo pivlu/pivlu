@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('pivlu_theme_menus', function (Blueprint $table) {
             $table->id();
             $table->string('label', 50);
-            $table->boolean('is_default')->default(false);   
-            
+            $table->boolean('is_default')->default(false);
+            $table->unsignedBigInteger('package_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('package_id')->references('id')->on('pivlu_packages')->cascadeOnDelete();
         });
     }
 

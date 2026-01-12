@@ -34,11 +34,13 @@
     <div class="form-group col-md-4">
         <label for="formFile" class="form-label">{{ __('Image') }}</label>
         <input class="form-control" type="file" id="formFile" name="image">
-        <div class="text-muted small">{{ __('Image file. Maximum 5 MB.') }}</div>
+        <div class="text-muted small">{{ __('Image file') }}</div>
     </div>
-    @if ($block_settings->media_id ?? null)
-        <a target="_blank" href="{{ image($block_settings->media_id) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings->media_id) }}" class="img-fluid"></a>
-        <input type="hidden" name="existing_image" value="{{ $block_settings->media_id ?? null }}">
+    @if ($block->media_id ?? null)
+        <a target="_blank" href="{{ first_media_url($block, 'block_media', 'large') }}">
+            <img style="max-width: 300px; max-height: 100px;" src="{{ first_media_url($block, 'block_media', 'thumb') }}" class="img-fluid">
+        </a>
+        <input type="hidden" name="existing_image" value="{{ $block->media_id ?? null }}">
     @endif
 
     <script>
@@ -145,25 +147,17 @@
     </div>
 </div>
 
-<h5 class="mb-3">{{ __('Block content') }}:</h5>
-
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif
-
-    @php
-        $block_content = json_decode($lang_content->content);
-    @endphp
+    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Block content')) !!}</div>
 
     <div class="form-group">
         <label>{{ __('Title') }}</label>
-        <input class="form-control" name="title_{{ $lang_content->lang_id }}" value="{{ $block_content->title ?? null }}">
+        <input class="form-control" name="title_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->title ?? null }}">
     </div>
 
     <div class="form-group">
         <label>{{ __('Content') }}</label>
-        <textarea class="form-control trumbowyg" name="content_{{ $lang_content->lang_id }}">{{ $block_content->content ?? null }}</textarea>
+        <textarea class="form-control trumbowyg" name="content_{{ $lang_content->lang_id }}">{{ $lang_content->data->content ?? null }}</textarea>
     </div>
 
     <div class="row">
@@ -172,7 +166,7 @@
                 <label>{{ __('Button 1 style') }} [<a target="_blank" href="{{ route('admin.theme-buttons.index') }}">{{ __('Manage buttons') }}</a>]</label>
                 <select class="form-select" name="btn1_id_{{ $lang_content->lang_id }}">
                     @foreach ($buttons as $button)
-                        <option @if (($block_content->btn1_id ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
+                        <option @if (($block_content->data->btn1_id ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
                     @endforeach
                 </select>
             </div>
@@ -181,7 +175,7 @@
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
                 <label>{{ __('Button 1 label') }}</label>
-                <input type="text" class="form-control" name="btn1_label_{{ $lang_content->lang_id }}" value="{{ $block_content->btn1_label ?? null }}">
+                <input type="text" class="form-control" name="btn1_label_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->btn1_label ?? null }}">
                 <div class="form-text">{{ __('Leave empty to hide button') }}</div>
             </div>
         </div>
@@ -189,7 +183,7 @@
         <div class="col-md-4 col-lg-3">
             <div class="form-group">
                 <label>{{ __('Button 1 URL') }}</label>
-                <input type="text" class="form-control" name="btn1_url_{{ $lang_content->lang_id }}" value="{{ $block_content->btn1_url ?? null }}">
+                <input type="text" class="form-control" name="btn1_url_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->btn1_url ?? null }}">
             </div>
         </div>
 
@@ -197,7 +191,7 @@
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
                 <label>{{ __('Button 1 icon') }} ({{ __('optional') }})</label>
-                <input type="text" class="form-control" name="btn1_icon_{{ $lang_content->lang_id }}" value="{{ $block_content->btn1_icon ?? null }}">
+                <input type="text" class="form-control" name="btn1_icon_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->btn1_icon ?? null }}">
             </div>
         </div>
     </div>
@@ -208,7 +202,7 @@
                 <label>{{ __('Button 2 style') }} [<a target="_blank" href="{{ route('admin.theme-buttons.index') }}">{{ __('Manage buttons') }}</a>]</label>
                 <select class="form-select" name="btn2_id_{{ $lang_content->lang_id }}">
                     @foreach ($buttons as $button)
-                        <option @if (($block_content->btn2_id ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
+                        <option @if (($block_content->data->btn2_id ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
                     @endforeach
                 </select>
             </div>
@@ -217,7 +211,7 @@
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
                 <label>{{ __('Button 2 label') }}</label>
-                <input type="text" class="form-control" name="btn2_label_{{ $lang_content->lang_id }}" value="{{ $block_content->btn2_label ?? null }}">
+                <input type="text" class="form-control" name="btn2_label_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->btn2_label ?? null }}">
                 <div class="form-text">{{ __('Leave empty to hide button') }}</div>
             </div>
         </div>
@@ -225,7 +219,7 @@
         <div class="col-md-4 col-lg-3">
             <div class="form-group">
                 <label>{{ __('Button 2 URL') }}</label>
-                <input type="text" class="form-control" name="btn2_url_{{ $lang_content->lang_id }}" value="{{ $block_content->btn2_url ?? null }}">
+                <input type="text" class="form-control" name="btn2_url_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->btn2_url ?? null }}">
             </div>
         </div>
 
@@ -233,7 +227,7 @@
         <div class="col-md-4 col-lg-3 col-xl-2">
             <div class="form-group">
                 <label>{{ __('Button 2 icon') }} ({{ __('optional') }})</label>
-                <input type="text" class="form-control" name="btn2_icon_{{ $lang_content->lang_id }}" value="{{ $block_content->btn2_icon ?? null }}">
+                <input type="text" class="form-control" name="btn2_icon_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->btn2_icon ?? null }}">
             </div>
         </div>
     </div>

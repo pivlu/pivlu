@@ -38,9 +38,5 @@ class FormFieldData extends Model
     {
         return $this->belongsTo(FormField::class, 'field_id')->with('default_lang_field');
     }
-
-    public function media()
-    {
-        return $this->belongsTo(Media::class, 'value', 'code');
-    }
+    
 }

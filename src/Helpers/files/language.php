@@ -71,11 +71,29 @@ if (!function_exists('admin_languages')) {
 
 
 if (!function_exists('lang_label')) {
-	function lang_label($text, $lang)
-	{
+	function lang_label($lang, $text = null)
+	{		
 		if (count(admin_languages()) > 1) {
-			$data = flag($lang->code) . ' '. $text. ' (' . $lang->name . ')';
+			if($text)
+				$data = flag(($lang->code ?? $lang->lang_code)) . ' '. $text. ' <span class="fw-normal">(' . ($lang->lang_name ?? $lang->name) . ')</span>';
+			else
+				$data = flag(($lang->code ?? $lang->lang_code)) . ' <span class="fw-normal">'. ($lang->lang_name ?? $lang->name) . '</span>';
 		}
+		else 
+			$data = $text;
+
 		return $data ?? null;
 	}
+}
+
+
+if (!function_exists('get_route_lang')) {
+    function get_route_lang()
+    {
+
+        if (Language::get_active_language()->id == Language::get_default_language()->id)
+            return null;
+        else
+            return Language::get_active_language()->code;
+    }
 }

@@ -62,14 +62,14 @@ class ThemeHomepageController extends Controller
      */
     public function delete_block(Request $request)
     {
-        $theme = Theme::where('slug', $request->slug)->first();
+        $theme = Theme::find($request->id);
         if (!$theme) return redirect(route('admin.themes.index'));
 
         Block::where('id', $request->block_id)->delete();
 
         BlockFunctions::regenerate_homepage_blocks($theme->id);
 
-        return redirect(route('admin.themes.show', ['slug' => $theme->slug, 'theme_tab' => 'homepage']))->with('success', 'deleted');
+        return redirect(route('admin.themes.show', ['id' => $theme->id, 'theme_tab' => 'home']))->with('success', 'deleted');
     }
 
 

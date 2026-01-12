@@ -3,6 +3,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ThemeMenuItem extends Model
 {
@@ -14,23 +15,34 @@ class ThemeMenuItem extends Model
         'position',
         'new_tab',
         'btn_id',
-        'icon'
+        'icon',
+        'css_classes',
     ];
 
     protected $table = 'pivlu_theme_menu_items';
 
-    protected $appends = ['all_languages_contents', 'default_language_content', 'type_page_data'];
-
-
-    public function getAllLanguagesContentsAttribute()
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
         foreach ($langs as $lang) {
             $content = ThemeMenuContent::where('lang_id', $lang->id)->where('item_id', $this->id)->first();
-            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'label' => $content->label ?? null];
+            $all_language_contents[] = [
+                'lang_id' => $lang->id,
+                'lang_name' => $lang->name,
+                'lang_code' => $lang->code,
+                'label' => $content->label ?? null,
+                'description' => $content->description ?? null,
+                'custom_url' => $content->custom_url ?? null,
+                'url' => $content->url ?? null
+            ];
         }
-        return json_decode(json_encode($all_language_contents));
+
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 
     public function default_language_content()
@@ -40,10 +52,17 @@ class ThemeMenuItem extends Model
 
 
 
-    public function getTypePageDataAttribute()
+    public function typePageData(): Attribute
     {
+        if (!($this->value ?? null)) {
+            return new Attribute(
+                get: fn() =>  null
+            );
+        }
         $page_content = PostContent::where(['lang_id' => Language::get_default_language()->id, 'post_id' => (int)$this->value])->first();
 
-        return $page_content;
+        return new Attribute(
+            get: fn() =>  $page_content
+        );
     }
 }

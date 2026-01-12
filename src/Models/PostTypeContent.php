@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostTypeContent extends Model
 {
@@ -32,6 +33,9 @@ class PostTypeContent extends Model
         'name',
         'labels',
         'slug',
+        'title',
+        'meta_title',
+        'meta_description',
     ];
 
     protected $table = 'pivlu_post_type_content';
@@ -47,5 +51,29 @@ class PostTypeContent extends Model
     {
         return $this->belongsTo(Language::class, 'lang_id');
     }
-   
+
+    public function url(): Attribute
+    {
+        $post_type = PostType::find($this->post_type_id);
+        $lang = Language::find($this->lang_id);
+
+        if (!$post_type) return new Attribute(
+            get: fn() => null
+        );
+
+        $type_slug = PostTypeContent::where(['post_type_id' => $this->post_type_id, 'lang_id' => $this->lang_id])->value('slug');
+        
+        if ($type_slug) {
+            if ($lang->is_default == 0) {
+                $return = route('locale.level1', ['lang' => $lang->code, 'slug' => $type_slug]) ?? null;
+            } else
+                $return = route('level1', ['slug' => $type_slug]) ?? null;
+        } else {
+            $return = null;
+        }
+
+        return new Attribute(
+            get: fn() =>  $return
+        );
+    }
 }

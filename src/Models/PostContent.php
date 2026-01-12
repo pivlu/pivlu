@@ -22,7 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostContent extends Model
 {
@@ -33,7 +33,6 @@ class PostContent extends Model
         'title',
         'summary',
         'slug',
-        'url',
         'meta_title',
         'meta_description',
         'search_terms',
@@ -45,5 +44,40 @@ class PostContent extends Model
     {
         return $this->belongsTo(Post::class, 'post_id');
     }
-    
+
+    public function url(): Attribute
+    {
+        $post = Post::with('post_type')->find($this->post_id);
+        if (!$post) $return = null;
+        
+        // PAGE TYPE
+        if ($post->post_type->type == 'page') {
+            // check if page is child of another page
+            $parent_id = Post::where('id', $this->post_id)->value('parent_id');
+
+            if ($parent_id) {
+                $parent_slug = PostContent::where(['post_id' => $parent_id, 'lang_id' => $this->lang_id])->value('slug');
+                if (! $parent_slug) $return = null;
+                $url = $parent_slug . '/' . $this->slug;
+            } else {
+                $slug = PostContent::where(['post_id' => $this->post_id, 'lang_id' => $this->lang_id])->value('slug');
+                if (! $slug) $return = null;
+                $url = $slug;
+            }
+        } else {
+            $type_slug = PostTypeContent::where(['post_type_id' => $post->post_type->id, 'lang_id' => $this->lang_id])->value('slug');
+            if (! $type_slug) $return = null;
+            $url = $type_slug . '/' . $this->slug;
+        }
+
+        $lang = Language::find($this->lang_id);
+        if ($lang->is_default == 0) $url = $lang->code . '/' . $url;
+
+        $return = route('home') . '/' . $url ?? null;
+
+
+        return new Attribute(
+            get: fn() =>  $return
+        );
+    }
 }

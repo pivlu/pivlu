@@ -23,14 +23,23 @@ namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Pivlu\Models\User;
-use Pivlu\Functions\PostFunctions;
+use Pivlu\Functions\HelperFunctions;
 
-class Post extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Enums\Fit;
+
+class Post extends Model implements HasMedia
 {
-    use SoftDeletes;
+    use SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
+        'code',
         'post_type_id',
         'media_id',
         'user_id',
@@ -47,17 +56,20 @@ class Post extends Model
 
     protected $table = 'pivlu_posts';
 
-    protected $appends = ['all_languages_contents'];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($post) {
+            if (empty($post->code)) {
+                $post->code = HelperFunctions::generateRandomInteger(16);
+            }
+        });
+    }
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-
-    public function media()
-    {
-        return $this->hasOne(Media::class, 'media_id');
     }
 
     public function post_type()
@@ -83,6 +95,7 @@ class Post extends Model
         return $this->hasOne(PostContent::class, 'post_id')->where('lang_id', Language::get_active_language()->id);
     }
 
+
     public static function get_main_hierarchical_taxonomy($post)
     {
         foreach ($post->taxonomies as $taxonomy) {
@@ -96,16 +109,37 @@ class Post extends Model
     }
 
 
+    public function meta()
+    {
+        return $this->hasMany(PostMeta::class, 'post_id');
+    }
+
+
     public function blocks()
     {
         return $this->hasMany(BlockContent::class, 'post_id');
     }
 
 
-    public function getAllLanguagesContentsAttribute()
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
+
+        $post = Post::find($this->id);
+        if (! $post) return new Attribute(
+            get: fn() =>  null
+        );
+
+        // If post type of this post has not multilingual content, then get only default language
+        if ($post->post_type_id) {
+            $post_type = PostType::find($post->post_type_id);
+            if ($post_type->multilingual_content == 0) {
+                $langs = Language::where('is_default', 1)->get(); // get only default language - must be an array with one language
+            }
+        }
+
+        // Get content for each language
         foreach ($langs as $lang) {
             $content = PostContent::where('lang_id', $lang->id)->where('post_id', $this->id)->first();
             $all_language_contents[] = [
@@ -118,9 +152,132 @@ class Post extends Model
                 'summary' => $content->summary ?? null,
                 'meta_title' => $content->meta_title ?? null,
                 'meta_description' => $content->meta_description ?? null,
-                'url' => PostFunctions::get_post_url($this->id, $lang->id)
+                'url' => $content->url ?? null
             ];
         }
-        return json_decode(json_encode($all_language_contents));
+
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
+    }
+
+
+    public function title(): Attribute
+    {
+        return new Attribute(
+            get: fn() => HelperFunctions::clean_text($this->active_language_content->title ?? null)
+        );
+    }
+
+    public function summary(): Attribute
+    {
+        return new Attribute(
+            get: fn() => HelperFunctions::clean_text($this->active_language_content->summary ?? null)
+        );
+    }
+
+    public function metaTitle(): Attribute
+    {
+        $data = $this->active_language_content->meta_title ?? $this->active_language_content->title ?? null;
+        $data = HelperFunctions::clean_text($data);
+        if (strlen($data) > 300) $data = substr($data, 0, 150);
+
+        return new Attribute(
+            get: fn() => HelperFunctions::clean_text($this->active_language_content->meta_title ?? $this->active_language_content->title ?? null)
+        );
+    }
+
+    public function metaDescription(): Attribute
+    {
+        $data = $this->active_language_content->meta_description ?? $this->active_language_content->summary ?? $this->active_language_content->title ?? null;
+        $data = HelperFunctions::clean_text($data);
+        if (strlen($data) > 300) $data = substr($data, 0, 250);
+
+        return new Attribute(
+            get: fn() => $data
+        );
+    }
+
+
+    public function contentBlocks(): Attribute
+    {
+        $data = [];
+        if ($this->blocks) $data = json_decode($this->blocks);
+
+        return new Attribute(
+            get: fn() => $data
+        );
+    }
+
+    /**
+     * Register the media collections.
+     *
+     * @return void
+     */
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('post_media')
+            ->singleFile()
+            ->withResponsiveImages()
+            ->useFallbackUrl(asset('assets/img/no-image.png'))
+            ->useFallbackUrl(asset('assets/img/no-image-thumb.png'), 'thumb')
+            ->useFallbackPath(public_path('/assets/img/no-image.png'))
+            ->useFallbackPath(public_path('/assets/img/no-image-thumb.png'), 'thumb');
+    }
+
+    /**
+     * Register the media conversions.
+     *
+     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media|null  $media
+     * @return void
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('large')
+            ->fit(Fit::Contain, 1200, 800)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->quality(80)
+            ->optimize()
+            ->nonQueued();
+
+        $this->addMediaConversion('small')
+            ->fit(Fit::Contain, 600, 400)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('square')
+            ->fit(Fit::Fill, 1000, 1000)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('small_square')
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->fit(Fit::FillMax, 350, 350)
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb_square')
+            ->format('webp')
+            //->keepOriginalImageFormat()
+            ->fit(Fit::FillMax, 150, 150)
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb')
+            ->format('webp')
+            //->keepOriginalImageFormat()
+            ->fit(Fit::Max, 150, 150)
+            ->nonQueued();
+
+        $this->addMediaConversion('crop')
+            ->format('webp')
+            //->keepOriginalImageFormat()
+            ->fit(Fit::Crop, 350, 350)
+            ->nonQueued();
     }
 }

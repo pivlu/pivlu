@@ -80,4 +80,25 @@ class HelperFunctions
 
         return $ip;
     }
+
+
+    public static function clean_text($content, $strip_tags = false)
+    {
+        if ($strip_tags) {
+            // Remove HTML tags
+            $content = strip_tags($content);
+        }
+
+        // Remove extra spaces, tabs, newlines
+        $content = preg_replace('/\s+/', ' ', $content);
+
+        // Trim leading and trailing spaces
+        $content = trim($content);
+
+        $content = str_replace('<p><br></p>', '', $content);
+        $content = str_replace('<br><br>', '<br>', $content);
+        $content = str_replace('<p></p>', '', $content);
+
+        return $content;
+    }    
 }

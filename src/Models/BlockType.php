@@ -40,8 +40,13 @@ class BlockType extends Model
 
     protected $table = 'pivlu_block_types';
 
-    public static function get_block_types()
+    public static function get_block_types($section = null)
     {
+        if ($section == 'homepage') {
+            $items = BlockType::where('allow_in_homepage', 1)->orderByDesc('core')->orderBy('position')->orderBy('label')->get();
+            return $items;
+        }
+
         $items = BlockType::orderByDesc('core')->orderBy('position')->orderBy('label')->get();
         return $items;
     }

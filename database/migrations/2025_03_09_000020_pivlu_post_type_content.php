@@ -37,6 +37,9 @@ return new class extends Migration
             $table->string('name', 100)->nullable();
             $table->string('slug', 100)->nullable();
             $table->text('labels')->nullable();                        
+            $table->text('title')->nullable();        
+            $table->text('meta_title')->nullable();        
+            $table->text('meta_description')->nullable();        
 
             $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->cascadeOnDelete();
             $table->foreign('lang_id')->references('id')->on('pivlu_languages')->cascadeOnDelete();

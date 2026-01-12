@@ -22,13 +22,20 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Enums\Fit;
 
-class BlockContent extends Model
+class BlockContent extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $fillable = [
         'block_id',
         'lang_id',
-        'content',
+        'media_id',
+        'data',
         'header',
     ];
 
@@ -40,4 +47,74 @@ class BlockContent extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * Register the media collections.
+     *
+     * @return void
+     */
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('block_content_media')
+            ->singleFile()
+            ->withResponsiveImages()
+            ->useFallbackUrl(asset('assets/img/no-image.png'))
+            ->useFallbackUrl(asset('assets/img/no-image-thumb.png'), 'thumb')
+            ->useFallbackPath(public_path('/assets/img/no-image.png'))
+            ->useFallbackPath(public_path('/assets/img/no-image-thumb.png'), 'thumb');
+    }
+
+    /**
+     * Register the media conversions.
+     *
+     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media|null  $media
+     * @return void
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('large')
+            ->fit(Fit::Contain, 1200, 800)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->quality(80)
+            ->optimize()
+            ->nonQueued();
+
+        $this->addMediaConversion('small')
+            ->fit(Fit::Contain, 600, 400)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('square')
+            ->fit(Fit::Fill, 1000, 1000)
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('small_square')
+            //->keepOriginalImageFormat()
+            ->format('webp')
+            ->fit(Fit::FillMax, 350, 350)
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb_square')
+            ->format('webp') 
+            //->keepOriginalImageFormat()
+            ->fit(Fit::FillMax, 150, 150)
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb')
+            ->format('webp') 
+            //->keepOriginalImageFormat()
+            ->fit(Fit::Max, 150, 150)
+            ->nonQueued();
+
+        $this->addMediaConversion('crop')
+            ->format('webp') 
+            //->keepOriginalImageFormat()
+            ->fit(Fit::Crop, 350, 350)
+            ->nonQueued();
+    }
 }

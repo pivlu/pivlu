@@ -10,30 +10,19 @@
 </div>
 
 
-<h5 class="mb-3">{{ __('Block content') }}:</h5>
-
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif
 
-    @php
-        $block_content = json_decode($lang_content->content);
-    @endphp
+    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Block content')) !!}</div>   
 
     <div class="form-group">
         <label>{{ __('Title') }} ({{ __('optional') }})</label>
-        <input class="form-control" type="text" name="title_{{ $lang_content->lang_id }}" value="{{ $block_content->title ?? null }}">
+        <input class="form-control" type="text" name="title_{{ $lang_content->lang_id }}" value="{{ $lang_content->data->title ?? null }}">
     </div>
 
     <div class="form-group">
         <label>{{ __('Content') }}</label>
-        <textarea class="form-control trumbowyg" name="content_{{ $lang_content->lang_id }}">{{ $block_content->content ?? null }}</textarea>
+        <textarea class="form-control trumbowyg" name="content_{{ $lang_content->lang_id }}">{{ $lang_content->data->content ?? null }}</textarea>
     </div>
 
-    <div class="mb-4"></div>
-
-    @if (count(admin_languages()) > 1 && !$loop->last)
-        <hr>
-    @endif
+    <div class="mb-4"></div>    
 @endforeach

@@ -1,17 +1,19 @@
-<nav class="navbar navbar-expand-lg @if ($config->tpl_navbar_sticky ?? null) sticky-top @endif style_{{ $tpl_theme_config->nav_default_style_id ?? null }}">
+<nav class="navbar navbar-expand-lg @if ($config->tpl_navbar_sticky ?? null) sticky-top @endif style_{{ $config->nav_default_style_id ?? null }}">
     <div class="container-xxl">
 
-        @if (!($tpl_theme_config->navbar_hide_logo ?? null))
+        @if (!($config->navbar_hide_logo ?? null))
             @php
-                if (get_default_language()->code == $tpl_locale->code) {
+                if ($config->active_language->code == $config->locale) {
                     $logo_url = route('home');
                 } else {
-                    $logo_url = route('locale.home', ['lang' => $tpl_locale->code]);
+                    $logo_url = route('locale.home', ['lang' => $config->active_language->code]);
                 }
             @endphp
             <a class="navbar-brand" href="{{ $logo_url }}">
-                @if ($tpl_theme_config->logo_media_id ?? null)
-                    <img src="{{ image($tpl_theme_config->logo_media_id) }}" alt="{{ $config_lang->site_label ?? 'Pivlu' }}">
+                @if ($config->logo_url ?? null)
+                    <img src="{{ $config->logo_url }}" alt="{{ $config->site_label ?? 'Pivlu' }}">
+                @else
+                    <img src="{{ asset('assets/img/logo.png') }}" alt="{{ $config->site_label ?? 'Pivlu' }}">
                 @endif
             </a>
         @endif
@@ -23,14 +25,14 @@
         <div class="collapse navbar-collapse" id="navbar1">
             <ul class="navbar-nav ms-auto">
 
-                @foreach (menu_links() as $navbar_link)
+                @foreach ($config->menu_links as $navbar_link)
                     @if (!empty($navbar_link->dropdown))
                         <li class="nav-item dropdown {{ $config->tpl_navbar_links_margin ?? null }}">
                             <a class="nav-link dropdown-toggle @if ($navbar_link->btn_id) btn btn_{{ $navbar_link->btn_id }} @endif" href="#" id="navbarDropdown_{{ $navbar_link->label }}" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $navbar_link->label }} <i class="bi bi-chevron-down"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-lg-end style_{{ $tpl_theme_config->nav_default_style_id ?? null }}" aria-labelledby="navbarDropdown_{{ $navbar_link->label }}">
+                            <ul class="dropdown-menu dropdown-menu-lg-end style_{{ $config->nav_default_style_id ?? null }}" aria-labelledby="navbarDropdown_{{ $navbar_link->label }}">
                                 @foreach ($navbar_link->dropdown as $navbar_dropdown_link)
                                     <li>
                                         <a @if ($navbar_dropdown_link->new_tab == 1) target="_blank" @endif class="dropdown-item" href="{{ $navbar_dropdown_link->url }}">
@@ -55,7 +57,7 @@
                                     </a>
                                 </span>
                             @else
-                                <span class="style_{{ $tpl_theme_config->nav_default_style_id ?? null }}">
+                                <span class="style_{{ $config->nav_default_style_id ?? null }}">
                                     <a @if ($navbar_link->new_tab == 1) target="_blank" @endif class="nav-link" href="{{ $navbar_link->url ?? null }}" title="{{ $config_lang->site_label ?? config('app.name') }}">
                                         @if ($navbar_link->icon)
                                             {!! $navbar_link->icon !!}
@@ -73,13 +75,13 @@
 
                 @if (!($config->tpl_navbar_hide_auth ?? null))
                     @if (Auth::user() ?? null)
-                        <li class="nav-item dropdown {{ $tpl_theme_config->tpl_navbar_links_margin ?? null }}">
+                        <li class="nav-item dropdown {{ $config->tpl_navbar_links_margin ?? null }}">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownAuth" role="button">
                                 <img class="avatar rounded-circle me-1" alt="{{ Auth::user()->name }}" src="{{ Auth::user()->getFirstMediaUrl('avatars', 'thumb') }}" />
                                 {{ strtok(Auth::user()->name, ' ') }} <i class="bi bi-chevron-down"></i>
                             </a>
 
-                            <ul class="dropdown-menu dropdown-menu-lg-end style_{{ $tpl_theme_config->nav_default_style_id ?? null }}" aria-labelledby="navbarDropdownAuth">
+                            <ul class="dropdown-menu dropdown-menu-lg-end style_{{ $config->nav_default_style_id ?? null }}" aria-labelledby="navbarDropdownAuth">
 
                                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'internal')
                                     <li><a href="{{ route('admin') }}" class="dropdown-item"><i class="bi bi-person-workspace me-2"></i> {{ __('Admin area') }}</a></li>

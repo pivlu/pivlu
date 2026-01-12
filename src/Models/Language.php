@@ -30,10 +30,7 @@ class Language extends Model
 
     protected $fillable = ['name', 'code', 'locale', 'is_default', 'status', 'timezone', 'dir', 'site_label']; // Defines the attributes that are mass assignable
 
-    protected $appends = ['site_label'];
-
     public $timestamps = false; // Indicates that the model does not have timestamp fields
-
     
 
     // Get active and inactive langs
@@ -106,11 +103,5 @@ class Language extends Model
     {
         return $this->hasOne(PostContent::class, 'lang_id');
     }
-
-    public function getSiteLabelAttribute()
-    {
-        $label  = ConfigLang::get_config($this->id, 'site_label');
-
-        return $label;
-    }
+    
 }

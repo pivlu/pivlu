@@ -1,26 +1,23 @@
-@php
-    $footer = footer();
-@endphp
-
+@if($tpl_footer ?? null)
 <div id="footer">
     <!-- ======= Primary Footer ======= -->
     <div class="style_footer py-4">
-        <div class="@if ((($is_forum_page ?? null) && ($config->tpl_forum_container_fluid ?? null)) || (($is_page ?? null) && ($page->container_fluid ?? null))) container-fluid @else container-xxl @endif overflow-hidden">
+        <div class="@if (($is_page ?? null) && ($page->container_fluid ?? null)) container-fluid @else container-xxl @endif overflow-hidden">
             @php
-                $footer_columns = $footer->footer_columns ?? 1;
-            @endphp
+                $footer_columns = $tpl_footer->footer_columns ?? 1;
+                @endphp
 
             @include("pivlu::web.layouts.footer-{$footer_columns}-col", ['destination' => 'primary'])
         </div>
     </div>
 
 
-    @if ($footer->footer2_show ?? null)
+    @if (($tpl_footer->footer2_show ?? null) == 1)
         <!-- ======= Secondary Footer ======= -->
         <div class="style_footer2 py-3">
-            <div class="@if ((($is_forum_page ?? null) && ($config->tpl_forum_container_fluid ?? null)) || (($is_page ?? null) && ($page->container_fluid ?? null))) container-fluid @else container-xxl @endif">
+            <div class="@if (($is_page ?? null) && ($page->container_fluid ?? null)) container-fluid @else container-xxl @endif">
                 @php
-                    $footer2_columns = $footer->footer2_columns ?? 1;
+                    $footer2_columns = $tpl_footer->footer2_columns ?? 1;
                 @endphp
 
                 @include("pivlu::web.layouts.footer-{$footer2_columns}-col", ['destination' => 'secondary'])
@@ -28,11 +25,18 @@
         </div>
     @endif
 </div>
+@endif
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
 <!-- Fancybox -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/fancybox/fancybox.umd.js"></script>
+
+<script>
+    Fancybox.bind("[data-fancybox]", {
+  
+    });
+</script>
 
 @if (($config->addthis_code ?? null) && ($config->addthis_code_enabled ?? null))
     <!-- Addthis tools -->

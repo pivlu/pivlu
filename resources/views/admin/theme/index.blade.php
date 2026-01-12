@@ -14,8 +14,6 @@
 
 <div class="card">
 
-    @include('pivlu::admin.theme.includes.menu-themes')
-
     <div class="card-header">
 
         <div class="float-end">
@@ -84,11 +82,21 @@
                                 </div>
 
                                 <div class="fw-bold fs-5">
-                                    {{ $theme->label }}
+                                    {{ $theme->name }}
                                     @if ($theme->is_active == 1)
-                                    <span class="badge bg-success fs-6 fw-normal">{{ __('Active template') }}</span>
+                                        <span class="badge bg-success fs-6 fw-normal">{{ __('Active template') }}</span>
+                                    @endif
+
+                                    @if ($theme->is_builder == 1)
+                                        <span class="badge bg-info fs-6 fw-normal">{{ __('Theme builder') }}</span>
                                     @endif
                                 </div>
+
+                                @if ($theme->description)
+                                    <div class="text-muted mt-1">
+                                        {{ $theme->description }}
+                                    </div>
+                                @endif
 
                                 <div class="small text-muted mt-1">
                                     {{ __('Created at') }} {{ $theme->created_at }}

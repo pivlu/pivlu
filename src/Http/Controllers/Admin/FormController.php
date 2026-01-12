@@ -60,7 +60,7 @@ class FormController extends Controller
         if (!$form) return redirect(route('admin.forms.config'));
 
         $fields = FormField::where('form_id', $request->id)->orderByDesc('active')->orderBy('position')->get();
-
+        
         return view('pivlu::admin.index', [
             'view_file' => 'admin.forms.show',
             'nav_section' => 'website',
@@ -206,7 +206,7 @@ class FormController extends Controller
             ]);
         }
 
-        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'created');
+        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'created');
     }
 
 
@@ -233,7 +233,7 @@ class FormController extends Controller
             );
         }
 
-        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'updated');
+        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'updated');
     }
 
 
@@ -248,7 +248,7 @@ class FormController extends Controller
         FormFieldData::where('field_id', $request->field_id)->delete();
         FormField::where('id', $request->field_id)->delete();
 
-        return redirect(route('admin.forms.show', ['id' => $request->id]))->with('success', 'deleted');
+        return redirect(route('admin.forms.config.show', ['id' => $request->id]))->with('success', 'deleted');
     }
 
 
@@ -341,7 +341,7 @@ class FormController extends Controller
 
         FormData::where('id', $request->id)->update(['read_at' => now()]);
 
-        $fields = FormFieldData::with('field', 'media')
+        $fields = FormFieldData::with('field')
             ->where('form_id', $form->id)
             ->where('form_data_id', $message->id)
             ->get();

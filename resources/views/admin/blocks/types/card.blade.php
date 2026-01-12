@@ -173,15 +173,9 @@
 </div>
 
 @foreach ($block->all_languages_contents as $lang_content)
-    @if (count(admin_languages()) > 1)
-        <div class="fw-bold fs-5">{!! flag($lang_content->lang_code, 'circle') !!} {{ $lang_content->lang_name }}</div>
-    @endif    
-
+    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Content')) !!}</div>   
+    
     @include('pivlu::admin.blocks.includes.block-header')
 
-    <div class="mb-4"></div>
-
-    @if (count(admin_languages()) > 1 && !$loop->last)
-        <hr>
-    @endif
+    <div class="mb-4"></div>    
 @endforeach

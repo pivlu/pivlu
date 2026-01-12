@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 
+use Pivlu\Http\Controllers\Web\ContentController;
+use Pivlu\Http\Controllers\Web\FormController;
 use Pivlu\Http\Controllers\Web\HomeController;
 use Pivlu\Http\Controllers\Web\ToolsController;
 
@@ -35,8 +37,12 @@ Route::get('/account', function () {
     else return redirect(route('login'));
 })->name('account')->withoutMiddleware('website'); // IMPORTANT !!! Add ->withoutMiddleware() to avoid 'to many redirects' error
 
+
 // Web maintenance
 Route::get('maintenance-mode', [ToolsController::class, 'maintenance'])->name('maintenance')->withoutMiddleware('website'); // IMPORTANT !!! Add ->withoutMiddleware() to avoid 'to many redirects' error
+
+// Submit form
+Route::put('/form-submit/{id}', [FormController::class, 'submit'])->name('form.submit')->where(['id' => '[0-9]+']);
 
 // Web New Account Invitation
 Route::get('action/invite', [ToolsController::class, 'account_invitation']);
@@ -47,13 +53,34 @@ Route::post('action/invite', [ToolsController::class, 'account_invitation_submit
 // Web Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// User profile page
+Route::get('profile' . '/{username}', [ProfileController::class, 'index'])->name('profile')->where(['username' => '[a-zA-Z0-9_-]+']);
+
+// Search
+Route::get('s', [ContentController::class, 'search'])->name('search');
+
+// Web Posts           
+Route::get('{slug}', [ContentController::class, 'level1'])->name('level1')->where(['slug' => '[a-z0-9_-]{3,}+']);
+Route::get('{slug1}/{slug2}', [ContentController::class, 'level2'])->name('level2')->where(['slug1' => '[a-z0-9_-]{3,}+'], ['slug2' => '[a-z0-9_-]+']);
+Route::get('{slug1}/{slug2}/{slug3}', [ContentController::class, 'level3'])->name('level3')->where(['slug1' => '[a-z0-9_-]{3,}+'], ['slug2' => '[a-z0-9_-]+'], ['slug3' => '[a-z0-9_-]+']);
+
 
 // 2. OTHER LANGUAGES
 Route::prefix('{lang}')->name('locale.')->group(function () {
     // Web Homepage
     Route::get('/', [HomeController::class, 'index'])->name('home')->where(['lang' => '[a-z]{2,}+']);
-});
 
+    // User profile page
+    Route::get('profile' . '/{username}', [ProfileController::class, 'index'])->name('profile')->where(['username' => '[a-zA-Z0-9_-]+'])->where(['lang' => '[a-z]{2,}+']);
+
+    // Search
+    Route::get('s', [ContentController::class, 'search'])->name('search')->where(['lang' => '[a-z]{2,}+']);
+
+    // Web Posts   
+    Route::get('{slug}', [ContentController::class, 'level1'])->name('level1')->where(['slug' => '[a-z0-9_-]{3,}+']);
+    Route::get('{slug1}/{slug2}', [ContentController::class, 'level2'])->name('level2')->where(['slug1' => '[a-z0-9_-]{3,}+'], ['slug2' => '[a-z0-9_-]+']);
+    Route::get('{slug1}/{slug2}/{slug3}', [ContentController::class, 'level3'])->name('level3')->where(['slug1' => '[a-z0-9_-]{3,}+'], ['slug2' => '[a-z0-9_-]+'], ['slug3' => '[a-z0-9_-]+']);
+});
 /***********************************
  * FRONTEND ROUTES END
  ***********************************/

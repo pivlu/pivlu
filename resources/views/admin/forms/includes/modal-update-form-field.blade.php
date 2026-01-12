@@ -92,18 +92,18 @@ debug_backtrace() || die('Direct access not permitted');
                     @foreach ($field->all_languages_contents as $field_content)
                         <h5 class="mb-3">
                             @if (count(admin_languages()) > 1)
-                                {!! flag($lang->code) !!} {{ $lang->name }}
+                                {!! flag($field_content->lang_code) !!} {{ $field_content->lang_name }}
                             @endif
                         </h5>
 
                         <div class="form-group">
                             <label>{{ __('Label') }}</label>
-                            <input class="form-control" name="label_{{ $lang->id }}" value="{{ $field_content->label }}" required>
+                            <input class="form-control" name="label_{{ $field_content->lang_id }}" value="{{ $field_content->label }}" required>
                         </div>
 
                         <div class="form-group">
                             <label>{{ __('Info') }} ({{ __('optional') }})</label>                            
-                            <textarea class="form-control" rows="2" name="info_{{ $lang->id }}">{{ $field_content->info }}</textarea>
+                            <textarea class="form-control" rows="2" name="info_{{ $field_content->lang_id }}">{{ $field_content->info }}</textarea>
                         </div>
 
                         <div id="hidden_div_dropdowns_{{ $field->id }}_{{ $field_content->lang_id }}" style="display: @if ($field->type == 'select' || $field->type == 'checkbox') block @else none @endif">

@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostTaxonomyContent extends Model
 {
@@ -30,8 +31,8 @@ class PostTaxonomyContent extends Model
         'post_taxonomy_id',
         'lang_id',
         'name',
-        'slug',   
-        'url_path',     
+        'slug',
+        'url_path',
         'description',
         'meta_title',
         'meta_description',
@@ -44,5 +45,46 @@ class PostTaxonomyContent extends Model
     public function post_taxonomy()
     {
         return $this->belongsTo(PostTaxonomy::class, 'post_taxonomy_id');
+    }
+
+    public function url(): Attribute
+    {
+        $post_taxonomy = PostTaxonomy::find($this->post_taxonomy_id);
+        if (!$post_taxonomy) return new Attribute(
+            get: fn() => null
+        );
+
+        $post_type = PostType::find($post_taxonomy->post_type_id);
+        if (!$post_type) return new Attribute(
+            get: fn() => null
+        );
+
+        $post_type_taxonomy = PostTypeTaxonomy::find($post_taxonomy->post_type_taxonomy_id);
+        if (!$post_type_taxonomy) return new Attribute(
+            get: fn() => null
+        );
+
+        $lang = Language::find($this->lang_id);
+
+        $post_type_slug = PostTypeContent::where(['post_type_id' => $post_type->id, 'lang_id' => $this->lang_id])->value('slug');
+        
+        $post_type_taxonomy_slug = PostTypeTaxonomyContent::where(['post_type_taxonomy_id' => $post_type_taxonomy->id, 'lang_id' => $this->lang_id])->value('slug');
+        
+        if (!($post_type_taxonomy_slug && $post_type_slug)) return new Attribute(
+            get: fn() => null
+        );
+
+        if ($post_type_slug && $this->slug) {
+            if ($lang->is_default == 0) {
+                $return = route('locale.level3', ['lang' => $lang->code, 'slug1' => $post_type_slug, 'slug2' => $post_type_taxonomy_slug, 'slug3' => $this->slug]) ?? null;
+            } else
+                $return = route('level3', ['slug1' => $post_type_slug, 'slug2' => $post_type_taxonomy_slug, 'slug3' => $this->slug]) ?? null;
+        } else {
+            $return = null;
+        }
+
+        return new Attribute(
+            get: fn() =>  $return
+        );
     }
 }

@@ -4,7 +4,7 @@
             <nav aria-label="breadcrumb" class="breadcrumb-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.plugins') }}">{{ __('Plugins') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.packages') }}">{{ __('Plugins') }}</a></li>
                 </ol>
             </nav>
         </div>

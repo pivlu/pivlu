@@ -16,14 +16,10 @@ debug_backtrace() || die('Direct access not permitted');
                 <div class="modal-body">
 
                     @foreach (admin_languages() as $lang)
-                        @if (count(admin_languages()) > 1)
-                            <div class="fw-bold fs-5">{!! flag($lang->code, 'circle') !!} {{ $lang->name }}</div>
-                        @endif
-
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>{{ __('Name') }} ({{ __('plural') }})</label>
+                                    <label>{!! lang_label($lang, __('Name (plural)')) !!}</label>
                                     <input class="form-control" name="name_{{ $lang->id }}" type="text" @if ($lang->is_default == 1) required @endif />
                                     <div class="text-muted small">{{ __('Examples: "Books", "Mobile phones"') }}</div>
                                 </div>
@@ -31,14 +27,39 @@ debug_backtrace() || die('Direct access not permitted');
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>{{ __('Custom URL slug') }} ({{ __('optional') }})</label>
+                                    <label>{!! lang_label($lang, __('Custom URL slug (optional)')) !!}</label>
                                     <div class="input-group">
-                                        <span class="input-group-text" id="addon-slug">{{ config('app.url') }}/</span>
+                                        <span class="input-group-text" id="addon-slug">{{ config('app.url') }}/@if ($lang->is_default == 0)
+                                                {{ $lang->code }}/
+                                            @endif
+                                        </span>
                                         <input class="form-control" aria-describedby="addon-slug" name="slug_{{ $lang->id }}" type="text" />
                                     </div>
                                     <div class="text-muted small">{{ __('Examples: "books", "mobile-phones"') }}</div>
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>{!! lang_label($lang, __('Title')) !!}</label>
+                                    <input class="form-control" name="title_{{ $lang->id }}" type="text" />
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>{!! lang_label($lang, __('Meta title')) !!}</label>
+                                    <input class="form-control" name="meta_title_{{ $lang->id }}" type="text" />
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>{!! lang_label($lang, __('Meta description')) !!}</label>
+                                    <input class="form-control" name="meta_description_{{ $lang->id }}" type="text" />
+                                </div>
+                            </div>
+
                         </div>
 
                         <hr>
@@ -48,7 +69,7 @@ debug_backtrace() || die('Direct access not permitted');
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label singular') }}</label>
+                                        <label>{!! lang_label($lang, __('Label singular')) !!}</label>
                                         <input class="form-control" name="label_singular_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Book", "Mobile phone"') }}</div>
                                     </div>
@@ -56,7 +77,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label plural') }}</label>
+                                        <label>{!! lang_label($lang, __('Label plural')) !!}</label>
                                         <input class="form-control" name="label_plural_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Books", "Mobile phones"') }}</div>
                                     </div>
@@ -64,7 +85,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label create') }}</label>
+                                        <label>{!! lang_label($lang, __('Label create')) !!}</label>
                                         <input class="form-control" name="label_create_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Add new book", "Add new mobile phone"') }}</div>
                                     </div>
@@ -72,7 +93,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label update') }}</label>
+                                        <label>{!! lang_label($lang, __('Label update')) !!}</label>
                                         <input class="form-control" name="label_update_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Update book", "Update mobile phone"') }}</div>
                                     </div>
@@ -80,7 +101,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label delete') }}</label>
+                                        <label>{!! lang_label($lang, __('Label delete')) !!}</label>
                                         <input class="form-control" name="label_delete_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Delete book", "Delete mobile phone"') }}</div>
                                     </div>
@@ -88,7 +109,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label all') }}</label>
+                                        <label>{!! lang_label($lang, __('Label all')) !!}</label>
                                         <input class="form-control" name="label_all_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "All books", "All mobile phones"') }}</div>
                                     </div>
@@ -96,7 +117,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label search') }}</label>
+                                        <label>{!! lang_label($lang, __('Label search')) !!}</label>
                                         <input class="form-control" name="label_search_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Search book", "Search mobile phone"') }}</div>
                                     </div>
@@ -104,7 +125,7 @@ debug_backtrace() || die('Direct access not permitted');
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{ __('Label featured') }}</label>
+                                        <label>{!! lang_label($lang, __('Label featured')) !!}</label>
                                         <input class="form-control" name="label_featured_{{ $lang->id }}" type="text" />
                                         <div class="text-muted small">{{ __('Examples: "Featured books", "Featured mobile phones"') }}</div>
                                     </div>
@@ -123,7 +144,7 @@ debug_backtrace() || die('Direct access not permitted');
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>{{ __('Identificator') }} ({{ __('singular') }})</label>
-                                <input class="form-control" name="type" type="text" minlength="1" maxlength="25" />
+                                <input class="form-control" name="type" type="text" minlength="1" maxlength="25" required />
                                 <div class="text-muted small">{{ __('Only lowercases, letters, numbers and _. Examples: "book", "mobile_phone"') }}</div>
                             </div>
                         </div>
@@ -146,34 +167,21 @@ debug_backtrace() || die('Direct access not permitted');
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="customSwitchShowAdmin" name="show_in_admin_menu" checked>
-                                    <label class="form-check-label" for="customSwitchShowAdmin">{{ __('Show in admin menu') }}</label>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="customSwitchShowSite" name="internal_only">
-                                    <label class="form-check-label" for="customSwitchShowSite">{{ __('Internal only') }}</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="customSwitch" name="active" checked>
-                                    <label class="form-check-label" for="customSwitch">{{ __('Active') }}</label>
-                                </div>
-                            </div>
+                    <div class="form-group mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="customSwitch" name="active" checked>
+                            <label class="form-check-label" for="customSwitch">{{ __('Active') }}</label>
                         </div>
                     </div>
+                    <div class="form-group mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="customSwitchMultilingual" name="multilingual_content" checked>
+                            <label class="form-check-label" for="customSwitchMultilingual">{{ __('Multilingual content') }}</label>
+                        </div>
+                        <div class="text-muted small">{{ __('If enabled, the content of this post type can be translated to multiple languages.') }}</div>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">

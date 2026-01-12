@@ -44,7 +44,7 @@ return new class extends Migration
             $table->boolean('is_default_subject')->default(false);
             $table->boolean('is_default_message')->default(false);
             $table->integer('min_length')->nullable();
-            $table->integer('max_length')->nullable(null);
+            $table->integer('max_length')->nullable();
             $table->timestamps();
 
             $table->foreign('form_id')->references('id')->on('pivlu_forms')->cascadeOnDelete();

@@ -24,6 +24,8 @@ namespace Pivlu\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Pivlu\Models\PostType;
+use Pivlu\Models\Post;
 use Pivlu\Models\ThemeMenu;
 use Pivlu\Models\ThemeMenuItem;
 use Pivlu\Models\ThemeMenuContent;
@@ -42,8 +44,8 @@ class ThemeMenuController extends Controller
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.menus.index',
-            'active_menu' => 'website',
-            'active_submenu' => 'themes',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'menus',
             'nav_tab' => 'menus',
             'menus' => $menus,
         ]);
@@ -82,14 +84,25 @@ class ThemeMenuController extends Controller
 
         $links = ThemeMenuItem::where('menu_id', $menu->id)->whereNull('parent_id')->orderBy('position')->get();
 
+        $post_type_page = PostType::where('type', 'page')->first();
+
+        $pages = Post::with(['default_language_content' => function ($q) {
+            $q->orderBy('title');
+        }])
+            ->where('post_type_id', $post_type_page->id)
+            ->where('status', 'published')
+            ->get();
+
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.menus.show',
-            'nav_section' => 'website',
-            'active_menu' => 'themes',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'menus',
             'nav_tab' => 'menus',
             'menu' => $menu,
             'links' => $links,
+            'pages' => $pages,
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
+            'post_types' => PostType::with('default_language_content')->where('type', '!=', 'page')->where('active', 1)->get(),
         ]);
     }
 
@@ -105,6 +118,7 @@ class ThemeMenuController extends Controller
         if ($menu->is_default == 1) return redirect(route('admin.theme-menus.index'));
 
         ThemeMenu::where('id', $request->id)->delete();
+        ThemeMenuItem::where('menu_id', $request->id)->delete();
 
         return redirect(route('admin.theme-menus.index'))->with('success', 'deleted');
     }
@@ -124,12 +138,12 @@ class ThemeMenuController extends Controller
 
         $type = $request->type;
 
-        if ($type == 'custom') {
-            $value = $request->custom_url;
-        }
-
         if ($type == 'page') {
             $value = $request->page_id;
+        }
+
+        if ($type == 'post_type') {
+            $value = $request->post_type_id;
         }
 
         $last_pos = ThemeMenuItem::where('menu_id', $menu->id)->orderByDesc('position')->value('position');
@@ -142,13 +156,16 @@ class ThemeMenuController extends Controller
             'position' => $position,
             'new_tab' => $request->has('new_tab') ? 1 : 0,
             'btn_id' => $request->btn_id ?? null,
-            'icon' => $request->icon
+            'icon' => $request->icon ?? null,
+            'css_classes' => $request->css_classes ?? null,
         ]);
 
         foreach (admin_languages() as $lang) {
             $label_key = 'label_' . $lang->id;
+            $description_key = 'description_' . $lang->id;
+            $custom_url_key = 'custom_url_' . $lang->id;
 
-            ThemeMenuContent::create(['menu_id' => $menu->id, 'item_id' => $item->id, 'lang_id' => $lang->id, 'label' => $request->$label_key]);
+            ThemeMenuContent::create(['menu_id' => $menu->id, 'item_id' => $item->id, 'lang_id' => $lang->id, 'label' => $request->$label_key, 'description' => $request->$description_key, 'custom_url' => $request->$custom_url_key ?? null]);
         }
 
         // regenerate menu links for each language and store in cache config
@@ -175,12 +192,12 @@ class ThemeMenuController extends Controller
 
         $type = $request->type;
 
-        if ($type == 'custom') {
-            $value = $request->custom_url;
-        }
-
         if ($type == 'page') {
             $value = $request->page_id;
+        }
+
+        if ($type == 'post_type') {
+            $value = $request->post_type_id;
         }
 
         $menu_item->update([
@@ -188,15 +205,18 @@ class ThemeMenuController extends Controller
             'value' => $value ?? null,
             'new_tab' => $request->has('new_tab') ? 1 : 0,
             'btn_id' => $request->btn_id ?? null,
-            'icon' => $request->icon
+            'icon' => $request->icon ?? null,
+            'css_classes' => $request->css_classes ?? null,
         ]);
 
         foreach (admin_languages() as $lang) {
             $label_key = 'label_' . $lang->id;
+            $description_key = 'description_' . $lang->id;
+            $custom_url_key = 'custom_url_' . $lang->id;
 
             ThemeMenuContent::updateOrCreate(
                 ['menu_id' => $menu->id, 'item_id' => $request->item_id, 'lang_id' => $lang->id],
-                ['label' => $request->$label_key]
+                ['label' => $request->$label_key, 'description' => $request->$description_key, 'custom_url' => $request->$custom_url_key ?? null]
             );
         }
 
@@ -250,6 +270,192 @@ class ThemeMenuController extends Controller
         }
 
         // regenerate menu links for each language and store in cache config
-        TemplateMenu::generate_menu_links();
+        ThemeFunctions::generate_menu_links($request->menu_id);
+    }
+
+
+    public function index_dropdown(Request $request)
+    {
+        $parent_item = ThemeMenuItem::with('default_language_content')->find($request->parent_id);
+        if (!$parent_item) return redirect(route('admin.theme-menus.index'));
+
+        $menu = ThemeMenu::find($parent_item->menu_id);
+        if (!$menu) return redirect(route('admin.theme-menus.index'));
+
+        $links = ThemeMenuItem::where(['menu_id' => $menu->id, 'parent_id' => $request->parent_id])->orderBy('position')->get();
+
+        $post_type_page = PostType::where('type', 'page')->first();
+
+        $pages = Post::with(['default_language_content' => function ($q) {
+            $q->orderBy('title');
+        }])
+            ->where('post_type_id', $post_type_page->id)
+            ->where('status', 'published')
+            ->get();
+
+        return view('pivlu::admin.index', [
+            'view_file' => 'admin.theme.menus.index-dropdown',
+            'active_menu' => 'appearance',
+            'active_submenu' => 'menus',
+            'nav_tab' => 'menus',
+            'parent_item' => $parent_item,
+            'is_dropdown' => 1,
+            'links' => $links,
+            'menu' => $menu,
+            'pages' => $pages,
+            'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->paginate(25),
+            'post_types' => PostType::with('default_language_content')->where('type', '!=', 'page')->where('active', 1)->get(),
+        ]);
+    }
+
+
+    public function store_dropdown(Request $request)
+    {
+
+        $parent_item = ThemeMenuItem::find($request->parent_id);
+        if (!$parent_item) return redirect(route('admin.theme-menus.index'));
+
+        $menu = ThemeMenu::find($parent_item->menu_id);
+        if (!$menu) return redirect(route('admin.theme-menus.index'));
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+        ]);
+
+        if ($validator->fails()) return redirect(route('admin.theme-menu.dropdown', ['parent_id' => $parent_item->id]))->withErrors($validator)->withInput();
+
+        $type = $request->type;       
+
+        if ($type == 'page') {
+            $value = $request->page_id;
+        }
+
+        if ($type == 'post_type') {
+            $value = $request->post_type_id;
+        }
+
+        $last_pos = ThemeMenuItem::where('menu_id', $menu->id)->orderByDesc('position')->value('position');
+        $position = ($last_pos ?? 0) + 1;
+
+        $dropdown_item = ThemeMenuItem::create([
+            'menu_id' => $menu->id,
+            'parent_id' => $parent_item->id,
+            'type' => $type,
+            'value' => $value ?? null,
+            'position' => $position,
+            'new_tab' => $request->has('new_tab') ? 1 : 0,
+            'icon' => $request->icon ?? null,
+            'css_classes' => $request->css_classes ?? null,
+        ]);
+
+        foreach (admin_languages() as $lang) {
+            $label_key = 'label_' . $lang->id;
+            $description_key = 'description_' . $lang->id;
+            $custom_url_key = 'custom_url_' . $lang->id;
+
+            ThemeMenuContent::create(['menu_id' => $menu->id, 'item_id' => $dropdown_item->id, 'lang_id' => $lang->id, 'label' => $request->$label_key, 'description' => $request->$description_key, 'custom_url' => $request->$custom_url_key ?? null]);
+        }
+
+        // regenerate menu links for each language and store in cache config
+        ThemeFunctions::generate_menu_links($menu->id);
+
+        return redirect(route('admin.theme-menu.dropdown', ['parent_id' => $parent_item->id]))->with('success', 'created');
+    }
+
+
+    public function update_dropdown(Request $request)
+    {
+        $menu_item = ThemeMenuItem::find($request->item_id);
+        if (!$menu_item) return redirect(route('admin.theme-menus.index'));
+
+        $menu = ThemeMenu::find($menu_item->menu_id);
+        if (!$menu) return redirect(route('admin.theme-menus.index'));
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+        ]);
+
+        if ($validator->fails()) return redirect(route('admin.theme-menu.dropdown', ['parent_id' => $request->parent_id]))->withErrors($validator)->withInput();
+
+        $type = $request->type;     
+
+        if ($type == 'page') {
+            $value = $request->page_id;
+        }
+
+        if ($type == 'post_type') {
+            $value = $request->post_type_id;
+        }
+
+        ThemeMenuItem::where('id', $menu_item->id)->update([
+            'type' => $type,
+            'value' => $value ?? null,
+            'new_tab' => $request->has('new_tab') ? 1 : 0,
+            'icon' => $request->icon ?? null,
+            'css_classes' => $request->css_classes ?? null,
+        ]);
+
+        foreach (admin_languages() as $lang) {
+            $label_key = 'label_' . $lang->id;
+            $description_key = 'description_' . $lang->id;
+            $custom_url_key = 'custom_url_' . $lang->id;
+
+            ThemeMenuContent::UpdateOrCreate(
+                ['menu_id' => $menu->id, 'item_id' => $menu_item->id, 'lang_id' => $lang->id],
+                ['label' => $request->$label_key, 'description' => $request->$description_key, 'custom_url' => $request->$custom_url_key ?? null]
+            );
+        }
+
+
+        // regenerate menu links for each language and store in cache config
+        ThemeFunctions::generate_menu_links($menu->id);
+
+        return redirect(route('admin.theme-menu.dropdown', ['parent_id' => $request->parent_id]))->with('success', 'updated');
+    }
+
+
+    public function destroy_dropdown(Request $request)
+    {
+        $menu_item = ThemeMenuItem::find($request->item_id);
+        if (!$menu_item) return redirect(route('admin.theme-menus.index'));
+
+        $menu = ThemeMenu::find($menu_item->menu_id);
+        if (!$menu) return redirect(route('admin.theme-menus.index'));
+
+        ThemeMenuItem::where('id', $menu_item->id)->delete();
+
+        // regenerate menu links for each language and store in cache config
+        ThemeFunctions::generate_menu_links($menu->id);
+
+        return redirect(route('admin.theme-menu.dropdown', ['parent_id' => $request->parent_id]))->with('success', 'deleted');
+    }
+
+    /**
+     * Ajax sortable dropdown links
+     */
+    public function sortable_dropdown(Request $request)
+    {
+        $parent_item = ThemeMenuItem::find($request->parent_id);
+        if (!$parent_item) return;
+
+        $menu = ThemeMenu::find($parent_item->menu_id);
+        if (!$menu) return;
+
+        $i = 1;
+
+        $items = $request->all();
+
+        foreach ($items['item'] as $key => $value) {
+
+            ThemeMenuItem::where(['menu_id' => $menu->id, 'id' => $value])
+                ->update([
+                    'position' => $i,
+                ]);
+
+            $i++;
+        }
+
+        // regenerate menu links for each language and store in cache config
+        ThemeFunctions::generate_menu_links($menu->id);
     }
 }

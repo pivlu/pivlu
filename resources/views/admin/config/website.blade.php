@@ -44,18 +44,18 @@
 
             @foreach (admin_languages() as $lang)
                 <div class="form-group">
-                    <label>{!! lang_label(__('Website label'), $lang) !!}</label>
+                    <label>{!! lang_label($lang, __('Website label')) !!}</label>
                     <input type="text" class="form-control" name="{{ $lang->id }}_site_label" value="{{ Pivlu\Models\ConfigLang::get_config($lang->id, 'site_label') }}">
                     <div class="text-muted small">{{ __('A short website title (1-3 words)') }}</div>
                 </div>
 
                 <div class="form-group">
-                    <label>{!! lang_label(__('Homepge meta title'), $lang) !!}</label>
+                    <label>{!! lang_label($lang, __('Homepge meta title')) !!}</label>
                     <input type="text" class="form-control" name="{{ $lang->id }}_site_meta_title" value="{{ Pivlu\Models\ConfigLang::get_config($lang->id, 'site_meta_title') }}">
                 </div>
 
                 <div class="form-group">
-                    <label>{!! lang_label(__('Homepge meta description'), $lang) !!}</label>
+                    <label>{!! lang_label($lang, __('Homepge meta description')) !!}</label>
                     <textarea rows="2" class="form-control" name="{{ $lang->id }}_site_meta_description">{{ Pivlu\Models\ConfigLang::get_config($lang->id, 'site_meta_description') }}</textarea>
                 </div>
 
@@ -143,6 +143,7 @@
                 <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
             </div>
         </form>
+
 
     </div>
     <!-- end card-body -->

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ $locale }}" dir="{{ $site_text_dir }}">
+<html lang="{{ $config->locale }}" dir="{{ $config->text_dir }}">
 
 <head>
 
@@ -14,29 +14,9 @@
 
     <!-- Start Main Content -->
     <div class="content">
-        @include('pivlu::web.global.navigation')        
+        @include('pivlu::web.global.navigation')
 
-        @if (($layout_top ?? null) == 1)
-            @include('pivlu::web.layouts.layout-top')
-        @endif
-
-        @if (($layout_sidebar ?? null) == 'left')
-            @include('pivlu::web.layouts.layout-sidebar-left')
-        @elseif (($layout_sidebar ?? null) == 'right')
-            @include('pivlu::web.layouts.layout-sidebar-right')
-        @else
-            {{--
-            <div class="@if ($page->container_fluid ?? null) container-fluid @else container-xxl @endif mt-4 style_forum">
-                @include('pivlu::web.layouts.layout-content')
-            </div>
-            --}}
-            @include('pivlu::web.layouts.layout-content')
-        @endif
-
-        @if (($layout_bottom ?? null) == 1)
-            @include('pivlu::web.layouts.layout-bottom')
-        @endif
-
+        @include('pivlu::web.includes.get-blocks')
     </div>
     <!-- End Main Content -->
 

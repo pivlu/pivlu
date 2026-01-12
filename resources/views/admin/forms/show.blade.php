@@ -1,4 +1,4 @@
-@include('pivlu::admin.includes.ckeditor-assets')
+@include('pivlu::admin.includes.trumbowyg-assets')
 
 <div class="page-title">
     <div class="row">
@@ -108,7 +108,7 @@
                 </thead>
 
                 <tbody id="sortable">
-                    @foreach ($fields as $field)
+                    @foreach ($fields as $field)                        
                         <tr @if ($field->active == 0) class="table-light" @endif id="item-{{ $field->id }}">
 
                             <td class="movable">
@@ -224,8 +224,7 @@
                             </td>
 
                             <td>
-                                <div class="d-grid gap-2">
-
+                                <div class="d-grid gap-2">                                    
                                     <button data-bs-toggle="modal" data-bs-target="#update-form-field-{{ $field->id }}" class="btn btn-primary btn-sm mb-2">{{ __('Update field') }}</button>
                                     @include('pivlu::admin.forms.includes.modal-update-form-field')
 
@@ -305,7 +304,7 @@
 
             <div class="form-group mb-3">
                 <label class="form-label" for="confirmation">{{ __('Confirmation message') }}</label>
-                <textarea name="confirmation_message" id="ckeditor">
+                <textarea name="confirmation_message" class="form-control trumbowyg">
 			        {!! $confirmation_message ?? null !!}
 		        </textarea>
             </div>

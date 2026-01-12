@@ -57,13 +57,16 @@
         <input class="form-control" type="file" id="formFile" name="bg_image">
     </div>
 
-    @if ($block_settings->bg_media_id ?? null)
-        <a target="_blank" href="{{ image($block_settings->bg_media_id) }}"><img style="max-width: 300px; max-height: 100px;" src="{{ image($block_settings->bg_media_id, 'small') }}" class="img-fluid mt-2"></a>
-        <input type="hidden" name="existing_bg_media_id" value="{{ $block_settings->bg_media_id ?? null }}">
+    @if ($block->media_id ?? null)
+        <a target="_blank" href="{{ first_media_url($block, 'block_media', 'large') }}">
+            <img style="max-width: 300px; max-height: 100px;" src="{{ first_media_url($block, 'block_media', 'thumb') }}" class="img-fluid">
+        </a>
+        <input type="hidden" name="existing_image" value="{{ $block->media_id ?? null }}">
+
 
         <div class="form-group mb-0">
             <div class="form-check form-switch">
-                <input type="hidden" name="delete_bg_media_id" value="{{ $block_settings->bg_media_id ?? null }}">
+                <input type="hidden" name="delete_bg_media_id" value="{{ $block->media_id ?? null }}">
                 <input class="form-check-input" type="checkbox" id="delete_bg_image" name="delete_bg_image">
                 <label class="form-check-label" for="delete_bg_image">{{ __('Delete image') }}</label>
             </div>
@@ -71,15 +74,26 @@
     @endif
 </div>
 
-<div class="col-md-6 form-group">
-    <label>{{ __('Interval duration (in seconds)') }}</label>
-    <input class="form-control" type="number" step="1" min="0" name="delay_seconds" value="{{ $block_settings->delay_seconds ?? null }}">
-    <div class="form-text">{{ 'Change the amount of time (in seconds) to delay between automatically cycling to the next item. Leave empty for no delay to next item' }}</div>
+<div class="row">
+    <div class="col-md-6 form-group">
+        <label>{{ __('Interval duration (in seconds)') }}</label>
+        <input class="form-control" type="number" step="1" min="0" name="delay_seconds" value="{{ $block_settings->delay_seconds ?? null }}">
+        <div class="form-text">{{ 'Change the amount of time (in seconds) to delay between automatically cycling to the next item. Leave empty for no delay to next item' }}</div>
+    </div>
+
+    <div class="col-md-6 form-group">
+        <label>{{ __('Padding (top / bottom)') }}</label>
+        <div class="input-group mb-1">
+            <input type="number" step="1" class="form-control" name="padding_y" aria-describedby="addonPadding" value="{{ $block_settings->padding_y ?? null }}">
+            <span class="input-group-text" id="addonPadding">px</span>
+        </div>
+        <div class="form-text">{{ __('Leave empty for default padding value') }}</div>
+    </div>
 </div>
 
 <div class="row">
     <div class="col-md-6 form-group">
-        <input class="form-control form-control-color" id="font_color_title" name="font_color_title" value="@if ($block_settings->font_color_title ?? null) {{ $block_settings->font_color_title }} @else #ffffff @endif">
+        <input class="form-control form-control-color" id="font_color_title" name="font_color_title" value="@if ($block_settings->font_color_title ?? null) {{ $block_settings->font_color_title }} @else #000000 @endif">
         <label>{{ __('Font color (title)') }}</label>
         <script>
             $('#font_color_title').spectrum({
@@ -94,7 +108,7 @@
     </div>
 
     <div class="col-md-6 form-group">
-        <input class="form-control form-control-color" id="font_color_content" name="font_color_content" value="@if ($block_settings->font_color_content ?? null) {{ $block_settings->font_color_content }} @else #ffffff @endif">
+        <input class="form-control form-control-color" id="font_color_content" name="font_color_content" value="@if ($block_settings->font_color_content ?? null) {{ $block_settings->font_color_content }} @else #000000 @endif">
         <label>{{ __('Font color (content)') }}</label>
         <script>
             $('#font_color_content').spectrum({
@@ -112,7 +126,7 @@
 <div class="row">
     <div class="col-md-6 form-group">
         @php
-            $font_size_title = $block_settings->font_size_title ?? config('pivlu.defaults.h3_size');
+            $font_size_title = $block_settings->font_size_title ?? config('pivlu.defaults.title_size');
         @endphp
 
         <label>{{ __('Title font size') }}</label>
@@ -130,8 +144,8 @@
 
         <label>{{ __('Content font size') }}</label>
         <select class="form-select" name="font_size_content">
-            @foreach ($font_sizes as $selectes_font_size_title)
-                <option @if ($font_size_content == $selectes_font_size_title->value) selected @endif value="{{ $selectes_font_size_title->value }}">{{ $selectes_font_size_title->name }}</option>
+            @foreach ($font_sizes as $selectes_font_size_content)
+                <option @if ($font_size_content == $selectes_font_size_content->value) selected @endif value="{{ $selectes_font_size_content->value }}">{{ $selectes_font_size_content->name }}</option>
             @endforeach
         </select>
     </div>

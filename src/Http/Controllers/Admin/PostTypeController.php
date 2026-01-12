@@ -71,23 +71,26 @@ class PostTypeController extends Controller
      * Create new resource
      */
     public function store(Request $request)
-    {
+    {           
         $type = Str::slug($request->type, '_');
         $type = substr($type, 0, 25);
+        if (! $type) return redirect(route('admin.post-types.index'))->with('error', 'no_identificator');
         if (PostType::where(['type' => $type])->exists()) return redirect(route('admin.post-types.index'))->with('error', 'duplicate');
 
         $post_type = PostType::create([
             'type' => $type,
             'admin_menu_icon' => $request->admin_menu_icon,
             'active' => $request->has('active') ? 1 : 0,
-            'show_in_admin_menu' => $request->has('show_in_admin_menu') ? 1 : 0,
-            'internal_only' => $request->has('internal_only') ? 1 : 0,
+            'multilingual_content' => $request->has('multilingual_content') ? 1 : 0,            
             //'custom_theme' => $request->custom_theme,
         ]);
 
         foreach (admin_languages() as $lang) {
             $name_key = 'name_' . $lang->id;
             $slug_key = 'slug_' . $lang->id;
+            $title_key = 'title_' . $lang->id;
+            $meta_title_key = 'meta_title_' . $lang->id;
+            $meta_description_key = 'meta_description_' . $lang->id;
             $label_singular_key = 'label_singular_' . $lang->id;
             $label_plural_key = 'label_plural_' . $lang->id;
             $label_create_key = 'label_create_' . $lang->id;
@@ -117,6 +120,9 @@ class PostTypeController extends Controller
                 'lang_id' => $lang->id,
                 'name' => $request->$name_key,
                 'slug' => $slug,
+                'title' => $request->$title_key,
+                'meta_title' => $request->$meta_title_key,
+                'meta_description' => $request->$meta_description_key,
                 'labels' => json_encode($labels),
             ]);
         }
@@ -136,8 +142,7 @@ class PostTypeController extends Controller
         PostType::where('id', $request->id)->update([
             'admin_menu_icon' => $request->admin_menu_icon,
             'active' => $request->has('active') ? 1 : 0,
-            'show_in_admin_menu' => $request->has('show_in_admin_menu') ? 1 : 0,
-            'internal_only' => $request->has('internal_only') ? 1 : 0,
+            'multilingual_content' => $request->has('multilingual_content') ? 1 : 0,            
             //'custom_theme' => $request->custom_theme,
         ]);
 
@@ -146,6 +151,9 @@ class PostTypeController extends Controller
 
             $name_key = 'name_' . $lang->id;
             $slug_key = 'slug_' . $lang->id;
+            $title_key = 'title_' . $lang->id;
+            $meta_title_key = 'meta_title_' . $lang->id;
+            $meta_description_key = 'meta_description_' . $lang->id;
             $label_singular_key = 'label_singular_' . $lang->id;
             $label_plural_key = 'label_plural_' . $lang->id;
             $label_create_key = 'label_create_' . $lang->id;
@@ -170,11 +178,18 @@ class PostTypeController extends Controller
             // Post type slug must be unique (for same language). If slug exists, then add the post type ID in the slug
             if (PostTypeContent::where('slug', $slug)->where('lang_id', $lang->id)->where('post_type_id', '!=', $request->id)->exists()) $slug = $slug . '-' . $post_type->id;
 
+            if(! $request->$name_key){
+                $slug = null;
+            }
+
             PostTypeContent::updateOrInsert(
                 ['post_type_id' => $request->id, 'lang_id' => $lang->id],
                 [
                     'name' => $request->$name_key,
                     'slug' => $slug,
+                    'title' => $request->$title_key,
+                    'meta_title' => $request->$meta_title_key,
+                    'meta_description' => $request->$meta_description_key,
                     'labels' => json_encode($labels),
                 ]
             );

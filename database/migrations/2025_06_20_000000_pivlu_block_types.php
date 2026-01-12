@@ -41,11 +41,11 @@ return new class extends Migration
             $table->boolean('allow_in_footer')->default(false);
             $table->boolean('allow_in_layout')->default(false);
             $table->unsignedBigInteger('post_type_id')->nullable();
-            $table->unsignedBigInteger('plugin_id')->nullable();
+            $table->unsignedBigInteger('package_id')->nullable();
             $table->timestamps();
 
             $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->cascadeOnDelete();
-            $table->foreign('plugin_id')->references('id')->on('pivlu_plugins')->cascadeOnDelete();
+            $table->foreign('package_id')->references('id')->on('pivlu_packages')->cascadeOnDelete();
         });
     }
 

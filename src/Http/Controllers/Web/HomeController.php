@@ -23,6 +23,8 @@ namespace Pivlu\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Pivlu\Functions\ThemeFunctions;
+use Pivlu\Functions\BlockFunctions;
 
 class HomeController extends Controller
 {
@@ -32,6 +34,12 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        return view('pivlu::web.index', []);
+        $active_theme_view = ThemeFunctions::get_active_theme_view();       
+        
+        $content_blocks = BlockFunctions::get_active_theme_homepage_blocks();        
+        
+        return view($active_theme_view . 'web.index', [
+            'content_blocks' => $content_blocks,
+        ]);
     }
 };

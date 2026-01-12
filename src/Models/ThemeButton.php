@@ -3,6 +3,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ThemeButton extends Model
 {
@@ -14,11 +15,13 @@ class ThemeButton extends Model
 
     protected $table = 'pivlu_theme_buttons';
 
-    protected $appends = ['data_styles'];
-
-    public function getDataStylesAttribute()
+    public function dataStyles(): Attribute
     {
-        return json_decode($this->data);
+        $return_data = json_decode($this->data);
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 
 }

@@ -44,7 +44,7 @@
 @endif
 
 
-@if ($block->block_type->type == 'gallery' || $block->block_type->type == 'card' || $block->block_type->type == 'slider')
+@if ($block->block_type->type == 'gallery' || $block->block_type->type == 'card' || $block->block_type->type == 'slider' || $block->block_type->type == 'links')
     <div class="row">
 
         <div class="col-md-5">
@@ -156,7 +156,7 @@
                             @if (count($styles) == 0)
                                 <div class="small text-info mt-1">{{ __("You don't have custom styles created") }}</div>
                             @endif
-                            <label class="mt-1">[<a class="fw-bold" target="_blank" href="{{ route('admin.theme-styles.index') }}">{{ __('manage custom styles') }}</a>]</label>
+                            <label class="mt-1">[<a class="fw-bold" target="_blank" href="{{ route('admin.block-styles.index') }}">{{ __('manage custom styles') }}</a>]</label>
                         </div>
                     </div>
                 @endif
@@ -200,6 +200,14 @@
     </div>
     <div class="col-md-7">
         @include('pivlu::admin.blocks.includes.items-slider')
+    </div>
+    </div>
+@endif
+
+@if ($block->block_type->type == 'links')
+    </div>
+    <div class="col-md-7">
+        @include('pivlu::admin.blocks.includes.items-links')
     </div>
     </div>
 @endif

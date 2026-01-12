@@ -34,7 +34,7 @@
             <input class="form-check-input" type="checkbox" id="footer_use_custom_style" name="footer_use_custom_style" @if ($theme_config->footer_use_custom_style ?? null) checked @endif>
             <label class="form-check-label" for="footer_use_custom_style">{{ __('Use custom style for primary footer') }}</label>
         </div>
-        <div class="text-muted small">{{ __('Manage background color, text size, links, text colour...') }}</div>
+        <div class="text-muted small">{{ __('Manage background color, text size, links, text colours...') }}</div>
     </div>
 
     <script>
@@ -50,7 +50,7 @@
     <div id="hidden_div_style_footer1" style="display: @if (isset($theme_config->footer_use_custom_style)) block @else none @endif" class="mt-2">
         <div class="form-group col-lg-4 col-md-6 mb-0">
             <label>{{ __('Select style form primary footer') }} <br>
-                <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
+                <a target="_blank" href="{{ route('admin.block-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
                 <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
             </label>
             <select class="form-select" id="footer_style_id" name="footer_style_id">
@@ -73,7 +73,7 @@
             <input class="form-check-input" type="checkbox" id="footer2_use_custom_style" name="footer2_use_custom_style" @if ($theme_config->footer2_use_custom_style ?? null) checked @endif>
             <label class="form-check-label" for="footer2_use_custom_style">{{ __('Use custom style for secondary footer (if enabled)') }}</label>
         </div>
-        <div class="text-muted small">{{ __('Manage background color, text size, links, text colour...') }}</div>
+        <div class="text-muted small">{{ __('Manage background color, text size, links, text colours...') }}</div>
     </div>
 
     <script>
@@ -89,7 +89,7 @@
     <div id="hidden_div_style_footer2" style="display: @if (isset($theme_config->footer2_use_custom_style)) block @else none @endif" class="mt-2">
         <div class="form-group col-lg-4 col-md-6 mb-3">
             <label>{{ __('Select style form secondary footer') }} <br>
-                <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
+                <a target="_blank" href="{{ route('admin.block-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
                 <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
             </label>
             <select class="form-select" id="footer2_style_id" name="footer2_style_id">

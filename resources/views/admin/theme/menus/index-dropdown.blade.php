@@ -1,7 +1,3 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
-
 <style>
     .hide {
         display: none !important;
@@ -26,8 +22,6 @@
 
 
 <div class="card">
-
-    @include('pivlu::admin.theme.includes.menu-themes')
 
     <div class="card-header">
 
@@ -89,39 +83,19 @@
 
                             <td>
                                 @foreach ($link->all_languages_contents as $link_content)
-                                    @if (count(admin_languages()) > 1)
-                                        <span class="me-1">{!! flag($link_content->lang_code) !!}</span>
-                                    @endif
-
                                     @if ($link_content->label)
-                                        {!! $link->icon !!} {{ $link_content->label }}</a>
+                                        {!! $link->icon !!} <b>{!! lang_label($link_content, $link_content->label) !!}</b>
                                     @else
-                                        <span class="text-danger">{{ __('not set') }}</span>
+                                        <span class="text-danger">{{ __('Label not set') }}</span>
                                     @endif
-                                    <div class="mb-1"></div>
-                                @endforeach
 
-                                @foreach ($languages as $lang)
-                                    @if ($link->type == 'home')
-                                        @if ($lang->is_default == 1)
-                                            <a target="_blank" href="{{ route('home') }}">{{ route('home') }}</a>
+                                    <div class="mb-2">
+                                        @if ($link_content->url)
+                                            <a target="_blank" href="{{ $link_content->url }}">{{ $link_content->url }}</a>
                                         @else
-                                            <a target="_blank" href="{{ route('locale.home', ['locale' => $lang->code]) }}">{{ route('locale.home', ['locale' => $lang->code]) }}</a>
+                                            <span class="text-danger">{{ __('URL not set') }}</span>
                                         @endif
-                                    @endif
-
-                                    @if ($link->type == 'custom')
-                                        <a target="_blank" href="{{ $link->value }}">{{ $link->value }}</a>
-                                    @endif
-
-
-                                    @if ($link->type == 'page')
-                                        @php
-                                            $link_url = page((int) $link->value, $lang->id)->url ?? null;
-                                        @endphp
-                                        <a target="_blank" href="{{ $link_url }}">{{ $link_url }}</a>
-                                    @endif
-                                    <div class="mb-2"></div>
+                                    </div>
                                 @endforeach
                             </td>
 
@@ -132,6 +106,10 @@
                                     {{ __('Custom link') }}
                                 @elseif($link->type == 'page')
                                     {{ __('Page') }}
+                                    <br>
+                                    <small class="text-muted"><a href="{{ route('admin.posts.show', ['id' => $link->value]) }}"><i class="bi bi-pencil-square"></i></a></small>
+                                @elseif($link->type == 'post_type')
+                                    {{ __('Post type') }}
                                 @else
                                     {{ $link->type }}
                                 @endif

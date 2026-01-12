@@ -8,11 +8,10 @@
                     @include('pivlu::admin.theme.footers.includes.modal-add-footer-block', ['col' => 1])
                 </div>
 
-                @foreach (footer_blocks($theme->id, $footer, $col = 1) as $block)
+                @foreach (footer_blocks($footer->id, $destination, $col = 1) as $block)
                     <div class="builder-block movable" id="item-{{ $block->id }}">
                         <div class="float-end ms-2">
-                            <a href="{{ route('admin.theme-footer.block', ['block_id' => $block->id, 'destination' => $destination, 'footer_id' => $footer->id]) }}"
-                                class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
+                            <a href="{{ route('admin.blocks.show', ['id' => $block->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block->id }}" class="btn btn-outline-danger btn-sm ms-2"><i class="bi bi-trash"></i></a>
                             <div class="modal fade confirm-{{ $block->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -56,11 +55,10 @@
                     @include('pivlu::admin.theme.footers.includes.modal-add-footer-block', ['col' => 2])
                 </div>
 
-                @foreach (footer_blocks($theme->id, $footer, $col = 2) as $block)
+                @foreach (footer_blocks($footer->id, $destination, $col = 2) as $block)
                     <div class="builder-block movable" id="item-{{ $block->id }}">
                         <div class="float-end ms-2">
-                            <a href="{{ route('admin.theme-footer.block', ['block_id' => $block->id, 'destination' => $destination, 'footer_id' => $footer->id]) }}"
-                                class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
+                            <a href="{{ route('admin.blocks.show', ['id' => $block->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block->id }}" class="btn btn-outline-danger btn-sm ms-2"><i class="bi bi-trash"></i></a>
                             <div class="modal fade confirm-{{ $block->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -105,11 +103,10 @@
                     @include('pivlu::admin.theme.footers.includes.modal-add-footer-block', ['col' => 3])
                 </div>
 
-                @foreach (footer_blocks($theme->id, $footer, $col = 3) as $block)
+                @foreach (footer_blocks($footer->id, $destination, $col = 3) as $block)
                     <div class="builder-block movable" id="item-{{ $block->id }}">
                         <div class="float-end ms-2">
-                            <a href="{{ route('admin.theme-footer.block', ['block_id' => $block->id, 'destination' => $destination, 'footer_id' => $footer->id]) }}"
-                                class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
+                            <a href="{{ route('admin.blocks.show', ['id' => $block->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block->id }}" class="btn btn-outline-danger btn-sm ms-2"><i class="bi bi-trash"></i></a>
                             <div class="modal fade confirm-{{ $block->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -154,11 +151,10 @@
                     @include('pivlu::admin.theme.footers.includes.modal-add-footer-block', ['col' => 4])
                 </div>
 
-                @foreach (footer_blocks($theme->id, $footer, $col = 4) as $block)
+                @foreach (footer_blocks($footer->id, $destination, $col = 4) as $block)
                     <div class="builder-block movable" id="item-{{ $block->id }}">
                         <div class="float-end ms-2">
-                            <a href="{{ route('admin.theme-footer.block', ['block_id' => $block->id, 'destination' => $destination, 'footer_id' => $footer->id]) }}"
-                                class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
+                            <a href="{{ route('admin.blocks.show', ['id' => $block->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block->id }}" class="btn btn-outline-danger btn-sm ms-2"><i class="bi bi-trash"></i></a>
                             <div class="modal fade confirm-{{ $block->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">

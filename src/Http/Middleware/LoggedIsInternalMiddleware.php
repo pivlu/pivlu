@@ -46,7 +46,7 @@ class LoggedIsInternalMiddleware
 
         Facades\View::composer('*', function (View $view) {
             // get custom posts types (used in sidebar menu for admins and internals accounts)
-            $post_types = PostType::with('default_language_content')->where('active', 1)->where('show_in_admin_menu', 1)->orderByDesc('core')->orderByDesc('id')->get();            
+            $post_types = PostType::with('default_language_content')->where('active', 1)->orderByDesc('core')->orderByDesc('id')->get();            
             $view->with('sidebar_post_types', $post_types ?? []);
         });
 

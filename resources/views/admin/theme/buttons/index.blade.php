@@ -16,8 +16,6 @@
 
 <div class="card">
 
-    @include('pivlu::admin.theme.includes.menu-themes')
-
     <div class="card-header">
 
         <div class="row">

@@ -151,205 +151,128 @@
                     <tr>
                         <th>{{ __('Details') }}</th>
                         @if ($post_type->type != 'page')
-                            <th width="320">{{ __('Taxonomies') }}</th>
+                            <th width="300">{{ __('Taxonomies') }}</th>
                         @endif
-                        <th width="300">{{ __('Author') }}</th>
-                        <th width="180">{{ __('Actions') }}</th>
+                        <th width="260">{{ __('Author') }}</th>
+                        <th width="160">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     @foreach ($posts as $post)
-                        @if ($post->is_homepage == 1 || $post->is_contactpage == 1)
-                            <tr @if ($post->status != 'published') class="table-light" @endif>
+                        <tr @if ($post->status != 'published') class="table-light" @endif>
 
-                                <td>
-                                    <div class="float-end ms-2 badge bg-secondary fw-normal">
-                                        @if ($post->is_homepage == 1)
-                                            {{ __('Home page') }}
-                                        @endif
-                                        @if ($post->is_contactpage == 1)
-                                            {{ __('Contact page') }}
-                                        @endif
-                                    </div>
-
-                                    <span class="text-muted small">
-                                        @foreach ($post->all_languages_contents as $page_content)
-                                            <div class="fw-bold fs-5">
-                                                @if (count(admin_languages()) > 1)
-                                                    <span class="me-1">
-                                                        {!! flag($page_content->lang_code) !!}
-                                                    </span>
-                                                @endif
-                                            </div>
-
-                                            <div>
-                                                <b>{{ __('URL') }}:</b> <a target="_blank" href="{{ $page_content->url }}">{{ $page_content->url }}</a>
-                                            </div>
-
-                                            <b>{{ __('Meta title') }}:</b>
-                                            @if ($page_content->meta_title)
-                                                {{ $page_content->meta_title }}</a>
-                                            @else
-                                                <span class="text-danger">{{ __('not set') }}</span>
-                                            @endif
-                                            <div class="mb-0"></div>
-
-                                            <b>{{ __('Meta description') }}:</b>
-                                            @if ($page_content->meta_description)
-                                                {{ $page_content->meta_description }}</a>
-                                            @else
-                                                <span class="text-danger">{{ __('not set') }}</span>
-                                            @endif
-
-                                            <div class="mb-2"></div>
-                                        @endforeach
-                                    </span>
-                                </td>
-
-                                @if ($post->post_type->type != 'page')
-                                    <td>
-                                    </td>
+                            <td>
+                                @if ($post->is_sample == 1)
+                                    <div class="float-end ms-2 badge bg-primary fw-normal">{{ __('Sample post') }}</div>
+                                @endif
+                                @if ($post->status == 'published' && $post->is_sample == 0)
+                                    <div class="float-end ms-2 badge bg-success fw-normal">{{ __('Published') }}</div>
+                                @endif
+                                @if ($post->status == 'draft')
+                                    <div class="float-end ms-2 badge bg-warning fw-normal">{{ __('Draft') }}</div>
+                                @endif
+                                @if ($post->status == 'pending')
+                                    <div class="float-end ms-2 badge bg-danger fw-normal">{{ __('Pending review') }}</div>
+                                @endif
+                                @if ($post->status == 'soft_reject')
+                                    <div class="float-end ms-2 badge bg-info fw-normal">{{ __('Rejected (needs modifications)') }}</div>
+                                @endif
+                                @if ($post->status == 'hard_reject')
+                                    <div class="float-end ms-2 badge bg-dark fw-normal">{{ __('Permanently rejected') }}</div>
                                 @endif
 
-                                <td>
+                                @if ($post->sticky == 1)
+                                    <div class="float-end ms-2 badge bg-info fs-6 fw-normal"><i class="bi bi-pin"></i> {{ __('Sticky') }}</div>
+                                @endif
 
-                                </td>
+                                @if ($post->post_type->type != 'page')
+                                    <div class="float-start me-3 mb-2"><img class="img-fluid rounded" style="width:150px; height: auto; " src="{{ post_image($post, 'crop') }}" /></div>
+                                @endif
 
-                                <td>
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('admin.posts.show', ['id' => $post->id]) }}" class="btn btn-primary btn-sm mb-2">
-                                            @if ($post->is_homepage == 1)
-                                                {{ __('Update home page') }}
-                                            @endif
-                                            @if ($post->is_contactpage == 1)
-                                                {{ __('Update contact page') }}
-                                            @endif
-                                        </a>
+
+                                @foreach ($post->all_languages_contents as $page_content)
+                                    <div class="fw-bold">
+                                        @if ($page_content->title)
+                                            {!! lang_label($page_content, $page_content->title) !!}
+                                        @else
+                                            <span class="text-danger">{!! lang_label($page_content, __('not set')) !!}</span>
+                                        @endif
                                     </div>
-                                </td>
-                            </tr>
-                        @else
-                            <tr @if ($post->status != 'published') class="table-light" @endif>
 
-                                <td>
-                                    @if ($post->is_sample == 1)
-                                        <div class="float-end ms-2 badge bg-primary fw-normal">{{ __('Sample post') }}</div>
-                                    @endif
-                                    @if ($post->status == 'published' && $post->is_sample == 0)
-                                        <div class="float-end ms-2 badge bg-success fw-normal">{{ __('Published') }}</div>
-                                    @endif
-                                    @if ($post->status == 'draft')
-                                        <div class="float-end ms-2 badge bg-warning fw-normal">{{ __('Draft') }}</div>
-                                    @endif
-                                    @if ($post->status == 'pending')
-                                        <div class="float-end ms-2 badge bg-danger fw-normal">{{ __('Pending review') }}</div>
-                                    @endif
-                                    @if ($post->status == 'soft_reject')
-                                        <div class="float-end ms-2 badge bg-info fw-normal">{{ __('Rejected (needs modifications)') }}</div>
-                                    @endif
-                                    @if ($post->status == 'hard_reject')
-                                        <div class="float-end ms-2 badge bg-dark fw-normal">{{ __('Permanently rejected') }}</div>
-                                    @endif
-
-                                    @if ($post->sticky == 1)
-                                        <div class="float-end ms-2 badge bg-info fs-6 fw-normal"><i class="bi bi-pin"></i> {{ __('Sticky') }}</div>
-                                    @endif
-
-                                    @if ($post->post_type->type != 'page')
-                                        <div class="float-start me-3 mb-2"><img class="img-fluid rounded" style="width:150px; height: 150px; background-color: black" src="{{ image($post->media_id, 'thumb') }}" /></div>
-                                    @endif
-
-
-                                    @foreach ($post->all_languages_contents as $page_content)
-                                        <div class="fw-bold fs-6">
-                                            @if (count(admin_languages()) > 1)
-                                                <span class="me-1">{!! flag($page_content->lang_code) !!}</span>
-                                            @endif
+                                    <div class="text-muted small">
+                                        <div>
                                             @if ($page_content->title)
-                                                {{ $page_content->title }}</a>
-                                            @else
-                                                <span class="text-danger">{{ __('not set') }}</span>
+                                                <a target="_blank" href="{{ $page_content->url }}">{{ $page_content->url }}</a>
                                             @endif
                                         </div>
 
-                                        <div class="text-muted small">
-                                            <div>
-                                                <b>{{ __('URL') }}:</b>
-                                                @if ($page_content->title)
-                                                    <a target="_blank" href="{{ $page_content->url }}">{{ $page_content->url }}</a>
-                                                @else
-                                                    -
-                                                @endif
-                                            </div>
+                                    </div>
+                                    <div class="mb-2"></div>
+                                @endforeach
 
-                                        </div>
-                                        <div class="mb-2"></div>
+                                <span class="text-muted small">
+                                    {{ __('Created') }}: {{ date_locale($post->created_at, 'datetime') }}
+                                    @if ($post->updated_at)
+                                        | {{ __('Updated') }}: {{ date_locale($post->updated_at, 'datetime') }} |
+                                    @endif
+                                    {{ $post->hits }} {{ __('hits') }}
+                                </span>
+                            </td>
+
+                            @if ($post->post_type->type != 'page')
+                                <td>
+                                    @foreach ($post->taxonomies as $post_taxonomy)
+                                        {{ $post_taxonomy->post_type_taxonomy->default_language_content->name }}:
+                                        <a target="_blank"
+                                            href="{{ route('home') }}/{{ $post_taxonomy->taxonomy->default_language_content->url_path ?? null }}">{{ $post_taxonomy->taxonomy->default_language_content->name ?? null }}</a>
+                                        <br>
                                     @endforeach
 
-                                    <span class="text-muted small">
-                                        {{ __('Created') }}: {{ date_locale($post->created_at, 'datetime') }}
-                                        @if ($post->updated_at)
-                                            | {{ __('Updated') }}: {{ date_locale($post->updated_at, 'datetime') }} |
-                                        @endif
-                                        {{ $post->hits }} {{ __('hits') }}
-                                    </span>
                                 </td>
+                            @endif
 
-                                @if ($post->post_type->type != 'page')
-                                    <td>
-                                        @foreach ($post->taxonomies as $post_taxonomy)
-                                            {{ $post_taxonomy->post_type_taxonomy->default_language_content->name }}:
-                                            <a target="_blank"
-                                                href="{{ route('home') }}/{{ $post_taxonomy->taxonomy->default_language_content->url_path ?? null }}">{{ $post_taxonomy->taxonomy->default_language_content->name ?? null }}</a>
-                                            <br>
-                                        @endforeach
+                            <td>
+                                <span class="float-start me-2"><img style="max-width:40px; height:auto;" class="rounded-circle" src="{{ $post->user->getFirstMediaUrl('avatars', 'thumb') }}" /></span>
+                                <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $post->user_id]) }}">{{ $post->user->name }}</a></b>
+                                <div class="small">{{ $post->user->email }}</div>
+                            </td>
 
-                                    </td>
-                                @endif
+                            <td>
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('admin.posts.show', ['id' => $post->id]) }}" class="btn btn-primary btn-sm mb-2">
+                                        {{ __(json_decode($post_type->default_language_content->labels ?? null)->update ?? __('Update')) }}
+                                    </a>
 
-                                <td>
-                                    <span class="float-start me-2"><img style="max-width:40px; height:auto;" class="rounded-circle" src="{{ $post->user->getFirstMediaUrl('avatars', 'thumb') }}" /></span>
-                                    <b><a target="_blank" href="{{ route('admin.accounts.show', ['id' => $post->user_id]) }}">{{ $post->user->name }}</a></b>
-                                    <div class="small">{{ $post->user->email }}</div>
-                                </td>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
+                                    <div class="modal fade confirm-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="ConfirmDeleteLabel">{{ __('Confirm delete') }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ __('Are you sure you want to move this item to trash?') }}
 
-                                <td>
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('admin.posts.show', ['id' => $post->id]) }}" class="btn btn-primary btn-sm mb-2">
-                                            {{ __(json_decode($post_type->default_language_content->labels ?? null)->update ?? __('Update')) }}
-                                        </a>
-
-                                        <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $post->id }}" class="btn btn-danger btn-sm">{{ __('Delete') }}</a>
-                                        <div class="modal fade confirm-{{ $post->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="ConfirmDeleteLabel">{{ __('Confirm delete') }}</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <div class="mt-2 fw-bold">
+                                                        <i class="bi bi-info-circle"></i> {{ __('This item will be moved to trash. You can recover it or permanently delete from recycle bin.') }}
                                                     </div>
-                                                    <div class="modal-body">
-                                                        {{ __('Are you sure you want to move this item to trash?') }}
-
-                                                        <div class="mt-2 fw-bold">
-                                                            <i class="bi bi-info-circle"></i> {{ __('This item will be moved to trash. You can recover it or permanently delete from recycle bin.') }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <form method="POST" action="{{ route('admin.posts.show', ['id' => $post->id]) }}">
-                                                            {{ csrf_field() }}
-                                                            {{ method_field('DELETE') }}
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
-                                                            <button type="submit" class="btn btn-danger">{{ __('Yes. Move to trash') }}</button>
-                                                        </form>
-                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form method="POST" action="{{ route('admin.posts.show', ['id' => $post->id]) }}">
+                                                        {{ csrf_field() }}
+                                                        {{ method_field('DELETE') }}
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                                                        <button type="submit" class="btn btn-danger">{{ __('Yes. Move to trash') }}</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                        @endif
+                                </div>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
 

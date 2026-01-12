@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ThemeFooterBlock extends Model
 {
@@ -39,8 +40,6 @@ class ThemeFooterBlock extends Model
     ];
 
     protected $table = 'pivlu_theme_footer_blocks';
-
-    protected $appends = ['all_languages_contents'];
 
     public function block_type()
     {
@@ -66,14 +65,19 @@ class ThemeFooterBlock extends Model
         return $this->hasOne(ThemeFooterBlockContent::class, 'footer_block_id')->where('lang_id', Language::get_active_language()->id);
     }
 
-    public function getAllLanguagesContentsAttribute()
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
         foreach ($langs as $lang) {
             $content = ThemeFooterBlockContent::where('lang_id', $lang->id)->where('footer_block_id', $this->id)->first();
-            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'content' => $content->content ?? null, 'header' => $content->header ?? null];
+            $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'data' => $content->data ?? null, 'header' => $content->header ?? null];
         }
-        return json_decode(json_encode($all_language_contents));
+
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
 }

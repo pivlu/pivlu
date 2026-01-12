@@ -22,6 +22,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class PostTypeTaxonomy extends Model
 {
@@ -37,8 +38,6 @@ class PostTypeTaxonomy extends Model
 
     protected $table = 'pivlu_post_type_taxonomies';
 
-    protected $appends = ['all_languages_contents'];
-
     public function content_post_type()
     {
         return $this->belongsTo(PostType::class, 'post_type_id');
@@ -49,14 +48,19 @@ class PostTypeTaxonomy extends Model
         return $this->hasOne(PostTypeTaxonomyContent::class, 'post_type_taxonomy_id')->where('lang_id', Language::get_default_language()->id);
     }
 
+    public function active_language_content()
+    {
+        return $this->hasOne(PostTypeTaxonomyContent::class, 'post_type_taxonomy_id')->where('lang_id', Language::get_active_language()->id);
+    }
+
     public function taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->with('default_language_content');
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->with('default_language_content', 'active_language_content');
     }
 
     public function active_taxonomies()
     {
-        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->where('active', 1);
+        return $this->hasMany(PostTaxonomy::class, 'post_type_taxonomy_id')->where('active', 1)->with('default_language_content', 'active_language_content');
     }
 
     public function root_taxonomies()
@@ -66,27 +70,37 @@ class PostTypeTaxonomy extends Model
 
     public static function get_hierarchical_taxonomies($post_type_id)
     {
-        $items = PostTypeTaxonomy::with('root_taxonomies', 'content_post_type')
-            ->whereHas('taxonomies', function ($query) {
-                $query->whereNull('parent_id')->where('active', 1);
-            })
-            ->where(['post_type_id' => $post_type_id, 'hierarchical' => 1, 'active' => 1])
-            ->orderBy('position')
-            ->get();
 
-        return $items;
+        $post_type_taxonomies = PostTypeTaxonomy::with('active_language_content', 'default_language_content', 'active_taxonomies')
+            ->where([
+                'post_type_id' => $post_type_id,
+                'hierarchical' => 1,
+                'active' => 1
+            ])->orderBy('position')->get();        
+
+        return $post_type_taxonomies;        
     }
 
-    public function getAllLanguagesContentsAttribute()
+    public function allLanguagesContents(): Attribute
     {
         $all_language_contents = [];
         $langs = Language::get_languages();
+
+        // If this is a post block and post type has not multilingual content, then get only default language
+        $post_type = PostType::find($this->post_type_id);
+        if ($post_type->multilingual_content == 0) {
+            $langs = Language::where('is_default', 1)->get(); // get only default language - must be an array with one language
+        }
+
         foreach ($langs as $lang) {
             $content = PostTypeTaxonomyContent::where('lang_id', $lang->id)->where('post_type_taxonomy_id', $this->id)->first();
             $all_language_contents[] = ['lang_id' => $lang->id, 'lang_name' => $lang->name, 'lang_code' => $lang->code, 'name' => $content->name ?? null, 'slug' => $content->slug ?? null, 'labels' => $content->labels ?? null];
         }
-        return json_decode(json_encode($all_language_contents));
+
+        $return_data = json_decode(json_encode($all_language_contents));
+
+        return new Attribute(
+            get: fn() =>  $return_data
+        );
     }
-
-
 }

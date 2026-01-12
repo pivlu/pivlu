@@ -1,59 +1,37 @@
-@php
-$block_data = block($block['id']);
-@endphp
-
-@if ($block_data->content ?? null)
-    @php
-        $block_items = unserialize($block_data->content);
-        $block_header = unserialize($block_data->header ?? null);
-    @endphp
-
+@if (count($block_items) > 0)
     <div class="block">
-        <div class="row">
 
-            @if ($block_header['add_header'] ?? null)
-                <div class="block-header">
-                    @if ($block_header['title'] ?? null)
-                        <div class="block-header-title title">
-                            {{ $block_header['title'] ?? null }}
-                        </div>
-                    @endif
+        @include('pivlu::web.includes.block-header')
 
-                    @if ($block_header['content'] ?? null)
-                        <div class="block-header-content mt-4">
-                            {!! $block_header['content'] ?? null !!}
-                        </div>
-                    @endif
-                </div>
+        @if (count($block_items) > 0)
+
+            @if (($block_settings->display_style ?? null) == 'list')
+                <ul>
             @endif
 
+            @foreach ($block_items as $item)
+                @php
+                    $block_item_data = json_decode($item->active_language_content->data ?? null);
+                @endphp
 
-            @if (count($block_items) > 0)
-
-                @if ($block_extra['display_style'] == 'list')
-                    <ul>
+                @if (($block_settings->display_style ?? null) == 'list')
+                    <li>
                 @endif
 
-                @foreach ($block_items as $item)
-                    @if ($block_extra['display_style'] == 'list')
-                        <li>
-                    @endif
+                @if ($block_item_data->icon ?? null)
+                    {!! $block_item_data->icon !!}
+                @endif
+                <a href="{{ $block_item_data->url }}" title="{{ $block_item_data->title }}" @if ($block_settings->new_tab ?? null) target="_blank" @endif>{{ $block_item_data->title }}</a>
 
-                    @if ($item['icon'])
-                        {!! $item['icon'] !!}
-                    @endif
-                    <a href="{{ $item['url'] }}" title="{{ $item['title'] }}" @if ($block_extra['new_tab'] ?? null) target="_blank" @endif>{{ $item['title'] }}</a>
+                @if (($block_settings->display_style ?? null) == 'list')
+                    </li>
+                @else
+                    <span class="me-3"></span>
+                @endif
+            @endforeach
 
-                    @if ($block_extra['display_style'] == 'list')
-                        </li>
-                    @else
-                        <span class="me-3"></span>
-                    @endif
-                @endforeach
+        @endif
 
-            @endif
-
-        </div>
     </div>
 
 @endif

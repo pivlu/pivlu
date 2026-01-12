@@ -98,15 +98,12 @@
 
                                 <div class="fw-bold">
                                     @foreach ($post_type_taxonomy->all_languages_contents as $lang_content)
-                                        @if (count(admin_languages()) > 1)
-                                            <span class="me-1">{!! flag($lang_content->lang_code) !!}</span>
+                                        @if ($lang_content->name)
+                                            {!! lang_label($lang_content, $lang_content->name) !!}
+                                        @else
+                                            <span class="text-danger fw-normal">{!! lang_label($lang_content, __('not set'), 'text-danger') !!}</span>
                                         @endif
 
-                                        @if ($lang_content->name)
-                                            {{ $lang_content->name }}</a>
-                                        @else
-                                            <span class="text-danger">{{ __('not set') }}</span>
-                                        @endif
                                         <div class="mb-1"></div>
                                     @endforeach
                                 </div>

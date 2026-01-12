@@ -1,4 +1,4 @@
-@if ($block_content ?? null)
+@if (count($block_items) > 0)
     @php
         if (!($block_settings->cols ?? null)) {
             $cols = 4;
@@ -20,12 +20,11 @@
         }
     @endphp
 
-    <div class="block text-center">
-        <div class="row">
+    <div class="container-xxl">
+        <div class="block text-center">
+            <div class="row">
 
-            @include('pivlu::web.includes.block-header')
-
-            @if (count($block_content) > 0)
+                @include('pivlu::web.includes.block-header')
 
                 @if ($block_settings->masonry_layout ?? null)
 
@@ -33,7 +32,7 @@
                         <div id="masonry">
                             <div class="grid-sizer"></div>
 
-                            @foreach ($block_content as $item)
+                            @foreach ($block_items as $item)
                                 <div class="grid-item g-0">
                                     <a data-fancybox="gallery-{{ $block['id'] }}" class="gallery" href="{{ image($item['image']) }}"><img
                                             class="img-fluid @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->rounded ?? null) rounded @endif" alt="{{ $item['title'] ?? $item['image'] }}"
@@ -44,31 +43,40 @@
                         </div>
                     </div>
                 @else
-                    @foreach ($block_content as $item)
-                        @if ($item->media_id)
+                    @foreach ($block_items as $item)
+                        @php
+                            $block_item_media_id = $item->active_language_content->media_id ?? null;
+                            $block_item_data = json_decode($item->active_language_content->data ?? null);
+                        @endphp
+
+                        @if ($block_item_media_id)
                             <div class="{{ $class }} mb-5">
                                 <div class="block-gallery-image-box">
 
-                                    @if ($item->url)
-                                        <a href="{{ $item->url }}"><img class="img-fluid @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->rounded ?? null) rounded @endif"
-                                                alt="{{ $item->title ?? $item->media_id }}" title="{{ $item->title ?? $item->media_id }}" src="{{ image($item->media_id, 'thumb') }}"></a>
+                                    @if ($block_item_data->url ?? null)
+                                        <a href="{{ $block_item_data->url }}"><img class="img-fluid @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->rounded ?? null) rounded @endif"
+                                                alt="{{ $block_item_data->title ?? $block_item_media_id }}" title="{{ $block_item_data->title ?? $block_item_media_id }}"
+                                                src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'large') }}"></a>
                                     @else
-                                        <a data-fancybox="gallery-{{ $block->id }}" class="gallery" href="{{ image($item->media_id) }}"><img
-                                                class="img-fluid @if ($block_settings->rounded ?? null) rounded @endif @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->rounded ?? null) rounded @endif"
-                                                alt="{{ $item->title ?? $item->media_id }}" title="{{ $item->title ?? $item->media_id }}" src="{{ image($item->media_id, 'thumb') }}"></a>
+                                        <a data-fancybox="gallery-{{ $block->id }}" data-caption="{{ $block_item_data->caption ?? null }}" class="gallery"
+                                            href="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'large') }}">
+                                            <img class="img-fluid @if ($block_settings->rounded ?? null) rounded @endif @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->rounded ?? null) rounded @endif"
+                                                alt="{{ $block_item_data->title ?? $block_item_media_id }}" title="{{ $block_item_data->title ?? ($block_item_data->caption ?? null) }}"
+                                                src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'large') }}">
+                                        </a>
                                     @endif
                                 </div>
 
-                                @if ($item->caption ?? null)
-                                    <div class="caption">{{ $item->caption }}</div>
+                                @if ($block_item_data->caption ?? null)
+                                    <div class="caption">{{ $block_item_data->caption }}</div>
                                 @endif
                             </div>
                         @endif
                     @endforeach
 
                 @endif
-            @endif
 
+            </div>
         </div>
     </div>
 

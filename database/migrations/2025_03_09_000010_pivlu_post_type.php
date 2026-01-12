@@ -38,8 +38,12 @@ return new class extends Migration
             $table->string('admin_menu_icon', 200)->nullable();
             $table->boolean('core')->default(false);
             $table->boolean('active')->default(false);
+            $table->boolean('multilingual_content')->default(false);
             $table->boolean('allow_block_type')->default(false);
+            $table->unsignedBigInteger('package_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('package_id')->references('id')->on('pivlu_packages')->cascadeOnDelete();
         });
     }
 

@@ -26,13 +26,13 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Pivlu\Models\Post;
 use Pivlu\Models\PostContent;
+use Pivlu\Models\PostMeta;
 use Pivlu\Models\PostType;
 use Pivlu\Models\PostTaxonomy;
 use Pivlu\Models\PostTaxonomyRelation;
 use Pivlu\Models\PostTypeTaxonomy;
 use Pivlu\Models\Block;
 use Pivlu\Models\BlockType;
-use Pivlu\Models\Language;
 use Pivlu\Functions\PostFunctions;
 use Pivlu\Functions\FileFunctions;
 use Pivlu\Functions\BlockFunctions;
@@ -146,7 +146,9 @@ class PostController extends Controller
 
         $post_type_id = $request->post_type_id;
         if (!$post_type_id) return redirect(route('admin'));
-        if ((PostType::where('id', $post_type_id))->doesntExist()) return redirect(route('admin'));
+
+        $post_type = PostType::find($post_type_id);
+        if (!$post_type) return redirect(route('admin'));
 
         // CHECK PERMISSION - create post
         if ($request->user()->cannot('create', [Post::class, $post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
@@ -160,6 +162,8 @@ class PostController extends Controller
         ]);
 
         foreach (admin_languages() as $lang) {
+            if ($post_type->multilingual_content == 0 && $lang->is_default != 1) continue;
+
             $title_key = 'title_' . $lang->id;
             $summary_key = 'summary_' . $lang->id;
             $search_terms_key = 'search_terms_' . $lang->id;
@@ -171,10 +175,11 @@ class PostController extends Controller
             else $post_content_slug = Str::slug($request->$title_key, '-');
 
             // Check for duplicate (same post type, slug and language). If exists, add ID in the slug             
-            $post_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->first();
-            if ($post_same_lang_and_slug) {
-                if (Post::where(['id' => $post_same_lang_and_slug->id, 'post_type_id' => $post->post_type_id])->exists())
+            $post_content_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->first();
+            if ($post_content_same_lang_and_slug) {
+                if (Post::where(['id' => $post_content_same_lang_and_slug->post_id, 'post_type_id' => $post_type->id])->exists()) {
                     $post_content_slug = $post_content_slug . '-' . $post->id;
+                }
             }
 
             PostContent::create([
@@ -189,19 +194,59 @@ class PostController extends Controller
             ]);
         }
 
-        // process image        
+        if ($request->custom_tpl_file) PostMeta::add_meta($post->id, 'custom_tpl_file', $request->custom_tpl_file ?? null);
+
+
+        if ($post_type->type != 'page') {
+            // Hierarchical taxonomies
+            $hierarchical_taxonomies = $request->only(['taxonomies']); // array           
+            //print_r($hierarchical_taxonomies);
+            if (count($hierarchical_taxonomies['taxonomies'] ?? []) > 0) {
+                foreach ($hierarchical_taxonomies['taxonomies'] as $hierarchical_taxonomy_id) {
+                    //echo "\n $hierarchical_taxonomy_id";
+                    $post_type_taxonomy_id = PostTaxonomy::where('id', $hierarchical_taxonomy_id)->value('post_type_taxonomy_id');
+                    //echo "\n $post_type_taxonomy_id";
+                    $taxonomy_term_id = PostTypeTaxonomy::where('post_type_id', $post_type_taxonomy_id)->value('id');
+                    //echo "\n $taxonomy_term_id";
+                    PostTaxonomyRelation::create([
+                        'post_id' => $post->id,
+                        'post_taxonomy_id' => (int)$hierarchical_taxonomy_id,
+                        'post_type_taxonomy_id' => $post_type_taxonomy_id
+                    ]);
+                }
+            }
+
+            // Non-Hierarchical taxonomies
+            $non_hierarchical_taxonomies = $request->only(['non-hierarchical-taxonomies']); // array
+            if ($non_hierarchical_taxonomies ?? null) {
+                if (count($non_hierarchical_taxonomies['non-hierarchical-taxonomies']) > 0) {
+                    foreach ($non_hierarchical_taxonomies['non-hierarchical-taxonomies'] as $non_hierarchical_taxonomy_items_json) {
+                        $non_hierarchical_taxonomy_items = json_decode($non_hierarchical_taxonomy_items_json); // array
+                        if (count($non_hierarchical_taxonomy_items ?? []) > 0) {
+                            foreach ($non_hierarchical_taxonomy_items as $non_hierarchical_taxonomy_item) {
+                                $non_hierarchical_taxonomy_item_id = $non_hierarchical_taxonomy_item->id;
+                                $post_type_taxonomy_id = PostTaxonomy::where('id', $non_hierarchical_taxonomy_item_id)->value('post_type_taxonomy_id');
+                                $taxonomy_term_id = PostTypeTaxonomy::where('post_type_id', $post_type_taxonomy_id)->value('id');
+                                PostTaxonomyRelation::create(['post_id' => $post->id, 'post_taxonomy_id' => (int)$non_hierarchical_taxonomy_item_id, 'post_type_taxonomy_id' => $post_type_taxonomy_id]);
+                            }
+                        }
+                    }
+                }
+            }
+        } // end IF post!=page
+
+        // process image      
         if ($request->hasFile('image')) {
-            $media = FileFunctions::store_image($request->file('image'));
+            $media = FileFunctions::store_file($post, $request->file('image'), 'post_media');
             if ($media) {
                 $post->update(['media_id' => $media->id]);
-                $media->update(['post_id' => $post->id]);
-            } else
-                $upload_fails = true;
+                $media->update(['post_id' => $post->id ?? null]);
+            }
         }
 
         PostFunctions::post_taxonomy_recount_posts($post_type_id);
 
-        return redirect(route('admin.posts.content', ['id' => $post->id, 'post_type_id' => $post_type_id]))->with('success', 'post_created')->with('upload_fails', $upload_fails ?? null);
+        return redirect(route('admin.posts.show', ['id' => $post->id]))->with('success', 'created');
     }
 
 
@@ -224,15 +269,14 @@ class PostController extends Controller
         $author_count_published_posts = Post::where('user_id', $post->user_id)->where('status', 'active')->count();
         $author_count_pending_posts = Post::where('user_id', $post->user_id)->where('status', 'pending')->count();
 
-        $post_id = $post->id;
-        $content_langs = Language::where('status', '!=', 'disabled')->with(['post_content' => function ($query) use ($post_id) {
-            $query->where('post_id', $post_id);
-        }])->orderByDesc('is_default')->get();
 
         // previews:
         $preview_urls = array();
-        foreach (Language::get_languages() as $lang) {
-            $preview_urls[$lang->name] = PostContent::where(['post_id' => $post->id, 'lang_id' => $lang->id])->value('url');
+        foreach ($post->all_languages_contents as $lang_content) {
+            if ($lang_content->title)
+                $preview_urls[$lang_content->lang_name] = $lang_content->url;
+            else
+                $preview_urls[$lang_content->lang_name] = null;
         }
 
         // post taxonomies (array)
@@ -247,7 +291,6 @@ class PostController extends Controller
             'post' => $post,
             'author_count_published_posts' => $author_count_published_posts,
             'author_count_pending_posts' => $author_count_pending_posts,
-            'content_langs' => $content_langs,
             'preview_urls' => $preview_urls,
 
             'post_type' => $post_type,
@@ -255,6 +298,8 @@ class PostController extends Controller
             'root_pages' => PostType::get_root_pages(), // for pages type only
             'post_taxonomies_array' => $post_taxonomies_array,
             'block_types' => BlockType::get_block_types(),
+
+            'custom_tpl_file' => PostMeta::get_meta($post->id, 'custom_tpl_file'),
         ]);
     }
 
@@ -291,9 +336,9 @@ class PostController extends Controller
             else $post_content_slug = Str::slug($request->$title_key, '-');
 
             // Check for duplicate (same post type, slug and language). If exists, add ID in the slug             
-            $post_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->where('post_id', '!=', $post->id)->first();
-            if ($post_same_lang_and_slug) {
-                if (Post::where(['id' => $post_same_lang_and_slug->id, 'post_type_id' => $post_type->id])->exists()) {
+            $post_content_same_lang_and_slug = PostContent::where('lang_id', $lang->id)->where('slug', $post_content_slug)->where('post_id', '!=', $post->id)->first();
+            if ($post_content_same_lang_and_slug) {
+                if (Post::where(['id' => $post_content_same_lang_and_slug->post_id, 'post_type_id' => $post_type->id])->exists()) {
                     $post_content_slug = $post_content_slug . '-' . $post->id;
                 }
             }
@@ -303,7 +348,6 @@ class PostController extends Controller
                 [
                     'title' => $request->$title_key ?? null,
                     'slug' => $post_content_slug ?? null,
-                    'url' => $path ?? null,
                     'summary' => $request->$summary_key ?? null,
                     'search_terms' => $request->$search_terms_key ?? null,
                     'meta_title' => $request->$meta_title_key ?? null,
@@ -312,10 +356,11 @@ class PostController extends Controller
             );
         }
 
+        PostMeta::add_meta($post->id, 'custom_tpl_file', $request->custom_tpl_file ?? null);
 
         if ($post_type->type != 'page') {
             // Hierarchical taxonomies
-            $hierarchical_taxonomies = $request->only(['taxonomies']); // array        
+            $hierarchical_taxonomies = $request->only(['taxonomies']); // array                    
             if (count($hierarchical_taxonomies['taxonomies'] ?? []) > 0) {
                 foreach ($hierarchical_taxonomies['taxonomies'] as $hierarchical_taxonomy_id) {
                     $post_type_taxonomy_id = PostTaxonomy::where('id', $hierarchical_taxonomy_id)->value('post_type_taxonomy_id');
@@ -324,16 +369,9 @@ class PostController extends Controller
                 }
             }
 
-            // Delete taxonomies not sent and found in database
-            $existingTaxonomies = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_taxonomy_id')->toArray();
-            foreach ($existingTaxonomies as $existing_taxonomy_id) {
-                if (!in_array($existing_taxonomy_id, $hierarchical_taxonomies['taxonomies'] ?? array()))
-                    PostTaxonomyRelation::where(['post_id' => $post->id, 'post_taxonomy_id' => $existing_taxonomy_id])->delete();
-            }
-
 
             // Non-Hierarchical taxonomies
-            $non_hierarchical_taxonomies = $request->only(['non-hierarchical-taxonomies']); // array
+            $non_hierarchical_taxonomies = $request->only(['non-hierarchical-taxonomies']); // array            
             if ($non_hierarchical_taxonomies ?? null) {
                 if (count($non_hierarchical_taxonomies['non-hierarchical-taxonomies']) > 0) {
                     foreach ($non_hierarchical_taxonomies['non-hierarchical-taxonomies'] as $non_hierarchical_taxonomy_items_json) {
@@ -343,23 +381,60 @@ class PostController extends Controller
                                 $non_hierarchical_taxonomy_item_id = $non_hierarchical_taxonomy_item->id;
                                 $post_type_taxonomy_id = PostTaxonomy::where('id', $non_hierarchical_taxonomy_item_id)->value('post_type_taxonomy_id');
                                 $taxonomy_term_id = PostTypeTaxonomy::where('post_type_id', $post_type_taxonomy_id)->value('id');
-                                PostTaxonomyRelation::updateOrInsert(['post_id' => $post->id, 'post_taxonomy_id' => (int)$non_hierarchical_taxonomy_item_id, 'post_type_taxonomy_id' => $taxonomy_term_id]);
+                                PostTaxonomyRelation::updateOrInsert(['post_id' => $post->id, 'post_taxonomy_id' => (int)$non_hierarchical_taxonomy_item_id, 'post_type_taxonomy_id' => $post_type_taxonomy_id]);
                             }
                         }
                     }
                 }
             }
+
+            // Delete hierarchical taxonomies not sent and found in database
+            $existingTaxonomies = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_type_taxonomy_id', 'post_taxonomy_id')->toArray();
+            foreach ($existingTaxonomies as $existing_post_taxonomy_id => $existing_post_type_taxonomy_id) {
+                $post_type_taxonomy = PostTypeTaxonomy::find($existing_post_type_taxonomy_id);
+                if (!$post_type_taxonomy) continue;
+                if ($post_type_taxonomy->hierarchical == 0) continue;
+
+                if (!in_array($existing_post_taxonomy_id, $hierarchical_taxonomies['taxonomies'] ?? array()))
+                    PostTaxonomyRelation::where(['post_id' => $post->id, 'post_taxonomy_id' => $existing_post_taxonomy_id, 'post_type_taxonomy_id' => $existing_post_type_taxonomy_id])->delete();
+            }
+
+            // Delete non-hierarchical taxonomies not sent and found in database
+            $existingTaxonomies = PostTaxonomyRelation::where('post_id', $post->id)->pluck('post_type_taxonomy_id', 'post_taxonomy_id')->toArray();
+            foreach ($existingTaxonomies as $existing_post_taxonomy_id => $existing_post_type_taxonomy_id) {
+                $post_type_taxonomy = PostTypeTaxonomy::find($existing_post_type_taxonomy_id);
+                if (!$post_type_taxonomy) continue;
+                if ($post_type_taxonomy->hierarchical == 1) continue;
+
+                $found = false;
+                if ($non_hierarchical_taxonomies ?? null) {
+                    if (count($non_hierarchical_taxonomies['non-hierarchical-taxonomies']) > 0) {
+                        foreach ($non_hierarchical_taxonomies['non-hierarchical-taxonomies'] as $non_hierarchical_taxonomy_items_json) {
+                            $non_hierarchical_taxonomy_items = json_decode($non_hierarchical_taxonomy_items_json); // array
+                            if (count($non_hierarchical_taxonomy_items ?? []) > 0) {
+                                foreach ($non_hierarchical_taxonomy_items as $non_hierarchical_taxonomy_item) {
+                                    $non_hierarchical_taxonomy_item_id = $non_hierarchical_taxonomy_item->id;
+                                    if ($existing_post_taxonomy_id == $non_hierarchical_taxonomy_item_id)
+                                        $found = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!$found)
+                    PostTaxonomyRelation::where(['post_id' => $post->id, 'post_taxonomy_id' => $existing_post_taxonomy_id, 'post_type_taxonomy_id' => $existing_post_type_taxonomy_id])->delete();
+            }
         } // end IF post!=page
 
 
-        // process image        
+        // process image      
         if ($request->hasFile('image')) {
-            $media = FileFunctions::store_image($request->file('image'), $post->media_id);
+            $media = FileFunctions::store_file($post, $request->file('image'), 'post_media');
             if ($media) {
                 $post->update(['media_id' => $media->id]);
-                $media->update(['post_id' => $post->id]);
-            } else
-                $upload_fails = true;
+                $media->update(['post_id' => $post->id ?? null]);
+            }
         }
 
         PostFunctions::post_taxonomy_recount_posts($post->post_type_id);

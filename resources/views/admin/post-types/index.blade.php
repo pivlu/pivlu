@@ -82,8 +82,8 @@
                                     <div class="float-end ms-2 badge bg-info fw-normal">{{ __('Core') }}</div>
                                 @endif
 
-                                @if ($post_type->internal_only == 1)
-                                    <div class="float-end ms-2 badge bg-info fw-normal ms-1">{{ __('Internal only') }}</div>
+                                @if ($post_type->multilingual_content == 1 && count(admin_languages()) > 1)
+                                    <div class="float-end ms-2 badge bg-info fw-normal ms-1">{{ __('Multilingual content') }}</div>
                                 @endif
 
                                 @if ($post_type->active == 0)
@@ -95,14 +95,16 @@
                                         {{ __('Page') }}
                                     @else
                                         @foreach ($post_type->all_languages_contents as $post_type_content)
-                                            @if (count(admin_languages()) > 1)
-                                                <span class="me-1">{!! flag($post_type_content->lang_code) !!}</span>
+                                            @if ($post_type->multilingual_content == 0 && $post_type_content->lang_code != $config->default_language->code)
+                                                @php
+                                                    continue;
+                                                @endphp
                                             @endif
 
                                             @if ($post_type_content->name)
-                                                {{ $post_type_content->name }}</a>
+                                                {!! lang_label($post_type_content, $post_type_content->name) !!}
                                             @else
-                                                <span class="text-danger">{{ __('not set') }}</span>
+                                                <span class="text-danger">{!! lang_label($post_type_content, __('not set')) !!}</span>
                                             @endif
                                             <div class="mb-1"></div>
                                         @endforeach
@@ -124,20 +126,25 @@
                             <td>
                                 @if ($post_type->type != 'page')
                                     @foreach ($post_type->all_languages_contents as $post_type_content)
-                                        @if (count(admin_languages()) > 1)
-                                            <span class="me-1">{!! flag($post_type_content->lang_code) !!}</span>
+                                        @if ($post_type->multilingual_content == 0 && $post_type_content->lang_code != $config->default_language->code)
+                                            @php
+                                                continue;
+                                            @endphp
                                         @endif
 
                                         @if ($post_type_content->slug)
-                                            @if ($post_type_content->lang_code == get_default_language()->code)
-                                                <a target="_blank" href="{{ route('home') }}/{{ $post_type_content->slug }}">/{{ $post_type_content->slug }}</a>
+                                            @if ($post_type_content->lang_code == $config->default_language->code)
+                                                {!! lang_label($post_type_content) !!}
+                                                <a class="fw-bold" target="_blank" href="{{ route('home') }}/{{ $post_type_content->slug }}">/{{ $post_type_content->slug }}</a>
                                             @else
-                                                <a target="_blank"
+                                                {!! lang_label($post_type_content) !!}
+                                                <a class="fw-bold" target="_blank"
                                                     href="{{ route('home') }}/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}">/{{ $post_type_content->lang_code }}/{{ $post_type_content->slug }}</a>
                                             @endif
                                         @else
-                                            <span class="text-danger">{{ __('not set') }}</span>
+                                            <span class="text-danger">{!! lang_label($post_type_content, __('not set')) !!}</span>
                                         @endif
+
                                         <div class="mb-1"></div>
                                     @endforeach
                                 @endif

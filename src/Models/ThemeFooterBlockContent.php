@@ -29,7 +29,7 @@ class ThemeFooterBlockContent extends Model
         'footer_id',
         'footer_block_id',
         'lang_id',
-        'content',
+        'data',
         'header',
     ];
 

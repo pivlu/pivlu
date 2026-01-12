@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ $locale }}" dir="{{ $site_text_dir }}">
+<html lang="{{ $config->locale }}" dir="{{ $config->text_dir }}">
 
 <head>
-    <title>{{ $post->meta_title ?? $post->title }}</title>
-    <meta name="description" content="{{ $post->meta_description ?? ($post->summary ?? strip_tags(substr($post->content, 0, 300))) }}">
+    <title>{{ $post->meta_title }}</title>
+    <meta name="description" content="{{ $post->meta_description }}">
 
     @include('pivlu::web.global.head')
 
     <meta property="og:title" content="{{ $post->title }}" />
-    @if ($post->image)
-        <meta property="og:image" content="{{ image($post->image) }}" />
+    @if ($post->media_id)
+        <meta property="og:image" content="{{ post_image($post) }}" />
     @endif
-    <meta property="og:site_name" content="{{ $config_lang->site_label ?? config('app.name') }}" />
+    <meta property="og:site_name" content="{{ $config->site_label ?? config('app.name') }}" />
     <meta property="og:description" content="{{ $post->meta_description ?? ($post->summary ?? strip_tags(substr($post->content, 0, 300))) }}" />
     <meta property="fb:app_id" content="{{ $config->facebook_app_id ?? null }}" />
     <meta property="og:type" content="article" />
@@ -22,8 +22,8 @@
 
     @if ($config->posts_comments_fb_enabled ?? null)
         <div id="fb-root"></div>
-        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/{{ $locale ?? 'en_US' }}/sdk.js#xfbml=1&version=v15.0&appId={{ $config->facebook_app_id ?? null }}&autoLogAppEvents=1"
-            nonce="Fr0Xvgjc"></script>
+        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/{{ $locale ?? 'en_US' }}/sdk.js#xfbml=1&version=v15.0&appId={{ $config->facebook_app_id ?? null }}&autoLogAppEvents=1" nonce="Fr0Xvgjc">
+        </script>
     @endif
 </head>
 
@@ -36,23 +36,10 @@
 
         @include('pivlu::web.includes.posts-search')
 
-        @if (($layout_top ?? null) == 1)
-            @include('pivlu::web.layouts.layout-top')
-        @endif
+        <div class="container-xxl mt-4 style_posts">
+            @include('pivlu::web.includes.post-item')
+        </div>
 
-        @if (($layout_sidebar ?? null) == 'left')
-            @include('pivlu::web.layouts.layout-sidebar-left-posts-post')
-        @elseif (($layout_sidebar ?? null) == 'right')
-            @include('pivlu::web.layouts.layout-sidebar-right-posts-post')
-        @else
-            <div class="container-xxl mt-4 style_posts">
-                @include('pivlu::web.includes.post-item')
-            </div>
-        @endif       
-
-        @if (($layout_bottom ?? null) == 1)
-            @include('pivlu::web.layouts.layout-bottom')
-        @endif
     </div>
     <!-- End Main Content -->
 

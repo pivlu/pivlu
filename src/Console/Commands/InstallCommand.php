@@ -66,7 +66,7 @@ class InstallCommand extends Command
         // Package artisan
         Artisan::call('vendor:publish --tag=config');
         Artisan::call('vendor:publish --tag=assets');
-        Artisan::call('vendor:publish --tag=migrations');
+        Artisan::call('vendor:publish --tag=migrations');        
 
         // Database tables
         $this->line('Setup database tables');
@@ -116,6 +116,9 @@ class InstallCommand extends Command
 
         $this->line('Check default theme');
         SetupFunctions::check_default_theme();
+
+        $this->line('Check default footer');
+        SetupFunctions::check_default_footer();
         
         $this->line('Check website default form and statuses');
         SetupFunctions::check_form();

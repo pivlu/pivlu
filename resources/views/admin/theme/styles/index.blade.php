@@ -15,8 +15,6 @@
 
 <div class="card">
 
-    @include('pivlu::admin.theme.includes.menu-themes')
-
     <div class="card-header">
         <div class="float-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-style"><i class="bi bi-plus-circle"></i> {{ __('Create block style') }}</button>
@@ -75,31 +73,19 @@
                     @foreach ($styles as $style)
                         <tr>
                             <td>
-                                @if ($style->style == 'custom')
-                                    <div class="float-end badge bg-light text-secondary">{{ __('Custom style') }}</div>
+                                @if ($style->is_default == 1)
+                                    <div class="float-end badge bg-light text-secondary">{{ __('Default style') }}</div>
                                 @endif
 
                                 <div class="fs-6 fw-bold mb-2">
-                                    @if ($style->is_default == 1)
-                                        {{ __('Default style') }}
-                                    @elseif($style->style == 'nav')
-                                        {{ __('Navigation menu') }}
-                                    @elseif($style->style == 'nav_dropdown')
-                                        {{ __('Navigation dropdown') }}
-                                    @elseif($style->style == 'footer')
-                                        {{ __('Primary footer') }}
-                                    @elseif($style->style == 'footer2')
-                                        {{ __('Secondary footer') }}
-                                    @else
-                                        {{ $style->label }}
-                                    @endif
+                                    {{ $style->label }}
                                 </div>
                             </td>
 
                             <td>
                                 <div class="d-grid gap-2">
 
-                                    <a class="btn btn-primary btn-sm mb-2" href="{{ route('admin.theme-styles.show', ['id' => $style->id]) }}">{{ __('Update style') }}</a>
+                                    <a class="btn btn-primary btn-sm mb-2" href="{{ route('admin.block-styles.show', ['id' => $style->id]) }}">{{ __('Update style') }}</a>
 
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $style->id }}" class="btn btn-danger btn-sm">{{ __('Delete style') }}</a>
                                     <div class="modal fade confirm-{{ $style->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
@@ -113,7 +99,7 @@
                                                     {{ __('Are you sure you want to delete this style?') }}
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form method="POST" action="{{ route('admin.theme-styles.show', ['id' => $style->id]) }}">
+                                                    <form method="POST" action="{{ route('admin.block-styles.show', ['id' => $style->id]) }}">
                                                         {{ csrf_field() }}
                                                         {{ method_field('DELETE') }}
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>

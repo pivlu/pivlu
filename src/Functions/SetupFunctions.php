@@ -29,10 +29,13 @@ use Pivlu\Models\PostTypeContent;
 use Pivlu\Models\PostTypeTaxonomy;
 use Pivlu\Models\PostTypeTaxonomyContent;
 use Pivlu\Models\Language;
+use Pivlu\Models\Block;
 use Pivlu\Models\BlockType;
+use Pivlu\Models\BlockContent;
 use Pivlu\Models\Theme;
 use Pivlu\Models\ThemeButton;
-use Pivlu\Models\ThemeStyle;
+use Pivlu\Models\ThemeFooter;
+use Pivlu\Models\BlockStyle;
 use Pivlu\Models\ThemeMenu;
 use Pivlu\Models\ThemeMenuItem;
 use Pivlu\Models\ThemeMenuContent;
@@ -145,7 +148,7 @@ class SetupFunctions
     public static function check_default_website_settings()
     {
         // first admin user_id
-        $first_admin_user = User::role('admin')->orderBy('id')->first();
+        $first_admin_user = User::where('role_group', 'admin')->orderBy('id')->first();
         $admin_user_id = $first_admin_user->id;
 
         // id for page type
@@ -417,6 +420,17 @@ class SetupFunctions
             ]);
         }
 
+        if (BlockType::where(['type' => 'form', 'core' => 1])->doesntExist()) {
+            BlockType::create([
+                'type' => 'form',
+                'label' => 'Form',
+                'description' => 'Form',
+                'core' => 1,
+                'position' => 13,
+                'icon' => '<i class="bi bi-textarea-resize"></i>'
+            ]);
+        }
+
         if (BlockType::where(['type' => 'post_section', 'core' => 1])->doesntExist()) {
             BlockType::create([
                 'type' => 'post_section',
@@ -479,17 +493,17 @@ class SetupFunctions
     // Add default theme, if not exists        
     public static function check_default_theme()
     {
-        if (Theme::where('is_active', 1)->doesntExist()) {
-            Theme::create([
+        $theme = Theme::firstorCreate(
+            ['is_active' => 1],
+            [
                 'code' => HelperFunctions::generateRandomInteger(16),
-                'is_active' => 1,
                 'is_builder' => 1,
                 'label' => 'Default theme',
                 'vendor_name' => 'pivlu',
                 'theme_name' => 'theme-default',
                 'menu_id' => ThemeMenu::where('is_default', 1)->value('id'),
-            ]);
-        }
+            ]
+        );
     }
 
 
@@ -523,7 +537,7 @@ class SetupFunctions
     // Add a default style, if not exists        
     public static function check_default_style()
     {
-        if (ThemeStyle::where('is_default', 1)->doesntExist()) {
+        if (BlockStyle::where('is_default', 1)->doesntExist()) {
             $data = [
                 'text_color' => config('pivlu.defaults.font_color'),
                 'text_size' => config('pivlu.defaults.font_size'),
@@ -555,7 +569,7 @@ class SetupFunctions
                 "dropdown_link_hover_decoration" => config('pivlu.defaults.dropdown_link_hover_decoration'),
             ];
 
-            ThemeStyle::create([
+            BlockStyle::create([
                 'is_default' => 1,
                 'label' => 'Default style',
                 'data' => json_encode($data)
@@ -592,30 +606,40 @@ class SetupFunctions
     public static function check_default_footer()
     {
         // Add default footer, if not exists
-        if (ThemeFooter::where(['is_default' => 1])->doesntExist()) {
-            $footer = ThemeFooter::create([
+        $default_footer = ThemeFooter::firstorCreate(
+            ['is_default' => 1],
+            [
                 'label' => 'Default footer',
-                'is_default' => 1,
-            ]);
+                'footer_columns' => 1,
+            ]
+        );
 
-            $editor_block_type = BlockType::where(['type' => 'editor'])->first();
+        $editor_block_type = BlockType::where(['type' => 'editor'])->first();
 
-            $footer_block = ThemeFooterBlock::create([
-                'footer_id' => $footer->id,
-                'block_type_id' => $editor_block_type->id,
-                'destination' => 'primary',
-                'col' => 1,
+        $footer_block = Block::firstorCreate(
+            [
+                'footer_id' => $default_footer->id,
+                'type_id' => $editor_block_type->id,                
+            ],
+            [
+                'footer_destination' => 'primary',
+                'footer_col' => 1,
                 'position' => 1,
                 'label' => 'Copyright'
-            ]);
+            ]
+        );
 
-            ThemeFooterBlockContent::create([
+        $footer_content = array('content' => 'Powered by <a target="_blank" href="https://pivlu.com">Pivlu - Free CMS and Website Builder</a>');
+
+        BlockContent::firstorCreate(
+            [
                 'lang_id' => Language::get_default_language()->id,
-                'footer_id' => $footer->id,
-                'footer_block_id' => $footer_block->id,
-                'content' => 'Powered by <a target="_blank" href="https://pivlu.com">Pivlu - Website Builder and Business Suite</a>',
-            ]);
-        }
+                'block_id' => $footer_block->id,
+            ],
+            [
+                'data' => json_encode($footer_content, JSON_UNESCAPED_UNICODE)
+            ]
+        );
     }
 
     // Add default roles and permissions, if not exists

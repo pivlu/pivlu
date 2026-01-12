@@ -3,10 +3,6 @@
         @include('pivlu::web.blocks.accordion')
     @break
 
-    @case('ads')
-        @include('pivlu::web.blocks.ads')
-    @break
-
     @case('alert')
         @include('pivlu::web.blocks.alert')
     @break
@@ -23,24 +19,16 @@
         @include('pivlu::web.blocks.card')
     @break
 
-    @case('text')
-        @include('pivlu::web.blocks.text', ['is_layout' => $is_layout ?? 0])
-    @break
-
     @case('editor')
-        @include('pivlu::web.blocks.editor', ['is_layout' => $is_layout ?? 0])
+        @include('pivlu::web.blocks.editor')
     @break
 
     @case('form')
-        <div class="container-xxl">
-            @include('pivlu::web.blocks.form')
-        </div>
+        @include('pivlu::web.blocks.form')
     @break
 
     @case('gallery')
-        <div class="@if (($module ?? null) == 'docs') @else container-xxl @endif">
-            @include('pivlu::web.blocks.gallery')
-        </div>
+        @include('pivlu::web.blocks.gallery')
     @break
 
     @case('hero')
@@ -48,24 +36,23 @@
     @break
 
     @case('image')
-        <div class="@if (($module ?? null) == 'docs') @else container-xxl @endif">
-            @include('pivlu::web.blocks.image')
-        </div>
+        @include('pivlu::web.blocks.image')
     @break
 
     @case('include')
-        @if ($block_extra['file'] ?? null)
+        @if ($block_data->tpl_file ?? null)
             @php
-                $include_file = str_replace('.blade.php', '', $block_extra['file']);
+                $include_file = str_replace('.blade.php', '', $block_data->tpl_file);
+                if(! file_exists(resource_path('views/custom-files/' . $config->theme_vendor_name . '/' . $block_data->tpl_file))) {
+                    break;
+                }
             @endphp
-            @include("pivlu::custom-files.{$include_file}")
+            @include("custom-files.{$config->theme_vendor_name}.{$include_file}")
         @endif
     @break
 
     @case('links')
-        <div class="container-xxl">
-            @include('pivlu::web.blocks.links')
-        </div>
+        @include('pivlu::web.blocks.links')
     @break
 
     @case('map')
@@ -77,9 +64,7 @@
     @break
 
     @case('search')
-        <div class="container-xxl">
-            @include('pivlu::web.blocks.search')
-        </div>
+        @include('pivlu::web.blocks.search')
     @break
 
     @case('slider')
@@ -91,13 +76,10 @@
     @break
 
     @case('testimonial')
-        <div class="container-xxl">
-            @include('pivlu::web.blocks.testimonial')
-        </div>
+        @include('pivlu::web.blocks.testimonial')
     @break
 
     @case('video')
         @include('pivlu::web.blocks.video')
-    @break
-
+    @break    
 @endswitch

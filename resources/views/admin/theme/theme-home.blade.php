@@ -6,11 +6,11 @@
                 <a class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#addBlock"><i class="bi bi-plus-circle"></i> {{ __('Add homepage content block') }}</a>
             </div>
 
-            @foreach (homepage_blocks($theme->id) as $block)
+            @foreach (homepage_blocks($theme->id, $show_hidden = true) as $block)
                 <div class="builder-block movable" id="item-{{ $block->id }}">
                     <div class="float-end ms-2">
 
-                        @if ($block->hide == 1)
+                        @if ($block->hidden == 1)
                             <div class="badge bg-danger fs-6 me-2">{{ __('Hidden') }}</div>
                         @endif
 

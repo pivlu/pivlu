@@ -11,7 +11,7 @@
                 @foreach (footer_blocks($footer->id, $destination, $col = 1) as $block)
                     <div class="builder-block movable" id="item-{{ $block->id }}">
                         <div class="float-end ms-2">
-                            <a href="{{ route('admin.theme-footer.block', ['block_id' => $block->id, 'destination' => $destination, 'footer_id' => $footer->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
+                            <a href="{{ route('admin.blocks.show', ['id' => $block->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>                            
                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block->id }}" class="btn btn-outline-danger btn-sm ms-2"><i class="bi bi-trash"></i></a>
                             <div class="modal fade confirm-{{ $block->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -59,7 +59,7 @@
                 @foreach (footer_blocks($footer->id, $destination, $col = 2) as $block)
                     <div class="builder-block movable" id="item-{{ $block->id }}">
                         <div class="float-end ms-2">
-                            <a href="{{ route('admin.theme-footer.block', ['block_id' => $block->id, 'destination' => $destination, 'footer_id' => $footer->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
+                            <a href="{{ route('admin.blocks.show', ['id' => $block->id]) }}" class="btn btn-primary btn-sm">{{ __('Manage content') }}</a>
                             <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block->id }}" class="btn btn-outline-danger btn-sm ms-2"><i class="bi bi-trash"></i></a>
                             <div class="modal fade confirm-{{ $block->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                                 <div class="modal-dialog">

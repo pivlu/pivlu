@@ -9,7 +9,7 @@ debug_backtrace() || die('Direct access not permitted');
                 @csrf
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createLabel">{{ __('Create style') }}</h5>
+                    <h5 class="modal-title" id="createLabel">{{ __('Create block style') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -33,23 +33,14 @@ debug_backtrace() || die('Direct access not permitted');
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-
-                         <div class="col-12">                            
-                            <div class="form-group">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="is_block_style" name="is_block_style">
-                                    <label class="form-check-label" for="is_block_style">{{ __('Is block style') }}</label>
-                                </div>
-                            </div>
-                        </div>
+                        </div>                        
 
                     </div>
 
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">{{ __('Create style') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Create block style') }}</button>
                 </div>
 
             </form>

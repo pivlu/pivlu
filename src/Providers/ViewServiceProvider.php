@@ -28,6 +28,7 @@ use Illuminate\View\View;
 use Pivlu\Models\Config;
 use Pivlu\Models\ThemeConfig;
 use Pivlu\Models\ThemeConfigLang;
+use Pivlu\Models\ThemeFooter;
 use Pivlu\Models\ConfigLang;
 use Pivlu\Models\Language;
 use Pivlu\Functions\ThemeFunctions;
@@ -46,32 +47,66 @@ class ViewServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot():void
+    public function boot(): void
     {
 
         Facades\View::composer('*', function (View $view) {
-            $view->with('theme_path', 'themes/' . Config::get_config('active_theme') ?? 'builder');
-
-            $view->with('active_theme', ThemeFunctions::get_active_theme());
-
-            // general config
+            $active_theme = ThemeFunctions::get_active_theme();
+            $active_language = Language::get_active_language();            
+            
+            // Config variables
             $config = Config::config();
-            $view->with('tpl_config', $config);
-
-            // config depending on language
             $config_lang = ConfigLang::config();
-            $view->with('tpl_config_locale', $config_lang);
+            foreach ($config_lang as $key => $value) {
+                $config->$key = $value;
+            }
 
-            // active theme config
+            // theme config
             $theme_config = ThemeConfig::config();
-            $view->with('tpl_theme_config', $theme_config);
+            $theme_data = json_decode($active_theme->data);
+            $config->logo_url = $theme_data->logo_url ?? asset('assets/img/logo.png');
+            $config->favicon_url = $theme_data->favicon_url ?? asset('assets/img/favicon.png');
+            $config->theme_code = $active_theme->code;
+            $config->theme_vendor_name = $active_theme->vendor_name;
+            $config->theme_package_name = $active_theme->package_name;
+            $config->style_id = $active_theme->style_id;
+            $config->menu_id = $active_theme->menu_id;
+            $config->footer_id = $active_theme->footer_id;
+            $config->view = ($active_theme->views_hint ?? 'pivlu') . '::';
+            $config->locale = $active_language->code;
+            $config->text_dir = $active_language->dir ?? 'ltr';
+            $config->site_meta_title = $config->site_meta_title ?? __('Pivlu website');
+            $config->site_meta_description = $config->site_meta_description ?? __('Pivlu website');
+            
+            $theme_configs = ThemeConfig::where('theme_id', $active_theme->id)->pluck('value', 'name')->toArray();
+            foreach ($theme_configs as $tc_key => $tc_value) {
+                $config->$tc_key= $tc_value;
+            }
 
-            // active theme config lang
-            $theme_config_lang = ThemeConfigLang::config();
-            $view->with('tpl_theme_config_locale', $theme_config_lang);
+            $theme_config_lang = ThemeConfigLang::config() ?? [];
+            foreach ($theme_config_lang as $key => $value) {
+                $config->$key = $value;
+            }
 
-            // Language details
-            $view->with('tpl_locale', Language::get_active_language());
+            // Theme menu links            
+		    $val = ConfigLang::where('lang_id', $active_language->id)->where('name', 'menu_links_' . $active_theme->menu_id)->value('value');
+		    $menu_links = json_decode($val);            
+            $config->menu_links = $menu_links ?? [];
+
+            // Theme footer
+            $footer_id = $theme_config->footer_id ?? null;
+            $footer = ThemeFooter::find($footer_id);
+            $config->footer_columns = $footer->footer_columns ?? 1;
+            $config->footer2_show = $footer->footer2_show ?? 1;
+            $config->footer2_columns = $footer->footer2_columns ?? 1;
+
+            $config->site_languages = Language::get_active_languages();
+            $config->active_language = $active_language;
+            $config->default_language = Language::get_default_language();
+            $config->active_theme = $active_theme;
+                        
+            //dd($config);
+            $view->with('config', $config);
         });
     }
 }

@@ -30,12 +30,10 @@ use Pivlu\Models\PostMeta;
 use Pivlu\Models\PostTaxonomy;
 use Pivlu\Models\PostTaxonomyContent;
 use Pivlu\Models\Language;
-use Pivlu\Functions\PostFunctions;
+use Pivlu\Functions\ThemeFunctions;
 
 class ContentController extends Controller
 {
-
-    public static function get_theme_path() {}
 
 
     /*
@@ -48,24 +46,39 @@ class ContentController extends Controller
     public function level1(Request $request)
     {
 
+        $active_theme_view = ThemeFunctions::get_active_theme_view();
+
         $slug = $request->slug;
 
-
         // 1. Check for custom post type        
-        $post_type = PostType::where('type', $slug)->where('active', 1)->first();
+        $post_type = PostType::with('active_language_content')
+            ->whereHas('active_language_content', function ($query) use ($slug) {
+                $query->where(['slug' => $slug, 'active' => 1]);
+            })->first();
         if ($post_type) {
             // POST TYPE
-
             // Get post type taxonomies
-            $post_type_nav_items = TaxonomyTerm::get_hierarchical_taxonomies($post_type->type);
+            $post_type_taxonomies = PostTypeTaxonomy::get_hierarchical_taxonomies($post_type->id);
 
             // Get posts
-            $posts = Post::with('author', 'taxonomies')->where('type', $post_type->type)->where('status', 'published')->whereNull('deleted_at')->orderByDesc('id')->paginate(24);
+            $posts = Post::with('user', 'taxonomies', 'active_language_content', 'default_language_content')->where('post_type_id', $post_type->id)->where('status', 'published')->orderByDesc('id')->paginate(24);
 
-            return view(get_active_theme_view() . ($post_type->custom_tpl_file ?? 'type'), [
+            foreach ($posts as $post) {
+                $post->title = $post->active_language_content->title ?? $post->default_language_content->title;
+                $post->summary = $post->active_language_content->summary ?? $post->default_language_content->summary;
+                //$post->image = image($post, 'post_media', 'thumb');
+                $post->author_name = $post->user->name;
+                $post->author_avatar = $post->user->avatar;
+                $post->url = $post->active_language_content->url ?? '#';
+            }
 
+            $post_type->title = $post_type->active_language_content->title ?? $post_type->default_language_content->title;
+            $post_type->meta_title = $post_type->active_language_content->meta_title ?? $post_type->default_language_content->title ?? $post_type->title;
+            $post_type->meta_description = $post_type->active_language_content->meta_description ?? $post_type->default_language_content->meta_description ?? (substr($post_type->active_language_content->description, 0, 200) ?? null);
+
+            return view($active_theme_view . ($post_type->custom_tpl_file ?? 'web.post-type'), [
                 'post_type' => $post_type,
-                'post_type_nav_items' => $post_type_nav_items,
+                'post_type_taxonomies' => $post_type_taxonomies,
                 'portal_section' => $post_type->type ?? null,
                 'posts' => $posts,
 
@@ -82,9 +95,9 @@ class ContentController extends Controller
 
             if ($post_type_taxonomy) {
                 // POSTS TAXONOMY
-                return view(get_active_theme_view() . ($custom_tpl_file ?? 'taxonomy'), [
-                    'taxonomy' => $taxonomy,
-
+                return view($active_theme_view . ($post_type_taxonomy->custom_tpl_file ?? 'web.taxonomy'), [
+                    'post_type' => $post_type_taxonomy->post_type,
+                    'taxonomy' => $post_type_taxonomy,
                 ]);
             }
         }
@@ -106,15 +119,15 @@ class ContentController extends Controller
             $page->meta_description = $page->active_language_content->meta_description ?? (substr($page->active_language_content->summary, 0, 200) ?? null);
             $page->author_name = $page->user->name;
             $page->author_avatar = $page->user->avatar_media_id;
-            if ($page->blocks) $content_blocks = json_decode($page->blocks);
 
             // check for custom tpl file
             $custom_tpl_file = PostMeta::get_meta($page->id, 'custom_tpl_file') ?? null;
 
-            //return view(get_active_theme_view() . ($custom_tpl_file ?? 'page'), [
-            return view('web.' . ($custom_tpl_file ?? 'page'), [
+            //dd($content_blocks);
+
+            return view($active_theme_view . ($custom_tpl_file ?? 'web.page'), [
                 'page' => $page,
-                'content_blocks' => $content_blocks ?? array(),
+                'content_blocks' => json_decode($page->blocks) ?? [],
             ]);
         }
 
@@ -138,6 +151,9 @@ class ContentController extends Controller
 
         $slug1 = $request->slug1;
         $slug2 = $request->slug2;
+        if ($slug1 == 'storage') abort(404);
+
+        $active_theme_view = ThemeFunctions::get_active_theme_view();
 
         // 1. Check for taxonomy from post type               
         $post_type = PostType::with('active_language_content')
@@ -174,19 +190,10 @@ class ContentController extends Controller
                     ->first();
 
                 if ($post) {
-
-                    $post->title = $post->active_language_content->title;
-                    $post->summary = $post->active_language_content->summary;
-                    $post->image = image($post->media_id);
-                    $post->author_name = $post->user->name;
-                    $post->author_avatar = $post->user->avatar_media_id;
-
-                    if ($post->blocks) $content_blocks = json_decode($post->blocks);
-
                     // Get post type taxonomies (userin nav menu)
                     $post_type_nav_items = PostTypeTaxonomy::get_hierarchical_taxonomies($post_type->id);
 
-                    // Get post main hierarchical taxonomy (userin nav menu active)
+                    // Get post main hierarchical taxonomy (used nav menu active)
                     $post_main_hierarchical_taxonomy = Post::get_main_hierarchical_taxonomy($post) ?? null;
 
                     // related
@@ -195,14 +202,14 @@ class ContentController extends Controller
                     // update hits
                     Post::where('id', $post->id)->increment('hits');
 
-                    return view('web.' . ($custom_tpl_file ?? 'post'), [                    
+                    return view($active_theme_view . ($post->custom_tpl_file ?? 'web.post'), [
                         'taxonomy_section' => $post_main_hierarchical_taxonomy->slug ?? null,
                         'post_type' => $post_type,
                         'post_main_hierarchical_taxonomy' => $post_main_hierarchical_taxonomy,
                         'post' => $post,
                         'related_posts' => $related_posts,
                         'post_type_nav_items' => $post_type_nav_items,
-                        'content_blocks' => $content_blocks ?? [],
+                        'content_blocks' => $post->content_blocks,
                     ]);
                 }
             }
@@ -250,10 +257,15 @@ class ContentController extends Controller
 
 
     /*       
-    post article from custom post type        
+        /post-type-slug/post-type-taxonomy-slug/xxx-xxx
+        taxonomy from post type
+        Ex:
+        /posts/categories/technology
+        /devices/brands/apple
     */
     public function level3(Request $request)
     {
+        $active_theme_view = ThemeFunctions::get_active_theme_view();
 
         $slug1 = $request->slug1; // post type
         $slug2 = $request->slug2; // post type taxonomy
@@ -263,7 +275,7 @@ class ContentController extends Controller
 
         $url_path = $slug1 . '/' . $slug2 . '/' . $slug3;
 
-        $post_taxonomy_content = PostTaxonomyContent::where(['url_path' => $url_path, 'lang_id' => $this->get_active_language_id()])->first();
+        $post_taxonomy_content = PostTaxonomyContent::where(['url_path' => $url_path, 'lang_id' => Language::get_active_language()->id])->first();
         if (! $post_taxonomy_content) abort(404);
 
         $post_taxonomy = PostTaxonomy::where('id', $post_taxonomy_content->post_taxonomy_id)->where('active', 1)->first();
@@ -282,15 +294,16 @@ class ContentController extends Controller
             ->orderByDesc('id')->paginate(24);
 
         foreach ($posts as $post) {
-            $post->title = $post->active_language_content->title;
-            $post->summary = $post->active_language_content->summary;
-            $post->image = image($post->media_id, 'thumb');
-            $post->author_name = $post->user->name;
-            $post->author_avatar = $post->user->avatar;
-            $post->url = PostFunctions::get_post_url($post->id, Language::get_active_language()->id);
+            $post->meta_title = $post->active_language_content->meta_title ?? $post->active_language_content->title ?? null;
+            $post->meta_description = $post->active_language_content->meta_description ?? $post->active_language_content->summary ?? $post->active_language_content->title;
+            $post->title = $post->active_language_content->title ?? null;
+            $post->summary = $post->active_language_content->summary ?? null;
+            $post->author_name = $post->user->name ?? null;
+            $post->author_avatar = $post->user->avatar ?? null;
+            $post->url = $post->active_language_content->url ?? null;
         }
 
-        return view(get_active_theme_view() . ($custom_tpl_file ?? 'taxonomy'), [
+        return view($active_theme_view . ($post_type->custom_tpl_file ?? 'web.taxonomy'), [
             'posts' => $posts,
             'post_type' => $post_type,
             'post_taxonomy' => $post_taxonomy,
@@ -418,12 +431,5 @@ class ContentController extends Controller
             'posts' => $posts ?? null,
             's' => $s,
         ]);
-    }
-
-
-
-    public static function get_active_language_id()
-    {
-        return Language::get_active_language()->id;
     }
 }

@@ -40,6 +40,15 @@
                     '2.0': 'Ekstra stor'
                 }
             },
+            de: {
+                lineheight: 'Zeilenhöhe',
+                lineheights: {
+                    '0.9': 'Klein',
+                    'normal': 'Normal',
+                    '1.5': 'Groß',
+                    '2.0': 'Sehr groß'
+                }
+            },
             et: {
                 lineheight: 'Reavahe',
                 lineheights: {
@@ -138,7 +147,7 @@
                     '1.5': '大',
                     '2.0': '特大'
                 }
-            },
+            }
         }
     });
     // jshint camelcase:true
@@ -158,8 +167,8 @@
             lineheight: {
                 init: function (trumbowyg) {
                     trumbowyg.o.plugins.lineheight = $.extend({},
-                      defaultOptions,
-                      trumbowyg.o.plugins.lineheight || {}
+                        defaultOptions,
+                        trumbowyg.o.plugins.lineheight || {}
                     );
 
                     trumbowyg.addBtnDef('lineheight', {
@@ -174,11 +183,11 @@
     function buildDropdown(trumbowyg) {
         var dropdown = [];
 
-        $.each(trumbowyg.o.plugins.lineheight.sizeList, function(index, size) {
+        $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
             trumbowyg.addBtnDef('lineheight_' + size, {
                 text: trumbowyg.lang.lineheights[size] || size,
                 hasIcon: false,
-                fn: function(){
+                fn: function () {
                     trumbowyg.saveRange();
                     var text = trumbowyg.getRangeText();
                     if (text.replace(/\s/g, '') !== '') {

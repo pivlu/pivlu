@@ -22,133 +22,29 @@
 use Pivlu\Models\Config;
 use Pivlu\Models\ConfigLang;
 use Pivlu\Models\Language;
-use Pivlu\Models\ThemeStyle;
+use Pivlu\Models\Post;
+use Pivlu\Models\PostType;
 use Pivlu\Models\ThemeButton;
+use Pivlu\Models\ThemeConfig;
 use Pivlu\Models\Theme;
 use Pivlu\Models\ThemeFooter;
-
-// Website general settings
-if (!function_exists('get_site_info')) {
-	function get_site_info($show = null)
-	{
-		$active_language = Language::get_active_language();
-
-		switch ($show) {
-			case 'name':
-				$result = $active_language->site_label ?? 'Pivlu site';
-				break;
-
-			case 'url':
-				$result = route('home');
-				break;
-			case 'text_dir':
-				$result = $active_language->dir ?? 'ltr';
-				break;
-			case 'lang':
-				$result = $active_language->code ?? 'en';
-				break;
-			default:
-				$result = null;
-				break;
-		}
-
-		return $result;
-	}
-}
-
-
-if (!function_exists('get_homepage_info')) {
-	function get_homepage_info($show = null)
-	{
-		$active_language = Language::get_active_language();
-
-		switch ($show) {
-			case 'title':
-				$result = $active_language->site_label ?? 'Pivlu site';
-				break;
-
-			case 'description':
-				$result = $active_language->site_label ?? 'Pivlu site';
-				break;
-			default:
-				$result = $active_language->site_label ?? 'Pivlu site';
-				break;
-		}
-
-		return $result;
-	}
-}
-
+use Pivlu\Functions\PostFunctions;
 
 if (!function_exists('theme_asset')) {
 	function theme_asset($file = null)
 	{
-		$active_theme = Theme::where('is_active', 1)->first();
-
-		return asset('vendor/' . $active_theme->vendor_name . '/' . $active_theme->theme_name) . '/' . $file;
+		$active_theme = Theme::get_active_theme();
+		return asset('vendor/' . $active_theme->vendor_name . '/' . $active_theme->package_name) . '/' . $file;
 	}
 }
 
 
-if (!function_exists('theme_meta')) {
-	function theme_meta($name = null)
-	{
-		if (! $name) return null;
-
-		switch ($name) {
-			case 'locale':
-				return Language::get_active_language()->code;
-				break;
-
-			case 'dir':
-				return Language::get_active_language()->dir;
-				break;
-
-			case 'label':
-				return Config::get_config('site_label') ?? 'Pivlu website';
-				break;
-
-			case 'author':
-				return Config::get_config('site_author') ?? 'Pivlu.com';
-				break;
-
-			default:
-				return null;
-		}
-	}
-}
-
-
-
-if (!function_exists('get_active_theme_view')) {
-	function get_active_theme_view()
+if (!function_exists('theme_view')) {
+	function theme_view($file = null)
 	{
 		$active_theme = Theme::where('is_active', 1)->first();
 
-		if ($active_theme != 'builder')
-			return 'themes.' . $active_theme->vendor_name . '.' . $active_theme->theme_name . '.';
-		else
-			return 'web.builder.';
-	}
-}
-
-if (!function_exists('get_active_theme')) {
-	function get_active_theme()
-	{
-		$theme = Theme::where('is_active', 1)->first();
-
-		if (! $theme) $theme = Theme::where('is_default', 1)->first();
-
-		return $theme;
-	}
-}
-
-if (!function_exists('get_default_style')) {
-	function get_default_style()
-	{
-		$id = ThemeStyle::where('is_default', 1)->value('id');
-
-		return 'style_' . $id;
+		return ($active_theme->views_hint ?? 'pivlu') . '::' . $file;
 	}
 }
 
@@ -164,37 +60,32 @@ if (!function_exists('get_style')) {
 
 
 
-// menu links
-if (!function_exists('menu_links')) {
-	function menu_links()
+if (!function_exists('theme_posts')) {
+	function theme_posts($type = null, $args = array())
 	{
-		$active_theme = Theme::get_active_theme();
-		if (! $active_theme) return [];
+		if (!$type) $type = 'post';
 
-		$theme_menu_id = $active_theme->menu_id;
+		$per_page = $args['posts_per_page'] ?? 24;
 
-		$val = ConfigLang::where('lang_id', Language::get_active_language()->id)->where('name', 'menu_links_' . $theme_menu_id)->value('value');
-		$menu_links = json_decode($val);
+		$post_type = PostType::where('type', $type)->first();
+		if (! $post_type) return null;
 
-		return $menu_links ?? [];
+		$items = Post::with('active_language_content', 'user')->where('post_type_id', $post_type->id)->where('status', 'published')->orderByDesc('id')->paginate($per_page);
+
+		foreach ($items as $item) {
+			//dd(avatar($item->user, 'thumb'));
+			$item->title = $item->active_language_content->title;
+			$item->summary = $item->active_language_content->summary;
+			$item->image = first_media_url($item, 'post_media', 'small');
+			$item->author_name = $item->user->name;
+			$item->author_avatar = avatar($item->user, 'thumb');
+			$item->url = $item->active_language_content->url;
+		}
+
+		return $items;
 	}
 }
 
-
-// Website footer
-if (!function_exists('footer')) {
-	function footer()
-	{
-		$active_theme = Theme::get_active_theme();
-		if (! $active_theme) return [];
-
-		$footer = ThemeFooter::find($active_theme->footer_id ?? null);
-		
-		if (! $footer) $footer = ThemeFooter::where('is_default', 1)->first();
-
-		return $footer;
-	}
-}
 
 if (!function_exists('button')) {
 	function button($id)
@@ -202,5 +93,22 @@ if (!function_exists('button')) {
 		if (!$id) return null;
 		$button = ThemeButton::find($id);
 		return $button;
+	}
+}
+
+
+if (!function_exists('get_theme_styles')) {
+	function get_theme_styles()
+	{
+		$styles_html = '';
+
+		// Get block styles css
+		$styles_html .= '<link rel="stylesheet" href="' . asset('custom/styles.css') . '" /> ';
+
+		// Get theme styles css
+		$active_theme = Theme::get_active_theme();
+		if ($active_theme) $styles_html .= '<link rel="stylesheet" href="' . asset('custom/themes/' . $active_theme->code . '.css') . '" /> ';
+
+		return nl2br($styles_html);
 	}
 }
