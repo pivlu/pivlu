@@ -501,8 +501,10 @@ class SetupFunctions
                 'name' => 'Default theme',
                 'description' => 'This is the default theme included with Pivlu CMS. This is a theme created with theme builder',
                 'vendor_name' => 'pivlu',
-                'theme_name' => 'theme-default',
+                'package_name' => 'theme-default',
+                'views_hint' => 'pivlu',
                 'menu_id' => ThemeMenu::where('is_default', 1)->value('id'),
+                'footer_id' => ThemeFooter::where('is_default', 1)->value('id'),
             ]
         );
     }
