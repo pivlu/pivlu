@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ theme_meta('locale') }}" dir="{{ theme_meta('dir') }}">
+<html lang="{{ $config->locale }}" dir="{{ $config->text_dir }}">
 
 <head>
     <meta charset="utf-8">
@@ -14,7 +14,7 @@
     @endif
 
     <!-- Bootstrap CSS-->
-    @if (theme_meta('dir') == 'rtl')
+    @if ($config->text_dir == 'rtl')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.rtl.min.css" integrity="sha384-7mQhpDl5nRA5nY9lr8F1st2NbIly/8WqhjTp+0oFxEA/QUuvlbF6M1KXezGBh3Nb"
             crossorigin="anonymous">
     @else
@@ -30,7 +30,7 @@
 
         <div class="container">
             <div class="mt-5">
-                {!! $tpl_config->website_maintenance_text ?? __('Maintenance mode') !!}
+                {!! $config->website_maintenance_text ?? __('Maintenance mode') !!}
             </div>
 
             @if (Auth::user() ?? null)
