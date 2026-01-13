@@ -178,7 +178,7 @@ class SetupFunctions
                 'source' => 'posts',
                 'label' => 'Contact form',
                 'position' => 1,
-                'user_id' => $admin_user->id
+                'user_id' => $admin_user_id
             ]);
 
             $contact_form = Form::first();
