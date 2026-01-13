@@ -21,6 +21,7 @@
 
 namespace Pivlu\Functions;
 
+use Pivlu\Models\ConfigLang;
 use Pivlu\Models\Post;
 use Pivlu\Models\PostContent;
 use Pivlu\Models\User;
@@ -188,6 +189,11 @@ class SetupFunctions
 
             $contact_page_post->update(['blocks' => serialize(['id' => $contact_block_form->id, 'type' => 'form'])]);
         }
+
+
+        ConfigLang::update_config(Language::get_default_language()->id, 'site_label', 'Pivlu Website');
+        ConfigLang::update_config(Language::get_default_language()->id, 'site_meta_title', 'Pivlu Website');
+        ConfigLang::update_config(Language::get_default_language()->id, 'site_meta_description', 'This website is created with Pivlu: Free CMS and Website Builder.');
     }
 
 
@@ -622,7 +628,7 @@ class SetupFunctions
         $footer_block = Block::firstorCreate(
             [
                 'footer_id' => $default_footer->id,
-                'type_id' => $editor_block_type->id,                
+                'type_id' => $editor_block_type->id,
             ],
             [
                 'footer_destination' => 'primary',

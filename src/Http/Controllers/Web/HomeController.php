@@ -36,7 +36,7 @@ class HomeController extends Controller
     {
         $active_theme_view = ThemeFunctions::get_active_theme_view();       
         
-        $content_blocks = BlockFunctions::get_active_theme_homepage_blocks();        
+        $content_blocks = BlockFunctions::get_homepage_blocks(); // get content blocks for homepage for active theme
         
         return view($active_theme_view . 'web.index', [
             'content_blocks' => $content_blocks,

@@ -32,18 +32,26 @@ use Pivlu\Models\ThemeConfig;
 class BlockFunctions
 {
 
-    // Get active theme homepage blocks    
-    public static function get_active_theme_homepage_blocks()
+    /**
+     * Get homepage blocks for a specific theme
+     *
+     * @param int|null $theme_id The ID of the theme to get homepage blocks for. If null, uses the active theme.
+     * @return array An array of block IDs for the homepage.
+     */
+    public static function get_homepage_blocks($theme_id = null)
     {
-        $active_theme = ThemeFunctions::get_active_theme();
-        if (! $active_theme) return [];
+        if ($theme_id === null) {
+            $active_theme = ThemeFunctions::get_active_theme();
+            if (! $active_theme) return [];
+            $theme_id = $active_theme->id;
+        }
+        $blocks = ThemeConfig::get_theme_config($theme_id, 'homepage_blocks');
+        if (! $blocks) return [];
 
-        $blocks = ThemeConfig::get_theme_config($active_theme->id, 'homepage_blocks') ?? [];       
+        $blocks = json_decode($blocks);
 
-        $blocks = json_decode($blocks) ?? [];
-        
-        return $blocks;
-    }  
+        return $blocks ?? [];
+    }
 
 
 
