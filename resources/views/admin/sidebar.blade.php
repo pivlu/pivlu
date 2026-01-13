@@ -101,7 +101,7 @@
                         </li>
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'styles') active @endif">
-                            <a href="{{ route('admin.block-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Block styles') }}</a>
+                            <a href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Block styles') }}</a>
                         </li>
                     </ul>
                 </li>

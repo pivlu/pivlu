@@ -8,7 +8,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.themes.index') }}">{{ __('Website template') }}</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.block-styles.index') }}">{{ __('Block styles') }}</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.theme-styles.index') }}">{{ __('Block styles') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $style->label }}</li>
                 </ol>
             </nav>

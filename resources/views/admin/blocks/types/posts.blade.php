@@ -20,7 +20,7 @@
 
     <div id="hidden_div_style" style="display: @if (isset($block_extra['style_id'])) block @else none @endif" class="mt-2">
         <div class="form-group col-lg-4 col-md-6 mb-3">
-            <label>{{ __('Select custom style') }} [<a class="fw-bold" target="_blank" href="{{ route('admin.block-styles.index') }}">{{ __('manage custom styles') }}</a>]</label>
+            <label>{{ __('Select custom style') }} [<a class="fw-bold" target="_blank" href="{{ route('admin.theme-styles.index') }}">{{ __('manage custom styles') }}</a>]</label>
             <select class="form-select" id="style_id" name="style_id" value="@if (isset($block_extra['style_id'])) {{ $block_extra['style_id'] }} @else #fbf7f0 @endif">
                 <option value="">-- {{ __('select') }} --</option>
                 @foreach ($styles as $style)

@@ -156,7 +156,7 @@
                             @if (count($styles) == 0)
                                 <div class="small text-info mt-1">{{ __("You don't have custom styles created") }}</div>
                             @endif
-                            <label class="mt-1">[<a class="fw-bold" target="_blank" href="{{ route('admin.block-styles.index') }}">{{ __('manage custom styles') }}</a>]</label>
+                            <label class="mt-1">[<a class="fw-bold" target="_blank" href="{{ route('admin.theme-styles.index') }}">{{ __('manage custom styles') }}</a>]</label>
                         </div>
                     </div>
                 @endif

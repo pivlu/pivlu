@@ -2,7 +2,7 @@
     <div class="col-lg-4 col-md-6">
         <div class="form-group mb-3">
             <label>{{ __('Select style form main navigation (links)') }} <br>
-                <a target="_blank" href="{{ route('admin.block-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
+                <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
                 <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
             </label>
             <select class="form-select" id="nav1_style_id" name="nav1_style_id">
@@ -19,7 +19,7 @@
     <div class="col-lg-4 col-md-6">
         <div class="form-group mb-3">
             <label>{{ __('Select style for secondary navigation') }} <br>
-                <a target="_blank" href="{{ route('admin.block-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
+                <a target="_blank" href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Manage styles') }}</a>
                 <a class="ms-2" onclick="location.reload();" href="#"><i class="bi bi-arrow-clockwise"></i> {{ __('Refresh page') }}</a>
             </label>
             <select class="form-select" id="nav2_style_id" name="nav2_style_id">

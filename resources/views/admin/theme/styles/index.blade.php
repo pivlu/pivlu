@@ -85,7 +85,7 @@
                             <td>
                                 <div class="d-grid gap-2">
 
-                                    <a class="btn btn-primary btn-sm mb-2" href="{{ route('admin.block-styles.show', ['id' => $style->id]) }}">{{ __('Update style') }}</a>
+                                    <a class="btn btn-primary btn-sm mb-2" href="{{ route('admin.theme-styles.show', ['id' => $style->id]) }}">{{ __('Update style') }}</a>
 
                                     <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $style->id }}" class="btn btn-danger btn-sm">{{ __('Delete style') }}</a>
                                     <div class="modal fade confirm-{{ $style->id }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
@@ -99,7 +99,7 @@
                                                     {{ __('Are you sure you want to delete this style?') }}
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form method="POST" action="{{ route('admin.block-styles.show', ['id' => $style->id]) }}">
+                                                    <form method="POST" action="{{ route('admin.theme-styles.show', ['id' => $style->id]) }}">
                                                         {{ csrf_field() }}
                                                         {{ method_field('DELETE') }}
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
