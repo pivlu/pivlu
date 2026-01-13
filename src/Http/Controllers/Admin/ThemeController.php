@@ -27,10 +27,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Pivlu\Models\Config;
 use Pivlu\Models\Theme;
-use Pivlu\Models\Language;
 use Pivlu\Models\ThemeConfig;
-use Pivlu\Models\ThemeConfigLang;
-use Pivlu\Models\BlockStyle;
+use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\ThemeFooter;
 use Pivlu\Models\ThemeMenu;
@@ -148,7 +146,7 @@ class ThemeController extends Controller
             'fonts' => ThemeFunctions::fonts(),
             'font_sizes' => ThemeFunctions::font_sizes(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
-            'styles' => BlockStyle::orderByDesc('is_default')->orderBy('label')->get(),
+            'styles' => ThemeStyle::orderByDesc('is_default')->orderBy('label')->get(),
             'footers' => ThemeFooter::orderByDesc('is_default')->orderBy('label')->get(),
             'menus' => ThemeMenu::orderByDesc('is_default')->orderBy('label')->get(),
             'theme_config' => ThemeConfig::config($theme->id),

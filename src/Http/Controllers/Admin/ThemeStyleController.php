@@ -24,10 +24,10 @@ namespace Pivlu\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use Pivlu\Models\BlockStyle;
+use Pivlu\Models\ThemeStyle;
 use Pivlu\Functions\ThemeFunctions;
 
-class BlockStyleController extends Controller
+class ThemeStyleController extends Controller
 {
 
     /**
@@ -36,7 +36,7 @@ class BlockStyleController extends Controller
     public function index()
     {
 
-        $styles = BlockStyle::orderByDesc('is_default')->orderBy('label')->paginate(20);
+        $styles = ThemeStyle::orderByDesc('is_default')->orderBy('label')->paginate(20);
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.styles.index',
@@ -58,21 +58,20 @@ class BlockStyleController extends Controller
             'label' => 'required',
         ]);
 
-        if ($validator->fails()) return redirect(route('admin.block-styles.index'))->withErrors($validator)->withInput();
+        if ($validator->fails()) return redirect(route('admin.theme-styles.index'))->withErrors($validator)->withInput();
 
-        if (BlockStyle::where('label', $request->label)->exists()) return redirect(route('admin.block-styles.index'))->with('error', 'duplicate');
+        if (ThemeStyle::where('label', $request->label)->exists()) return redirect(route('admin.theme-styles.index'))->with('error', 'duplicate');
 
-        $style = BlockStyle::create([
+        $style = ThemeStyle::create([
             'label' => $request->label,
-            'is_block_style' => $request->has('is_block_style') ? 1 : 0,
         ]);
 
         $source_style_id = $request->source_style_id;
         if ($source_style_id) {
-            $source = BlockStyle::find($source_style_id);
+            $source = ThemeStyle::find($source_style_id);
             if ($source) {
 
-                BlockStyle::updateOrCreate(['id' => $style->id], [
+                ThemeStyle::updateOrCreate(['id' => $style->id], [
                     'data' => $source->data
                 ]);
             }
@@ -91,8 +90,8 @@ class BlockStyleController extends Controller
      */
     public function show(Request $request)
     {
-        $style = BlockStyle::find($request->id);
-        if (! $style) return redirect(route('admin.block-styles.index'));
+        $style = ThemeStyle::find($request->id);
+        if (! $style) return redirect(route('admin.theme-styles.index'));
 
         $item = json_decode($style->data);
 
@@ -111,8 +110,8 @@ class BlockStyleController extends Controller
 
     public function preview_style(Request $request)
     {
-        $style = BlockStyle::find($request->id);
-        if (! $style) return redirect(route('admin.block-styles.index'));
+        $style = ThemeStyle::find($request->id);
+        if (! $style) return redirect(route('admin.theme-styles.index'));
 
         return view('pivlu::admin.preview-style', [
             'style' => $style,
@@ -125,8 +124,8 @@ class BlockStyleController extends Controller
      */
     public function update(Request $request)
     {
-        $style = BlockStyle::find($request->id);
-        if (! $style) return redirect(route('admin.block-styles.index'));
+        $style = ThemeStyle::find($request->id);
+        if (! $style) return redirect(route('admin.theme-styles.index'));
 
         $data =  [
             'text_size' => $request->text_size,
@@ -172,14 +171,14 @@ class BlockStyleController extends Controller
     public function destroy(Request $request)
     {
 
-        $style = BlockStyle::find($request->id);
-        if (!$style) return redirect(route('admin.block-styles.index'));
+        $style = ThemeStyle::find($request->id);
+        if (!$style) return redirect(route('admin.theme-styles.index'));
 
-        BlockStyle::where('id', $request->id)->delete();
+        ThemeStyle::where('id', $request->id)->delete();
 
         // regenerate css file
         ThemeFunctions::generate_styles_css();
 
-        return redirect(route('admin.block-styles.index'))->with('success', 'deleted');
+        return redirect(route('admin.theme-styles.index'))->with('success', 'deleted');
     }
 }

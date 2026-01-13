@@ -35,7 +35,7 @@ use Pivlu\Models\BlockContent;
 use Pivlu\Models\Theme;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\ThemeFooter;
-use Pivlu\Models\BlockStyle;
+use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeMenu;
 use Pivlu\Models\ThemeMenuItem;
 use Pivlu\Models\ThemeMenuContent;
@@ -498,7 +498,8 @@ class SetupFunctions
             [
                 'code' => HelperFunctions::generateRandomInteger(16),
                 'is_builder' => 1,
-                'label' => 'Default theme',
+                'name' => 'Default theme',
+                'description' => 'This is the default theme included with Pivlu CMS. This is a theme created with theme builder',
                 'vendor_name' => 'pivlu',
                 'theme_name' => 'theme-default',
                 'menu_id' => ThemeMenu::where('is_default', 1)->value('id'),
@@ -537,7 +538,7 @@ class SetupFunctions
     // Add a default style, if not exists        
     public static function check_default_style()
     {
-        if (BlockStyle::where('is_default', 1)->doesntExist()) {
+        if (ThemeStyle::where('is_default', 1)->doesntExist()) {
             $data = [
                 'text_color' => config('pivlu.defaults.font_color'),
                 'text_size' => config('pivlu.defaults.font_size'),
@@ -569,7 +570,7 @@ class SetupFunctions
                 "dropdown_link_hover_decoration" => config('pivlu.defaults.dropdown_link_hover_decoration'),
             ];
 
-            BlockStyle::create([
+            ThemeStyle::create([
                 'is_default' => 1,
                 'label' => 'Default style',
                 'data' => json_encode($data)

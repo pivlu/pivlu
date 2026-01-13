@@ -24,17 +24,15 @@ namespace Pivlu\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Pivlu\Models\Block;
-use Pivlu\Models\Theme;
 use Pivlu\Models\BlockItem;
 use Pivlu\Models\BlockItemContent;
 use Pivlu\Models\Language;
-use Pivlu\Models\BlockStyle;
+use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\Form;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\BlockFunctions;
 use Pivlu\Functions\FileFunctions;
-use Pivlu\Functions\HelperFunctions;
 
 class BlockController extends Controller
 {
@@ -64,7 +62,7 @@ class BlockController extends Controller
             'langs' => Language::get_languages(),
             'referer' => $referer,
             'font_sizes' => ThemeFunctions::font_sizes(),
-            'styles' => BlockStyle::orderBy('label')->get(),
+            'styles' => ThemeStyle::orderBy('label')->get(),
             'buttons' => ThemeButton::orderByDesc('is_default')->orderBy('label')->get(),
             'forms' => Form::where('active', 1)->orderBy('label')->get(), // forms (used in form block)
         ]);

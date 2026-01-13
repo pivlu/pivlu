@@ -46,7 +46,7 @@ use Pivlu\Http\Controllers\Admin\ThemeHomepageController;
 use Pivlu\Http\Controllers\Admin\ThemeLayoutController;
 use Pivlu\Http\Controllers\Admin\ThemeButtonController;
 use Pivlu\Http\Controllers\Admin\ThemeMenuController;
-use Pivlu\Http\Controllers\Admin\BlockStyleController;
+use Pivlu\Http\Controllers\Admin\ThemeStyleController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('admin');
 
@@ -119,8 +119,8 @@ Route::name('admin.')->group(function () {
     Route::post('appearance/theme/{id}/update-logo', [ThemeController::class, 'update_logo'])->name('theme.logo')->where('id', '[0-9]+');
 
     // Theme Styles
-    Route::resource('appearance/block-styles', BlockStyleController::class)->parameters(['block-styles' => 'id']);
-    Route::get('preview-style/{id}', [BlockStyleController::class, 'preview_style'])->name('preview-style')->where('id', '[a-z0-9_-]+');
+    Route::resource('appearance/theme-styles', ThemeStyleController::class)->parameters(['theme-styles' => 'id']);
+    Route::get('preview-style/{id}', [ThemeStyleController::class, 'preview_style'])->name('preview-style')->where('id', '[a-z0-9_-]+');
 
     // Theme Buttons
     Route::resource('appearance/theme-buttons', ThemeButtonController::class)->parameters(['theme-buttons' => 'id']);

@@ -21,16 +21,15 @@
 
 namespace Pivlu\Functions;
 
-use Pivlu\Models\Post;
 use Pivlu\Models\Theme;
 use Pivlu\Models\Language;
 use Pivlu\Models\ThemeMenuItem;
 use Pivlu\Models\ThemeButton;
-use Pivlu\Models\BlockStyle;
+use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeConfig;
 use Pivlu\Models\ThemeMenuContent;
 use Pivlu\Models\ConfigLang;
-use Pivlu\Models\PostContent;
+
 
 class ThemeFunctions
 {
@@ -145,7 +144,7 @@ class ThemeFunctions
     {
         $css_file = fopen('custom/styles.css', "w");
 
-        $styles = BlockStyle::get();
+        $styles = ThemeStyle::get();
         $buttons = ThemeButton::get();
         $fonts_array = array();
 
