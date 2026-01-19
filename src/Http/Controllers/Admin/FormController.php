@@ -353,7 +353,6 @@ class FormController extends Controller
             'message' => $message,
             'form' => $form,
             'fields' => $fields,
-            'geo' => json_decode($message->geo),
         ]);
     }
 

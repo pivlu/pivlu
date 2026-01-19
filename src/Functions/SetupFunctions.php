@@ -529,7 +529,7 @@ class SetupFunctions
                 'vendor_name' => 'pivlu',
                 'package_name' => 'theme-default',
                 'views_hint' => 'pivlu',
-                'menu_id' => ThemeMenu::where('is_default', 1)->value('id'),
+                'nav_id' => ThemeNav::where('is_default', 1)->value('id'),
                 'footer_id' => ThemeFooter::where('is_default', 1)->value('id'),
             ]
         );
@@ -568,39 +568,32 @@ class SetupFunctions
     {
         if (ThemeStyle::where('is_default', 1)->doesntExist()) {
             $data = [
-                'text_color' => config('pivlu.defaults.font_color'),
-                'text_size' => config('pivlu.defaults.font_size'),
-                'h1_size' => config('pivlu.defaults.h1_size'),
-                'h2_size' => config('pivlu.defaults.h2_size'),
-                'h3_size' => config('pivlu.defaults.h3_size'),
-
-                "link_color" => config('pivlu.defaults.link_color'),
-                "link_color_hover" => config('pivlu.defaults.link_color_hover'),
-                "link_color_underline" => config('pivlu.defaults.link_color_underline'),
-                "link_color_underline_hover" => config('pivlu.defaults.link_color_underline_hover'),
-                "link_decoration" => config('pivlu.defaults.link_decoration'),
-                "link_hover_decoration" => config('pivlu.defaults.link_hover_decoration'),
-
-                "nav_bg_color" => config('pivlu.defaults.nav_bg_color'),
-                "nav_font_color" => config('pivlu.defaults.nav_font_color'),
-                "nav_font_size" => config('pivlu.defaults.nav_font_size'),
-                "nav_link_color" => config('pivlu.defaults.nav_link_color'),
-                "nav_link_color_hover" => config('pivlu.defaults.nav_link_color_hover'),
-                "nav_link_color_underline" => config('pivlu.defaults.nav_link_color_underline'),
-                "nav_link_hover_decoration" => config('pivlu.defaults.nav_link_hover_decoration'),
-
-                "dropdown_font_color" => config('pivlu.defaults.dropdown_font_color'),
-                "dropdown_bg_color" => config('pivlu.defaults.dropdown_bg_color'),
-                "dropdown_link_color" => config('pivlu.defaults.dropdown_link_color'),
-                "dropdown_link_color_hover" => config('pivlu.defaults.dropdown_link_color_hover'),
-                "dropdown_link_color_underline" => config('pivlu.defaults.dropdown_link_color_underline'),
-                "dropdown_bg_color_hover" => config('pivlu.defaults.dropdown_bg_color_hover'),
-                "dropdown_link_hover_decoration" => config('pivlu.defaults.dropdown_link_hover_decoration'),
-            ];
+                "text_size" => "1rem",
+                "text_color" => "black",
+                "text_font_weight" => "normal",
+                "text_align" => "left",
+                "link_color" => "#2272dd",
+                "link_hover_color" => "black",
+                "link_underline_color" => "black",
+                "link_underline_color_hover" => "black",
+                "link_decoration" => "none",
+                "link_hover_decoration" => "none",
+                "link_font_weight" => "bold",
+                "link_underline_thickness" => "auto",
+                "link_underline_offset" => "auto",
+                "title_size" => "1.4rem",
+                "subtitle_size" => "1.2rem",
+                "title_font_weight" => "normal",
+                "subtitle_font_weight" => "normal",
+                "caption_color" => "grey",
+                "caption_size" => "0.95rem",
+                "caption_style" => "normal",
+                "bg_color" => "#f3f6f4"
+            ];           
 
             ThemeStyle::create([
                 'is_default' => 1,
-                'label' => 'Default style',
+                'label' => 'Primary navigation row style',
                 'data' => json_encode($data)
             ]);
         }

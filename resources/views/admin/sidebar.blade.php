@@ -110,11 +110,13 @@
                     </ul>
                 </li>
 
+                {{--
                 <li class="sidebar-item @if (($active_menu ?? null) == 'packages') active @endif">
                     <a href="{{ route('admin.packages') }}" class='sidebar-link'>
                         <i class="bi bi-plugin"></i> <span>{{ __('Plugins / packages') }}</span>
                     </a>
                 </li>
+                --}}
 
                 @if (Auth::user()->hasRole('admin'))
                     <li class="sidebar-item @if (($active_menu ?? null) == 'config') active @endif">

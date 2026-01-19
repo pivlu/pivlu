@@ -67,7 +67,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="use_custom_font_family" name="use_custom_font_family" @if ($item->font_family ?? null) checked @endif>
+                                    <input class="form-check-input" type="checkbox" id="use_custom_font_family" name="use_custom_font_family" @if (($item->use_custom_font_family ?? null) == 1) checked @endif>
                                     <label class="form-check-label" for="use_custom_font_family">
                                         {{ __('Use custom font family for this block section') }}
                                     </label>
@@ -89,7 +89,7 @@
                         </script>
 
                         <div class="row">
-                            <div id="hidden_div_font_family" style="display: @if ($item->font_family ?? null) block @else none @endif" class="mt-1">
+                            <div id="hidden_div_font_family" style="display: @if (($item->use_custom_font_family ?? null) == 1) block @else none @endif" class="mt-1">
                                 <div class="col-sm-6 col-md-6 col-12">
                                     <div class="form-group">
                                         <label>{{ __('Font family') }}</label>

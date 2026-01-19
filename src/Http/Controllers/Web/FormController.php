@@ -80,18 +80,7 @@ class FormController extends Controller
         $message = $inputs[$field_id_message] ?? null;
 
         $anonymized_ip = HelperFunctions::anonymize($request->ip());
-
-        $geo = geoip($request->ip());
-
-        $geo_cc = $geo['iso_code'] ?? null;
-        $geo_country = $geo['country'] ?? null;
-        $geo_city = $geo['city'] ?? null;
-        $geo_state = $geo['state'] ?? null;
-        $geo_state_name = $geo['state_name'] ?? null;
-        $geo_continent = $geo['continent'] ?? null;
-        $geo_timezone = $geo['timezone'] ?? null;
-        $geo_data = ['country_code' => $geo_cc, 'country' => $geo_country, 'state' => $geo_state, 'state_name' => $geo_state_name, 'city' => $geo_city, 'continent' => $geo_continent, 'timezone' => $geo_timezone];
-
+        
 
         $form_data = FormData::create([
             'form_id' => $request->id,
@@ -102,7 +91,6 @@ class FormController extends Controller
             'referer' => $referer ?? null,
             'created_at' =>  now(),
             'ip' => $anonymized_ip,
-            'geo' => json_encode($geo_data, JSON_UNESCAPED_UNICODE),
             'source_lang_id' => $request->source_lang_id ?? null,
         ]);
 

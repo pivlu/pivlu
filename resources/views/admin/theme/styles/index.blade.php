@@ -23,7 +23,9 @@
 
         <h4 class="card-title">{{ __('Custom styles') }} ({{ $styles->total() ?? 0 }})</h4>
 
-        <div class="text-muted">{{ __('Custom styles can be used to personalize the appearance of sections of your website (header navigation, footer, content blocks etc.).') }}</div>
+        <div class="text-muted">
+            {{ __('Apply custom styles to different sections of your website (header navigation, footer, content blocks etc.). These styles will overwrite the default styles of your website template in the places where they are applied. To change your theme global style, slect your theme in the Themes menu and go to "Global style" page.') }}
+        </div>
     </div>
 
 

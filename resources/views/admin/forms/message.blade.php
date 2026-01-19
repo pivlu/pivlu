@@ -108,17 +108,7 @@
                     {{ __('Referer') }}: <a target="_blank" href="{{ $message->referer ?? '#' }}"><b>{{ $message->referer }}</b></a>
                     <br>
                 @endif
-                <br>
-
-                @if ($message->geo_data->country_code ?? null)
-                    <div class="mb-2 text-muted small">
-                        {!! flag(strtolower($message->geo_data->country_code)) !!}
-                        {{ $message->geo_data->city }},
-                        {{ $message->geo_data->state }} ({{ $message->geo_data->state_name }}),
-                        {{ $message->geo_data->country }}
-
-                    </div>
-                @endif
+                <br>                
 
                 IP: {{ $message->ip }}
 

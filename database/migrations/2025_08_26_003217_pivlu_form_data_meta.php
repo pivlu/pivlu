@@ -30,29 +30,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_form_data', function (Blueprint $table) {
+        Schema::create('pivlu_form_data_meta', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('form_id')->nullable();
-            $table->unsignedBigInteger('status_id')->nullable();
+            $table->unsignedBigInteger('form_data_id')->nullable();
             $table->string('name', 250)->nullable();
-            $table->string('email', 250)->nullable();
-            $table->text('subject')->nullable();
-            $table->mediumText('message')->nullable();
-            $table->string('ip', 50)->nullable();
-            $table->text('referer')->nullable();
-            $table->timestamp('read_at')->nullable();
-            $table->timestamp('responded_at')->nullable();
-            $table->boolean('is_important')->default(false);
-            $table->boolean('is_spam')->default(false);
-            $table->unsignedBigInteger('source_lang_id')->nullable();
-            $table->unsignedBigInteger('status_changed_by_user_id')->nullable();
+            $table->mediumText('value')->nullable();
             $table->timestamps();
-            $table->softDeletes();
-
+            
             $table->foreign('form_id')->references('id')->on('pivlu_forms')->cascadeOnDelete();
-            $table->foreign('status_id')->references('id')->on('pivlu_form_data_statuses')->nullOnDelete();
-            $table->foreign('source_lang_id')->references('id')->on('pivlu_languages')->nullOnDelete();
-            $table->foreign('status_changed_by_user_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('form_data_id')->references('id')->on('pivlu_form_data')->nullOnDelete();            
         });
     }
 
@@ -61,7 +48,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_form_data');
+        Schema::dropIfExists('pivlu_form_data_meta');
         Schema::dropSoftDeletes();
     }
 };

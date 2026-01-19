@@ -23,45 +23,26 @@ namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
-class FormData extends Model
+class FormDataMeta extends Model
 {
-    use SoftDeletes;
 
     protected $fillable = [
         'form_id',
-        'status_id',
-        'source_lang_id',
+        'form_data_id',
         'name',
-        'email',
-        'subject',
-        'message',
-        'ip',
-        'referer',
-        'read_at',
-        'responded_at',
-        'is_important',
-        'is_spam',
-        'status_changed_by_user_id',
+        'value',        
     ];
 
-    protected $table = 'pivlu_form_data';
+    protected $table = 'pivlu_form_data_meta';
 
     public function form(): BelongsTo
     {
         return $this->BelongsTo(Form::class, 'form_id');
     }
 
-    public function status(): BelongsTo
+    public function formData(): BelongsTo
     {
-        return $this->BelongsTo(FormDataStatus::class, 'status_id');
-    }
-
-    public function statur_changes_by_user(): BelongsTo
-    {
-        return $this->BelongsTo(User::class, 'status_changed_by_user_id');
-    }
-
+        return $this->BelongsTo(FormData::class, 'form_data_id');
+    }    
 }

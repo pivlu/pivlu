@@ -160,7 +160,6 @@ class ThemeFunctions
             $font_family_import = str_replace(' ', '+', $font_family_import);
             $font_family_import =  $font_family_import . ":wght@" . $font_weights;
 
-            //echo $font_family_import . "<br>";
             array_push($fonts_array, $font_family_import);
 
             $fonts_array = array_unique($fonts_array);

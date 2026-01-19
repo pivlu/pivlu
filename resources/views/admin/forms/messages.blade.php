@@ -176,16 +176,7 @@
                                             {{ $message->email }}
                                         @else
                                             <span class="text-danger">{{ __('No email') }}</span>
-                                        @endif
-
-                                        @if ($message->geo_data->country_code ?? null)
-                                            <div class="mt-2 text-muted small">
-                                                {!! flag(strtolower($message->geo_data->country_code)) !!}
-                                                {{ $message->geo_data->city }},
-                                                {{ $message->geo_data->state }} ({{ $message->geo_data->state_name }}),
-                                                {{ $message->geo_data->country }}
-                                            </div>
-                                        @endif
+                                        @endif                                        
                                     </td>
 
                                     <td>

@@ -126,7 +126,7 @@ class ThemeStyleController extends Controller
     {
         $style = ThemeStyle::find($request->id);
         if (! $style) return redirect(route('admin.theme-styles.index'));
-
+        
         $data =  [
             'text_size' => $request->text_size,
             'text_color' => $request->text_color,
@@ -140,20 +140,19 @@ class ThemeStyleController extends Controller
             'link_hover_decoration' => $request->link_hover_decoration,
             'link_font_weight' => $request->link_font_weight,
             'link_underline_thickness' => $request->link_underline_thickness,
-            'link_underline_offset' => $request->link_underline_offset,
-            'font_family' => $request->font_family,
-            'font_family_weights' => $request->font_family_weights ?? '400',
+            'link_underline_offset' => $request->link_underline_offset,            
             'title_size' => $request->title_size,
             'subtitle_size' => $request->subtitle_size,
             'title_font_weight' => $request->title_font_weight,
-            'subtitle_font_weight' => $request->subtitle_font_weight,
-            'use_custom_bg' => $request->has('use_custom_bg') ? 1 : 0,
-            'bg_color' => $request->bg_color,
+            'subtitle_font_weight' => $request->subtitle_font_weight,            
             'caption_color' => $request->caption_color,
             'caption_size' => $request->caption_size,
             'caption_style' => $request->caption_style,
         ];
 
+        if($request->has('use_custom_bg')) $data['bg_color'] = $request->bg_color;        
+        if($request->has('use_custom_font_family')) $data['font_family'] = $request->font_family;
+            
         $style->update(['data' => json_encode($data)]);
 
 
