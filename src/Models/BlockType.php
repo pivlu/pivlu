@@ -33,9 +33,11 @@ class BlockType extends Model
         'position',
         'icon',
         'core',
+        'allow_in_homepage',
         'allow_in_footer',
         'allow_in_layout',
-        'post_type_id'
+        'post_type_id',
+        'package_id',
     ];
 
     protected $table = 'pivlu_block_types';
@@ -49,5 +51,15 @@ class BlockType extends Model
 
         $items = BlockType::orderByDesc('core')->orderBy('position')->orderBy('label')->get();
         return $items;
+    }
+
+    public function postType()
+    {
+        return $this->belongsTo(PostType::class, 'post_type_id');
+    }
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class, 'package_id');
     }
 }
