@@ -31,6 +31,7 @@ use Pivlu\Models\ThemeConfigLang;
 use Pivlu\Models\ThemeFooter;
 use Pivlu\Models\ConfigLang;
 use Pivlu\Models\Language;
+use Pivlu\Models\ThemeNavRow;
 use Pivlu\Functions\ThemeFunctions;
 
 class ViewServiceProvider extends ServiceProvider
@@ -52,8 +53,8 @@ class ViewServiceProvider extends ServiceProvider
 
         Facades\View::composer('*', function (View $view) {
             $active_theme = ThemeFunctions::get_active_theme();
-            $active_language = Language::get_active_language();            
-            
+            $active_language = Language::get_active_language();
+
             // Config variables
             $config = Config::config();
             $config_lang = ConfigLang::config();
@@ -70,17 +71,17 @@ class ViewServiceProvider extends ServiceProvider
             $config->theme_vendor_name = $active_theme->vendor_name;
             $config->theme_package_name = $active_theme->package_name;
             $config->style_id = $active_theme->style_id;
-            $config->menu_id = $active_theme->menu_id;
+            $config->nav_id = $active_theme->nav_id;
             $config->footer_id = $active_theme->footer_id;
             $config->view = ($active_theme->views_hint ?? 'pivlu') . '::';
             $config->locale = $active_language->code;
             $config->text_dir = $active_language->dir ?? 'ltr';
             $config->site_meta_title = $config->site_meta_title ?? __('Pivlu website');
             $config->site_meta_description = $config->site_meta_description ?? __('Pivlu website');
-            
+
             $theme_configs = ThemeConfig::where('theme_id', $active_theme->id)->pluck('value', 'name')->toArray();
             foreach ($theme_configs as $tc_key => $tc_value) {
-                $config->$tc_key= $tc_value;
+                $config->$tc_key = $tc_value;
             }
 
             $theme_config_lang = ThemeConfigLang::config() ?? [];
@@ -88,9 +89,16 @@ class ViewServiceProvider extends ServiceProvider
                 $config->$key = $value;
             }
 
-            // Theme menu links            
-		    $val = ConfigLang::where('lang_id', $active_language->id)->where('name', 'menu_links_' . $active_theme->menu_id)->value('value');
-		    $menu_links = json_decode($val);            
+            // Theme nav
+            $nav_rows = ThemeNavRow::with('active_items')->where('nav_id', $active_theme->nav_id)
+                ->where('active', 1)
+                ->orderBy('position')
+                ->get();
+            $config->nav_rows = $nav_rows ?? [];
+
+
+            $val = ConfigLang::where('lang_id', $active_language->id)->where('name', 'menu_links_' . $active_theme->menu_id)->value('value');
+            $menu_links = json_decode($val);
             $config->menu_links = $menu_links ?? [];
 
             // Theme footer
@@ -104,7 +112,26 @@ class ViewServiceProvider extends ServiceProvider
             $config->active_language = $active_language;
             $config->default_language = Language::get_default_language();
             $config->active_theme = $active_theme;
-                        
+
+            /*
+            $config->nav_primary_items = ThemeNavItem::where('theme_id', $active_theme->id)
+                ->where('nav_line', 'primary')
+                ->where('active', 1)
+                ->orderBy('position', 'asc')
+                ->get();
+
+            $config->nav_secondary_items = ThemeNavItem::where('theme_id', $active_theme->id)
+                ->where('nav_line', 'secondary')
+                ->where('active', 1)
+                ->orderBy('position', 'asc')
+                ->get();
+
+            $config->nav_tertiary_items = ThemeNavItem::where('theme_id', $active_theme->id)
+                ->where('nav_line', 'tertiary')
+                ->where('active', 1)
+                ->orderBy('position', 'asc')
+                ->get();
+            */
             //dd($config);
             $view->with('config', $config);
         });

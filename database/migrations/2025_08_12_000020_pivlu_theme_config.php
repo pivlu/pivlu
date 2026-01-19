@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('pivlu_theme_config', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('theme_id')->nullable();            
-            $table->string('template_part', 100)->nullable();
             $table->string('name', 100);
             $table->longText('value')->nullable();
             $table->timestamps();

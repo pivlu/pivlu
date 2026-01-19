@@ -117,6 +117,9 @@ class UpdateCommand extends Command
         $this->line('Check default menu');
         SetupFunctions::check_default_menu();
 
+        $this->line('Check default navigation');
+        SetupFunctions::check_default_nav();
+        
         $this->line('Check default footer');
         SetupFunctions::check_default_footer();
         

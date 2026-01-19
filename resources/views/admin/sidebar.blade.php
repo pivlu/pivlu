@@ -87,9 +87,13 @@
                         <li class="submenu-item @if (($active_submenu ?? null) == 'themes') active @endif">
                             <a href="{{ route('admin.themes.index') }}"><i class="bi bi-display"></i> {{ __('Themes') }}</a>
                         </li>
+                        
+                        <li class="submenu-item @if (($active_submenu ?? null) == 'navs') active @endif">
+                            <a href="{{ route('admin.theme-navs.index') }}"><i class="bi bi-window-fullscreen"></i> {{ __('Navigation header') }}</a>
+                        </li>
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'menus') active @endif">
-                            <a href="{{ route('admin.theme-menus.index') }}"><i class="bi bi-menu-down"></i> {{ __('Menus') }}</a>
+                            <a href="{{ route('admin.theme-menus.index') }}"><i class="bi bi-menu-down"></i> {{ __('Links menus') }}</a>
                         </li>
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'footers') active @endif">
@@ -101,7 +105,7 @@
                         </li>
 
                         <li class="submenu-item @if (($active_submenu ?? null) == 'styles') active @endif">
-                            <a href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Block styles') }}</a>
+                            <a href="{{ route('admin.theme-styles.index') }}"><i class="bi bi-palette"></i> {{ __('Custom styles') }}</a>
                         </li>
                     </ul>
                 </li>

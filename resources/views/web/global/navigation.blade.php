@@ -10,16 +10,6 @@
     </div>
 @endif
 
-@if ($config->tpl_notification_navbar_show ?? null)
-    <div class="navbar3 py-3 @if ($config->tpl_notification_navbar_sticky ?? null) sticky-top @endif @if ($config->tpl_notification_navbar_style_id) style_{{ $config->tpl_notification_navbar_style_id }} @endif">
-        <div class="@if ((($is_forum_page ?? null) && ($config->tpl_forum_container_fluid ?? null)) || (($is_page ?? null) && ($page->container_fluid ?? null))) container-fluid @else container-xxl @endif">
-            <div class="{{ $config->tpl_notification_navbar_content_align ?? null }}">{!! $config->tpl_notification_navbar_content ?? null !!}</div>
-        </div>
-    </div>
-@endif
-
-@if (!($tpl_theme_config->theme_nav ?? null))
-    @include('pivlu::template-parts.navigations.default.nav')
-@else
-    @include("pivlu::template-parts.navigations.$tpl_theme_config->theme_nav.nav")
-@endif
+@foreach ($config->nav_rows as $nav_row)    
+    @include('pivlu::web.navigation.nav', ['style_id' => $config->{"nav_style_id_row_{$nav_row->id}"} ?? null, 'style_id_dropdown' => $config->{"nav_style_id_row_dropdown_{$nav_row->id}"} ?? null, 'nav_row_id' => $nav_row->id, 'items' => $nav_row->active_items])    
+@endforeach

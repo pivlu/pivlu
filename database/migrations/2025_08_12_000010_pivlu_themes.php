@@ -20,15 +20,16 @@ return new class extends Migration
             $table->string('views_hint', 150)->nullable();
             $table->text('description')->nullable();
             //$table->unsignedBigInteger('style_id')->nullable();
-            $table->unsignedBigInteger('menu_id')->nullable();
+            $table->unsignedBigInteger('nav_id')->nullable();
             $table->unsignedBigInteger('footer_id')->nullable();
             $table->unsignedBigInteger('package_id')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('is_builder')->default(false);
+            $table->text('data')->nullable();
             $table->timestamps();
             
             //$table->foreign('style_id')->references('id')->on('pivlu_theme_styles')->nullOnDelete();
-            $table->foreign('menu_id')->references('id')->on('pivlu_theme_menus')->nullOnDelete();
+            $table->foreign('nav_id')->references('id')->on('pivlu_theme_navs')->nullOnDelete();
             $table->foreign('footer_id')->references('id')->on('pivlu_theme_footers')->nullOnDelete();
             $table->foreign('package_id')->references('id')->on('pivlu_packages')->cascadeOnDelete();
         });

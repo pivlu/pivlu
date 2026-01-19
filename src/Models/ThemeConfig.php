@@ -24,8 +24,6 @@ namespace Pivlu\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\Image\Enums\Fit;
 
 class ThemeConfig extends Model implements HasMedia
 {
@@ -33,7 +31,7 @@ class ThemeConfig extends Model implements HasMedia
 
     protected $table = 'pivlu_theme_config';
 
-    protected $fillable = ['theme_id', 'template_part', 'name', 'value'];
+    protected $fillable = ['theme_id', 'name', 'value'];
 
 
     /**
@@ -51,52 +49,14 @@ class ThemeConfig extends Model implements HasMedia
 
 
     /**
-     * Get theme template part configs from database
-     *
-     * @return object
-     */
-    public static function template_part_config($theme_id = null, $template_part)
-    {
-        if (!$theme_id ?? null) $theme_id = Theme::where('is_active', 1)->value('id');
-        $results = ThemeConfig::where(['theme_id' => $theme_id, 'template_part' => $template_part])->pluck('value', 'name')->toArray();
-
-        return (object) $results;
-    }
-
-
-    /**
      * Get specific config value 
      *
      * @return string
      */
     public static function get_config($theme_id, $name)
     {
-        return ThemeConfig::where(['theme_id' => $theme_id, 'name' => $name])->whereNull('template_part')->value('value') ?? null;
+        return ThemeConfig::where(['theme_id' => $theme_id, 'name' => $name])->value('value') ?? null;
     }
-
-
-    /**
-     * Get specific config value for a specific template part
-     *
-     * @return null
-     */
-    public static function get_template_part_config($theme_id, $template_part, $name)
-    {
-        return ThemeConfig::where(['theme_id' => $theme_id, 'template_part' => $template_part, 'name' => $name])->value('value') ?? null;
-    }
-
-
-    /**
-     * Get specific config value for a specific template part for active theme
-     *
-     * @return null
-     */
-    public static function get_template_part_config_for_active_theme($template_part, $name)
-    {
-        $active_theme = Theme::get_active_theme();
-        return ThemeConfig::where(['theme_id' => $active_theme->id, 'template_part' => $template_part, 'name' => $name])->value('value') ?? null;
-    }
-
 
 
     /**

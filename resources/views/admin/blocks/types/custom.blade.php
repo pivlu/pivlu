@@ -14,10 +14,5 @@
 @endforeach
 
 
-<script src="{{ asset('assets/vendor/prism/bliss.shy.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/prism/prism.js') }}"></script>
-<script src="{{ asset('assets/vendor/prism/prism-line-numbers.js') }}"></script>
 <script src="{{ asset('assets/vendor/prism/prism-live.js') }}"></script>
-<script src="{{ asset('assets/vendor/prism/prism-live-markup.js') }}"></script>
-<script src="{{ asset('assets/vendor/prism/prism-live-css.js') }}"></script>
-<script src="{{ asset('assets/vendor/prism/prism-live-javascript.js') }}"></script>

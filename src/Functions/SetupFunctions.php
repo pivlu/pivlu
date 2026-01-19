@@ -40,11 +40,15 @@ use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeMenu;
 use Pivlu\Models\ThemeMenuItem;
 use Pivlu\Models\ThemeMenuContent;
+use Pivlu\Models\ThemeNav;
+use Pivlu\Models\ThemeNavRow;
+use Pivlu\Models\ThemeNavItem;
 use Pivlu\Models\Form;
 use Pivlu\Models\FormDataStatus;
 use Pivlu\Models\FormField;
 use Pivlu\Models\FormFieldContent;
 use Pivlu\Functions\HelperFunctions;
+use Pivlu\Functions\ThemeFunctions;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -191,9 +195,9 @@ class SetupFunctions
         }
 
 
-        ConfigLang::update_config(Language::get_default_language()->id, 'site_label', 'Pivlu Website');
-        ConfigLang::update_config(Language::get_default_language()->id, 'site_meta_title', 'Pivlu Website');
-        ConfigLang::update_config(Language::get_default_language()->id, 'site_meta_description', 'This website is created with Pivlu: Free CMS and Website Builder.');
+        ConfigLang::firstOrCreate(['lang_id' => Language::get_default_language()->id, 'name' => 'site_label'], ['value' => 'Pivlu Website']);
+        ConfigLang::firstOrCreate(['lang_id' => Language::get_default_language()->id, 'name' => 'site_meta_title'], ['value' => 'Pivlu Website']);
+        ConfigLang::firstOrCreate(['lang_id' => Language::get_default_language()->id, 'name' => 'site_meta_description'], ['value' => 'This website is created with Pivlu: Free CMS and Website Builder.']);
     }
 
 
@@ -282,217 +286,233 @@ class SetupFunctions
 
     public static function check_default_block_types()
     {
-        if (BlockType::where(['type' => 'editor', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'editor',
+        BlockType::firstOrCreate(
+            ['type' => 'editor'],
+            [
+                'core' => 1,
                 'label' => 'Editor',
                 'description' => 'Text editor',
                 'core' => 1,
                 'position' => 1,
                 'icon' => '<i class="bi bi-textarea-t"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
                 'allow_in_footer' => 1,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'image', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'image',
+        BlockType::firstOrCreate(
+            ['type' => 'image'],
+            [
+                'core' => 1,
                 'label' => 'Image',
                 'description' => 'Image / banner',
-                'core' => 1,
                 'position' => 2,
                 'icon' => '<i class="bi bi-image"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
                 'allow_in_footer' => 1,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'gallery', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'gallery',
+        BlockType::firstOrCreate(
+            ['type' => 'gallery'],
+            [
+                'core' => 1,
                 'label' => 'Images gallery',
                 'description' => 'Images gallery',
-                'core' => 1,
                 'position' => 3,
-                'icon' => '<i class="bi bi-images"></i>'
-            ]);
-        }
+                'icon' => '<i class="bi bi-images"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 1,
+            ]
+        );
 
-        if (BlockType::where(['type' => 'hero', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'hero',
+        BlockType::firstOrCreate(
+            ['type' => 'hero'],
+            [
+                'core' => 1,
                 'label' => 'Hero',
                 'description' => "A hero section is a prominent, visually striking area at the top of a webpage, designed to immediately capture a visitor's attention.",
-                'core' => 1,
                 'position' => 4,
                 'icon' => '<i class="bi bi-card-heading"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'card', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'card',
+        BlockType::firstOrCreate(
+            ['type' => 'card'],
+            [
+                'core' => 1,
                 'label' => 'Card',
                 'description' => 'A card is a flexible and extensible content container. It includes options for headers and footers, a wide variety of content, contextual background colors, and powerful display options.',
-                'core' => 1,
                 'position' => 5,
                 'icon' => '<i class="bi bi-file-richtext"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'slider', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'slider',
+        BlockType::firstOrCreate(
+            ['type' => 'slider'],
+            [
+                'core' => 1,
                 'label' => 'Slider',
                 'description' => 'A slider, also known as a carousel or slideshow, is a design element that displays a sequence of images, videos, text or other content, allowing users to navigate through them.',
-                'core' => 1,
                 'position' => 6,
-                'icon' => '<i class="bi bi-collection"></i>'
-            ]);
-        }
+                'icon' => '<i class="bi bi-collection"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 1,
+            ]
+        );
 
-        if (BlockType::where(['type' => 'video', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'video',
-                'label' => 'Video',
-                'description' => 'Add embed video.',
+        BlockType::firstOrCreate(
+            ['type' => 'video'],
+            [
                 'core' => 1,
+                'label' => 'Video',
+                'description' => 'A video block allows you to embed videos from various sources, enhancing your content with multimedia elements.',
                 'position' => 7,
                 'icon' => '<i class="bi bi-play-btn"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'map', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'map',
-                'label' => 'Map',
-                'description' => 'Google map.',
+        BlockType::firstOrCreate(
+            ['type' => 'map'],
+            [
                 'core' => 1,
+                'label' => 'Map',
+                'description' => 'Add a Google map.',
                 'position' => 8,
                 'icon' => '<i class="bi bi-geo-alt"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'alert', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'alert',
+        BlockType::firstOrCreate(
+            ['type' => 'alert'],
+            [
+                'core' => 1,
                 'label' => 'Alert',
                 'description' => 'Alert (info, warning, error, success)',
-                'core' => 1,
                 'position' => 9,
-                'icon' => '<i class="bi bi-exclamation-square"></i>'
-            ]);
-        }
+                'icon' => '<i class="bi bi-exclamation-square"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 1,
+            ]
+        );
 
-        if (BlockType::where(['type' => 'blockquote', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'blockquote',
+
+        BlockType::firstOrCreate(
+            ['type' => 'blockquote'],
+            [
+                'core' => 1,
                 'label' => 'Blockquote',
                 'description' => 'Blockquote',
-                'core' => 1,
                 'position' => 10,
-                'icon' => '<i class="bi bi-chat-left-quote"></i>'
-            ]);
-        }
+                'icon' => '<i class="bi bi-chat-left-quote"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 1,
+            ]
+        );
 
-        if (BlockType::where(['type' => 'include', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'include',
+        BlockType::firstOrCreate(
+            ['type' => 'include'],
+            [
+                'core' => 1,
                 'label' => 'Include file',
                 'description' => 'Include file content',
-                'core' => 1,
                 'position' => 11,
                 'icon' => '<i class="bi bi-file-earmark-plus"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
                 'allow_in_footer' => 1,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'custom', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'custom',
-                'label' => 'Custom',
-                'description' => 'Custom code',
+        BlockType::firstOrCreate(
+            ['type' => 'custom'],
+            [
                 'core' => 1,
+                'label' => 'Custom code',
+                'description' => 'Custom code',
                 'position' => 12,
                 'icon' => '<i class="bi bi-code"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
                 'allow_in_footer' => 1,
                 'allow_in_layout' => 1,
-            ]);
-        }
+            ]
+        );
 
-        if (BlockType::where(['type' => 'form', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'form',
+        BlockType::firstOrCreate(
+            ['type' => 'form'],
+            [
+                'core' => 1,
                 'label' => 'Form',
                 'description' => 'Form',
-                'core' => 1,
                 'position' => 13,
-                'icon' => '<i class="bi bi-textarea-resize"></i>'
-            ]);
-        }
+                'icon' => '<i class="bi bi-textarea-resize"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 0,
+            ]
+        );
 
-        if (BlockType::where(['type' => 'post_section', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'post_section',
+
+        BlockType::firstOrCreate(
+            ['type' => 'post_section'],
+            [
+                'core' => 1,
                 'label' => 'Post Sction',
                 'description' => 'Add a new section in this article',
-                'core' => 1,
                 'position' => 14,
-                'icon' => '<i class="bi bi-distribute-vertical"></i>'
-            ]);
-        }
+                'icon' => '<i class="bi bi-distribute-vertical"></i>',
+                'allow_in_homepage' => 0,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 0,
+            ]
+        );
 
-        if (BlockType::where(['type' => 'post_toc', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'post_toc',
-                'label' => 'Table of content',
-                'description' => 'Generate Table of Content for post',
+        BlockType::firstOrCreate(
+            ['type' => 'links'],
+            [
                 'core' => 1,
-                'position' => 15,
-                'icon' => '<i class="bi bi-list-ol"></i>'
-            ]);
-        }
-
-        if (BlockType::where(['type' => 'links', 'core' => 1])->doesntExist()) {
-            BlockType::create([
-                'type' => 'links',
                 'label' => 'Links',
-                'description' => 'Links list',
-                'core' => 1,
-                'position' => 16,
-                'icon' => '<i class="bi bi-link-45deg"></i>',
+                'description' => 'Add a links list',
+                'position' => 15,
+                'icon' => '<i class="bi bi-distribute-vertical"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
                 'allow_in_footer' => 1,
                 'allow_in_layout' => 1,
-            ]);
-        }
-
-
-        // Add custom block types from post type content
-        $post_types_blocks = PostType::with('default_language_content')->where('allow_block_type', 1)->get();
-        foreach ($post_types_blocks as $post_type_block) {
-            $type_slug = 'content_post_type_' . $post_type_block->type;
-            $type_icon = $post_type_block->menu_icon ?? '<i class="bi bi-file-text"></i>';
-            $last_block_position = BlockType::orderByDesc('position')->first();
-
-            if (BlockType::where(['type' => $type_slug, 'post_type_id' => $post_type_block->id,])->doesntExist()) {
-                BlockType::create([
-                    'type' => $type_slug,
-                    'post_type_id' => $post_type_block->id,
-                    'label' => 'Content: ' . $post_type_block->default_language_content->name,
-                    'description' => 'Content: ' . $post_type_block->default_language_content->name,
-                    'core' => 1,
-                    'position' => $last_block_position->position + 1,
-                    'icon' => $type_icon,
-                    'allow_in_layout' => 1,
-                ]);
-            }
-        }
+            ]
+        );
     }
 
 
@@ -598,7 +618,7 @@ class SetupFunctions
 
             $menu_item = ThemeMenuItem::create([
                 'menu_id' => $menu->id,
-                'type' => 'homepage',
+                'type' => 'home',
                 'position' => 1
             ]);
 
@@ -608,6 +628,65 @@ class SetupFunctions
                 'item_id' => $menu_item->id,
                 'label' => 'Home'
             ]);
+
+            ThemeFunctions::generate_menu_links($menu->id);
+        }
+    }
+
+
+    public static function check_default_nav()
+    {
+        // Add default navigation, if not exists
+        if (ThemeNav::where(['is_default' => 1])->doesntExist()) {
+            $nav = ThemeNav::create([
+                'label' => 'Default navigation',
+                'is_default' => 1,
+            ]);
+
+            $nav_row1 = ThemeNavRow::create([
+                'nav_id' => $nav->id,
+                'position' => 1,
+                'active' => 1,
+            ]);
+
+            $nav_row2 = ThemeNavRow::create([
+                'nav_id' => $nav->id,
+                'position' => 2,
+                'active' => 1,
+            ]);
+
+            $nav_row1_item1 = ThemeNavItem::create([
+                'nav_id' => $nav->id,
+                'row_id' => $nav_row1->id,
+                'column' => 'left',
+                'type' => 'logo',
+                'position' => 1,
+                'active' => 1,
+            ]);
+
+            $nav_row1_item2 = ThemeNavItem::create([
+                'nav_id' => $nav->id,
+                'row_id' => $nav_row1->id,
+                'column' => 'right',
+                'type' => 'login_register',
+                'position' => 1,
+                'active' => 1,
+            ]);
+
+            $nav_row2_item2 = ThemeNavItem::create([
+                'nav_id' => $nav->id,
+                'row_id' => $nav_row2->id,
+                'column' => 'left',
+                'type' => 'menu_links',
+                'position' => 1,
+                'active' => 1,
+                'menu_links_id' => ThemeMenu::where('is_default', 1)->value('id') ?? null,
+            ]);
+
+            $default_theme = Theme::where('is_active', 1)->first();
+            if ($default_theme) {
+                if (!$default_theme->nav_id) $default_theme->update(['nav_id' => $nav->id]);
+            }
         }
     }
 

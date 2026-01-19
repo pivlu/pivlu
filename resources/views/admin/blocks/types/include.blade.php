@@ -1,6 +1,6 @@
 <div class="alert alert-light">
     <i class="bi bi-exclamation-circle"></i> {{ __('Input custom template filename to be included (example: "my-custom-file.blade.php"). File must be located in: ') }}
-    <strong>{{ resource_path('views/custom-files/' . $active_theme->vendor_name) }}/</strong>
+    <strong>{{ resource_path('views/custom-files/' . $config->active_theme->vendor_name) }}/</strong>
 </div>
 
 @foreach ($block->all_languages_contents as $lang_content)

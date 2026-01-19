@@ -14,11 +14,11 @@ class Theme extends Model
         'description',
         'is_active',
         'package_id',
-        'menu_id',
+        'nav_id',
         'footer_id',
         'views_hint',
         'is_builder',
-        'meta'
+        'data'
     ];
 
     protected $table = 'pivlu_themes';
@@ -35,9 +35,9 @@ class Theme extends Model
         return $this->belongsTo(Package::class, 'package_id');
     }
 
-    public function menu()
+    public function nav()
     {
-        return $this->belongsTo(ThemeMenu::class, 'menu_id');
+        return $this->belongsTo(ThemeNav::class, 'nav_id');
     }
 
     public function footer()
@@ -46,7 +46,7 @@ class Theme extends Model
     }
 
 
-    public static function update_meta($theme)
+    public static function update_data($theme)
     {
         $data = ['logo_url' => null, 'favicon_url' => null];
 

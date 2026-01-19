@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lang_id');
             $table->string('label', 200)->nullable();
             $table->text('description')->nullable();
+            $table->text('custom_url')->nullable();
             $table->timestamps();
 
             $table->foreign('menu_id')->references('id')->on('pivlu_theme_menus')->cascadeOnDelete();

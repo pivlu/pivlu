@@ -32,11 +32,13 @@ use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeButton;
 use Pivlu\Models\ThemeFooter;
 use Pivlu\Models\ThemeMenu;
+use Pivlu\Models\ThemeNav;
 use Pivlu\Models\BlockType;
 use Pivlu\Models\PostType;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\FileFunctions;
 use Pivlu\Functions\HelperFunctions;
+use Pivlu\Models\ThemeNavRow;
 
 class ThemeController extends Controller
 {
@@ -101,35 +103,24 @@ class ThemeController extends Controller
             $theme_tab_settings = $theme_settings[str_replace('package_', '', $theme_tab)] ?? null;
         }
 
-
-        $post_types = PostType::orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->paginate(25);
-        $post_types_tabs = [];
-        foreach ($post_types as $post_type) {
-            $post_types_tabs[$post_type->type] = $post_type->default_language_content->name;
-        }
-
+        // nav templates for nav tab        
+        $post_types_tabs = $this->get_post_types_tabs();
         if (isset($post_types_tabs[$theme_tab])) {
             $post_type_tab = $post_types_tabs[$theme_tab];
             $theme_tab = 'post-type';
             $tab_post_type = $request->post_type_type ?? 'page'; // to be used in view
         }
 
-        if ($theme_tab == 'nav') {
-            $nav_templates = [];
-            $nav_templates_folders = glob(resource_path('views/template-parts/navigations/' . '*'), GLOB_ONLYDIR); // frontend 
-            foreach ($nav_templates_folders as $nav_templates_folder) {
-                $nav_template_json = resource_path('views/template-parts/navigations/' . basename($nav_templates_folder) . '/nav.json');
-                if (file_exists($nav_template_json)) {
-                    $string = file_get_contents($nav_template_json);
-                    $json_data = json_decode($string);
-                    $nav_templates[] = ['slug' => basename($nav_templates_folder), 'name' => $json_data->name, 'author' => $json_data->author, 'description' => $json_data->description, 'screenshot' => $json_data->screenshot];
-                }
-            }
-        }
 
         if ($theme_tab == 'general') {
             $logo_model = ThemeConfig::where(['theme_id' => $theme->id, 'name' => 'logo_media_id'])->first();
             $favicon_model = ThemeConfig::where(['theme_id' => $theme->id, 'name' => 'favicon_media_id'])->first();
+        }
+
+
+        if ($theme_tab == 'nav') {
+            $navs = ThemeNav::orderByDesc('is_default')->orderBy('label')->get();
+            $nav_rows = ThemeNavRow::where('nav_id', $theme->nav_id)->orderBy('position', 'asc')->get();
         }
 
 
@@ -139,7 +130,7 @@ class ThemeController extends Controller
             'active_submenu' => 'themes',
             'theme' => $theme,
             'theme_tab' => $theme_tab,
-            'post_types_tabs' => $post_types_tabs,
+            'post_types_tabs' => $this->get_post_types_tabs(),
             'post_type_tab' => $post_type_tab ?? null,
             'tab_post_type' => $tab_post_type ?? null,
 
@@ -153,7 +144,8 @@ class ThemeController extends Controller
 
             'block_types' => BlockType::get_block_types($section = 'homepage'), // for homepage tab
 
-            'nav_templates' => $nav_templates ?? null, // for nav tab
+            'navs' => $navs ?? null, // for nav tab
+            'nav_rows' => $nav_rows ?? null, // for nav tab
             'logo_model' => $logo_model ?? null, // for general tab
             'favicon_model' => $favicon_model ?? null, // for general tab
 
@@ -179,39 +171,16 @@ class ThemeController extends Controller
         if ($theme_tab != 'general') {
             // request inputs WITHOUT files
             $inputs = $request->except($excepts);
-            //dd($inputs);
             ThemeConfig::update_config($theme->id, $inputs);
         }
 
-        if ($theme_tab == 'style' || $theme_tab == 'nav') ThemeFunctions::generate_theme_css($theme->code);
+        if ($theme_tab == 'style') ThemeFunctions::generate_theme_css($theme->code);
 
         if ($theme_tab == 'nav') {
-            $menu_id = $request->menu_id;
-            if (! $menu_id) $menu_id = ThemeMenu::where('is_default', 1)->value('id');
-            $theme->update(['menu_id' => $menu_id]);
+            $theme->update(['nav_id' => $request->nav_id ?? null]);
         }
 
         return redirect(route('admin.themes.show', ['id' => $theme->id, 'theme_tab' => $theme_tab, 'post_type_type' => $request->post_type_type ?? null]))->with('success', 'updated');
-    }
-
-
-    /**
-     * Update template part settings
-     */
-    public function update_template_part(Request $request)
-    {
-        $theme = Theme::find($request->id);
-        if (! $theme) return redirect(route('admin.themes.index'));
-
-        $theme_tab = $request->theme_tab;
-
-        $excepts = array('_token', '_method', 'theme_tab');
-
-        $inputs = $request->except($excepts);
-
-        ThemeConfig::update_template_part_config($theme->id, $request->template_part, $inputs);
-
-        return redirect(route('admin.themes.show', ['id' => $theme->id, 'theme_tab' => $theme_tab]))->with('success', 'updated');
     }
 
 
@@ -264,7 +233,7 @@ class ThemeController extends Controller
 
                 if ($media) ThemeConfig::update_config($theme->id, 'logo_media_id', $media->id);
 
-                Theme::update_meta($theme);
+                Theme::update_data($theme);
             }
         }
 
@@ -281,7 +250,7 @@ class ThemeController extends Controller
 
                 if ($media) ThemeConfig::update_config($theme->id, 'favicon_media_id', $media->id);
 
-                Theme::update_meta($theme);
+                Theme::update_data($theme);
             }
         }
 
@@ -312,5 +281,16 @@ class ThemeController extends Controller
         Config::update_config($inputs);
 
         return redirect($request->Url())->with('success', 'updated');
+    }
+
+
+    public static function get_post_types_tabs()
+    {
+        $post_types = PostType::orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->paginate(25);
+        $post_types_tabs = [];
+        foreach ($post_types as $post_type) {
+            $post_types_tabs[$post_type->type] = $post_type->default_language_content->name;
+        }
+        return $post_types_tabs;
     }
 }

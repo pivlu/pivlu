@@ -46,7 +46,7 @@ class ConfigLang extends Model
     {
         if (is_array($name)) {
             foreach ($name as $key => $value) {
-                if ($key != '_token')  ConfigLang::updateOrCreate(['lang_id' => $lang_id, 'name' => $key], ['value' => $value]);
+                if ($key != '_token') ConfigLang::updateOrCreate(['lang_id' => $lang_id, 'name' => $key], ['value' => $value]);
             }
         } else {
             ConfigLang::updateOrCreate(['lang_id' => $lang_id, 'name' => $name], ['value' => $value]);

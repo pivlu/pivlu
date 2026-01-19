@@ -43,7 +43,7 @@ use Pivlu\Http\Controllers\Admin\PostTaxonomyController;
 use Pivlu\Http\Controllers\Admin\ThemeController;
 use Pivlu\Http\Controllers\Admin\ThemeFooterController;
 use Pivlu\Http\Controllers\Admin\ThemeHomepageController;
-use Pivlu\Http\Controllers\Admin\ThemeLayoutController;
+use Pivlu\Http\Controllers\Admin\ThemeNavController;
 use Pivlu\Http\Controllers\Admin\ThemeButtonController;
 use Pivlu\Http\Controllers\Admin\ThemeMenuController;
 use Pivlu\Http\Controllers\Admin\ThemeStyleController;
@@ -108,10 +108,23 @@ Route::name('admin.')->group(function () {
     Route::post('appearance/theme-footers/{footer_id}/{destination}/{col}/sortable', [ThemeFooterController::class, 'sortable'])->name('theme-footer.sortable')->where(['footer_id' => '[0-9]+', 'destination' => '[a-z0-9_-]+', 'col' => '[0-9]+']);
     Route::delete('appearance/theme-footers/{footer_id}/delete/{block_id}', [ThemeFooterController::class, 'delete_content'])->name('theme-footer.content.delete')->where(['footer_id' => '[0-9]+', 'block_id' => '[0-9]+']);
 
+    // Theme Navs
+    Route::resource('appearance/theme-navs', ThemeNavController::class)->parameters(['theme-navs' => 'id']);
+    Route::get('appearance/theme-nav-rows/create', [ThemeNavController::class, 'create_nav_row'])->name('theme-nav-rows.create');    
+    Route::post('appearance/theme-nav-rows/sortable', [ThemeNavController::class, 'sortable_nav_rows'])->name('theme-nav-rows.sortable');    
+    Route::get('appearance/theme-nav/{nav_id}/{row_id}', [ThemeNavController::class, 'show_nav_row'])->name('theme-nav-rows.show')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
+    Route::put('appearance/theme-nav/{nav_id}/{row_id}/status', [ThemeNavController::class, 'nav_row_status'])->name('theme-nav-row.status')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
+    Route::delete('appearance/theme-nav/{nav_id}/{row_id}/delete', [ThemeNavController::class, 'destroy_nav_row'])->name('theme-nav-rows.delete')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
+    Route::get('appearance/theme-nav/{nav_id}/{row_id}/add-item/{column}/{item_type}', [ThemeNavController::class, 'store_row_item'])->name('theme-nav-rows.add-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'column' => '[a-zA-Z0-9_-]+', 'item_type' => '[a-zA-Z0-9_-]+']);
+    Route::post('appearance/theme-nav/{nav_id}/{row_id}/{column}/sortable', [ThemeNavController::class, 'sortable_row_items'])->name('theme-nav-rows.sortable-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'column' => '[a-zA-Z0-9_-]+']);
+    Route::get('appearance/theme-nav/{nav_id}/{row_id}/item/{item_id}', [ThemeNavController::class, 'show_nav_item'])->name('theme-nav-row.show-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'item_id' => '[0-9]+']);
+    Route::put('appearance/theme-nav/{nav_id}/{row_id}/item/{item_id}', [ThemeNavController::class, 'update_nav_item'])->name('theme-nav-row.update-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'item_id' => '[0-9]+']);
+    Route::delete('appearance/theme-nav/{nav_id}/{row_id}/delete/{item_id}', [ThemeNavController::class, 'delete_nav_item'])->name('theme-nav-row.delete-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'item_id' => '[0-9]+']);
+    
+
     // Themes
     Route::resource('appearance/themes', ThemeController::class)->parameters(['themes' => 'id']);
-    Route::get('appearance/theme-set-active/{id}', [ThemeController::class, 'set_active'])->name('themes.set-active')->where('id', '[0-9]+');
-    Route::put('appearance/themes/{id}/{template_part}/update-template-part', [ThemeController::class, 'update_template_part'])->name('themes.update-template-part')->where(['id', '[0-9]+', 'template_part', '[a-zA-Z0-9_-]+']);
+    Route::get('appearance/theme-set-active/{id}', [ThemeController::class, 'set_active'])->name('themes.set-active')->where('id', '[0-9]+');    
 
     Route::post('appearance/theme/{id}/update-homepage-block', [ThemeHomepageController::class, 'update_block'])->name('theme.homepage.blocks.store')->where('id', '[0-9]+');
     Route::delete('appearance/theme/{id}/delete-homepage-block', [ThemeHomepageController::class, 'delete_block'])->name('theme.homepage.blocks.delete')->where('id', '[a-zA-Z0-9_-]+');
@@ -136,16 +149,6 @@ Route::name('admin.')->group(function () {
     Route::post('block-items/{type}/{block_id}/sortable', [BlockController::class, 'sortable_items'])->name('block.sortable-items')->where(['type' => '[a-zA-Z0-9]+', 'block_id' => '[0-9]+']);
     Route::delete('block-items/delete/{block_item_id}', [BlockController::class, 'destroy_item'])->name('block.delete-item')->where(['block_item_id' => '[0-9]+']);
 
-    // Template layouts
-    Route::resource('appearance/layouts', ThemeLayoutController::class)->names(['index' => 'theme.layouts', 'create' => 'theme.layouts.create', 'show' => 'theme.layouts.show'])->parameters(['layouts' => 'id']);
-    Route::post('appearance/layouts/{id}/sortable', [ThemeLayoutController::class, 'sortable'])->name('theme.layouts.sortable')->where('id', '[0-9]+');
-    Route::post('appearance/layouts/{id}/update', [ThemeLayoutController::class, 'update'])->name('theme.layouts.update')->where('id', '[0-9]+');
-
-    Route::get('appearance/layouts/{id}/content', [ThemeLayoutController::class, 'content'])->name('theme.layouts.content')->where(['id' => '[0-9]+']);
-    Route::post('appearance/layouts/{id}/content', [ThemeLayoutController::class, 'update_content'])->name('theme.layouts.content.new')->where('id', '[0-9]+');
-    Route::delete('appearance/layouts/{id}/content/delete/{block_id}', [ThemeLayoutController::class, 'delete_content'])->name('theme.layouts.content.delete')->where('id', '[0-9]+')->where('block_id', '[0-9]+');
-    Route::get('appearance/layouts/block/{id}', [ThemeLayoutController::class, 'block'])->name('theme.layouts.block')->where('id', '[0-9]+');
-    Route::put('appearance/layouts/block/{id}', [ThemeLayoutController::class, 'block_update'])->where('id', '[0-9]+');
 
     // Forms   
     Route::get('forms', [FormController::class, 'messages'])->name('forms');

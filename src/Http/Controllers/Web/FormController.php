@@ -28,7 +28,6 @@ use Pivlu\Models\FormField;
 use Pivlu\Models\FormFieldData;
 use Pivlu\Models\FormData;
 use Pivlu\Functions\HelperFunctions;
-use \Torann\GeoIP\GeoIP as GeoIP;
 
 class FormController extends Controller
 {

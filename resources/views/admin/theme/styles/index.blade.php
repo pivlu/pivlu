@@ -5,7 +5,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin') }}">{{ __('Dashboard') }}</a></li>
                     <li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.themes.index') }}">{{ __('Website template') }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ __('Block styles') }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ __('Custom styles') }}</li>
                 </ol>
             </nav>
         </div>
@@ -17,11 +17,13 @@
 
     <div class="card-header">
         <div class="float-end">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-style"><i class="bi bi-plus-circle"></i> {{ __('Create block style') }}</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create-style"><i class="bi bi-plus-circle"></i> {{ __('Create custom style') }}</button>
             @include('pivlu::admin.theme.styles.includes.modal-create-style')
         </div>
 
-        <h4 class="card-title">{{ __('Block styles') }} ({{ $styles->total() ?? 0 }})</h4>
+        <h4 class="card-title">{{ __('Custom styles') }} ({{ $styles->total() ?? 0 }})</h4>
+
+        <div class="text-muted">{{ __('Custom styles can be used to personalize the appearance of sections of your website (header navigation, footer, content blocks etc.).') }}</div>
     </div>
 
 

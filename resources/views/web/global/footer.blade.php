@@ -1,30 +1,30 @@
-@if($tpl_footer ?? null)
-<div id="footer">
-    <!-- ======= Primary Footer ======= -->
-    <div class="style_footer py-4">
-        <div class="@if (($is_page ?? null) && ($page->container_fluid ?? null)) container-fluid @else container-xxl @endif overflow-hidden">
-            @php
-                $footer_columns = $tpl_footer->footer_columns ?? 1;
-                @endphp
-
-            @include("pivlu::web.layouts.footer-{$footer_columns}-col", ['destination' => 'primary'])
-        </div>
-    </div>
-
-
-    @if (($tpl_footer->footer2_show ?? null) == 1)
-        <!-- ======= Secondary Footer ======= -->
-        <div class="style_footer2 py-3">
-            <div class="@if (($is_page ?? null) && ($page->container_fluid ?? null)) container-fluid @else container-xxl @endif">
+@if ($config->footer_id ?? null)
+    <div id="footer" >
+        <!-- ======= Primary Footer ======= -->
+        <div class="style_footer py-4 @if($config->footer_use_custom_style ?? null) style_{{ $config->footer_style_id ?? null }} @endif">
+            <div class="container-xxl overflow-hidden">
                 @php
-                    $footer2_columns = $tpl_footer->footer2_columns ?? 1;
+                    $footer_columns = $config->footer_columns ?? 1;
                 @endphp
 
-                @include("pivlu::web.layouts.footer-{$footer2_columns}-col", ['destination' => 'secondary'])
+                @include("pivlu::web.layouts.footer-{$footer_columns}-col", ['destination' => 'primary'])
             </div>
         </div>
-    @endif
-</div>
+
+
+        @if (($config->footer2_show ?? null) == 1)
+            <!-- ======= Secondary Footer ======= -->
+            <div class="style_footer2 py-3 @if($config->footer2_use_custom_style ?? null) style_{{ $config->footer2_style_id ?? null }} @endif">
+                <div class="container-xxl overflow-hidden">
+                    @php
+                        $footer2_columns = $config->footer2_columns ?? 1;
+                    @endphp
+
+                    @include("pivlu::web.layouts.footer-{$footer2_columns}-col", ['destination' => 'secondary'])
+                </div>
+            </div>
+        @endif
+    </div>
 @endif
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
@@ -33,9 +33,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/fancybox/fancybox.umd.js"></script>
 
 <script>
-    Fancybox.bind("[data-fancybox]", {
-  
-    });
+    Fancybox.bind("[data-fancybox]", {});
 </script>
 
 @if (($config->addthis_code ?? null) && ($config->addthis_code_enabled ?? null))
@@ -44,38 +42,3 @@
 @endif
 
 {!! $config->template_global_footer_code ?? null !!}
-
-@if ($config->popup_enabled ?? null)
-    @php
-        $popup_title_key = 'popup_title_' . active_lang()->id;
-        $popup_content_key = 'popup_content_' . active_lang()->id;
-        $popup_destination_page_label_key = 'popup_destination_page_label_' . active_lang()->id;
-        $popup_destination_page_url_key = 'popup_destination_page_url_' . active_lang()->id;
-        $popup_button_label_key = 'popup_button_label_' . active_lang()->id;
-
-        $popup_content = $config->$popup_content_key;
-        $popup_content = str_replace(["\r", "\n", '<br>'], '', $popup_content);
-
-    @endphp
-    <script src="{{ asset('assets/js/cookies.js') }}"></script>
-    <script>
-        var options = {
-            title: '{{ $config->$popup_title_key ?? __('Accept terms') }}',
-            message: "{{ $popup_content ?? __('Accept terms') }}",
-            delay: 600,
-            expires: {{ $config->popup_days ?? 30 }}, // 30 days default
-            link: '{{ $config->$popup_destination_page_url_key ?? '#' }}',
-            uncheckBoxes: true,
-            acceptBtnLabel: '{{ $config->$popup_button_label_key ?? __('I agree') }}',
-            moreInfoLabel: '{{ $config->$popup_destination_page_label_key ?? '#' }}',
-        }
-
-        $(document).ready(function() {
-            $('body').ihavecookies(options);
-
-            $('#ihavecookiesBtn').on('click', function() {
-                $('body').ihavecookies(options, 'reinit');
-            });
-        });
-    </script>
-@endif

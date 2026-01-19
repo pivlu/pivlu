@@ -1,0 +1,1 @@
+{!! $item->activeLanguageContentData['html_content'] ?? null !!}

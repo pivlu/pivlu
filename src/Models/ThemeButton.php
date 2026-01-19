@@ -17,10 +17,16 @@ class ThemeButton extends Model
 
     public function dataStyles(): Attribute
     {
-        $return_data = json_decode($this->data);
+        if(!($this->data ?? null)) {
+            return new Attribute(
+                get: fn() => null
+            );
+        }
+
+        $return_data = $this->data;
 
         return new Attribute(
-            get: fn() =>  $return_data
+            get: fn() =>  json_decode($return_data)
         );
     }
 

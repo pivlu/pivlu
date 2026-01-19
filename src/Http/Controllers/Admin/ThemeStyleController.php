@@ -80,7 +80,7 @@ class ThemeStyleController extends Controller
         // regenerate custom styles css file
         ThemeFunctions::generate_styles_css();
 
-        return redirect(route('admin.block-styles.show', ['id' => $style->id]))->with('success', 'created');
+        return redirect(route('admin.theme-styles.show', ['id' => $style->id]))->with('success', 'created');
     }
 
 
@@ -160,7 +160,7 @@ class ThemeStyleController extends Controller
         // regenerate custom styles css file
         ThemeFunctions::generate_styles_css();
 
-        return redirect(route('admin.block-styles.show', ['id' => $request->id]))->with('success', 'updated');
+        return redirect(route('admin.theme-styles.show', ['id' => $request->id]))->with('success', 'updated');
     }
 
 

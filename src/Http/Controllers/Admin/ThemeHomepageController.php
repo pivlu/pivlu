@@ -39,6 +39,8 @@ class ThemeHomepageController extends Controller
         $theme = Theme::find($request->id);
         if (!$theme) return redirect(route('admin.themes.index'));
 
+        if(!$request->type_id) return redirect(route('admin.themes.index'));
+
         $last_pos = Block::where(['is_homepage_block' => 1, 'theme_id' => $theme->id])->orderByDesc('position')->value('position');
         $position = ($last_pos ?? 0) + 1;
 
