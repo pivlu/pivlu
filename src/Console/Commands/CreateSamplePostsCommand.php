@@ -31,8 +31,8 @@ use Pivlu\Models\BlockType;
 use Pivlu\Models\PostContent;
 use Pivlu\Models\BlockContent;
 use Pivlu\Models\Language;
+use Pivlu\Functions\BlockFunctions;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CreateSamplePostsCommand extends Command
 {
@@ -63,10 +63,10 @@ class CreateSamplePostsCommand extends Command
         $this->line('Create sample posts. Note: creating fake images can take a while...');
 
 
-        $number_of_posts = $this->ask('Input the number of fake posts to be created: ', '6', ['required', 'min:1', 'max:48']);
+        $number_of_posts = $this->ask('Input the number of fake posts to be created: ', '6', ['required', 'min:1', 'max:12']);
 
         $number_of_posts = (int)$number_of_posts;
-        if (! ($number_of_posts > 1 && $number_of_posts <= 12)) $number_of_posts = 6;
+        if (! ($number_of_posts >= 1 && $number_of_posts <= 12)) $number_of_posts = 6;
 
         // Admin user_id
         $admin_user_id = User::where(['role_group' => 'admin'])->orderByDesc('id')->value('id');
@@ -81,7 +81,13 @@ class CreateSamplePostsCommand extends Command
 
             $title = fake()->sentence(12);
             $summary = fake()->paragraph();
-            $content = fake()->paragraphs(8, true);
+
+            $content_title= fake()->sentence(40);
+            $content1 = fake()->paragraphs(4, true);
+            $content2 = fake()->paragraphs(6, true);
+            $content3 = fake()->paragraphs(4, true);
+            
+            $content = "<p class=\"fw-bold\">$content_title</p>\n\n<p>$content1</p>\n\n<p>$content2</p>\n\n<p>$content3</p>";
 
             $fake_post = Post::create([
                 'post_type_id' => $post_type_post->id,
@@ -114,7 +120,9 @@ class CreateSamplePostsCommand extends Command
                 'data' => $data ?? null,
             ]);
 
-            $fake_post->update(['blocks' => serialize(['id' => $post_block->id, 'type_id' =>  $editor_block_type->id, 'type' => 'editor'])]);
+            //$fake_post->update(['blocks' => serialize(['id' => $post_block->id, 'type_id' =>  $editor_block_type->id, 'type' => 'editor'])]);
+
+            BlockFunctions::regenerate_post_blocks($fake_post->id);
 
             $fake_post->addMediaFromUrl('https://picsum.photos/1200/800')->toMediaCollection('post_media');
             $fake_post->media_id = $fake_post->getFirstMedia('post_media')->id;

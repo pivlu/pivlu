@@ -414,20 +414,19 @@ class ContentController extends Controller
         $s = $request->s;
 
         if ($s) {
-            $posts = Post::with('author', 'taxonomies', 'post_type')
-                ->whereNull('deleted_at')
+            $posts = Post::with('user', 'taxonomies', 'post_type', 'active_language_content')
                 ->where('status', 'published')
-                ->where(function ($query) use ($s) {
+                ->whereHas('active_language_content', function ($query) use ($s) {
                     $query->where('title', 'like', "%$s%")
                         ->orWhere('search_terms', 'like', "%$s%");
                 });
 
-            $posts = $posts->orderBy('posts.sticky', 'desc')
-                ->orderBy('posts.id', 'desc')
+            $posts = $posts->orderByDesc('sticky')
+                ->orderByDesc('id')
                 ->paginate(24);
         }
 
-        return view($this->theme_views_path . '.search', [
+        return view('pivlu::web.search', [
             'posts' => $posts ?? null,
             's' => $s,
         ]);

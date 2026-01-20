@@ -36,14 +36,21 @@ class ProfileController extends Controller
      */
     public function index(Request $request)
     {
-        $username = $request->username;        
+        $username = $request->username;
 
         $user = User::where('username', $username)->first();
         if (!$user) return redirect(route('home'));
 
-        $posts = Post::where('user_id', $id)->where('status', 'published')->orderByDesc('id')->paginate(Config::config()->posts_per_page ?? 12);
+        $posts = Post::with('user', 'taxonomies', 'active_language_content', 'default_language_content', 'post_type')
+            ->whereHas('post_type', function ($query) {
+                $query->where('type', '!=', 'page');
+            })
+            ->where('user_id', $user->id)
+            ->where('status', 'published')
+            ->orderByDesc('id')
+            ->paginate(Config::config()->posts_per_page ?? 12);
 
-        return view('web.builder.profile', [
+        return view('pivlu::web.profile', [
             'user' => $user,
             'bio' => UserMeta::get_meta($user->id, 'bio'),
             'posts' => $posts,

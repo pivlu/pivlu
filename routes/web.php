@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 use Pivlu\Http\Controllers\Web\ContentController;
 use Pivlu\Http\Controllers\Web\FormController;
 use Pivlu\Http\Controllers\Web\HomeController;
+use Pivlu\Http\Controllers\Web\ProfileController;
 use Pivlu\Http\Controllers\Web\ToolsController;
 
 /***********************************
