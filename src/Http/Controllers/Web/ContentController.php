@@ -75,7 +75,7 @@ class ContentController extends Controller
             $post_type->title = $post_type->active_language_content->title ?? $post_type->default_language_content->title;
             $post_type->meta_title = $post_type->active_language_content->meta_title ?? $post_type->default_language_content->title ?? $post_type->title;
             $post_type->meta_description = $post_type->active_language_content->meta_description ?? $post_type->default_language_content->meta_description ?? (substr($post_type->active_language_content->description, 0, 200) ?? null);
-
+                        
             return view($active_theme_view . ($post_type->custom_tpl_file ?? 'web.post-type'), [
                 'post_type' => $post_type,
                 'post_type_taxonomies' => $post_type_taxonomies,

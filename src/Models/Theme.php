@@ -3,6 +3,7 @@
 namespace Pivlu\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Theme extends Model
 {
@@ -46,6 +47,16 @@ class Theme extends Model
     }
 
 
+    public function configs(): Attribute
+    {
+        $configs = $this->hasMany(ThemeConfig::class, 'theme_id')->pluck('value', 'name')->toArray();
+
+        return Attribute::make(
+            get: fn() => $configs
+        );
+    }
+
+
     public static function update_data($theme)
     {
         $data = ['logo_url' => null, 'favicon_url' => null];
@@ -64,7 +75,7 @@ class Theme extends Model
             $favicon_model = ThemeConfig::where(['theme_id' => $theme->id, 'name' => 'favicon_media_id'])->first();
             $favicon_url = $favicon_model->getFirstMediaUrl('theme_config_media');
             $data['favicon_url'] = $favicon_url;
-        }       
+        }
 
         $theme->data = json_encode($data);
         $theme->save();

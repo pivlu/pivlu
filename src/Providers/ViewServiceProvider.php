@@ -88,18 +88,12 @@ class ViewServiceProvider extends ServiceProvider
             foreach ($theme_config_lang as $key => $value) {
                 $config->$key = $value;
             }
-
-            // Theme nav
-            $nav_rows = ThemeNavRow::with('active_items')->where('nav_id', $active_theme->nav_id)
-                ->where('active', 1)
-                ->orderBy('position')
-                ->get();
-            $config->nav_rows = $nav_rows ?? [];
-
-
+          
+            /*
             $val = ConfigLang::where('lang_id', $active_language->id)->where('name', 'menu_links_' . $active_theme->menu_id)->value('value');
             $menu_links = json_decode($val);
             $config->menu_links = $menu_links ?? [];
+            */
 
             // Theme footer
             $footer_id = $theme_config->footer_id ?? null;

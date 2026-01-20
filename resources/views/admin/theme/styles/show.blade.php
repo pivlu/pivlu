@@ -67,7 +67,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="use_custom_font_family" name="use_custom_font_family" @if (($item->use_custom_font_family ?? null) == 1) checked @endif>
+                                    <input class="form-check-input" type="checkbox" id="use_custom_font_family" name="use_custom_font_family" @if ($item->font_family ?? null) checked @endif>
                                     <label class="form-check-label" for="use_custom_font_family">
                                         {{ __('Use custom font family for this block section') }}
                                     </label>
@@ -89,7 +89,7 @@
                         </script>
 
                         <div class="row">
-                            <div id="hidden_div_font_family" style="display: @if (($item->use_custom_font_family ?? null) == 1) block @else none @endif" class="mt-1">
+                            <div id="hidden_div_font_family" style="display: @if ($item->font_family ?? null) block @else none @endif" class="mt-1">
                                 <div class="col-sm-6 col-md-6 col-12">
                                     <div class="form-group">
                                         <label>{{ __('Font family') }}</label>
@@ -297,7 +297,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="use_custom_bg" name="use_custom_bg" @if (($item->use_custom_bg ?? null) == 1) checked @endif>
+                                    <input class="form-check-input" type="checkbox" id="use_custom_bg" name="use_custom_bg" @if ($item->bg_color ?? null) checked @endif>
                                     <label class="form-check-label" for="use_custom_bg">
                                         {{ __('Use custom background color for this block section') }}
                                     </label>
@@ -319,7 +319,7 @@
                         </script>
 
                         <div class="col-12">
-                            <div id="hidden_div_color" style="display: @if (($item->use_custom_bg ?? null) == 1) block @else none @endif" class="mt-1">
+                            <div id="hidden_div_color" style="display: @if ($item->bg_color ?? null) block @else none @endif" class="mt-1">
                                 <div class="form-group mb-4">
                                     <input id="bg_color" name="bg_color" value="{{ $item->bg_color ?? '#ffffff' }}">
                                     <label>{{ __('Background color') }}</label>

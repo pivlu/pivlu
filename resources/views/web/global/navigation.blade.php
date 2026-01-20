@@ -10,6 +10,32 @@
     </div>
 @endif
 
-@foreach ($config->nav_rows as $nav_row)    
-    @include('pivlu::web.navigation.nav', ['style_id' => $config->{"nav_style_id_row_{$nav_row->id}"} ?? null, 'style_id_dropdown' => $config->{"nav_style_id_row_dropdown_{$nav_row->id}"} ?? null, 'nav_row_id' => $nav_row->id, 'items' => $nav_row->active_items])    
+@php
+    $nav_rows = \Pivlu\Models\ThemeNavRow::with('active_items')->where('nav_id', $config->active_theme->nav_id)->where('active', 1)->orderBy('position')->get();
+    $nav_rows = $nav_rows ?? [];
+
+    if ($post_type ?? null) {
+        $nav_post_type_id = $post_type->id ?? null;
+        $key_nav_post_type_id = 'nav_id_for_post_type_id_' . $nav_post_type_id;
+
+        if ($config->$key_nav_post_type_id ?? null) {
+            $custom_nav_id = $config->$key_nav_post_type_id;
+
+            $custom_nav_rows = \Pivlu\Models\ThemeNavRow::with('active_items')->where('nav_id', $custom_nav_id)->where('active', 1)->orderBy('position')->get();
+            $custom_nav_rows = $custom_nav_rows ?? [];
+
+            if (count($custom_nav_rows) > 0) {
+                $nav_rows = $custom_nav_rows;
+            }
+        }
+    }
+@endphp
+
+@foreach ($nav_rows as $nav_row)
+    @include('pivlu::web.navigation.nav', [
+        'style_id' => $nav_row->configs['style_id'] ?? null,
+        'style_id_dropdown' => $nav_row->configs['style_id_dropdown'] ?? null,
+        'nav_row_id' => $nav_row->id,
+        'items' => $nav_row->active_items,
+    ])
 @endforeach

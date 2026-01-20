@@ -101,9 +101,9 @@
                     <div class="fw-bold mb-2">
                         <a href="{{ route('admin.theme-nav-rows.show', ['nav_id' => $nav->id, 'row_id' => $row->id]) }}" class="btn btn-primary">{{ __('Manage row content') }}</a>
                     </div>
-                    
-                    
-                    <form method="post" action="{{ route('admin.theme-nav-row.status', ['nav_id' => $nav->id, 'row_id' => $row->id]) }}">
+
+
+                    <form method="post" action="{{ route('admin.theme-nav-row.update', ['nav_id' => $nav->id, 'row_id' => $row->id]) }}">
                         @csrf
                         @method('PUT')
                         <div class="form-check form-switch">
@@ -111,15 +111,62 @@
                             <input class="form-check-input" type="checkbox" id="row_{{ $row->id }}_active" name="active" @if ($row->active ?? null) checked @endif onchange="this.form.submit()">
                             <label class="form-check-label" for="row_{{ $row->id }}_active">{{ __('Show this navigation row') }}</label>
                         </div>
+
+                        <div class="row mt-3">
+                            <div class="form-group col-xl-3 col-lg-4 col-md-6 mb-2">
+                                <label>{{ __('Select style for this navigation row') }}</label>
+                                <select class="form-select" id="style_id_row_{{ $row->id }}" name="style_id" onchange="this.form.submit()">
+                                    <option value="">-- {{ __('select') }} --</option>
+                                    @foreach ($styles as $style)
+                                        <option @if (($row->configs['style_id'] ?? null) == $style->id) selected @endif value="{{ $style->id }}">{{ $style->label }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="text-muted small">{{ __('Style for background, links, color...') }}</div>
+
+                                @if (!($row->configs['style_id'] ?? null))
+                                    <div class="mt-1 text-muted"><span class="text-danger">{{ __('no style selected') }}</span></div>
+                                @endif
+                            </div>
+
+                            <div class="form-group col-xl-3 col-lg-4 col-md-6 mb-2">
+                                <label>{{ __('Navigation row size') }}</label>
+                                <select class="form-select" id="nav_size_row_{{ $row->id }}" name="nav_size" onchange="this.form.submit()">
+                                    <option @if (($row->configs['nav_size'] ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                                    <option @if (($row->configs['nav_size'] ?? null) == 'large') selected @endif value="large">{{ __('Large') }}</option>
+                                    <option @if (($row->configs['nav_size'] ?? null) == 'extra_large') selected @endif value="extra_large">{{ __('Extra large') }}</option>
+                                    <option @if (($row->configs['nav_size'] ?? null) == 'small') selected @endif value="small">{{ __('Small') }}</option>
+                                </select>
+                                <div class="text-muted small">{{ __('The height of the navigation row') }}</div>
+                            </div>
+
+                            <div class="form-group col-xl-3 col-lg-4 col-md-6 mb-2">
+                                <label>{{ __('Navigation position') }}</label>
+                                <select class="form-select" id="nav_position_row_{{ $row->id }}" name="nav_position" onchange="this.form.submit()">
+                                    <option @if (($row->configs['nav_position'] ?? null) == 'scroll') selected @endif value="scroll">{{ __('Scroll') }}</option>
+                                    <option @if (($row->configs['nav_position'] ?? null) == 'sticky') selected @endif value="sticky">{{ __('Sticky') }}</option>
+                                </select>
+                                <div class="text-muted small">{{ __('The position of the navigation row. Only one navigation row can be sticky.') }}</div>
+                            </div>
+
+                            <div class="form-group col-xl-3 col-lg-4 col-md-6 mb-2">
+                                <label>{{ __('Navigation row shadow') }}</label>
+                                <select class="form-select" id="nav_shadow_row_{{ $row->id }}" name="nav_shadow" onchange="this.form.submit()">
+                                    <option @if (($row->configs['nav_shadow'] ?? null) == 'none') selected @endif value="none">{{ __('None') }}</option>
+                                    <option @if (($row->configs['nav_shadow'] ?? null) == 'small') selected @endif value="small">{{ __('Small') }}</option>
+                                    <option @if (($row->configs['nav_shadow'] ?? null) == 'regular') selected @endif value="regular">{{ __('Regular') }}</option>
+                                    <option @if (($row->configs['nav_shadow'] ?? null) == 'large') selected @endif value="large">{{ __('Large') }}</option>
+                                </select>
+                                <div class="text-muted small">{{ __('The shadow of the navigation row. Only one navigation row can have a shadow.') }}</div>
+                            </div>
+                        </div>
                     </form>
-
-                    <div class="small">{{ __('Created at') }}: {{ $row->created_at }}</div>
-
                 </div>
             @endforeach
-
         </div>
 
+        <div class="text-muted small mt-3">
+            <i class="bi bi-arrows-move"></i> {{ __('Drag and drop the navigation rows to reorder them.') }}
+        </div>
 
     </div>
     <!-- end card-body -->

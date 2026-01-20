@@ -26,6 +26,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Pivlu\Models\ThemeNav;
 use Pivlu\Models\ThemeNavRow;
+use Pivlu\Models\ThemeNavRowConfig;
 use Pivlu\Models\ThemeNavItem;
 use Pivlu\Models\ThemeStyle;
 use Pivlu\Models\ThemeNavItemContent;
@@ -83,7 +84,7 @@ class ThemeNavController extends Controller
         $nav = ThemeNav::find($request->id);
         if (!$nav) return redirect(route('admin.theme-navs.index'));
 
-        $rows = ThemeNavRow::with('style')->where('nav_id', $nav->id)->orderBy('position')->get();
+        $rows = ThemeNavRow::where('nav_id', $nav->id)->orderBy('position')->get();
 
         return view('pivlu::admin.index', [
             'view_file' => 'admin.theme.navs.show',
@@ -92,6 +93,7 @@ class ThemeNavController extends Controller
             'nav_tab' => 'navs',
             'nav' => $nav,
             'rows' => $rows,
+            'styles' => ThemeStyle::orderByDesc('is_default')->orderBy('label')->get(),
         ]);
     }
 
@@ -185,19 +187,40 @@ class ThemeNavController extends Controller
     }
 
 
-    public function nav_row_status(Request $request)
+    public function nav_row_update(Request $request)
     {
         $nav = ThemeNav::find($request->nav_id);
         if (! $nav) return redirect(route('admin.theme-navs.index'));
 
         $row = ThemeNavRow::where('id', $request->row_id)->where('nav_id', $nav->id)->first();
         if (! $row) return redirect(route('admin.theme-navs.index'));
-
-        $active = $request->active ? 1 : 0;
         
+        $active = $request->active ? 1 : 0;        
         $row->update([
             'active' => $active,
         ]);
+
+        $style_id = $request->style_id ?? null;
+        $nav_size = $request->nav_size ?? null;
+        $nav_position = $request->nav_position ?? null;
+        $nav_shadow = $request->nav_shadow ?? null;
+
+        ThemeNavRowConfig::updateOrCreate(
+            ['nav_id' => $nav->id, 'row_id' => $row->id, 'name' => 'style_id'],
+            ['value' => $style_id]
+        );
+        ThemeNavRowConfig::updateOrCreate(
+            ['nav_id' => $nav->id, 'row_id' => $row->id, 'name' => 'nav_size'],
+            ['value' => $nav_size]
+        );
+        ThemeNavRowConfig::updateOrCreate(
+            ['nav_id' => $nav->id, 'row_id' => $row->id, 'name' => 'nav_position'],
+            ['value' => $nav_position]
+        );
+        ThemeNavRowConfig::updateOrCreate(
+            ['nav_id' => $nav->id, 'row_id' => $row->id, 'name' => 'nav_shadow'],
+            ['value' => $nav_shadow]
+        );      
 
         return redirect(route('admin.theme-navs.show', ['id' => $nav->id]))->with('success', 'updated');
     }

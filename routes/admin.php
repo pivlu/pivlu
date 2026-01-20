@@ -113,7 +113,7 @@ Route::name('admin.')->group(function () {
     Route::get('appearance/theme-nav-rows/create', [ThemeNavController::class, 'create_nav_row'])->name('theme-nav-rows.create');    
     Route::post('appearance/theme-nav-rows/sortable', [ThemeNavController::class, 'sortable_nav_rows'])->name('theme-nav-rows.sortable');    
     Route::get('appearance/theme-nav/{nav_id}/{row_id}', [ThemeNavController::class, 'show_nav_row'])->name('theme-nav-rows.show')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
-    Route::put('appearance/theme-nav/{nav_id}/{row_id}/status', [ThemeNavController::class, 'nav_row_status'])->name('theme-nav-row.status')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
+    Route::put('appearance/theme-nav/{nav_id}/{row_id}/status', [ThemeNavController::class, 'nav_row_update'])->name('theme-nav-row.update')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
     Route::delete('appearance/theme-nav/{nav_id}/{row_id}/delete', [ThemeNavController::class, 'destroy_nav_row'])->name('theme-nav-rows.delete')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+']);    
     Route::get('appearance/theme-nav/{nav_id}/{row_id}/add-item/{column}/{item_type}', [ThemeNavController::class, 'store_row_item'])->name('theme-nav-rows.add-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'column' => '[a-zA-Z0-9_-]+', 'item_type' => '[a-zA-Z0-9_-]+']);
     Route::post('appearance/theme-nav/{nav_id}/{row_id}/{column}/sortable', [ThemeNavController::class, 'sortable_row_items'])->name('theme-nav-rows.sortable-item')->where(['nav_id' => '[0-9]+', 'row_id' => '[0-9]+', 'column' => '[a-zA-Z0-9_-]+']);

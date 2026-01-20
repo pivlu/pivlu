@@ -121,6 +121,7 @@ class ThemeController extends Controller
         if ($theme_tab == 'nav') {
             $navs = ThemeNav::orderByDesc('is_default')->orderBy('label')->get();
             $nav_rows = ThemeNavRow::where('nav_id', $theme->nav_id)->orderBy('position', 'asc')->get();
+            $post_types = PostType::with('default_language_content')->orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->get();
         }
 
 
@@ -146,6 +147,7 @@ class ThemeController extends Controller
 
             'navs' => $navs ?? null, // for nav tab
             'nav_rows' => $nav_rows ?? null, // for nav tab
+            'post_types' => $post_types ?? null, // for nav tab
             'logo_model' => $logo_model ?? null, // for general tab
             'favicon_model' => $favicon_model ?? null, // for general tab
 
@@ -168,7 +170,7 @@ class ThemeController extends Controller
 
         $excepts = array('_token', '_method', 'theme_tab', 'post_type_type');
 
-        if ($theme_tab != 'general') {
+        if ($theme_tab != 'general' && $theme_tab != 'nav') {
             // request inputs WITHOUT files
             $inputs = $request->except($excepts);
             ThemeConfig::update_config($theme->id, $inputs);
@@ -178,6 +180,12 @@ class ThemeController extends Controller
 
         if ($theme_tab == 'nav') {
             $theme->update(['nav_id' => $request->nav_id ?? null]);
+            
+            $post_types = PostType::with('default_language_content')->orderByDesc('core')->orderByDesc('active')->orderByDesc('id')->get();
+            foreach ($post_types as $post_type) {
+                $nav_id = $request->has('nav_on_post_type_' . $post_type->id) ? $request->input('nav_id_' . $post_type->id) : null;
+                ThemeConfig::update_config($theme->id, 'nav_id_for_post_type_id_' . $post_type->id, $nav_id);
+            }
         }
 
         return redirect(route('admin.themes.show', ['id' => $theme->id, 'theme_tab' => $theme_tab, 'post_type_type' => $request->post_type_type ?? null]))->with('success', 'updated');
