@@ -24,9 +24,6 @@ use Pivlu\Models\Language;
 use Pivlu\Models\Block;
 use Pivlu\Models\BlockContent;
 use Pivlu\Models\BlockItemContent;
-use Pivlu\Models\ThemeFooterBlock;
-use Pivlu\Models\ThemeLayoutBlock;
-use Pivlu\Models\ThemeLayoutBlockContent;
 use Pivlu\Models\ThemeFooter;
 
 // Get blocks for homepage
@@ -100,56 +97,3 @@ if (!function_exists('footer_blocks')) {
 	}
 }
 
-
-// show footer block 
-if (!function_exists('footer_block')) {
-	function footer_block($id)
-	{
-
-		$data = ['content' => null];
-		$block = ThemeFooterBlock::find($id);
-		if (!$block) return (object)$data;
-		if ($block->hidden == 1) return (object)$data;
-
-		$block_content = ThemeFooterBlockContent::where('footer_block_id', $id)->where('lang_id', Language::get_active_language()->id ?? null)->first();
-
-		$data = array('content' => $block_content->content ?? null, 'header' => $block_content->header ?? null, 'settings' => json_decode($block->settings) ?? null);
-
-		return (object)$data;
-	}
-}
-
-
-// Get blocks for a specific layout column
-if (!function_exists('layout_blocks')) {
-	function layout_blocks($id, $section, $show_hidden = null)
-	{
-		$blocks = ThemeLayoutBlock::where('layout_id', $id)->where('section', $section);
-
-		if (!$show_hidden) $blocks = $blocks->where('hide', 0);
-
-		$blocks = $blocks->orderBy('position')->get();
-		if (!$blocks) return array();
-
-		return $blocks;
-	}
-}
-
-
-// show layout block 
-if (!function_exists('layout_block')) {
-	function layout_block($id)
-	{
-		$data = array('settings' => null, 'content' => null, 'header' => null);
-
-		$block = ThemeLayoutBlock::find($id);
-
-		if (!$block) return (object)$data;
-
-		$block_content = ThemeLayoutBlockContent::where('block_id', $id)->where('lang_id', Language::get_active_language()->id)->first();
-
-		$data = array('content' => $block_content->content ?? null, 'header' => $block_content->header ?? null, 'settings' => (object)unserialize($block->settings));
-
-		return (object)$data;
-	}
-}

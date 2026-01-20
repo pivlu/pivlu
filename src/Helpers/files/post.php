@@ -69,7 +69,7 @@ if (!function_exists('content_blocks')) {
 	{
 
 		if (!$show_hidden) {
-			$blocks = Post::where('id', $post_id)->value('blocks');
+			$blocks = Post::with('post_type')->where('id', $post_id)->value('blocks');
 			if (!$blocks) return array();
 			$blocks = unserialize($blocks);
 		} else {

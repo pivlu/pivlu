@@ -142,6 +142,7 @@ class ThemeFunctions
 
     public static function generate_styles_css()
     {
+
         $css_file = fopen('custom/styles.css', "w");
 
         $styles = ThemeStyle::get();
@@ -424,7 +425,7 @@ class ThemeFunctions
                 if ($link->type == 'custom') {
                     $url = $link_content->custom_url ?? '#';
                     if (!(str_starts_with($url, 'http://') || str_starts_with($url, 'https://')))
-                        $url = 'https://' . $url;                     
+                        $url = 'https://' . $url;
                 }
 
 
@@ -475,115 +476,4 @@ class ThemeFunctions
 
         return null;
     }
-
-
-    /*
-    public static function generate_menu_links($menu_id)
-    {
-        $default_lang_id = Language::get_default_language()->id;
-
-        $langs = Language::get_languages();
-
-        foreach ($langs as $lang) {
-
-            $links = ThemeMenuItem::where('menu_id', $menu_id)->whereNull('parent_id')->orderBy('position')->get();
-
-            $items = [];
-
-            foreach ($links as $link) {
-
-                $dropdown = [];
-
-                if ($link->type == 'home') {
-                    if ($lang->id == $default_lang_id) $url = route('home');
-                    else $url = route('locale.home', ['lang' => $lang->code]);
-                }
-
-                if ($link->type == 'page') {
-                    $page = Post::where('id', $link->value)->first();
-                    $page_content = PostContent::where('post_id', $link->value)->where('lang_id', $lang->id)->first();
-
-                    if ($page->parent_id)
-                        $parent_page_content = PostContent::where('post_id', $page->parent_id)->where('lang_id', $lang->id)->first();
-
-                    if ($page_content) {
-
-                        if ($lang->id == $default_lang_id) {
-                            if ($page->parent_id)
-                                $url = route('level2', ['slug1' => $parent_page_content->slug ?? null, 'slug2' => $page_content->slug ?? null]);
-                            else
-                                $url = route('level1', ['slug' => $page_content->slug ?? null]);
-                        } else {
-                            $lang = Language::where('id', $page_content->lang_id)->first();
-                            if ($page->parent_id)
-                                $url = route('locale.level2', ['lang' => $lang->code, 'slug1' => $parent_page_content->slug ?? null, 'slug2' => $page_content->slug ?? null]);
-                            else
-                                $url = route('locale.level1', ['lang' => $lang->code, 'slug' => $page_content->slug]);
-                        }
-                    } else $url = '#';
-                }
-
-                if ($link->type == 'custom')
-                    $url = $link->value;
-
-                if ($link->type == 'dropdown') {
-                    $url = '#';
-
-                    $dropdown_links = ThemeMenuItem::where('menu_id', $menu_id)->where('parent_id', $link->id)->orderBy('position')->get();
-                    foreach ($dropdown_links as $dropdown_link) {
-
-                        if ($dropdown_link->type == 'home') {
-                            if ($lang->id == $default_lang_id) $dropdown_url = route('home');
-                            else $dropdown_url = route('locale.home', ['lang' => $lang->code]);
-                        }
-
-                        if ($dropdown_link->type == 'page') {
-                            $page = PostContent::where('post_id', $dropdown_link->value)->where('lang_id', $lang->id)->first();
-                            if ($page->slug ?? null) {
-                                if ($lang->id == $default_lang_id)
-                                    $dropdown_url = route('level1', ['slug' => $page->slug ?? null]);
-                                else {
-                                    $lang = Language::where('id', $page->lang_id)->first();
-                                    $dropdown_url = route('locale.level1', ['lang' => $lang->code, 'slug' => $page->slug]);
-                                }
-                            } else $dropdown_url = '#';
-                        }
-
-                        if ($dropdown_link->type == 'custom')
-                            $dropdown_url = $dropdown_link->value;
-
-                        $menu_content = ThemeMenuContent::where(['menu_id' => $menu_id, 'item_id' => $dropdown_link->id, 'lang_id' => $lang->id])->first();
-
-                        $dropdown[] = array(
-                            'label' => $menu_content->label ?? '#',
-                            'description' => $menu_content->description ?? null,
-                            'url' => $dropdown_url ?? null,
-                            'new_tab' => $dropdown_link->new_tab,
-                            'icon' => $dropdown_link->icon
-                        );
-                    }
-                }
-
-
-                $menu_content = ThemeMenuContent::where(['menu_id' => $menu_id, 'item_id' => $link->id, 'lang_id' => $lang->id])->first();
-
-                $items[] = array(
-                    'label' => $menu_content->label ?? '#',
-                    'description' => $menu_content->description ?? null,
-                    'url' => $url ?? '#',
-                    'dropdown' => $dropdown,
-                    'type' => $link->type,
-                    'btn_id' => $link->btn_id,
-                    'new_tab' => $link->new_tab,
-                    'icon' => $link->icon,
-                    'css_classes' => $link->css_classes
-                );
-            }
-
-            ConfigLang::update_config($lang->id, 'menu_links_' . $menu_id, json_encode($items, JSON_UNESCAPED_UNICODE));
-        }
-
-        return null;
-    }
-        */
 }

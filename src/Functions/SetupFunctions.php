@@ -160,7 +160,6 @@ class SetupFunctions
         // id for page type
         $page_post_type = PostType::where(['type' => 'page'])->first();
 
-
         // Add contact page, if not exists
         $pivlu_contact_page_identificator = md5('pivlu_contact_page');
         if (Post::where(['identificator' => $pivlu_contact_page_identificator])->doesntExist()) {
@@ -179,7 +178,7 @@ class SetupFunctions
             ]);
 
             $contact_block_form = Block::create([
-                'type' => 'form',
+                'type_id' => BlockType::where('type', 'form')->value('id'),
                 'post_id' => $contact_page_post->id,
                 'source' => 'posts',
                 'label' => 'Contact form',
@@ -190,9 +189,9 @@ class SetupFunctions
             $contact_form = Form::first();
 
             $block_settings = array('form_id' => $contact_form->id);
-            $contact_block_form->update(['settings' => serialize($block_settings)]);
+            $contact_block_form->update(['settings' => json_encode($block_settings, JSON_UNESCAPED_UNICODE)]);
 
-            $contact_page_post->update(['blocks' => serialize(['id' => $contact_block_form->id, 'type' => 'form'])]);
+            BlockFunctions::regenerate_post_blocks($contact_page_post->id);
         }
 
 
@@ -596,7 +595,7 @@ class SetupFunctions
                 'is_default' => 1,
                 'label' => 'Header navigation primary row',
                 'data' => json_encode($data)
-            ]);
+            ]);          
         }
     }
 
@@ -664,7 +663,7 @@ class SetupFunctions
             $nav_row_item2 = ThemeNavItem::create([
                 'nav_id' => $nav->id,
                 'row_id' => $nav_row->id,
-                'column' => 'left',
+                'column' => 'right',
                 'type' => 'menu_links',
                 'position' => 1,
                 'active' => 1,
@@ -677,12 +676,9 @@ class SetupFunctions
             }
 
             ThemeNavRowConfig::updateOrCreate(
-                ['nav_id' => $nav->id, 'row_id' => $row->id, 'name' => 'style_id'],
+                ['nav_id' => $nav->id, 'row_id' => $nav_row->id, 'name' => 'style_id'],
                 ['value' => ThemeStyle::where('is_default', 1)->value('id') ?? null]
             );
-
-            // regenerate custom styles css file
-            ThemeFunctions::generate_styles_css();
         }
     }
 

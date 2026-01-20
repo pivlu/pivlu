@@ -126,7 +126,7 @@
                             @endif
 
                             <b>
-                                @include('pivlu::admin.includes.block_type_label', ['type' => $block->block_type->type])
+                                @include('pivlu::admin.includes.block_type_label', ['type' => $block->block_type->type ?? null])
                             </b>
 
                             <div class="small text-muted">
@@ -224,7 +224,7 @@
                                                                 "id": {{ $tax_list_item['id'] }},
                                                                 "value": "{!! $tax_list_item['name'] !!}",
                                                             },
-                                                        @endforeach                                                       
+                                                        @endforeach
                                                     ],
                                                     dropdown: {
                                                         searchKeys: ['value'], // very important to set by which keys to search for suggesttions when typing

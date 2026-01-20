@@ -82,6 +82,8 @@ class ThemeController extends Controller
             'is_builder' => 1,
         ]);
 
+        ThemeFunctions::generate_theme_css($theme->code);
+        
         return redirect(route('admin.themes.show', ['id' => $theme->id]))->with('success', 'created');
     }
 
