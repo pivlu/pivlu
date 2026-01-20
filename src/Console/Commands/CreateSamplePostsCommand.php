@@ -60,12 +60,13 @@ class CreateSamplePostsCommand extends Command
     public function handle()
     {
 
-        $this->line('Create sample posts');
+        $this->line('Create sample posts. Note: creating fake images can take a while...');
+
 
         $number_of_posts = $this->ask('Input the number of fake posts to be created: ', '6', ['required', 'min:1', 'max:48']);
 
         $number_of_posts = (int)$number_of_posts;
-        if (! ($number_of_posts > 1 && $number_of_posts <= 24)) $number_of_posts = 6;
+        if (! ($number_of_posts > 1 && $number_of_posts <= 12)) $number_of_posts = 6;
 
         // Admin user_id
         $admin_user_id = User::where(['role_group' => 'admin'])->orderByDesc('id')->value('id');
@@ -80,7 +81,7 @@ class CreateSamplePostsCommand extends Command
 
             $title = fake()->sentence(12);
             $summary = fake()->paragraph();
-            $content = fake()->paragraphs(6, true);
+            $content = fake()->paragraphs(8, true);
 
             $fake_post = Post::create([
                 'post_type_id' => $post_type_post->id,
@@ -104,16 +105,24 @@ class CreateSamplePostsCommand extends Command
                 'position' => 1,
                 'user_id' => $admin_user_id
             ]);
+           
+            $data = json_encode(array('content' => $content), JSON_UNESCAPED_UNICODE);
 
             BlockContent::create([
                 'block_id' => $post_block->id,
                 'lang_id' => Language::get_default_language()->id,
-                'content' => $content,
+                'data' => $data ?? null,
             ]);
 
             $fake_post->update(['blocks' => serialize(['id' => $post_block->id, 'type_id' =>  $editor_block_type->id, 'type' => 'editor'])]);
-        }
 
+            $fake_post->addMediaFromUrl('https://picsum.photos/1200/800')->toMediaCollection('post_media');
+            $fake_post->media_id = $fake_post->getFirstMedia('post_media')->id;
+            $fake_post->save();
+
+            $this->line('# '. ($i+1) .' Created fake post: ' . $title);
+        }
+        
 
         $this->info('The fake posts was created!');
     }

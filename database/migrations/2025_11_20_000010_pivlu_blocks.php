@@ -51,12 +51,12 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('type_id')->references('id')->on('pivlu_block_types')->nullOnDelete();
-            $table->foreign('post_id')->references('id')->on('pivlu_posts')->nullOnDelete();
+            $table->foreign('post_id')->references('id')->on('pivlu_posts')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
             $table->foreign('theme_id')->references('id')->on('pivlu_themes')->nullOnDelete();
-            $table->foreign('footer_id')->references('id')->on('pivlu_theme_footers')->nullOnDelete();
-            $table->foreign('layout_id')->references('id')->on('pivlu_theme_layouts')->nullOnDelete();
+            $table->foreign('footer_id')->references('id')->on('pivlu_theme_footers')->cascadeOnDelete();
+            $table->foreign('layout_id')->references('id')->on('pivlu_theme_layouts')->cascadeOnDelete();
         });
     }
 

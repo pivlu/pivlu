@@ -1,4 +1,4 @@
-@foreach ($content_blocks as $key => $block_id)
+@foreach (($content_blocks ?? []) as $key => $block_id)
     @php        
         $block = block($block_id);
 
