@@ -152,7 +152,7 @@ class PostController extends Controller
 
         // CHECK PERMISSION - create post
         if ($request->user()->cannot('create', [Post::class, $post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
-
+        
         $post = Post::create([
             'post_type_id' => $post_type_id,
             'user_id' => Auth::user()->id,
@@ -317,8 +317,9 @@ class PostController extends Controller
 
         // CHECK PERMISSION - If user can see only own posts
         if ($request->user()->cannot('update', [$post, $post_type->id])) return redirect(route('admin'))->with('error', 'no_permission');
-
+        
         Post::where('id', $request->id)->update([
+            'parent_id' => $request->parent_id ?? null, // for "pages" only
             'status' => $request->status,
             'sticky' => $request->has('sticky') ? 1 : 0,
             'disable_comments' => $request->has('disable_comments') ? 1 : 0,

@@ -36,7 +36,7 @@ return new class extends Migration
             $table->unsignedBigInteger('media_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->char('code', 16)->unique();
-            $table->integer('parent_id')->nullable(); // used for 'page' type only
+            $table->unsignedBigInteger('parent_id')->nullable(); // used for 'page' type only
             $table->string('status', 20);
             $table->boolean('sticky')->default(false);
             $table->integer('hits')->default(0);
@@ -53,6 +53,7 @@ return new class extends Migration
             $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
+            $table->foreign('parent_id')->references('id')->on('pivlu_posts')->cascadeOnDelete();
         });
     }
 

@@ -155,7 +155,6 @@ class ThemeStyleController extends Controller
             
         $style->update(['data' => json_encode($data)]);
 
-
         // regenerate custom styles css file
         ThemeFunctions::generate_styles_css();
 

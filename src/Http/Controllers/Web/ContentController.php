@@ -75,7 +75,7 @@ class ContentController extends Controller
             $post_type->title = $post_type->active_language_content->title ?? $post_type->default_language_content->title;
             $post_type->meta_title = $post_type->active_language_content->meta_title ?? $post_type->default_language_content->title ?? $post_type->title;
             $post_type->meta_description = $post_type->active_language_content->meta_description ?? $post_type->default_language_content->meta_description ?? (substr($post_type->active_language_content->description, 0, 200) ?? null);
-                        
+
             return view($active_theme_view . ($post_type->custom_tpl_file ?? 'web.post-type'), [
                 'post_type' => $post_type,
                 'post_type_taxonomies' => $post_type_taxonomies,
@@ -239,6 +239,31 @@ class ContentController extends Controller
                 $query->where('slug', $slug1);
             })
             ->where('status', 'published')->first();
+
+
+        if ($parent_page) {
+            $page = Post::with('post_type', 'active_language_content')
+                ->whereHas('post_type', function ($query) {
+                    $query->where('type', 'page');
+                })
+                ->whereHas('active_language_content', function ($query) use ($slug2) {
+                    $query->where('slug', $slug2);
+                })
+                ->where('parent_id', $parent_page->id)
+                ->where('status', 'published')
+                ->first();
+
+            $custom_tpl_file = PostMeta::get_meta($page->id, 'custom_tpl_file') ?? null;
+
+            return view($active_theme_view . ($custom_tpl_file ?? 'web.page'), [
+                'page' => $page,
+                'parent_page' => $parent_page,
+                'content_blocks' => json_decode($page->blocks) ?? [],
+            ]);
+        }
+
+
+
         if ($parent_page) {
             $page = Post::where('type', 'page')->where('slug', $slug2)->where('parent_id', $parent_page->id)->where('status', 'published')->first();
             if ($page) {

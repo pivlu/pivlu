@@ -41,6 +41,7 @@ class Post extends Model implements HasMedia
         'post_type_id',
         'media_id',
         'user_id',
+        'parent_id',
         'status',
         'sticky',
         'hits',

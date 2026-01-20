@@ -34,6 +34,9 @@
 @foreach ($nav_rows as $nav_row)
     @include('pivlu::web.navigation.nav', [
         'style_id' => $nav_row->configs['style_id'] ?? null,
+        'nav_size' => $nav_row->configs['nav_size'] ?? null,
+        'nav_position' => $nav_row->configs['nav_position'] ?? null,
+        'nav_shadow' => $nav_row->configs['nav_shadow'] ?? null,
         'style_id_dropdown' => $nav_row->configs['style_id_dropdown'] ?? null,
         'nav_row_id' => $nav_row->id,
         'items' => $nav_row->active_items,

@@ -43,6 +43,7 @@ use Pivlu\Models\ThemeMenuContent;
 use Pivlu\Models\ThemeNav;
 use Pivlu\Models\ThemeNavRow;
 use Pivlu\Models\ThemeNavItem;
+use Pivlu\Models\ThemeNavRowConfig;
 use Pivlu\Models\Form;
 use Pivlu\Models\FormDataStatus;
 use Pivlu\Models\FormField;
@@ -589,11 +590,11 @@ class SetupFunctions
                 "caption_size" => "0.95rem",
                 "caption_style" => "normal",
                 "bg_color" => "#f3f6f4"
-            ];           
+            ];
 
             ThemeStyle::create([
                 'is_default' => 1,
-                'label' => 'Primary navigation row style',
+                'label' => 'Header navigation primary row',
                 'data' => json_encode($data)
             ]);
         }
@@ -636,39 +637,33 @@ class SetupFunctions
                 'is_default' => 1,
             ]);
 
-            $nav_row1 = ThemeNavRow::create([
+            $nav_row = ThemeNavRow::create([
                 'nav_id' => $nav->id,
                 'position' => 1,
                 'active' => 1,
             ]);
 
-            $nav_row2 = ThemeNavRow::create([
+            $nav_row_item1 = ThemeNavItem::create([
                 'nav_id' => $nav->id,
-                'position' => 2,
-                'active' => 1,
-            ]);
-
-            $nav_row1_item1 = ThemeNavItem::create([
-                'nav_id' => $nav->id,
-                'row_id' => $nav_row1->id,
+                'row_id' => $nav_row->id,
                 'column' => 'left',
                 'type' => 'logo',
                 'position' => 1,
                 'active' => 1,
             ]);
 
-            $nav_row1_item2 = ThemeNavItem::create([
+            $nav_row_item2 = ThemeNavItem::create([
                 'nav_id' => $nav->id,
-                'row_id' => $nav_row1->id,
+                'row_id' => $nav_row->id,
                 'column' => 'right',
                 'type' => 'login_register',
-                'position' => 1,
+                'position' => 2,
                 'active' => 1,
             ]);
 
-            $nav_row2_item2 = ThemeNavItem::create([
+            $nav_row_item2 = ThemeNavItem::create([
                 'nav_id' => $nav->id,
-                'row_id' => $nav_row2->id,
+                'row_id' => $nav_row->id,
                 'column' => 'left',
                 'type' => 'menu_links',
                 'position' => 1,
@@ -680,6 +675,14 @@ class SetupFunctions
             if ($default_theme) {
                 if (!$default_theme->nav_id) $default_theme->update(['nav_id' => $nav->id]);
             }
+
+            ThemeNavRowConfig::updateOrCreate(
+                ['nav_id' => $nav->id, 'row_id' => $row->id, 'name' => 'style_id'],
+                ['value' => ThemeStyle::where('is_default', 1)->value('id') ?? null]
+            );
+
+            // regenerate custom styles css file
+            ThemeFunctions::generate_styles_css();
         }
     }
 

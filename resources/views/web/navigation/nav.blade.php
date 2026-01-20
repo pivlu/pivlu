@@ -1,5 +1,5 @@
 <nav
-    class="navbar navbar-expand-lg @if (($config->{'nav_size_row_' . $nav_row_id} ?? null) == 'normal') py-2 @elseif (($config->{'nav_size_row_' . $nav_row_id} ?? null) == 'large') py-3 @elseif (($config->{'nav_size_row_' . $nav_row_id} ?? null) == 'extra_large') py-4 @elseif (($config->{'nav_size_row_' . $nav_row_id} ?? null) == 'small') py-1 @endif @if (($config->{'nav_position_row_' . $nav_row_id} ?? null) == 'sticky') sticky-top @endif @if ($style_id) style_{{ $style_id }} @endif @if( ($config->{'nav_shadow_row_' . $nav_row_id} ?? null) == 'small') shadow-sm @elseif (($config->{'nav_shadow_row_' . $nav_row_id} ?? null) == 'regular') shadow @elseif (($config->{'nav_shadow_row_' . $nav_row_id} ?? null) == 'large') shadow-lg @endif">
+    class="navbar navbar-expand-lg @if ($nav_size == 'normal') py-2 @elseif ($nav_size == 'large') py-3 @elseif ($nav_size == 'extra_large') py-4 @elseif ($nav_size == 'small') py-1 @endif @if ($nav_position == 'sticky') sticky-top @endif @if ($style_id) style_{{ $style_id }} @endif @if( $nav_shadow == 'small') shadow-sm @elseif ($nav_shadow == 'regular') shadow @elseif ($nav_shadow == 'large') shadow-lg @endif">
 
     <div class="container-xxl">
 
