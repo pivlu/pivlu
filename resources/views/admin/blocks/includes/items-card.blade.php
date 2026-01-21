@@ -65,7 +65,7 @@
                                         <h5 class="modal-title" id="ConfirmUpdateLabel-{{ $block_item['id'] ?? '-' }}">{{ __('Update') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    
+
                                     <div class="modal-body">
                                         @foreach (admin_languages() as $item_lang)
                                             @php
@@ -126,15 +126,17 @@
                         </div>
                     </div>
 
-                    <a target="_blank" href="{{ $block_item_default_lang_content->getFirstMediaUrl('block_item_media', 'large') }}">
-                        <img class="float-start img-fluid me-2 rounded" style="width: 140px; max-height: 110px;" src="{{ $block_item_default_lang_content->getFirstMediaUrl('block_item_media', 'thumb') }}">
-                    </a>
+                    @if ($block_item_default_lang_content->media_id)
+                        <a target="_blank" href="{{ $block_item_default_lang_content->getFirstMediaUrl('block_item_media', 'large') }}">
+                            <img class="float-start img-fluid me-2 rounded" style="width: 120px; max-height: 100px;" src="{{ $block_item_default_lang_content->getFirstMediaUrl('block_item_media', 'thumb') }}">
+                        </a>
+                    @endif
 
                     <div>
                         <b>{{ __('Title') }}:</b> {{ $block_item_content_data->title ?? null }}
                     </div>
 
-                    <div>
+                    <div class="text-clamp-3">
                         <b>{{ __('Content') }}:</b> {{ $block_item_content_data->content ?? '-' }}
                     </div>
 

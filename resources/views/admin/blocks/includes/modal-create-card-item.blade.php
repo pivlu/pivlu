@@ -18,7 +18,7 @@ debug_backtrace() || die('Direct access not permitted');
                     @foreach (admin_languages() as $item_lang)
                         <div class="form-group">
                             <label for="formFile_{{ $item_lang->id }}" class="form-label">{!! lang_label($item_lang, __('Card image')) !!}</label>
-                            <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}" required>
+                            <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}">
 
                             @if (count(admin_languages()) > 1)
                                 @if ($loop->first)
@@ -56,7 +56,8 @@ debug_backtrace() || die('Direct access not permitted');
 
                         <div class="form-group">
                             <label>{!! lang_label($item_lang, __('Content')) !!}</label>
-                            <textarea rows="4" class="form-control" name="content_{{ $item_lang->id }}"></textarea>
+                            <textarea rows="4" class="form-control trum" name="content_{{ $item_lang->id }}"></textarea>
+                            <div class="form-text">{{ __('You can use HTML code here') }}</div>
                         </div>
 
                         <div class="row">
