@@ -7,6 +7,6 @@
     </li>
 @else
     <li class="nav-item">
-        <a href="{{ route('user') }}" class="nav-link"><i class="bi bi-person me-2"></i> <span class="d-none d-md-inline-block"> {{ __('My account') }}</span></a>
+        <a href="{{ route('login') }}" class="nav-link"><i class="bi bi-person-circle me-1"></i> <span class="d-none d-md-inline-block"> {{ __('My account') }}</span></a>
     </li>
 @endif

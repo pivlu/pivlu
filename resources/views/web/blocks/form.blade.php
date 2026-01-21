@@ -33,7 +33,7 @@
 
                                     @if (in_array($field->type, $arrayTypes))
                                         <input id="form_field_{{ $field->id }}" type="{{ $field->type }}"
-                                            class="form-control block-form-control @if ($block_settings->field_size == 'lg') form-control-lg @endif @if ($block_settings->field_size == 'sm') form-control-sm @endif"
+                                            class="form-control block-form-control @if (($block_settings->field_size ?? null) == 'lg') form-control-lg @endif @if (($block_settings->field_size ?? null) == 'sm') form-control-sm @endif"
                                             name="{{ $field->id }}" @if ($field->required) required @endif @if ($field->type == 'color') style="width: 100px" @endif
                                             @if ($field->type == 'file') accept=".doc,.docx,.xml,.pdf,.txt,.zip,.gz,.rar,application/msword,audio/*,video/*,text/*,image/*" @endif>
                                     @elseif ($field->type == 'textarea')
@@ -87,8 +87,14 @@
                 @if (check_form_have_recaptcha($block_settings->form_id))
                     <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
                 @endif
-                <button type="submit"
-                    class="btn btn_{{ $block_settings->button_id ?? ' btn-primary' }} {{ button($block_settings->button_id)->font_weight ?? null }} {{ button($block_settings->button_id)->rounded ?? null }} {{ button($block_settings->button_id)->shadow ?? null }} {{ button($block_settings->button_id)->size ?? null }}">{{ $block_content->submit_btn_text ?? __('Submit') }}</button>
+
+                @if ($block_settings->button_id ?? null)
+                    <button type="submit"
+                        class="btn btn_{{ $block_settings->button_id ?? ' btn-primary' }} {{ button($block_settings->button_id)->font_weight ?? null }} {{ button($block_settings->button_id)->rounded ?? null }} {{ button($block_settings->button_id)->shadow ?? null }} {{ button($block_settings->button_id)->size ?? null }}">{{ $block_content->submit_btn_text ?? __('Submit') }}</button>
+                @else
+                    <button type="submit" class="btn btn-primary">{{ $block_content->submit_btn_text ?? __('Submit') }}
+                @endif
+
             </form>
         @endif
 

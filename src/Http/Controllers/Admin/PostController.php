@@ -479,33 +479,6 @@ class PostController extends Controller
         return redirect(route('admin.posts.show', ['id' => $request->id]))->with('success', 'main_image_deleted');
     }
 
-
-    /**
-     * Show form to add content
-     */
-    public function content(Request $request)
-    {
-        $post = Post::with('user', 'default_language_content')->find($request->id);
-        if (!$post) return redirect(route('admin.posts.index'));
-
-        if ($request->user()->cannot('view', [$post, $post->post_type_id])) return redirect(route('admin'))->with('error', 'no_permission');
-
-        $post_type = PostType::with('default_language_content')->find($post->post_type_id);
-
-        return view('pivlu::admin.index', [
-            'view_file' => 'admin.posts.content',
-            'active_menu' => 'website',
-            'active_submenu' => 'post_type_' . $post_type->id ?? null,
-            'menu_section' => 'posts',
-            'post_menu_tab' => 'content',
-
-            'post' => $post,
-            'post_type' => $post_type ?? null,
-            'block_types' => BlockType::get_block_types(),
-        ]);
-    }
-
-
     /**
      * Update post content   
      */
@@ -549,7 +522,7 @@ class PostController extends Controller
 
         BlockFunctions::regenerate_post_blocks($request->id);
 
-        return redirect(route('admin.posts.content', ['id' => $request->id]))->with('success', 'deleted');
+        return redirect(route('admin.posts.show', ['id' => $request->id]))->with('success', 'deleted');
     }
 
 
