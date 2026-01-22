@@ -21,6 +21,7 @@
 
 namespace Pivlu\Functions;
 
+use Pivlu\Models\Config;
 use Pivlu\Models\ConfigLang;
 use Pivlu\Models\Post;
 use Pivlu\Models\PostContent;
@@ -595,7 +596,7 @@ class SetupFunctions
                 'is_default' => 1,
                 'label' => 'Header navigation primary row',
                 'data' => json_encode($data)
-            ]);          
+            ]);
         }
     }
 
@@ -1348,6 +1349,25 @@ class SetupFunctions
             foreach ($permissions as $permission) {
                 if (in_array($permission->name, $contributor_perms)) $permission->assignRole($role_posts_contributor->name);
             }
+        }
+    }
+
+
+    // Finish setup tasks at the first access of admin dashboard 
+    public static function finish_setup_tasks()
+    {
+
+        // generate css for default theme on first access of admin dashboard after install
+        if (! Config::get_config('default_theme_css_generated_at')) {
+            $active_theme = Theme::where('is_active', 1)->first();
+            ThemeFunctions::generate_theme_css($active_theme->code);
+            Config::update_config('default_theme_css_generated_at', now());
+        }
+
+        // generate css for default custom style on first access of admin dashboard after install
+        if (! Config::get_config('default_style_css_generated_at')) {
+            ThemeFunctions::generate_styles_css();
+            Config::update_config('default_style_css_generated_at', now());
         }
     }
 }
