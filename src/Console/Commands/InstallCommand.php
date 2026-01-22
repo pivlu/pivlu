@@ -141,6 +141,9 @@ class InstallCommand extends Command
             <small class="text-muted">If you are the owner of this website, go to administrator area and start building your awesome website.</small>');
         }
 
+        Config::update_config('default_theme_css_generated_at', null); // generate css for default theme on first access of admin dashboard after install
+        Config::update_config('default_style_css_generated_at', null); // generate css for default custom style on first access of admin dashboard after install
+
         Config::update_config('installed_at', now());
         $this->info('The install was successful!');
     }

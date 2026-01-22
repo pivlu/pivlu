@@ -184,8 +184,9 @@ class ThemeFunctions
             $data = json_decode($style->data);
 
             // FONTS AND COLORS
-            $bg_color = $data->bg_color ?? 'white';
             $use_custom_bg = $data->use_custom_bg ?? 0;
+            $bg_color = $data->bg_color ?? 'white';
+
             $font_color = $data->text_color ?? config('pivlu.defaults.font_color');
             $text_font_weight = $data->text_font_weight ?? 'normal';
             $text_font_size = $data->text_size ?? '1em';
@@ -198,17 +199,29 @@ class ThemeFunctions
             $caption_color = $data->caption_color ?? 'grey';
             $caption_size = $data->caption_size ?? '0.95em';
             $caption_style = $data->caption_style ?? 'normal';
+
+            $use_custom_line_height = $data->use_custom_line_height ?? 0;
             $title_line_height = $data->title_line_height ?? '1.3';
             $text_line_height = $data->text_line_height ?? '1.4';
 
-            if ($use_custom_bg == 1)
+            if ($use_custom_bg == 1) {
                 $write = ".style_$style->id { background-color: $bg_color; } ";
+                fwrite($css_file, $write);
+            }
 
-            $write = ".style_$style->id { color: $font_color; font-weight: $text_font_weight; font-size: $text_font_size; text-align: $text_align; line-height: $text_line_height } ";
-            $write .= ".style_$style->id .title {font-size: $title_size; font-weight: $title_font_weight; line-height: $title_line_height; text-align: $title_align;} ";
-            $write .= ".style_$style->id .subtitle { font-size: $subtitle_size; font-weight: $subtitle_font_weight; line-height:$title_line_height } ";
-            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color; font-size: $caption_size; line-height: $text_line_height } ";
-            $write .= ".style_$style->id p { line-height: $text_line_height } ";
+            if ($use_custom_line_height == 1) {
+                $write = ".style_$style->id { line-height: $text_line_height; } ";
+                $write .= ".style_$style->id .title { line-height: $title_line_height; } ";
+                $write .= ".style_$style->id .subtitle { line-height: $title_line_height; } ";
+                $write .= ".style_$style->id .caption { line-height: $text_line_height; } ";
+                $write .= ".style_$style->id p { line-height: $text_line_height } ";
+                fwrite($css_file, $write);
+            }
+
+            $write = ".style_$style->id { color: $font_color; font-weight: $text_font_weight; font-size: $text_font_size; text-align: $text_align; } ";
+            $write .= ".style_$style->id .title {font-size: $title_size; font-weight: $title_font_weight; text-align: $title_align;} ";
+            $write .= ".style_$style->id .subtitle { font-size: $subtitle_size; font-weight: $subtitle_font_weight; } ";
+            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color; font-size: $caption_size; } ";            
 
             fwrite($css_file, $write);
 
@@ -347,17 +360,21 @@ class ThemeFunctions
         $caption_color = $theme_config->default_caption_color ?? 'grey';
         $caption_font_style = $theme_config->default_caption_font_style ?? 'normal';
 
+        $title_line_height = $theme_config->default_title_line_height ?? '1.3';
+        $text_line_height = $theme_config->default_text_line_height ?? '1.4';
+
         $bg_color = $theme_config->default_bg_color ?? config('pivlu.defaults.bg_color');
 
-        $write = "html, body { font-family: $font_family_name; color: $font_color; font-size: $font_size; background-color: $bg_color } ";
+        $write = "html, body { font-family: $font_family_name; color: $font_color; font-size: $font_size; background-color: $bg_color; line-height: $text_line_height } ";
 
-        $write .= "h1 {font-size: $h1_size; font-weight: $h1_weight  } ";
-        $write .= "h2 {font-size: $h2_size; font-weight: $h2_weight  } ";
-        $write .= "h3 {font-size: $h3_size; font-weight: $h3_weight  } ";
+        $write .= "h1 {font-size: $h1_size; font-weight: $h1_weight; line-height: $title_line_height } ";
+        $write .= "h2 {font-size: $h2_size; font-weight: $h2_weight; line-height: $title_line_height } ";
+        $write .= "h3 {font-size: $h3_size; font-weight: $h3_weight; line-height: $title_line_height } ";
 
-        $write .= ".title { font-size: $h1_size; font-weight: $h1_weight  } ";
-        $write .= ".subtitle { font-size: $h2_size; font-weight: $h2_weight  } ";
-        $write .= ".caption { font-style: $caption_font_style; color: $caption_color; font-size: $caption_size  } ";
+        $write .= ".title { font-size: $h1_size; font-weight: $h1_weight; line-height: $title_line_height } ";
+        $write .= ".subtitle { font-size: $h2_size; font-weight: $h2_weight; line-height: $title_line_height } ";
+        $write .= ".caption { font-style: $caption_font_style; color: $caption_color; font-size: $caption_size; line-height: $text_line_height } ";
+        $write .= "p { line-height: $text_line_height } ";
 
         fwrite($css_file, $write);
 

@@ -126,38 +126,69 @@
                                     </select>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-sm-4 col-md-3 col-12">
-                                <div class="form-group mb-4">
-                                    <label>{{ __('Title line height') }}</label>
-                                    <select class="form-select" name="title_line_height">
-                                        <option @if (($item->title_line_height ?? null) == 1.3) selected @endif value="1.3">({{ __('Normal') }})</option>                                        
-                                        <option @if (($item->title_line_height ?? null) == 1.4) selected @endif value="1.4">x 1.4</option>
-                                        <option @if (($item->title_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
-                                        <option @if (($item->title_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
-                                        <option @if (($item->title_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
-                                        <option @if (($item->title_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
-                                        <option @if (($item->title_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
-                                        <option @if (($item->title_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
-                                    </select>
-                                    <div class="text-muted small">{{ __('The distance from the top of the first line of text to the top of the second.') }}</div>
+
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="use_custom_line_height" name="use_custom_line_height" @if ($item->use_custom_line_height ?? null) checked @endif>
+                                    <label class="form-check-label" for="use_custom_line_height">
+                                        {{ __('Use custom line height for this block section') }}
+                                    </label>
+                                </div>
+                                <div class="form-text mt-0 mb-0">
+                                    {{ __('The distance from the top of the first line of text to the top of the second.') }}
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-sm-4 col-md-3 col-12">
-                                <div class="form-group mb-4">
-                                    <label>{{ __('Text line height') }}</label>
-                                    <select class="form-select" name="text_line_height">
-                                        <option @if (($item->text_line_height ?? null) == 1.4) selected @endif value="1.4">({{ __('Normal') }})</option>
-                                        <option @if (($item->text_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
-                                        <option @if (($item->text_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
-                                        <option @if (($item->text_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
-                                        <option @if (($item->text_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
-                                        <option @if (($item->text_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
-                                        <option @if (($item->text_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
-                                    </select>
-                                    <div class="text-muted small">{{ __('The distance from the top of the first line of text to the top of the second.') }}</div>
+                        <script>
+                            $('#use_custom_line_height').change(function() {
+                                select = $(this).prop('checked');
+                                if (select)
+                                    document.getElementById('hidden_div_line_height').style.display = 'block';
+                                else
+                                    document.getElementById('hidden_div_line_height').style.display = 'none';
+                            })
+                        </script>
+
+                        <div class="row">
+                            <div id="hidden_div_line_height" style="display: @if ($item->use_custom_line_height ?? null) block @else none @endif" class="mt-1">
+
+                                <div class="row">
+                                    <div class="col-sm-4 col-md-3 col-12">
+                                        <div class="form-group mb-4">
+                                            <label>{{ __('Title line height') }}</label>
+                                            <select class="form-select" name="title_line_height">
+                                                <option @if (($item->title_line_height ?? null) == 1.3) selected @endif value="1.3">({{ __('Normal') }})</option>
+                                                <option @if (($item->title_line_height ?? null) == 1.4) selected @endif value="1.4">x 1.4</option>
+                                                <option @if (($item->title_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
+                                                <option @if (($item->title_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
+                                                <option @if (($item->title_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
+                                                <option @if (($item->title_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
+                                                <option @if (($item->title_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
+                                                <option @if (($item->title_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4 col-md-3 col-12">
+                                        <div class="form-group mb-4">
+                                            <label>{{ __('Text line height') }}</label>
+                                            <select class="form-select" name="text_line_height">
+                                                <option @if (($item->text_line_height ?? null) == 1.4) selected @endif value="1.4">({{ __('Normal') }})</option>
+                                                <option @if (($item->text_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
+                                                <option @if (($item->text_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
+                                                <option @if (($item->text_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
+                                                <option @if (($item->text_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
+                                                <option @if (($item->text_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
+                                                <option @if (($item->text_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
 

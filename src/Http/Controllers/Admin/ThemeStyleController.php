@@ -153,8 +153,9 @@ class ThemeStyleController extends Controller
             'caption_style' => $request->caption_style,
         ];
 
-        if($request->has('use_custom_bg')) $data['bg_color'] = $request->bg_color;        
+        if($request->has('use_custom_bg')) $data['bg_color'] = $request->bg_color;                
         if($request->has('use_custom_font_family')) $data['font_family'] = $request->font_family;
+        $data['use_custom_line_height'] = $request->has('use_custom_line_height') ? 1 : 0;        
             
         $style->update(['data' => json_encode($data)]);
 

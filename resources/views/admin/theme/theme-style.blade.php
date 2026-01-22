@@ -25,6 +25,43 @@
                 </div>
 
 
+                <h5 class="fw-bold mt-3 mb-0">{{ __('Line height') }}</h5>
+                <div class="text-muted small">{{ __('The distance from the top of the first line of text to the top of the second.') }}</div>
+
+                <div class="row mt-2">
+                    <div class="col-sm-4 col-md-3 col-12">
+                        <div class="form-group mb-4">
+                            <label>{{ __('Title / Subtitle line height') }}</label>
+                            <select class="form-select" name="default_title_line_height">
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1.3) selected @endif value="1.3">({{ __('Normal') }})</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1.4) selected @endif value="1.4">x 1.4</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
+                                <option @if (($theme_config->default_title_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-md-3 col-12">
+                        <div class="form-group mb-4">
+                            <label>{{ __('Text line height') }}</label>
+                            <select class="form-select" name="default_text_line_height">
+                                <option @if (($theme_config->default_text_line_height ?? null) == 1.4) selected @endif value="1.4">({{ __('Normal') }})</option>
+                                <option @if (($theme_config->default_text_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
+                                <option @if (($theme_config->default_text_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
+                                <option @if (($theme_config->default_text_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
+                                <option @if (($theme_config->default_text_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
+                                <option @if (($theme_config->default_text_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
+                                <option @if (($theme_config->default_text_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div class="fw-bold fs-5 mb-2">{{ __('Sizes') }}</div>
 
                 <div class="row">
@@ -83,6 +120,9 @@
                         </div>
                     </div>
                 </div>
+
+
+
 
 
                 <div class="fw-bold fs-5 mb-2">{{ __('Font weights') }}</div>
@@ -255,7 +295,8 @@
 
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_link_color_underline" name="default_link_color_underline" value="{{ $theme_config->default_link_color_underline ?? config('pivlu.pivlu.defaults.link_color_underline') }}">
+                            <input id="default_link_color_underline" name="default_link_color_underline"
+                                value="{{ $theme_config->default_link_color_underline ?? config('pivlu.pivlu.defaults.link_color_underline') }}">
                             <label>{{ __('Underline color') }}</label>
                             <div class="mt-1 small"> {{ strtoupper($theme_config->default_link_color_underline ?? config('pivlu.pivlu.defaults.link_color_underline')) }}</div>
                             <script>
@@ -310,9 +351,9 @@
 
                     <div class="col-sm-4 col-md-3 col-12">
                         <div class="form-group mb-4">
-                            <input id="default_bg_color" name="default_bg_color" value="{{ $theme_config->default_bg_color ?? config('pivlu.pivlu.defaults.bg_color') }}">
+                            <input id="default_bg_color" name="default_bg_color" value="{{ $theme_config->default_bg_color ?? 'white' }}">
                             <label>{{ __('Background color') }}</label>
-                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_bg_color ?? config('pivlu.pivlu.defaults.bg_color')) }}</div>
+                            <div class="mt-1 small"> {{ strtoupper($theme_config->default_bg_color ?? 'white') }}</div>
                             <script>
                                 $('#default_bg_color').spectrum({
                                     type: "color",
