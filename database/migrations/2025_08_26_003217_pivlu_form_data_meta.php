@@ -39,7 +39,7 @@ return new class extends Migration
             $table->timestamps();
             
             $table->foreign('form_id')->references('id')->on('pivlu_forms')->cascadeOnDelete();
-            $table->foreign('form_data_id')->references('id')->on('pivlu_form_data')->nullOnDelete();            
+            $table->foreign('form_data_id')->references('id')->on('pivlu_form_data')->cascadeOnDelete();            
         });
     }
 

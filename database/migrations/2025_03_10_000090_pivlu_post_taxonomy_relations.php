@@ -36,9 +36,9 @@ return new class extends Migration
             $table->unsignedBigInteger('post_taxonomy_id');           
             $table->unsignedBigInteger('post_type_taxonomy_id')->nullable();        
 
-            $table->foreign('post_id')->references('id')->on('pivlu_posts')->onDelete('cascade');
-            $table->foreign('post_taxonomy_id')->references('id')->on('pivlu_post_taxonomies')->onDelete('cascade');
-            $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullonDelete();
+            $table->foreign('post_id')->references('id')->on('pivlu_posts')->cascadeOnDelete();
+            $table->foreign('post_taxonomy_id')->references('id')->on('pivlu_post_taxonomies')->cascadeOnDelete();
+            $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullOnDelete();
         });
     }
 

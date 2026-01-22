@@ -42,7 +42,7 @@ return new class extends Migration
 
             $table->foreign('form_id')->references('id')->on('pivlu_forms')->cascadeOnDelete();
             $table->foreign('field_id')->references('id')->on('pivlu_form_fields')->cascadeOnDelete();
-            $table->foreign('lang_id')->references('id')->on('pivlu_languages')->nullOnDelete();
+            $table->foreign('lang_id')->references('id')->on('pivlu_languages')->cascadeOnDelete();
         });
     }
 

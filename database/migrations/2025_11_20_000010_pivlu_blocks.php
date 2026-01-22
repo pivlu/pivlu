@@ -51,7 +51,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('type_id')->references('id')->on('pivlu_block_types')->nullOnDelete();
+            $table->foreign('type_id')->references('id')->on('pivlu_block_types')->cascadeOnDelete();
             $table->foreign('post_id')->references('id')->on('pivlu_posts')->cascadeOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();

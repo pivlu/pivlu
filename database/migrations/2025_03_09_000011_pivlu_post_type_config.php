@@ -30,13 +30,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pivlu_block_items', function (Blueprint $table) {
+        Schema::create('pivlu_post_type_config', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('block_id')->nullable();            
-            $table->integer('position')->default(0);
+            $table->unsignedBigInteger('post_type_id')->nullable();
+            $table->string('name', 100);
+            $table->longText('value')->nullable();
             $table->timestamps();
 
-            $table->foreign('block_id')->references('id')->on('pivlu_blocks')->cascadeOnDelete();            
+            $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->cascadeOnDelete();
         });
     }
 
@@ -45,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pivlu_block_items');
+        Schema::dropIfExists('pivlu_post_type_config');
     }
 };

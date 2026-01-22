@@ -43,12 +43,14 @@ return new class extends Migration
             $table->string('icon', 250)->nullable();
             $table->integer('count_posts')->nullable();
             $table->integer('count_tree_posts')->nullable();
+            $table->unsignedBigInteger('layout_id')->nullable();
             $table->timestamps();
 
             $table->foreign('post_type_taxonomy_id')->references('id')->on('pivlu_post_type_taxonomies')->nullOnDelete();
             $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
+            $table->foreign('layout_id')->references('id')->on('pivlu_theme_layouts')->nullOnDelete();
         });
     }
 

@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('pivlu_user_internal_notes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('created_by_user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('created_by_user_id')->nullable();
             $table->text('note')->nullable();
             $table->smallInteger('sticky')->default(0);
             $table->unsignedBigInteger('media_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('created_by_user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('created_by_user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-                Schema::dropIfExists('pivlu_user_internal_notes');
+        Schema::dropIfExists('pivlu_user_internal_notes');
     }
 };

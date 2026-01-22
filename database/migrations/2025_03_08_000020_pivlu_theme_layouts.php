@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('bg_color_top', 25)->nullable();
             $table->string('bg_color_bottom', 25)->nullable();
             $table->string('bg_color_sidebar', 25)->nullable();
+            $table->text('settings')->nullable();
+            $table->timestamps();
         });
     }
 

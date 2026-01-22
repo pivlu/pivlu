@@ -47,13 +47,15 @@ return new class extends Migration
             $table->text('blocks')->nullable();
             $table->string('identificator', 32)->unique()->nullable();
             $table->boolean('is_sample')->default(false);
+            $table->unsignedBigInteger('layout_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('post_type_id')->references('id')->on('pivlu_post_types')->nullOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
             $table->foreign('parent_id')->references('id')->on('pivlu_posts')->cascadeOnDelete();
+            $table->foreign('layout_id')->references('id')->on('pivlu_theme_layouts')->nullOnDelete();
         });
     }
 

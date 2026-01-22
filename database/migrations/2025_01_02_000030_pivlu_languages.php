@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('status', 25)->nullable();
             $table->string('timezone', 50)->nullable();
             $table->string('dir', 3)->default('ltr');
-            $table->string('site_label', 100)->nullable();
+            $table->text('settings')->nullable();
         });
     }
 

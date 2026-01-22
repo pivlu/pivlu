@@ -41,9 +41,11 @@ return new class extends Migration
             $table->boolean('multilingual_content')->default(false);
             $table->boolean('allow_block_type')->default(false);
             $table->unsignedBigInteger('package_id')->nullable();
+            $table->unsignedBigInteger('layout_id')->nullable();
             $table->timestamps();
 
             $table->foreign('package_id')->references('id')->on('pivlu_packages')->cascadeOnDelete();
+            $table->foreign('layout_id')->references('id')->on('pivlu_theme_layouts')->nullOnDelete();
         });
     }
 

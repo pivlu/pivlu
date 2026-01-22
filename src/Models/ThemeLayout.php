@@ -37,11 +37,4 @@ class ThemeLayout extends Model
 
     protected $table = 'pivlu_theme_layouts';
 
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 }

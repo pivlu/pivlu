@@ -18,7 +18,7 @@ return new class extends Migration
             $table->longText('value')->nullable();
             $table->timestamps();
             
-            $table->foreign('theme_id')->references('id')->on('pivlu_themes')->nullOnDelete();
+            $table->foreign('theme_id')->references('id')->on('pivlu_themes')->cascadeOnDelete();
         });
     }
 

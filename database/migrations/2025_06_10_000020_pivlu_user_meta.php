@@ -38,7 +38,7 @@ return new class extends Migration
             $table->string('name', 100);
             $table->mediumText('value')->nullable();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 

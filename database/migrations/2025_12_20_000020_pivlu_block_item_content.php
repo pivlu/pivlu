@@ -40,7 +40,7 @@ return new class extends Migration
 
             $table->foreign('block_item_id')->references('id')->on('pivlu_block_items')->cascadeOnDelete();
             $table->foreign('block_id')->references('id')->on('pivlu_blocks')->cascadeOnDelete();
-            $table->foreign('lang_id')->references('id')->on('pivlu_languages')->nullOnDelete();
+            $table->foreign('lang_id')->references('id')->on('pivlu_languages')->cascadeOnDelete();
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
         });
     }
