@@ -115,24 +115,56 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="col-sm-4 col-md-3 col-12">
+                                <div class="form-group mb-4">
+                                    <label>{{ __('Title align') }}</label>
+                                    <select class="form-select" name="title_align">
+                                        <option @if (($item->title_align ?? null) == 'left') selected @endif value="left">{{ __('Left') }}</option>
+                                        <option @if (($item->title_align ?? null) == 'right') selected @endif value="right">{{ __('Right') }}</option>
+                                        <option @if (($item->title_align ?? null) == 'center') selected @endif value="center">{{ __('Center') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 col-12">
+                                <div class="form-group mb-4">
+                                    <label>{{ __('Title line height') }}</label>
+                                    <select class="form-select" name="title_line_height">
+                                        <option @if (($item->title_line_height ?? null) == 1.3) selected @endif value="1.3">({{ __('Normal') }})</option>                                        
+                                        <option @if (($item->title_line_height ?? null) == 1.4) selected @endif value="1.4">x 1.4</option>
+                                        <option @if (($item->title_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
+                                        <option @if (($item->title_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
+                                        <option @if (($item->title_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
+                                        <option @if (($item->title_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
+                                        <option @if (($item->title_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
+                                        <option @if (($item->title_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
+                                    </select>
+                                    <div class="text-muted small">{{ __('The distance from the top of the first line of text to the top of the second.') }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 col-12">
+                                <div class="form-group mb-4">
+                                    <label>{{ __('Text line height') }}</label>
+                                    <select class="form-select" name="text_line_height">
+                                        <option @if (($item->text_line_height ?? null) == 1.4) selected @endif value="1.4">({{ __('Normal') }})</option>
+                                        <option @if (($item->text_line_height ?? null) == 1.5) selected @endif value="1.5">x 1.5</option>
+                                        <option @if (($item->text_line_height ?? null) == 1.6) selected @endif value="1.6">x 1.6</option>
+                                        <option @if (($item->text_line_height ?? null) == 1.8) selected @endif value="1.8">x 1.8</option>
+                                        <option @if (($item->text_line_height ?? null) == 2) selected @endif value="2">x 2 ({{ __('larger') }})</option>
+                                        <option @if (($item->text_line_height ?? null) == 1.2) selected @endif value="1.2">{{ __('Condensed') }}</option>
+                                        <option @if (($item->text_line_height ?? null) == 1) selected @endif value="1">{{ __('Extra condensed') }}</option>
+                                    </select>
+                                    <div class="text-muted small">{{ __('The distance from the top of the first line of text to the top of the second.') }}</div>
+                                </div>
+                            </div>
                         </div>
 
 
                         <div class="fw-bold fs-5 mb-2">{{ __('Sizes') }}</div>
 
                         <div class="row">
-                            <div class="col-sm-4 col-md-3 col-12">
-                                <div class="form-group mb-4">
-                                    <label>{{ __('Text font size') }}</label>
-                                    <select class="form-select" name="text_size">
-                                        @foreach ($font_sizes as $font_size)
-                                            <option @if (($item->text_size ?? null) == $font_size->value) selected @endif @if (!($item->text_size ?? null) && $font_size->value == '1rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
                                     <label>{{ __('Title font size') }}</label>
@@ -159,6 +191,18 @@
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
+                                    <label>{{ __('Text font size') }}</label>
+                                    <select class="form-select" name="text_size">
+                                        @foreach ($font_sizes as $font_size)
+                                            <option @if (($item->text_size ?? null) == $font_size->value) selected @endif @if (!($item->text_size ?? null) && $font_size->value == '1rem') selected @endif value="{{ $font_size->value }}">{{ $font_size->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 col-12">
+                                <div class="form-group mb-4">
                                     <label>{{ __('Caption font size') }}</label>
                                     <select class="form-select" name="caption_size">
                                         @foreach ($font_sizes as $font_size)
@@ -174,29 +218,10 @@
                         <div class="fw-bold fs-5 mb-2">{{ __('Font weights') }}</div>
 
                         <div class="row">
-                            <div class="col-sm-4 col-md-3 col-12">
-                                <div class="form-group mb-4">
-                                    <label>{{ __('Font weight (text)') }}</label>
-                                    <select class="form-select col-md-6 col-lg-4 col-xl-3" name="text_font_weight">
-                                        <option @if (($item->text_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
-                                        <option @if (($item->text_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
-                                    </select>
-                                </div>
-                            </div>
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <label>{{ __('Font weight (links)') }}</label>
-                                    <select class="form-select col-md-6 col-lg-4 col-xl-3" name="link_font_weight">
-                                        <option @if (($item->link_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
-                                        <option @if (($item->link_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4 col-md-3 col-12">
-                                <div class="form-group mb-4">
-                                    <label>{{ __('Font weight (title)') }}</label>
+                                    <label>{{ __('Title font weight') }}</label>
                                     <select class="form-select col-md-6 col-lg-4 col-xl-3" name="title_font_weight">
                                         <option @if (($item->title_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
                                         <option @if (($item->title_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
@@ -206,10 +231,30 @@
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <label>{{ __('Font weight (subtitle)') }}</label>
+                                    <label>{{ __('Subtitle font weight') }}</label>
                                     <select class="form-select col-md-6 col-lg-4 col-xl-3" name="subtitle_font_weight">
                                         <option @if (($item->subtitle_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
                                         <option @if (($item->subtitle_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 col-12">
+                                <div class="form-group mb-4">
+                                    <label>{{ __('Text font weight') }}</label>
+                                    <select class="form-select col-md-6 col-lg-4 col-xl-3" name="text_font_weight">
+                                        <option @if (($item->text_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                                        <option @if (($item->text_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-3 col-12">
+                                <div class="form-group mb-4">
+                                    <label>{{ __('Link font weight') }}</label>
+                                    <select class="form-select col-md-6 col-lg-4 col-xl-3" name="link_font_weight">
+                                        <option @if (($item->link_font_weight ?? null) == 'normal') selected @endif value="normal">{{ __('Normal') }}</option>
+                                        <option @if (($item->link_font_weight ?? null) == 'bold') selected @endif value="bold">{{ __('Bold') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -433,7 +478,8 @@
 
                             <div class="col-sm-4 col-md-3 col-12">
                                 <div class="form-group mb-4">
-                                    <input id="link_underline_color_hover" name="link_underline_color_hover" value="{{ $item->link_underline_color_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover') }}">
+                                    <input id="link_underline_color_hover" name="link_underline_color_hover"
+                                        value="{{ $item->link_underline_color_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover') }}">
                                     <label>{{ __('Underline color on hover') }}</label>
                                     <div class="mt-1 small"> {{ strtoupper($item->link_underline_color_hover ?? config('pivlu.pivlu.defaults.link_color_underline_hover')) }}</div>
                                     <script>

@@ -183,7 +183,6 @@ class ThemeFunctions
 
             $data = json_decode($style->data);
 
-
             // FONTS AND COLORS
             $bg_color = $data->bg_color ?? 'white';
             $use_custom_bg = $data->use_custom_bg ?? 0;
@@ -195,17 +194,22 @@ class ThemeFunctions
             $title_font_weight = $data->title_font_weight ?? 'normal';
             $subtitle_font_weight = $data->subtitle_font_weight ?? 'normal';
             $text_align = $data->text_align ?? 'left';
+            $title_align = $data->title_align ?? 'left';
             $caption_color = $data->caption_color ?? 'grey';
             $caption_size = $data->caption_size ?? '0.95em';
             $caption_style = $data->caption_style ?? 'normal';
+            $title_line_height = $data->title_line_height ?? '1.3';
+            $text_line_height = $data->text_line_height ?? '1.4';
 
             if ($use_custom_bg == 1)
                 $write = ".style_$style->id { background-color: $bg_color; } ";
 
-            $write = ".style_$style->id { color: $font_color; font-weight: $text_font_weight; font-size: $text_font_size; text-align: $text_align;  } ";
-            $write .= ".style_$style->id .title {font-size: $title_size; font-weight: $title_font_weight; line-height:1.3 } ";
-            $write .= ".style_$style->id .subtitle { font-size: $subtitle_size; font-weight: $subtitle_font_weight; line-height:1.3 } ";
-            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color; font-size: $caption_size; } ";
+            $write = ".style_$style->id { color: $font_color; font-weight: $text_font_weight; font-size: $text_font_size; text-align: $text_align; line-height: $text_line_height } ";
+            $write .= ".style_$style->id .title {font-size: $title_size; font-weight: $title_font_weight; line-height: $title_line_height; text-align: $title_align;} ";
+            $write .= ".style_$style->id .subtitle { font-size: $subtitle_size; font-weight: $subtitle_font_weight; line-height:$title_line_height } ";
+            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color; font-size: $caption_size; line-height: $text_line_height } ";
+            $write .= ".style_$style->id p { line-height: $text_line_height } ";
+
             fwrite($css_file, $write);
 
             if ($data->font_family ?? null) {

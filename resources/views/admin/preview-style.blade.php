@@ -29,8 +29,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/builder.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/blocks.css') }}" />
 
-    <!-- Custom CSS File -->
-    <link rel="stylesheet" href='{{ asset('assets/css/custom.css') }}' />
+    <!-- Styles CSS File -->
+    <link rel="stylesheet" href='{{ asset('custom/styles.css') }}' />
 
 </head>
 
@@ -53,12 +53,17 @@
             </div>
 
             <div class="style_{{ $style->id }} p-3">
-                <div class="title mb-2">This is a title</div>
-                <div class="subtitle mb-2">This is a subtitle</div>
+                <div class="title mb-3">This is a title. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+                <div class="subtitle mb-4">This is a subtitle. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vehicula dui nisl. <a href="#">Quisque ullamcorper orci enim</a>, sed porta diam bibendum in. Pellentesque in aliquet diam, a porta
                 magna.
                 Almost before <a href="#">we knew it</a>, we had left the ground. onec malesuada at elit facilisis lobortis.
                 Curabitur scelerisque ornare urna vel vulputate. Cras <a href="#">pellentesque eros ut tellus scelerisque</a>, at iaculis felis vehicula. Quisque pulvinar sem quis turpis scelerisque aliquam. </a>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                officia deserunt mollit anim id est laborum.
+
+
 
                 <div class="caption mt-2">This is a caption text</div>
             </div>
