@@ -26,7 +26,7 @@
     <div class="block">
 
         <div class="container-xxl">
-            
+
             @include('pivlu::web.includes.block-header')
 
             <div class="row {{ $class }} g-4">
@@ -38,8 +38,8 @@
 
                     @if ($block_settings->horizontal ?? null)
                         <div class="col">
-                            <div class="card card_{{ $block['id'] }} mb-4 @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->same_height ?? null) h-100 @endif @if (!($block_extra['border_color'] ?? null)) border-0 @endif"
-                                style="@if ($block_settings->card_bg_color ?? null) background-color: {{ $block_settings->card_bg_color }}; @endif @if ($block_settings->border_color ?? null) border-color: {{ $block_settings->border_color }}; @endif @if ($block_settings->no_border_radius ?? null) border-radius: 0; @endif">
+                            <div class="card @if($block['style_id'] ?? null) style_{{ $block['style_id'] }} @endif card_{{ $block['id'] }} mb-4 @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->same_height ?? null) h-100 @endif @if (!($block_extra['border_color'] ?? null)) border-0 @endif"
+                                style="@if ($block_settings->border_color ?? null) border-color: {{ $block_settings->border_color }}; @endif @if ($block_settings->no_border_radius ?? null) border-radius: 0; @endif">
 
                                 <div class="row g-0">
 
@@ -118,15 +118,17 @@
                         </div>
                     @else
                         <div class="col">
-                            <div class="card card_{{ $block->id }} mb-4 @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->same_height ?? null) h-100 @endif @if (!($block_settings->border_color ?? null)) border-0 @endif"
-                                style="@if ($block_settings->card_bg_color ?? null) background-color: {{ $block_settings->card_bg_color }}; @endif @if ($block_settings->border_color ?? null) border-color: {{ $block_settings->border_color }}; @endif @if ($block_settings->no_border_radius ?? null) border-radius: 0; @endif">
+                            <div class="card @if($block['style_id'] ?? null) style_{{ $block['style_id'] }} @endif card_{{ $block->id }} mb-4 @if ($block_settings->shadow ?? null) shadow @endif @if ($block_settings->same_height ?? null) h-100 @endif @if (!($block_settings->border_color ?? null)) border-0 @endif"
+                                style="@if ($block_settings->border_color ?? null) border-color: {{ $block_settings->border_color }}; @endif @if ($block_settings->no_border_radius ?? null) border-radius: 0; @endif">
 
                                 @if ($block_item_data->icon ?? null)
                                     <div class="icon px-2 py-1 text-center" style="font-size: {{ $block_settings->icon_size ?? '2em' }}">{!! $block_item_data->icon !!}</div>
                                 @elseif ($block_item_media_id ?? null)
-                                    <img class="card-img-top @if ($block_settings->img_full_width ?? null) w-100 @endif" alt="{{ $block_item_data->title ?? $block_item_media_id }}"
-                                        title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'thumb') }}"
-                                        @if ($block_settings->no_border_radius ?? null) style="border-radius: 0;" @endif>
+                                    @if (($block_settings->image_position ?? null) == 'top')
+                                        <img class="card-img-top @if ($block_settings->img_full_width ?? null) w-100 @endif" alt="{{ $block_item_data->title ?? $block_item_media_id }}"
+                                            title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'thumb') }}"
+                                            @if ($block_settings->no_border_radius ?? null) style="border-radius: 0;" @endif>
+                                    @endif
                                 @endif
 
                                 <div class="card-body">
@@ -149,6 +151,12 @@
                                         </div>
                                     @endif
                                 </div>
+
+                                @if (($block_item_media_id ?? null) && ($block_settings->image_position ?? null) == 'bottom')
+                                    <img class="card-img-bottom @if ($block_settings->img_full_width ?? null) w-100 @endif" alt="{{ $block_item_data->title ?? $block_item_media_id }}"
+                                        title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'thumb') }}"
+                                        @if ($block_settings->no_border_radius ?? null) style="border-radius: 0;" @endif>
+                                @endif
                             </div>
                         </div>
                     @endif

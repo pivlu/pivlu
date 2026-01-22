@@ -81,21 +81,21 @@ class BlockController extends Controller
         $block = Block::find($request->id);
         if (!$block) return redirect(route('admin'));
 
-        $block->update(['label' =>  $request->label ?? null, 'hidden' => $request->has('hidden') ? 1 : 0]);
+        if ($request->has('use_custom_style')) $style_id = $request->style_id ?? null;
+            
+        $block->update(['label' =>  $request->label ?? null, 'hidden' => $request->has('hidden') ? 1 : 0, 'style_id' => $style_id ?? null]);
 
         BlockFunctions::update_block($id, $block->type_id, $request);
 
         if ($block->post_id) BlockFunctions::regenerate_post_blocks($block->post_id);
-
+        if ($block->is_homepage_block == 1 && $block->theme_id) BlockFunctions::regenerate_homepage_blocks($block->theme_id);
 
         if (($request->submit_return_to_block ?? null) == 'block') return redirect(route('admin.blocks.show', ['id' => $id, 'referer' => $referer ?? null]))->with('success', 'updated');
         elseif ($block->footer_id) {
             return redirect(route('admin.theme-footers.content', ['id' => $block->footer_id, 'destination' => $block->footer_destination]))->with('success', 'updated');
-        } 
-        elseif($block->theme_id && $block->is_homepage_block == 1) {            
+        } elseif ($block->theme_id && $block->is_homepage_block == 1) {
             return redirect(route('admin.themes.show', ['id' => $block->theme_id, 'theme_tab' => 'home']))->with('success', 'updated');
-        }
-        elseif ($referer) return redirect($referer)->with('success', 'updated');
+        } elseif ($referer) return redirect($referer)->with('success', 'updated');
         else return redirect(route('admin.blocks'))->with('success', 'updated');
     }
 

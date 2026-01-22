@@ -37,6 +37,7 @@ return new class extends Migration
             $table->unsignedBigInteger('media_id')->nullable();
             $table->unsignedBigInteger('theme_id')->nullable();
             $table->unsignedBigInteger('footer_id')->nullable();
+            $table->unsignedBigInteger('style_id')->nullable();
             $table->unsignedBigInteger('layout_id')->nullable();    
             $table->boolean('is_homepage_block')->default(false)->index();
             $table->string('label', 100)->nullable();
@@ -57,6 +58,7 @@ return new class extends Migration
             $table->foreign('theme_id')->references('id')->on('pivlu_themes')->nullOnDelete();
             $table->foreign('footer_id')->references('id')->on('pivlu_theme_footers')->cascadeOnDelete();
             $table->foreign('layout_id')->references('id')->on('pivlu_theme_layouts')->cascadeOnDelete();
+            $table->foreign('style_id')->references('id')->on('pivlu_theme_styles')->nullOnDelete();
         });
     }
 

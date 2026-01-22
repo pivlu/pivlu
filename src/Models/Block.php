@@ -39,6 +39,7 @@ class Block extends Model implements HasMedia
         'settings',
         'post_id',
         'media_id',
+        'style_id',
         'is_homepage_block',
         'theme_id',
         'footer_id',
@@ -57,6 +58,27 @@ class Block extends Model implements HasMedia
     public function block_type()
     {
         return $this->belongsTo(BlockType::class, 'type_id');
+    }
+
+
+    public function post()
+    {
+        return $this->belongsTo(Post::class, 'post_id');
+    }
+
+    public function theme()
+    {
+        return $this->belongsTo(Theme::class, 'theme_id');
+    }
+
+    public function footer()
+    {
+        return $this->belongsTo(ThemeFooter::class, 'footer_id');
+    }
+
+    public function style()
+    {
+        return $this->belongsTo(ThemeStyle::class, 'style_id');
     }
 
     /**      

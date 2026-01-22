@@ -98,7 +98,7 @@ class BlockFunctions
         foreach ($blocks as $block) {
             array_push($blocks_array, $block->id);
         }
-
+        
         ThemeConfig::update_config($theme_id, 'homepage_blocks', json_encode($blocks_array));
 
         return;
@@ -259,22 +259,24 @@ class BlockFunctions
         }
         if ($request->cols) $block_settings['cols'] = $request->cols;
         $block_settings['icon_size'] = $request->icon_size ?? '2em';
+
+        // Extra content CARD
         if ($block_type->type == 'card') {
-            $block_settings = array('border_color' => null, 'no_border_radius' => null, 'card_bg_color' => null, 'bg_color_hover' => null, 'same_height' => null, 'horizontal' => null, 'img_full_width' => null, 'shadow' => null, 'cols' => null);
+            $block_settings = array('border_color' => null, 'no_border_radius' => null, 'bg_color_hover' => null, 'same_height' => null, 'horizontal' => null, 'img_full_width' => null, 'shadow' => null, 'cols' => null);
             if ($request->shadow) $block_settings['shadow'] = $request->shadow;
             if ($request->no_border_radius) $block_settings['no_border_radius'] = $request->no_border_radius;
             if ($request->same_height) $block_settings['same_height'] = $request->same_height;
             if ($request->horizontal) $block_settings['horizontal'] = $request->horizontal;
             if ($request->img_full_width) $block_settings['img_full_width'] = $request->img_full_width;
             if ($request->use_border) $block_settings['border_color'] = $request->border_color;
-            if ($request->use_bg_color_hover) $block_settings['bg_color_hover'] = $request->bg_color_hover;
-            if ($request->card_bg_color) $block_settings['card_bg_color'] = $request->card_bg_color;
+            if ($request->use_bg_color_hover) $block_settings['bg_color_hover'] = $request->bg_color_hover;            
             if ($request->cols) $block_settings['cols'] = $request->cols ?? 4;
             if ($request->icon_size) $block_settings['icon_size'] = $request->icon_size ?? '2em';
             if ($request->link_location) $block_settings['link_location'] = $request->link_location;
             if ($request->link_btn_id) $block_settings['link_btn_id'] = $request->link_btn_id;
             if ($request->link_btn_size) $block_settings['link_btn_size'] = $request->link_btn_size;
             if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;
+            if ($request->image_position) $block_settings['image_position'] = $request->image_position;
         }
 
         // Extra content MAPS       

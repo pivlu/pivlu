@@ -50,21 +50,6 @@
 </div>
 
 <div class="form-group">
-    <input class="form-control form-control-color" name="card_bg_color" id="card_bg_color" value="{{ $block_settings->card_bg_color ?? 'white' }}">
-    <label>{{ __('Card background color') }}</label>
-    <script>
-        $('#card_bg_color').spectrum({
-            type: "color",
-            showInput: true,
-            showInitial: true,
-            showAlpha: false,
-            showButtons: false,
-            allowEmpty: false,
-        });
-    </script>
-</div>
-
-<div class="form-group">
     <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" id="use_border" name="use_border" @if ($block_settings->border_color ?? null) checked @endif>
         <label class="form-check-label" for="use_border">{{ __('Show cards border') }}</label>
@@ -133,16 +118,26 @@
     </div>
 </div>
 
-<div class="form-group col-md-6 mb-3">
-    <label>{{ __('Select icon size (if you use icons)') }}</label>
-    <select class="form-select" id="icon_size" name="icon_size">
-        @foreach ($font_sizes as $selected_font_size_title)
-            <option @if (($block_settings->icon_size ?? null) == $selected_font_size_title->value) selected @endif @if (!($block_settings->icon_size ?? null) && $selected_font_size_title->value == '2rem') selected @endif value="{{ $selected_font_size_title->value }}">
-                {{ $selected_font_size_title->name }}</option>
-        @endforeach
-        <option @if (($block_settings->icon_size ?? null) == '15rem') selected @endif value="15rem">1500%</option>
-        <option @if (($block_settings->icon_size ?? null) == '20rem') selected @endif value="20rem">2000%</option>
-    </select>
+<div class="row">
+    <div class="form-group col-md-6 col-lg-4 mb-3">
+        <label>{{ __('Select icon size (if you use icons)') }}</label>
+        <select class="form-select" id="icon_size" name="icon_size">
+            @foreach ($font_sizes as $selected_font_size_title)
+                <option @if (($block_settings->icon_size ?? null) == $selected_font_size_title->value) selected @endif @if (!($block_settings->icon_size ?? null) && $selected_font_size_title->value == '2rem') selected @endif value="{{ $selected_font_size_title->value }}">
+                    {{ $selected_font_size_title->name }}</option>
+            @endforeach
+            <option @if (($block_settings->icon_size ?? null) == '15rem') selected @endif value="15rem">1500%</option>
+            <option @if (($block_settings->icon_size ?? null) == '20rem') selected @endif value="20rem">2000%</option>
+        </select>
+    </div>
+
+    <div class="form-group col-md-6 col-lg-4 mb-3">
+        <label>{{ __('Image position (if card has image)') }}</label>
+        <select class="form-select" id="image_position" name="image_position">            
+            <option @if (($block_settings->image_position ?? null) == 'top') selected @endif value="top">{{ __('Top') }}</option>
+            <option @if (($block_settings->image_position ?? null) == 'bottom') selected @endif value="bottom">{{ __('Bottom') }}</option>            
+        </select>
+    </div>
 </div>
 
 <div class="row">
@@ -173,9 +168,9 @@
 </div>
 
 @foreach ($block->all_languages_contents as $lang_content)
-    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Content')) !!}</div>   
-    
+    <div class="fw-bold mb-2">{!! lang_label($lang_content, __('Content')) !!}</div>
+
     @include('pivlu::admin.blocks.includes.block-header')
 
-    <div class="mb-4"></div>    
+    <div class="mb-4"></div>
 @endforeach
