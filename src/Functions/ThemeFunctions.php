@@ -221,7 +221,7 @@ class ThemeFunctions
             $write = ".style_$style->id { color: $font_color; font-weight: $text_font_weight; font-size: $text_font_size; text-align: $text_align; } ";
             $write .= ".style_$style->id .title {font-size: $title_size; font-weight: $title_font_weight; text-align: $title_align;} ";
             $write .= ".style_$style->id .subtitle { font-size: $subtitle_size; font-weight: $subtitle_font_weight; } ";
-            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color; font-size: $caption_size; } ";            
+            $write .= ".style_$style->id .caption { font-style: $caption_style; color: $caption_color; font-size: $caption_size; } ";
 
             fwrite($css_file, $write);
 
@@ -285,31 +285,57 @@ class ThemeFunctions
                 $bg_color_hover = $button_data->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover');
                 $font_color_hover = $button_data->font_color_hover ?? config('pivlu.defaults.button_font_color_hover');
                 $border_color_hover = $button_data->border_color_hover ?? config('pivlu.defaults.button_border_color_hover');
+                $transparent = $button_data->transparent ?? null;
+                $transparent_hover = $button_data->transparent_hover ?? null;
+                $shadow = $button_data->shadow ?? 'none';
+                
+                if ($transparent == 1) {
+                    $bg_color = 'transparent';
+                }
+                if ($transparent_hover == 1) {
+                    $bg_color_hover = 'transparent';
+                }
 
-                $write = ".btn_$button->id, a .btn_$button->id  {
-                    background-color: $bg_color; 
-                    color: $font_color;
+                $write = "\n.btn_$button->id, a .btn_$button->id  {
+                    background-color: $bg_color !important; 
+                    color: $font_color !important;
                     border-color: $border_color;
-                    font-weight: $font_weight;
-                    text-decoration: none;
+                    font-weight: $font_weight !important;
+                    text-decoration: none !important;
                     border-radius: $rounded;
                 } ";
 
-                $write .= ".btn_$button->id:hover, .btn_$button->id:focus {
-                background-color: $bg_color_hover ;
-                color: $font_color_hover;
+                $write .= "\n.btn_$button->id:hover, .btn_$button->id:focus {
+                background-color: $bg_color_hover !important;
+                color: $font_color_hover !important;
                 border-color: $border_color_hover;
-                font-weight: $font_weight;
-                text-decoration: none; } ";
+                font-weight: $font_weight !important;
+                text-decoration: none !important; } ";
 
-                $write .= ".btn_$button->id a, a .btn_$button->id {
-                color: $font_color ;       
-                font-weight: $font_weight;         
-                text-decoration: none; }";
+                $write .= "\n.btn_$button->id a, a .btn_$button->id {
+                color: $font_color !important;       
+                font-weight: $font_weight !important;         
+                text-decoration: none !important; }";
 
-                $write .= ".btn_$button->id a:hover, a:hover .btn_$button->id {
-                color: $font_color_hover ;
-                text-decoration: none; }";
+                $write .= "\n.btn_$button->id a:hover, a:hover .btn_$button->id {
+                color: $font_color_hover !important;
+                text-decoration: none !important; }";
+
+                if ($shadow == 'shadow-sm') {
+                    $write .= "\n.btn_$button->id {
+                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+                    }";
+                }
+                if ($shadow == 'shadow') {
+                    $write .= "\n.btn_$button->id {
+                    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+                    }";
+                }
+                if ($shadow == 'shadow-lg') {
+                    $write .= "\n.btn_$button->id {
+                    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+                    }";
+                }
 
                 fwrite($css_file, $write);
             }

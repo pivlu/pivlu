@@ -40,6 +40,7 @@
             <style>
                 .btn_style_{{ $button->id }} {
                     background-color: {{ $data->bg_color ?? config('pivlu.defaults.button_bg_color') }};
+                    border-color: {{ $data->border_color ?? config('pivlu.defaults.button_bg_color') }};
                     color: {{ $data->font_color ?? config('pivlu.defaults.button_font_color') }};
                     font-weight: {{ $data->font_weight ?? 'normal' }};
                     border-radius: {{ $data->rounded ?? 0 }};
@@ -47,12 +48,14 @@
 
                 .btn_style_{{ $button->id }}:hover {
                     background-color: {{ $data->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover') }};
+                    border-color: {{ $data->border_color_hover ?? config('pivlu.defaults.button_bg_color_hover') }};
                     color: {{ $data->font_color_hover ?? config('pivlu.defaults.button_font_color') }};
                     font-weight: {{ $data->font_weight ?? 'normal' }};
                 }
             </style>
 
             <button class="btn btn_style_{{ $button->id }} @if ($data->shadow ?? null) {{ $data->shadow }} @endif">Preview button</button>
+            
             <div class="form-text text-muted small mt-3"><i class="bi bi-info-circle"></i> {{ __('Update style to preview using new changes') }}</div>
 
             <hr>
@@ -208,6 +211,27 @@
                     </div>
                 </div>
             </div>
+
+              <div class="col-sm-4 col-md-3 col-12">
+                <div class="form-group mb-3">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="transparent" name="transparent" @if ($data->transparent ?? null) checked @endif>
+                        <label class="form-check-label" for="transparent">{{ __('Transparent button') }}</label>
+                    </div>
+                    <div class="form-text text-muted small mt-1"> {{ __('Button with transparent background and colored border') }}</div>
+                </div>
+            </div>
+
+            <div class="col-sm-4 col-md-3 col-12">
+                <div class="form-group mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="transparent_hover" name="transparent_hover" @if ($data->transparent_hover ?? null) checked @endif>
+                        <label class="form-check-label" for="transparent_hover">{{ __('Transparent button on mouse hover') }}</label>
+                    </div>
+                    <div class="form-text text-muted small mt-1"> {{ __('Button with transparent background and colored border on mouse hover') }}</div>
+                </div>
+            </div>
+
 
 
             <div class="col-sm-4 col-md-3 col-12">

@@ -114,14 +114,18 @@ class ThemeButtonController extends Controller
         else
             $label = $request->label;
 
+        $bg_color = $request->has('transparent') ? 'transparent' : $request->bg_color;
+        
         $data = [
-            'bg_color' => $request->bg_color,
+            'bg_color' => $bg_color,
             'border_color' => $request->border_color,
             'font_color' => $request->font_color,
             'bg_color_hover' => $request->bg_color_hover,
             'border_color_hover' => $request->border_color_hover,
             'font_color_hover' => $request->font_color_hover,
             'shadow' => $request->has('shadow') ? $request->shadow_style : null,
+            'transparent' => $request->has('transparent') ? true : null,
+            'transparent_hover' => $request->has('transparent_hover') ? true : null,
             'rounded' => $request->rounded,
             'font_weight' => $request->font_weight
         ];
