@@ -19,7 +19,8 @@ debug_backtrace() || die('Direct access not permitted');
                         <div class="form-group">
                             <label for="formFile_{{ $item_lang->id }}" class="form-label">{!! lang_label($item_lang, __('Card image')) !!}</label>
                             <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}">
-
+                            <div class="form-text">{{ __('optional') }}</div>
+                            
                             @if (count(admin_languages()) > 1)
                                 @if ($loop->first)
                                     <div class="form-check form-switch mt-2">
@@ -61,17 +62,27 @@ debug_backtrace() || die('Direct access not permitted');
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <div class="form-group">
-                                    <label class="mb-2">{!! lang_label($item_lang, __('URL (optional)')) !!}</label>
+                                    <label class="mb-2">{!! lang_label($item_lang, __('URL')) !!}</label>
                                     <input type="text" class="form-control" name="url_{{ $item_lang->id }}">
+                                    <div class="form-text">{{ __('optional') }}</div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="mb-2">{!! lang_label($item_lang, __('Icon (optional)')) !!}</label>
+                                    <label class="mb-2">{!! lang_label($item_lang, __('Icon code')) !!}</label>
                                     <input class="form-control" type="text" name="icon_{{ $item_lang->id }}">
+                                    <div class="form-text">{{ __('optional') }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mb-2">{!! lang_label($item_lang, __('Button label - if buttons are enabled')) !!}</label>
+                                    <input class="form-control" type="text" name="button_label_{{ $item_lang->id }}">
+                                    <div class="form-text">{{ __('optional') }}</div>
                                 </div>
                             </div>
                         </div>

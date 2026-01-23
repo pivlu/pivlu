@@ -60,15 +60,15 @@
                                                 <p>{{ $block_item_data->content ?? null }}</p>
                                                 @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
                                                     <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
-                                                        <a class="mt-3 btn btn_{{ $block_settings->link_btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
-                                                            href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->title ?? null }}</a>
+                                                        <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
+                                                            href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                                     </div>
                                                 @endif
                                             </div>
                                         </div>
                                     @elseif ($block_item_media_id ?? null)
                                         <div class="col-md-4">
-                                            <img src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'thumb') }}"
+                                            <img src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'small') }}"
                                                 class="img-fluid @if ($block_settings->img_full_width ?? null) w-100 @endif @if (!$block_settings->no_border_radius ?? null) rounded-start @endif"
                                                 alt="{{ $block_item_data->title ?? ($block_item_media_id ?? null) }}">
                                         </div>
@@ -87,8 +87,8 @@
                                                 <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
                                                 @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
                                                     <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
-                                                        <a class="mt-3 btn btn_{{ $block_settings->link_btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
-                                                            href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->title ?? null }}</a>
+                                                        <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
+                                                            href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                                     </div>
                                                 @endif
                                             </div>
@@ -107,8 +107,8 @@
                                             <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
                                             @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
                                                 <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
-                                                    <a class="mt-3 btn btn_{{ $block_settings->link_btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
-                                                        href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->title ?? null }}</a>
+                                                    <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
+                                                        href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                                 </div>
                                             @endif
                                         </div>
@@ -126,7 +126,7 @@
                                 @elseif ($block_item_media_id ?? null)
                                     @if (($block_settings->image_position ?? null) == 'top')
                                         <img class="card-img-top @if ($block_settings->img_full_width ?? null) w-100 @endif" alt="{{ $block_item_data->title ?? $block_item_media_id }}"
-                                            title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'thumb') }}"
+                                            title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'small') }}"
                                             @if ($block_settings->no_border_radius ?? null) style="border-radius: 0;" @endif>
                                     @endif
                                 @endif
@@ -146,15 +146,15 @@
 
                                     @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
                                         <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
-                                            <a class="mt-3 btn btn_{{ $block_settings->link_btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}" href="https://{{ $block_item_data->url ?? null }}"
-                                                title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->title ?? null }}</a>
+                                            <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}" href="https://{{ $block_item_data->url ?? null }}"
+                                                title="{{ $block_item_data->title ?? null }}">{{  $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                         </div>
                                     @endif
                                 </div>
 
                                 @if (($block_item_media_id ?? null) && ($block_settings->image_position ?? null) == 'bottom')
                                     <img class="card-img-bottom @if ($block_settings->img_full_width ?? null) w-100 @endif" alt="{{ $block_item_data->title ?? $block_item_media_id }}"
-                                        title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'thumb') }}"
+                                        title="{{ $block_item_data->title ?? $block_item_media_id }}" src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'small') }}"
                                         @if ($block_settings->no_border_radius ?? null) style="border-radius: 0;" @endif>
                                 @endif
                             </div>

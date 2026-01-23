@@ -82,7 +82,7 @@ class BlockController extends Controller
         if (!$block) return redirect(route('admin'));
 
         if ($request->has('use_custom_style')) $style_id = $request->style_id ?? null;
-            
+
         $block->update(['label' =>  $request->label ?? null, 'hidden' => $request->has('hidden') ? 1 : 0, 'style_id' => $style_id ?? null]);
 
         BlockFunctions::update_block($id, $block->type_id, $request);
@@ -123,6 +123,7 @@ class BlockController extends Controller
             $key_caption = 'caption_' . $lang->id ?? null;
             $key_url = 'url_' . $lang->id ?? null;
             $key_icon = 'icon_' . $lang->id ?? null;
+            $key_button_label = 'button_label_' . $lang->id ?? null;
 
             $block_item_content = BlockItemContent::create(['block_id' => $request->block_id, 'block_item_id' => $block_item->id, 'lang_id' => $lang->id]);
 
@@ -154,7 +155,8 @@ class BlockController extends Controller
                     'title' => $request->$key_title ?? null,
                     'content' => $request->$key_content ?? null,
                     'url' => $request->$key_url ?? null,
-                    'icon' => $request->$key_icon ?? null
+                    'icon' => $request->$key_icon ?? null,
+                    'button_label' => $request->$key_button_label ?? null
                 );
             }
             if ($request->type == 'slider') {
@@ -210,6 +212,7 @@ class BlockController extends Controller
             $key_caption = 'caption_' . $lang->id ?? null;
             $key_url = 'url_' . $lang->id ?? null;
             $key_icon = 'icon_' . $lang->id ?? null;
+            $key_button_label = 'button_label_' . $lang->id ?? null;
 
             if ($request->type == 'gallery') {
                 $data = array(
@@ -223,7 +226,8 @@ class BlockController extends Controller
                     'title' => $request->$key_title ?? null,
                     'content' => $request->$key_content ?? null,
                     'url' => $request->$key_url ?? null,
-                    'icon' => $request->$key_icon ?? null
+                    'icon' => $request->$key_icon ?? null,
+                    'button_label' => $request->$key_button_label ?? null
                 );
             }
             if ($request->type == 'slider') {

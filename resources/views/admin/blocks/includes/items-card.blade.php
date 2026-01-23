@@ -27,9 +27,9 @@
                     $block_item_content_data = json_decode($block_item_default_lang_content->data ?? null);
                 @endphp
 
-                <div class="builder-block movable d-block" style="height: 120px" id="item-{{ $block_item['id'] ?? '-' }}">
+                <div class="builder-block movable d-block" style="height: 135px" id="item-{{ $block_item['id'] ?? '-' }}">
 
-                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block_item['id'] ?? '-' }}" class="btn btn-danger btn-sm float-end ms-2"><i class="bi bi-trash"></i></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target=".confirm-{{ $block_item['id'] ?? '-' }}" class="btn btn-danger btn-sm float-end ms-2 mb-2"><i class="bi bi-trash"></i></a>
                     <div class="modal fade confirm-{{ $block_item['id'] ?? '-' }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmDeleteLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -52,7 +52,7 @@
                         </div>
                     </div>
 
-                    <a href="#" data-bs-toggle="modal" data-bs-target=".update-{{ $block_item['id'] ?? '-' }}" class="btn btn-primary btn-sm float-end ms-2"><i class="bi bi-pencil-square"></i></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target=".update-{{ $block_item['id'] ?? '-' }}" class="btn btn-primary btn-sm float-end ms-2 mb-2"><i class="bi bi-pencil-square"></i></a>
                     <div class="modal fade update-{{ $block_item['id'] ?? '-' }}" tabindex="-1" role="dialog" aria-labelledby="ConfirmUpdateLabel-{{ $block_item['id'] ?? '-' }}" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
@@ -88,26 +88,36 @@
 
                                             <div class="form-group">
                                                 <label>{!! lang_label($item_lang, __('Title')) !!}</label>
-                                                <input type="text" class="form-control" name="title_{{ $item_lang->id }}" value="{{ $block_item_data->title ?? null }}" />
+                                                <input type="text" class="form-control line-clamp-1" name="title_{{ $item_lang->id }}" value="{{ $block_item_data->title ?? null }}" />
                                             </div>
 
                                             <div class="form-group">
                                                 <label>{!! lang_label($item_lang, __('Content')) !!}</label>
-                                                <textarea rows="4" class="form-control" name="content_{{ $item_lang->id }}">{{ $block_item_data->content ?? null }}</textarea>
+                                                <textarea rows="4" class="form-control line-clamp-1" name="content_{{ $item_lang->id }}">{{ $block_item_data->content ?? null }}</textarea>
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-12">
                                                     <div class="form-group">
-                                                        <label class="mb-2">{!! lang_label($item_lang, __('URL (optional)')) !!}</label>
+                                                        <label class="mb-2">{!! lang_label($item_lang, __('URL')) !!}</label>
                                                         <input type="text" class="form-control" name="url_{{ $item_lang->id }}" value="{{ $block_item_data->url ?? null }}">
+                                                        <div class="form-text">{{ __('optional') }}</div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label class="mb-2">{!! lang_label($item_lang, __('Icon (optional)')) !!}</label>
+                                                        <label class="mb-2">{!! lang_label($item_lang, __('Icon')) !!}</label>
                                                         <input class="form-control" type="text" name="icon_{{ $item_lang->id }}" value="{{ $block_item_data->icon ?? null }}">
+                                                        <div class="form-text">{{ __('optional') }}</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="mb-2">{!! lang_label($item_lang, __('Button label - if buttons are enabled')) !!}</label>
+                                                        <input class="form-control" type="text" name="button_label_{{ $item_lang->id }}" value="{{ $block_item_data->button_label ?? null }}">
+                                                        <div class="form-text">{{ __('optional') }}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -132,20 +142,18 @@
                         </a>
                     @endif
 
-                    <div>
-                        <b>{{ __('Title') }}:</b> {{ $block_item_content_data->title ?? null }}
+                    <div class="text-clamp-2">
+                        <b>{{ $block_item_content_data->title ?? null }}</b>
                     </div>
 
-                    <div class="text-clamp-3">
-                        <b>{{ __('Content') }}:</b> {{ $block_item_content_data->content ?? '-' }}
+                    <div class="text-clamp-2 text-muted">
+                        {{ $block_item_content_data->content ?? '-' }}
                     </div>
 
-                    <div>
-                        <b>{{ __('URL') }}:</b> {{ $block_item_content_data->url ?? '-' }}
-                    </div>
-
-                    <div>
-                        <b>{{ __('Icon') }}:</b> {{ $block_item_content_data->icon ?? '-' }}
+                    <div class="text-clamp-1 small text-muted">
+                        @if ($block_item_content_data->url ?? null)
+                            <a target="_blank" href="{{ $block_item_content_data->url }}">{{ $block_item_content_data->url }}</a>
+                        @endif
                     </div>
 
                     <div class="clearfix"></div>

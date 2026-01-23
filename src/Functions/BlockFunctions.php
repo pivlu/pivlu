@@ -277,6 +277,7 @@ class BlockFunctions
             if ($request->link_btn_size) $block_settings['link_btn_size'] = $request->link_btn_size;
             if ($request->link_btn_width) $block_settings['link_btn_width'] = $request->link_btn_width;
             if ($request->image_position) $block_settings['image_position'] = $request->image_position;
+            if ($request->btn_id) $block_settings['btn_id'] = $request->btn_id;
         }
 
         // Extra content MAPS       

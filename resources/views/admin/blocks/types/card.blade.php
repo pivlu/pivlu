@@ -120,7 +120,7 @@
 
 <div class="row">
     <div class="form-group col-md-6 col-lg-4 mb-3">
-        <label>{{ __('Select icon size (if you use icons)') }}</label>
+        <label>{{ __('Select icon size (if icon is used)') }}</label>
         <select class="form-select" id="icon_size" name="icon_size">
             @foreach ($font_sizes as $selected_font_size_title)
                 <option @if (($block_settings->icon_size ?? null) == $selected_font_size_title->value) selected @endif @if (!($block_settings->icon_size ?? null) && $selected_font_size_title->value == '2rem') selected @endif value="{{ $selected_font_size_title->value }}">
@@ -132,25 +132,26 @@
     </div>
 
     <div class="form-group col-md-6 col-lg-4 mb-3">
-        <label>{{ __('Image position (if card has image)') }}</label>
-        <select class="form-select" id="image_position" name="image_position">            
+        <label>{{ __('Image position (if image is used)') }}</label>
+        <select class="form-select" id="image_position" name="image_position">
             <option @if (($block_settings->image_position ?? null) == 'top') selected @endif value="top">{{ __('Top') }}</option>
-            <option @if (($block_settings->image_position ?? null) == 'bottom') selected @endif value="bottom">{{ __('Bottom') }}</option>            
+            <option @if (($block_settings->image_position ?? null) == 'bottom') selected @endif value="bottom">{{ __('Bottom') }}</option>
         </select>
     </div>
-</div>
 
-<div class="row">
     <div class="form-group col-md-4 mb-3">
-        <label>{{ __('Link location (if card link is set)') }}</label>
+        <label>{{ __('Link location (if link is used)') }}</label>
         <select class="form-select" name="link_location">
             <option @if (($block_settings->link_location ?? null) == 'title') selected @endif value="title">{{ __('Add link on title') }}</option>
             <option @if (($block_settings->link_location ?? null) == 'button') selected @endif value="button">{{ __('Add button link') }}</option>
         </select>
     </div>
+</div>
+
+<div class="row">
 
     <div class="form-group col-md-4 mb-3">
-        <label>{{ __('Button size (if button link is set)') }}</label>
+        <label>{{ __('Button size (if button is used)') }}</label>
         <select class="form-select" name="link_btn_size">
             <option @if (($block_settings->link_btn_size ?? null) == '') selected @endif value="">{{ __('Normal') }}</option>
             <option @if (($block_settings->link_btn_size ?? null) == 'btn-lg') selected @endif value="btn-lg">{{ __('Large') }}</option>
@@ -165,6 +166,17 @@
             <option @if (($block_settings->link_btn_width ?? null) == 'block') selected @endif value="block">{{ __('Full width') }}</option>
         </select>
     </div>
+
+
+    <div class="form-group col-md-4 mb-3">
+        <label>{{ __('Button style') }} [<a target="_blank" href="{{ route('admin.theme-buttons.index') }}">{{ __('Manage buttons') }}</a>]</label>
+        <select class="form-select" name="btn_id">
+            @foreach ($buttons as $button)
+                <option @if (($block_settings->btn_id ?? null) == $button->id) selected @endif value="{{ $button->id }}">{{ $button->label }}</option>
+            @endforeach
+        </select>
+    </div>
+
 </div>
 
 @foreach ($block->all_languages_contents as $lang_content)
