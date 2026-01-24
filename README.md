@@ -25,13 +25,22 @@ If you have composer installed, run this in your terminal to create a fresh proj
 
 ```composer create-project pivlu/skeleton mypivlu```
 
+Go to your project folder and edit .env file:
+- APP_NAME="input your application name"
+- APP_URL="https://your-domain"
+- Create a database and input your database details (database, user and password) in DB_DATABASE, DB_USERNAME and DB_PASSWORD
+
 After creating the project, go to your project folder and install Pivlu CMS from command line..
 
 ```cd mypivlu```
 
+```composer update```
+
 ```php artisan pivlu:install```
 
 This command will create database tables, setup website, copy the assets files and create an admin user.
+
+Important: the "public" folder is located in youir project folder. You must point your public path to this folder or copy this folder content (files and subfolders) in your public folder (for example, in the "public_html").
 
 > [!NOTE]
 > **This repository contains the code for the core Pivlu CMS.**
