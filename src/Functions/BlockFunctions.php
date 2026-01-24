@@ -130,15 +130,13 @@ class BlockFunctions
         // EDITOR
         if ($block_type->type == 'editor') {
             $block_settings = array(
-                'bg_color' => ($request->use_custom_bg ? $request->bg_color : null),
-                'style_id' => ($request->use_custom_style ? $request->style_id : null),
+                'bg_color' => ($request->use_custom_bg ? $request->bg_color : null),                
             );
         }
 
         // Extra content HERO            
         if ($block_type->type == 'hero') {
             $block_settings = array(
-                'style_id' => ($request->use_custom_style ? $request->style_id : null),
                 'image_position' => $request->image_position,
                 'cover_fixed' => null,
                 'cover_dark' => null,
@@ -248,7 +246,6 @@ class BlockFunctions
         if ($block_type->type == 'gallery') {
             $block_settings = [
                 'bg_color' => ($request->use_custom_bg ? $request->bg_color : null),
-                'style_id' => ($request->use_custom_style ? $request->style_id : null),
                 'shadow' => $request->shadow ?? null,
                 'rounded' => $request->rounded ?? null,
                 'cols' => $request->cols ?? 4,
@@ -319,8 +316,7 @@ class BlockFunctions
         // POST TABLE OF CONTENTS
         if ($block_type->type == 'post_toc') {
             $block_settings = array(
-                'bg_color' => ($request->use_custom_bg ? $request->bg_color : null),
-                'style_id' => ($request->use_custom_style ? $request->style_id : null),
+                'bg_color' => ($request->use_custom_bg ? $request->bg_color : null),                
                 'block_align' => $request->block_align ?? null
             );
         }
@@ -334,6 +330,9 @@ class BlockFunctions
                 'field_size' => $request->field_size ?? null
             );
         }
+
+
+        $block_settings['style_id'] = $request->use_custom_style ? $request->style_id : null;
 
         $block->update(['settings' => json_encode($block_settings ?? null, JSON_UNESCAPED_UNICODE)]);
 
