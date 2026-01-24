@@ -124,7 +124,7 @@
                                 <div class="text-muted small">{{ __('Style for background, links, color...') }}</div>
 
                                 @if (!($row->configs['style_id'] ?? null))
-                                    <div class="mt-1 text-muted"><span class="text-danger">{{ __('no style selected') }}</span></div>
+                                    <div class="mt-1 text-muted"><span class="text-danger fw-bold">{{ __('no style selected') }}</span></div>
                                 @endif
                             </div>
 
@@ -159,6 +159,7 @@
                                 <div class="text-muted small">{{ __('The shadow of the navigation row. Only one navigation row can have a shadow.') }}</div>
                             </div>
                         </div>
+                        
                     </form>
                 </div>
             @endforeach

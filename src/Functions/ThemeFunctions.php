@@ -44,7 +44,7 @@ class ThemeFunctions
         if ($_GET['preview_theme'] ?? null) {
             $theme_code = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET['preview_theme']);
 
-            if(!Cookie::get('preview_theme')) Cookie::queue('preview_theme', $theme_code, 60); // 1 hour
+            if (!Cookie::get('preview_theme')) Cookie::queue('preview_theme', $theme_code, 60); // 1 hour
 
             $theme = Theme::where('code', $theme_code)->first();
         } else {
@@ -54,7 +54,7 @@ class ThemeFunctions
             }
             if (!isset($theme) || ! $theme) {
                 $theme = Theme::where('is_active', 1)->first();
-            }               
+            }
         }
 
 
@@ -290,6 +290,40 @@ class ThemeFunctions
             if (($data->link_hover_decoration ?? null) == 'dashed') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: dashed; } ";
             if (($data->link_hover_decoration ?? null) == 'dotted') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: dotted; } ";
             if (($data->link_hover_decoration ?? null) == 'wavy') $write .= ".style_$style->id a:hover { text-decoration-line: underline; text-decoration-style: wavy; } ";
+
+            if (($data->link_hover_decoration ?? null) == 'animated_left' || ($data->link_hover_decoration ?? null) == 'animated_right' || ($data->link_hover_decoration ?? null) == 'animated_center') {
+                if ($data->link_underline_thickness == 'auto') $animated_line_height = '1px';
+                else {
+                    $animated_line_height = $data->link_underline_thickness;
+                }                
+                $write .= "\n.style_$style->id a {
+                    background-image: linear-gradient(to right, $link_color_hover, $link_color_hover);
+                    background-size: 0% $animated_line_height;
+                    background-repeat: no-repeat;
+                    transition: background-size 0.3s;                    
+                }";
+                $write .= "\n.style_$style->id a:hover {
+                    background-size: 100% $animated_line_height;                    
+                }";
+            }
+
+            if (($data->link_hover_decoration ?? null) == 'animated_left') {
+                $write .= "\n.style_$style->id a {                   
+                    background-position: 0% 100%;
+                }";
+            }
+
+            if (($data->link_hover_decoration ?? null) == 'animated_right') {
+                $write .= "\n.style_$style->id a {                   
+                    background-position: 100% 100%;                    
+                }";
+            }
+
+            if (($data->link_hover_decoration ?? null) == 'animated_center') {
+                $write .= "\n.style_$style->id a {
+                    background-position: center bottom;                    
+                }";
+            }
 
             fwrite($css_file, $write);
 

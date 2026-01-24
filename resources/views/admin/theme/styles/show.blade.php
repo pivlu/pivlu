@@ -339,6 +339,11 @@
                                         <option @if (($item->link_hover_decoration ?? null) == 'underline') selected @endif value="underline">{{ __('Underline') }}</option>
                                         <option @if (($item->link_hover_decoration ?? null) == 'dotted') selected @endif value="dotted">{{ __('Dotted') }}</option>
                                         <option @if (($item->link_hover_decoration ?? null) == 'dashed') selected @endif value="dashed">{{ __('Dashed') }}</option>
+                                        <option @if (($item->link_hover_decoration ?? null) == 'double') selected @endif value="double">{{ __('Double') }}</option>
+                                        <option @if (($item->link_hover_decoration ?? null) == 'wavy') selected @endif value="wavy">{{ __('Wavy') }}</option>
+                                        <option @if (($item->link_hover_decoration ?? null) == 'animated_left') selected @endif value="animated_left">{{ __('Animated (left to right)') }}</option>
+                                        <option @if (($item->link_hover_decoration ?? null) == 'animated_right') selected @endif value="animated_right">{{ __('Animated (right to left)') }}</option>
+                                        <option @if (($item->link_hover_decoration ?? null) == 'animated_center') selected @endif value="animated_center">{{ __('Animated (center to edges)') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -348,8 +353,10 @@
                                     <label>{{ __('Underline line thickness') }}</label>
                                     <select class="form-select" name="link_underline_thickness">
                                         <option @if (($item->link_underline_thickness ?? null) == 'auto') selected @endif value="auto">{{ __('Normal') }}</option>
-                                        <option @if (($item->link_underline_thickness ?? null) == '3px') selected @endif value="3px">{{ __('Bold') }}</option>
-                                        <option @if (($item->link_underline_thickness ?? null) == '6px') selected @endif value="6px">{{ __('Bolder') }}</option>
+                                        <option @if (($item->link_underline_thickness ?? null) == '2px') selected @endif value="2px">2px</option>
+                                        <option @if (($item->link_underline_thickness ?? null) == '3px') selected @endif value="3px">3px</option>
+                                        <option @if (($item->link_underline_thickness ?? null) == '4px') selected @endif value="4px">4px</option>
+                                        <option @if (($item->link_underline_thickness ?? null) == '5px') selected @endif value="5px">5px</option>
                                     </select>
                                 </div>
                             </div>
