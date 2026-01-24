@@ -419,7 +419,7 @@ class ThemeNavController extends Controller
                 $key_content = 'content_' . $language->id ?? null;
 
                 $data = array(
-                    'content' => HelperFunctions::clean_text($request->$key_content ?? null),
+                    'content' => $request->$key_content ?? null,
                 );
 
                 $item_content = ThemeNavItemContent::updateOrCreate(

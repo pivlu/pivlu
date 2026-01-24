@@ -10,7 +10,7 @@
 
     <textarea name="content_{{ $lang_content->lang_id }}" class="prism-live line-numbers language-html fill">{{ $lang_content->data->content ?? null }}</textarea>
 
-    <div class="mb-4"></div>   
+    <div class="mb-4"></div>
 @endforeach
 
 

@@ -223,10 +223,10 @@
             <link rel="stylesheet" href="{{ asset('assets/vendor/prism/prism-live.css') }}">
 
             <h5 class="fw-bold">{{ __('Text / HTML item') }}</h5>
-
+            
             @foreach (admin_languages() as $lang_code => $language)
                 <div class="form-group mb-3">
-                    <label>{!! lang_label($language, __('Custom code')) !!}</label>
+                    <label>{!! lang_label($language, __('Custom code')) !!}</label>                    
                     <textarea name="content_{{ $language->id }}" class="prism-live line-numbers language-html fill">{{ $item->getTranslation('content', $language->id) }}</textarea>
                 </div>
             @endforeach
