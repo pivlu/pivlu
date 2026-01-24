@@ -30,7 +30,7 @@ Go to your project folder and edit .env file:
 - APP_URL="https://your-domain"
 - Create a database and input your database details (database, user and password) in DB_DATABASE, DB_USERNAME and DB_PASSWORD
 
-After creating the project, go to your project folder and install Pivlu CMS from command line..
+After creating the project, go to your project folder and install Pivlu CMS from command line.
 
 ```cd mypivlu```
 
@@ -41,6 +41,8 @@ After creating the project, go to your project folder and install Pivlu CMS from
 This command will create database tables, setup website, copy the assets files and create an admin user.
 
 Important: the "public" folder is located in youir project folder. You must point your public path to this folder or copy this folder content (files and subfolders) in your public folder (for example, in the "public_html").
+
+The website is automatically in "maintenance" mode. After installation, you can login to administration area at https://your-doman/login
 
 > [!NOTE]
 > **This repository contains the code for the core Pivlu CMS.**
