@@ -44,7 +44,7 @@
                                 <div class="row g-0">
 
                                     @if ($block_item_data->icon ?? null)
-                                        <div class="card-body p-0">
+                                        <div class="card-body p-0 d-flex flex-column">
                                             <div class="icon px-2 py-1 float-start me-2" style="font-size: {{ $block_settings->icon_size ?? '2em' }}">{!! $item['icon'] !!}</div>
 
                                             <div class="p-2">
@@ -59,7 +59,7 @@
                                                 @endif
                                                 <p>{{ $block_item_data->content ?? null }}</p>
                                                 @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
-                                                    <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
+                                                    <div class="mt-auto @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
                                                         <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
                                                             href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                                     </div>
@@ -74,7 +74,7 @@
                                         </div>
 
                                         <div class="col-md-8">
-                                            <div class="card-body">
+                                            <div class="card-body d-flex flex-column">
                                                 @if ($block_item_data->title ?? null)
                                                     <div class="title mb-3">
                                                         @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
@@ -86,7 +86,7 @@
                                                 @endif
                                                 <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
                                                 @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
-                                                    <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
+                                                    <div class="mt-auto @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
                                                         <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
                                                             href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                                     </div>
@@ -94,7 +94,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <div class="card-body">
+                                        <div class="card-body d-flex flex-column">
                                             @if ($block_item_data->title)
                                                 <div class="title mb-3">
                                                     @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
@@ -106,7 +106,7 @@
                                             @endif
                                             <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
                                             @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
-                                                <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
+                                                <div class="mt-auto @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
                                                     <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}"
                                                         href="https://{{ $block_item_data->url ?? null }}" title="{{ $block_item_data->title ?? null }}">{{ $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                                 </div>
@@ -131,7 +131,7 @@
                                     @endif
                                 @endif
 
-                                <div class="card-body">
+                                <div class="card-body d-flex flex-column">
                                     @if ($block_item_data->title ?? null)
                                         <div class="title mb-2">
                                             @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
@@ -145,7 +145,7 @@
                                     <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
 
                                     @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
-                                        <div class="mt-3 @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
+                                        <div class="mt-auto @if (($block_settings->link_btn_width ?? null) == 'block') d-grid gap-2 @endif">
                                             <a class="mt-3 btn btn_{{ $block_settings->btn_id ?? 'primary' }} {{ $block_settings->link_btn_size ?? null }}" href="https://{{ $block_item_data->url ?? null }}"
                                                 title="{{ $block_item_data->title ?? null }}">{{  $block_item_data->button_label ??  $block_item_data->title ?? null }}</a>
                                         </div>

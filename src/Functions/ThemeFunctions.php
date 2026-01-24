@@ -21,6 +21,7 @@
 
 namespace Pivlu\Functions;
 
+use Illuminate\Support\Facades\Cookie;
 use Pivlu\Models\Theme;
 use Pivlu\Models\Language;
 use Pivlu\Models\ThemeMenuItem;
@@ -36,13 +37,32 @@ class ThemeFunctions
 
     public static function get_active_theme()
     {
+        if (($_GET['clear_preview_theme'] ?? null) == 1) {
+            Cookie::queue(Cookie::forget('preview_theme'));
+        }
+
         if ($_GET['preview_theme'] ?? null) {
             $theme_code = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET['preview_theme']);
-            $theme = Theme::where('code', $theme_code)->first();
-        } else
-            $theme = Theme::where('is_active', 1)->first();
 
-        if (! $theme) $theme = Theme::where('is_active', 1)->first();
+            if(!Cookie::get('preview_theme')) Cookie::queue('preview_theme', $theme_code, 60); // 1 hour
+
+            $theme = Theme::where('code', $theme_code)->first();
+        } else {
+            if (Cookie::get('preview_theme')) {
+                $theme_code = preg_replace('/[^-a-zA-Z0-9_]/', '', Cookie::get('preview_theme'));
+                $theme = Theme::where('code', $theme_code)->first();
+            }
+            if (!isset($theme) || ! $theme) {
+                $theme = Theme::where('is_active', 1)->first();
+            }               
+        }
+
+
+        if (! $theme) {
+            $theme = Theme::where('is_active', 1)->first();
+            Cookie::queue(Cookie::forget('preview_theme'));
+        }
+
 
         return $theme;
     }
@@ -288,7 +308,7 @@ class ThemeFunctions
                 $transparent = $button_data->transparent ?? null;
                 $transparent_hover = $button_data->transparent_hover ?? null;
                 $shadow = $button_data->shadow ?? 'none';
-                
+
                 if ($transparent == 1) {
                     $bg_color = 'transparent';
                 }

@@ -60,6 +60,9 @@ Route::get('profile' . '/{username}', [ProfileController::class, 'index'])->name
 // Search
 Route::get('s', [ContentController::class, 'search'])->name('search');
 
+// Theme preview
+Route::get('preview-theme/{theme_code}', [HomeController::class, 'preview_theme'])->name('preview_theme')->where(['theme_code' => '[a-z0-9]+']);
+
 // Web Posts           
 Route::get('{slug}', [ContentController::class, 'level1'])->name('level1')->where(['slug' => '[a-z0-9_-]{3,}+']);
 Route::get('{slug1}/{slug2}', [ContentController::class, 'level2'])->name('level2')->where(['slug1' => '[a-z0-9_-]{3,}+'], ['slug2' => '[a-z0-9_-]+']);

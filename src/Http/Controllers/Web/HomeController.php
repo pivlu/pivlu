@@ -22,7 +22,9 @@
 namespace Pivlu\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
+use Pivlu\Models\Theme;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\BlockFunctions;
 
@@ -34,12 +36,32 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $active_theme_view = ThemeFunctions::get_active_theme_view();       
-        
+        $active_theme_view = ThemeFunctions::get_active_theme_view();
+
         $content_blocks = BlockFunctions::get_homepage_blocks(); // get content blocks for homepage for active theme
-        
+
         return view($active_theme_view . 'web.index', [
             'content_blocks' => $content_blocks,
         ]);
+    }
+
+
+    public function preview_theme($theme_code)
+    {
+        $theme_code = preg_replace('/[^-a-zA-Z0-9_]/', '', $theme_code);
+
+        if($theme_code == 'default') {
+            Cookie::queue(Cookie::forget('preview_theme'));
+            return redirect(route('home'));
+        }
+
+        $theme = Theme::where('code', $theme_code)->first();
+        if(! $theme) return redirect(route('home'));
+
+        if ($theme->is_active != 1) {
+            if (!Cookie::get('preview_theme')) Cookie::queue('preview_theme', $theme_code, 60); // 1 hour
+        }
+
+        return redirect(route('home'));
     }
 };
