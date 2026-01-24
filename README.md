@@ -1,5 +1,4 @@
-<p align="center"><img width="249" height="71" alt="logo-big" src="https://github.com/user-attachments/assets/3bd14f60-be61-4c54-b01d-8094611c2d72" /></p>
-
+<p align="center"><a target="_blank" href="https://pivlu.com"><img width="249" height="71" alt="logo-big" src="https://github.com/user-attachments/assets/3bd14f60-be61-4c54-b01d-8094611c2d72" /></a></p>
 
 ## About Pivlu
 
@@ -8,6 +7,9 @@ Pivlu is a free and open source CMS (Content Managementr System) and Website Bui
 **Pivlu** is an alternative to existing CMS and Website Builders, like WordPress, Joomla, Drupal, Wix, Weebly, SquareSpace, Ghost and others. Pivlu offers a great opportunity to grow your business building websites and applications.
 
 Pivlu use a **plugin system that extends the features and functions** of a Pivlu website. Plugins make it easier for users and developers to add features to their website without knowing a single line of code.
+
+<a target="_blank" href="https://pivlu.com">**Pivlu Website**</a>
+
 
 ## Pivlu core features
 One of the main advantages of Pivlu is that the most important functionalities are implemented in the core code, without the need to install additional plugins or themes.
