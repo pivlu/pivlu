@@ -295,7 +295,7 @@ class ThemeFunctions
                 if ($data->link_underline_thickness == 'auto') $animated_line_height = '1px';
                 else {
                     $animated_line_height = $data->link_underline_thickness;
-                }                
+                }
                 $write .= "\n.style_$style->id a {
                     background-image: linear-gradient(to right, $link_color_hover, $link_color_hover);
                     background-size: 0% $animated_line_height;
@@ -325,32 +325,35 @@ class ThemeFunctions
                 }";
             }
 
+
             fwrite($css_file, $write);
+        } // END foreach styles
 
-            // BUTTONS
-            foreach ($buttons as $button) {
-                $button_data = json_decode(($button->data));
 
-                $bg_color = $button_data->bg_color ?? config('pivlu.defaults.button_bg_color');
-                $font_color = $button_data->font_color ?? config('pivlu.defaults.button_font_color');
-                $font_weight = $button_data->font_weight ?? 'normal';
-                $rounded = $button_data->rounded ?? 0;
-                $border_color = $button_data->border_color ?? config('pivlu.defaults.button_border_color');
-                $bg_color_hover = $button_data->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover');
-                $font_color_hover = $button_data->font_color_hover ?? config('pivlu.defaults.button_font_color_hover');
-                $border_color_hover = $button_data->border_color_hover ?? config('pivlu.defaults.button_border_color_hover');
-                $transparent = $button_data->transparent ?? null;
-                $transparent_hover = $button_data->transparent_hover ?? null;
-                $shadow = $button_data->shadow ?? 'none';
+        // BUTTONS
+        foreach ($buttons as $button) {
+            $button_data = json_decode(($button->data));
 
-                if ($transparent == 1) {
-                    $bg_color = 'transparent';
-                }
-                if ($transparent_hover == 1) {
-                    $bg_color_hover = 'transparent';
-                }
+            $bg_color = $button_data->bg_color ?? config('pivlu.defaults.button_bg_color');
+            $font_color = $button_data->font_color ?? config('pivlu.defaults.button_font_color');
+            $font_weight = $button_data->font_weight ?? 'normal';
+            $rounded = $button_data->rounded ?? 0;
+            $border_color = $button_data->border_color ?? config('pivlu.defaults.button_border_color');
+            $bg_color_hover = $button_data->bg_color_hover ?? config('pivlu.defaults.button_bg_color_hover');
+            $font_color_hover = $button_data->font_color_hover ?? config('pivlu.defaults.button_font_color_hover');
+            $border_color_hover = $button_data->border_color_hover ?? config('pivlu.defaults.button_border_color_hover');
+            $transparent = $button_data->transparent ?? null;
+            $transparent_hover = $button_data->transparent_hover ?? null;
+            $shadow = $button_data->shadow ?? 'none';
 
-                $write = "\n.btn_$button->id, a .btn_$button->id  {
+            if ($transparent == 1) {
+                $bg_color = 'transparent';
+            }
+            if ($transparent_hover == 1) {
+                $bg_color_hover = 'transparent';
+            }
+
+            $write = "\n.btn_$button->id, a .btn_$button->id  {
                     background-color: $bg_color !important; 
                     color: $font_color !important;
                     border-color: $border_color;
@@ -359,44 +362,40 @@ class ThemeFunctions
                     border-radius: $rounded;
                 } ";
 
-                $write .= "\n.btn_$button->id:hover, .btn_$button->id:focus {
+            $write .= "\n.btn_$button->id:hover, .btn_$button->id:focus {
                 background-color: $bg_color_hover !important;
                 color: $font_color_hover !important;
                 border-color: $border_color_hover;
                 font-weight: $font_weight !important;
                 text-decoration: none !important; } ";
 
-                $write .= "\n.btn_$button->id a, a .btn_$button->id {
+            $write .= "\n.btn_$button->id a, a .btn_$button->id {
                 color: $font_color !important;       
                 font-weight: $font_weight !important;         
                 text-decoration: none !important; }";
 
-                $write .= "\n.btn_$button->id a:hover, a:hover .btn_$button->id {
+            $write .= "\n.btn_$button->id a:hover, a:hover .btn_$button->id {
                 color: $font_color_hover !important;
                 text-decoration: none !important; }";
 
-                if ($shadow == 'shadow-sm') {
-                    $write .= "\n.btn_$button->id {
+            if ($shadow == 'shadow-sm') {
+                $write .= "\n.btn_$button->id {
                     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
                     }";
-                }
-                if ($shadow == 'shadow') {
-                    $write .= "\n.btn_$button->id {
+            }
+            if ($shadow == 'shadow') {
+                $write .= "\n.btn_$button->id {
                     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
                     }";
-                }
-                if ($shadow == 'shadow-lg') {
-                    $write .= "\n.btn_$button->id {
+            }
+            if ($shadow == 'shadow-lg') {
+                $write .= "\n.btn_$button->id {
                     box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
                     }";
-                }
-
-                fwrite($css_file, $write);
             }
 
             fwrite($css_file, $write);
-        }
-
+        } // END foreach buttons
 
         // END. Close the file
         fclose($css_file);
