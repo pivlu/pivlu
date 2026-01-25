@@ -19,7 +19,7 @@
 
                         @if ($block_data->btn1_label || $block_data->btn2_label)
                             <div class="row justify-content-center">
-                                <div class="col @if ($block_data->btn2_label) col-12 col-12 col-md-6 col-lg-4 @else col-12 @endif">
+                                <div class="col @if ($block_data->btn2_label) col-12 col-12 col-md-6 col-lg-3 @else col-12 @endif">
                                     @if ($block_data->btn1_label)
                                         <a href="{{ $block_data->btn1_url ?? '#' }}" class="block-hero-button1 btn btn_{{ $block_data->btn1_id }}">
                                             @if ($block_data->btn1_icon)
@@ -29,7 +29,7 @@
                                     @endif
                                 </div>
 
-                                <div class="col col-12 col-md-6 col-lg-4">
+                                <div class="col col-12 col-md-6 col-lg-3">
                                     @if ($block_data->btn2_label ?? null)
                                         <a href="{{ $block_data->btn2_url ?? '#' }}" class="block-hero-button2 btn btn_{{ $block_data->btn2_id }}">
                                             @if ($block_data->btn2_icon)
