@@ -1,46 +1,46 @@
-@php
-$block_data = block($block['id']);
-@endphp
-
-@if ($block_data->content ?? null)
-    @php
-        $block_items = unserialize($block_data->content ?? null);
-        $block_header = unserialize($block_data->header ?? null);
-    @endphp
-
-    <div class="@if(($module ?? null) == 'docs') @else container-xxl @endif">
+@if (count($block_items) > 0)
+    <div class="container-xxl">
         <div class="block">
 
-            @if ($block_header['add_header'] ?? null)
-                <div class="block-header">
-                    @if ($block_header['title'] ?? null)
-                        <div class="block-header-title title">
-                            {{ $block_header['title'] ?? null }}
-                        </div>
-                    @endif
+            @include('pivlu::web.includes.block-header')
 
-                    @if ($block_header['content'] ?? null)
-                        <div class="block-header-content mt-4">
-                            {!! $block_header['content'] ?? null !!}
-                        </div>
-                    @endif
-                </div>
+            @if ($block_settings->bg_color_item_active_title ?? null)
+                @php
+                    $accordion_item_title_css = $block_settings->bg_color_item_active_title . '!important';
+                @endphp
+                <style>
+                    .accordion-button:not(.collapsed) {
+                        /*color: unset !important;*/
+                        background-color: {{ $accordion_item_title_css }};
+                    }
+
+                    .accordion-button .accordion_collapse_first_show:not(.collapsed) {
+                        /*color: unset !important;*/
+                        background-color: {{ $accordion_item_title_css }};
+                    }
+                </style>
             @endif
 
-            <div class="accordion @if($block_data->block_extra->remove_border ?? null) accordion-flush @endif" id="accordion_{{ $block['id'] }}">
+            <div class="accordion @if ($block_settings->remove_border ?? null) accordion-flush @endif" id="accordion_{{ $block['id'] }}">
                 @foreach ($block_items as $block_item)
+                    @php
+                        $block_item_data = json_decode($block_item->active_language_content->data ?? null);
+                    @endphp
+
                     <div class="accordion-item">
                         <div class="accordion-header" id="heading_{{ $loop->index }}">
-                            <button class="accordion-button collapsed block-accordion-title" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ $loop->index }}" aria-expanded="@if ($loop->index == 0) true @else false @endif"
-                                aria-controls="collapse_{{ $loop->index }}" style="color: {{ $block_data->block_extra->title_color ?? 'black' }}; background-color: {{ $block_data->block_extra->title_bg_color ?? 'white' }}">
-                                <div class="fw-bold {{ $block_data->block_extra->title_size ?? 'fs-6' }}">{{ $block_item['title'] }}</div>
+                            <button
+                                class="accordion-button collapsed block-accordion-title @if ($block_settings->items_title_style_id ?? null) style_{{ $block_settings->items_title_style_id }} @endif @if ($loop->index == 0 && ($block_settings->collapse_first_item ?? null)) accordion_collapse_first_show @endif"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ $loop->index }}" aria-expanded="@if ($loop->index == 0) true @else false @endif"
+                                aria-controls="collapse_{{ $loop->index }}">
+                                <div class="title">{{ $block_item_data->title ?? null }}</div>
                             </button>
                         </div>
 
-                        <div id="collapse_{{ $loop->index }}" class="accordion-collapse collapse @if ($loop->index == 0 && ($block_data->block_extra->collapse_first_item ?? null)) show @endif" aria-labelledby="heading_{{ $loop->index }}"
+                        <div id="collapse_{{ $loop->index }}" class="accordion-collapse collapse @if ($loop->index == 0 && ($block_settings->collapse_first_item ?? null)) show @endif" aria-labelledby="heading_{{ $loop->index }}"
                             data-bs-parent="#accordion_{{ $block['id'] }}">
-                            <div class="accordion-body block-accordion-content">
-                                {!! $block_item['content'] !!}
+                            <div class="accordion-body block-accordion-content @if ($block_settings->items_content_style_id ?? null) style_{{ $block_settings->items_content_style_id }} @endif">
+                                {!! $block_item_data->content ?? null !!}
                             </div>
                         </div>
                     </div>

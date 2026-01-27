@@ -49,13 +49,13 @@
 
                                             <div class="p-2">
                                                 @if ($block_item_data->title ?? null)
-                                                    <div class="title mb-1">
+                                                    <h1 class="title mb-1">
                                                         @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
                                                             <a href="https://{{ $block_item_data->url ?? null }}">{{ $block_item_data->title ?? null }}</a>
                                                         @else
                                                             {{ $block_item_data->title ?? null }}
                                                         @endif
-                                                    </div>
+                                                    </h1>
                                                 @endif
                                                 <p>{{ $block_item_data->content ?? null }}</p>
                                                 @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
@@ -76,13 +76,13 @@
                                         <div class="col-md-8">
                                             <div class="card-body d-flex flex-column">
                                                 @if ($block_item_data->title ?? null)
-                                                    <div class="title mb-3">
+                                                    <h1 class="title mb-3">
                                                         @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
                                                             <a href="https://{{ $block_item_data->url }}">{{ $block_item_data->title ?? null }}</a>
                                                         @else
                                                             {{ $block_item_data->title ?? null }}
                                                         @endif
-                                                    </div>
+                                                    </h1>
                                                 @endif
                                                 <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
                                                 @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
@@ -96,13 +96,13 @@
                                     @else
                                         <div class="card-body d-flex flex-column">
                                             @if ($block_item_data->title)
-                                                <div class="title mb-3">
+                                                <h1 class="title mb-3">
                                                     @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
                                                         <a href="https://{{ $block_item_data->url }}">{{ $block_item_data->title ?? null }}</a>
                                                     @else
                                                         {{ $block_item_data->title ?? null }}
                                                     @endif
-                                                </div>
+                                                </h1>
                                             @endif
                                             <p>{!! nl2br($block_item_data->content ?? null) !!}</p>
                                             @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'button')
@@ -133,13 +133,13 @@
 
                                 <div class="card-body d-flex flex-column">
                                     @if ($block_item_data->title ?? null)
-                                        <div class="title mb-2">
+                                        <h1 class="title mb-2">
                                             @if (($block_item_data->url ?? null) && ($block_settings->link_location ?? null) == 'title')
                                                 <a href="https://{{ $block_item_data->url }}">{{ $block_item_data->title ?? null }}</a>
                                             @else
                                                 {{ $block_item_data->title ?? null }}
                                             @endif
-                                        </div>
+                                        </h1>
                                     @endif
 
                                     <p>{!! nl2br($block_item_data->content ?? null) !!}</p>

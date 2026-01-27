@@ -20,7 +20,7 @@ debug_backtrace() || die('Direct access not permitted');
                             <label for="formFile_{{ $item_lang->id }}" class="form-label">{!! lang_label($item_lang, __('Card image')) !!}</label>
                             <input class="form-control" type="file" id="formFile_{{ $item_lang->id }}" name="image_{{ $item_lang->id }}">
                             <div class="form-text">{{ __('optional') }}</div>
-                            
+
                             @if (count(admin_languages()) > 1)
                                 @if ($loop->first)
                                     <div class="form-check form-switch mt-2">
@@ -65,9 +65,12 @@ debug_backtrace() || die('Direct access not permitted');
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="mb-2">{!! lang_label($item_lang, __('URL')) !!}</label>
-                                    <input type="text" class="form-control" name="url_{{ $item_lang->id }}">
-                                    <div class="form-text">{{ __('optional') }}</div>
-                                </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="url-addon-create_{{ $item_lang->id }}">https://</span>
+                                        <input type="text" class="form-control" placeholder="URL" aria-label="URL" aria-describedby="url-addon-create_{{ $item_lang->id }}" name="url_{{ $item_lang->id }}">
+                                    </div>
+                                    <div class="form-text">{{ __('Optional. Without "https://"') }}</div>
+                                </div>                                
                             </div>
 
                             <div class="col-md-6">

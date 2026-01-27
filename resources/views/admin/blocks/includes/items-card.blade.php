@@ -100,8 +100,12 @@
                                                 <div class="col-12">
                                                     <div class="form-group">
                                                         <label class="mb-2">{!! lang_label($item_lang, __('URL')) !!}</label>
-                                                        <input type="text" class="form-control" name="url_{{ $item_lang->id }}" value="{{ $block_item_data->url ?? null }}">
-                                                        <div class="form-text">{{ __('optional') }}</div>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text" id="url-addon_{{ $item_lang->id }}">https://</span>
+                                                            <input type="text" class="form-control" placeholder="URL" aria-label="URL" aria-describedby="url-addon_{{ $item_lang->id }}"
+                                                                name="url_{{ $item_lang->id }}" value="{{ $block_item_data->url ?? null }}">
+                                                        </div>
+                                                        <div class="form-text">{{ __('Optional. Without "https://"') }}</div>
                                                     </div>
                                                 </div>
 

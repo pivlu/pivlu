@@ -33,6 +33,7 @@ use Pivlu\Models\Form;
 use Pivlu\Functions\ThemeFunctions;
 use Pivlu\Functions\BlockFunctions;
 use Pivlu\Functions\FileFunctions;
+use Pivlu\Functions\HelperFunctions;
 
 class BlockController extends Controller
 {
@@ -175,6 +176,13 @@ class BlockController extends Controller
                 );
             }
 
+            if ($request->type == 'accordion') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'content' => HelperFunctions::clean_text($request->$key_content ?? null),
+                );
+            }
+
             $block_item_content->update(['data' => json_encode($data, JSON_UNESCAPED_UNICODE)]);
         }
 
@@ -243,6 +251,13 @@ class BlockController extends Controller
                     'title' => $request->$key_title ?? null,
                     'url' => $request->$key_url ?? null,
                     'icon' => $request->$key_icon ?? null
+                );
+            }
+
+            if ($request->type == 'accordion') {
+                $data = array(
+                    'title' => $request->$key_title ?? null,
+                    'content' => HelperFunctions::clean_text($request->$key_content ?? null),
                 );
             }
 

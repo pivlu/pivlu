@@ -106,8 +106,10 @@
                                     {{ __('Custom link') }}
                                 @elseif($link->type == 'page')
                                     {{ __('Page') }}
-                                    <br>
-                                    <small class="text-muted"><a href="{{ route('admin.posts.show', ['id' => $link->value]) }}"><i class="bi bi-pencil-square"></i></a></small>
+                                    @if ($link->value)
+                                        <br>
+                                        <small class="text-muted"><a href="{{ route('admin.posts.show', ['id' => $link->value]) }}"><i class="bi bi-pencil-square"></i></a></small>
+                                    @endif
                                 @elseif($link->type == 'post_type')
                                     {{ __('Post type') }}
                                 @else

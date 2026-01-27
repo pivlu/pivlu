@@ -489,7 +489,7 @@ class SetupFunctions
             ['type' => 'post_section'],
             [
                 'core' => 1,
-                'label' => 'Post Sction',
+                'label' => 'Post section',
                 'description' => 'Add a new section in this article',
                 'position' => 14,
                 'icon' => '<i class="bi bi-distribute-vertical"></i>',
@@ -512,6 +512,21 @@ class SetupFunctions
                 'allow_in_posts' => 1,
                 'allow_in_footer' => 1,
                 'allow_in_layout' => 1,
+            ]
+        );
+
+        BlockType::firstOrCreate(
+            ['type' => 'accordion'],
+            [
+                'core' => 1,
+                'label' => 'Accordion',
+                'description' => 'Vertically collapsing accordions',
+                'position' => 16,
+                'icon' => '<i class="bi bi-menu-up"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 0,
             ]
         );
     }
