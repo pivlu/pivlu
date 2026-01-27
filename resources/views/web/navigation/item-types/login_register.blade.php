@@ -1,6 +1,6 @@
 @if (Auth::user() ?? null)
     <li class="nav-item">
-        <a href="{{ route('account') }}" class="nav-link">
+        <a href="{{ route('account') }}" class="nav-link no-decoration">
             <img class="avatar rounded-circle me-1" alt="{{ Auth::user()->name }}" src="{{ avatar(Auth::user(), 'thumb') }}" />
             {{ strtok(Auth::user()->name, ' ') }}
         </a>

@@ -2,7 +2,7 @@
     @foreach ($item->menu_links as $navbar_link)
         @if (!empty($navbar_link->dropdown))
             <li class="nav-item dropdown {{ $config->tpl_navbar_links_margin ?? null }}">
-                <a class="nav-link dropdown-toggle @if ($navbar_link->btn_id) btn btn_{{ $navbar_link->btn_id }} @endif" href="#" id="navbarDropdown_{{ $navbar_link->label }}" role="button"
+                <a class="nav-link dropdown-toggle @if ($navbar_link->btn_id) btn btn_{{ $navbar_link->btn_id }} @endif no-decoration" href="#" id="navbarDropdown_{{ $navbar_link->label }}" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     {{ $navbar_link->label }} <i class="bi bi-chevron-down"></i>
                 </a>
@@ -23,7 +23,7 @@
             <li class="nav-item {{ $config->tpl_navbar_links_margin ?? null }}">
                 @if ($navbar_link->btn_id)
                     <span class="btn_{{ $navbar_link->btn_id }}">
-                        <a @if ($navbar_link->new_tab == 1) target="_blank" @endif class="nav-link btn btn_{{ $navbar_link->btn_id }}" href="{{ $navbar_link->url ?? null }}"
+                        <a @if ($navbar_link->new_tab == 1) target="_blank" @endif class="nav-link btn btn_{{ $navbar_link->btn_id }} no-decoration" href="{{ $navbar_link->url ?? null }}"
                             title="{{ $config_lang->site_label ?? config('app.name') }}">
                             @if ($navbar_link->icon)
                                 {!! $navbar_link->icon !!}
