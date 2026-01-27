@@ -494,3 +494,14 @@
 }
 
 /* end-video */
+
+
+/* start-testimonial */
+.testimonial {
+    margin-bottom: 25px;
+    border: 1px solid #f1f1f1;
+    background-color: #fbfbfb;
+    padding: 10px;
+    border-radius: 5px;
+}
+/* end-testimonial */

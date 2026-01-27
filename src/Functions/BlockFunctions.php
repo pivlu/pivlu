@@ -239,6 +239,18 @@ class BlockFunctions
             ];
         }
 
+
+        // Extra content TESTIMONIAL            
+        if ($block_type->type == 'testimonial') {
+            $block_settings = [
+                'cols' => $request->cols ?? 4,
+                'use_star_rating' => ($request->use_star_rating ? $request->use_star_rating : null),
+                'use_images' => ($request->use_images ? $request->use_images : null),
+                'items_style_id' => ($request->use_custom_style_items ? $request->items_style_id : null),
+            ];
+        }
+
+
         // Extra content VIDEO               
         if ($block_type->type == 'video') {
             $block_settings = ['full_width_responsive' => ($request->full_width_responsive ? $request->full_width_responsive : null)];

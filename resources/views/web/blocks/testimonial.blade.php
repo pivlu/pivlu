@@ -1,16 +1,9 @@
-@php
-    $block_data = block($block['id']);
-@endphp
-
-@if ($block_data->content ?? null)
+@if (count($block_items) > 0)
     @php
-        $block_items = unserialize($block_data->content);
-        $block_header = unserialize($block_data->header ?? null);
-
-        if (!($block_extra['cols'] ?? null)) {
+        if (!($block_settings->cols ?? null)) {
             $cols = 4;
         } else {
-            $cols = $block_extra['cols'];
+            $cols = $block_settings->cols;
         }
 
         if ($cols == 2) {
@@ -27,84 +20,87 @@
         }
     @endphp
 
-    <div class="block">
-        <div class="row">
+    <div class="container-xxl">
 
-            @if ($block_header['add_header'] ?? null)
-                <div class="block-header">
-                    @if ($block_header['title'] ?? null)
-                        <div class="block-header-title title">
-                            {{ $block_header['title'] ?? null }}
-                        </div>
-                    @endif
+        <div class="block">
 
-                    @if ($block_header['content'] ?? null)
-                        <div class="block-header-content mt-4">
-                            {!! $block_header['content'] ?? null !!}
-                        </div>
-                    @endif
-                </div>                
-            @endif
+            <div class="row">
 
-            @if (count($block_items) > 0)
+                @include('pivlu::web.includes.block-header')
+
 
                 @foreach ($block_items as $item)
+                    @php
+                        $block_item_media_id = $item->active_language_content->media_id ?? null;
+                        $block_item_data = json_decode($item->active_language_content->data ?? null);
+                    @endphp
+
                     <div class="{{ $class }} mb-5">
-                        @if (($block_extra['use_image'] ?? null) && $item['image'])
-                            <div class="d-flex justify-content-center mb-3">
-                                <img src="{{ thumb_square($item['image']) }}" class="rounded-circle shadow-1-strong" width="150" height="150" alt="{{ $item['name'] ?? $item['image'] }}" />
+
+                        <div class="testimonial @if ($block_settings->items_style_id ?? null) style_{{ $block_settings->items_style_id }} @endif ">
+
+                            @if (($block_settings->use_images ?? null) && ($block_item_media_id ?? null))
+                                <div class="d-flex justify-content-center mb-3">
+                                    <img src="{{ $item->active_language_content->getFirstMediaUrl('block_item_media', 'large') }}" class="rounded-circle shadow-1-strong" width="150" height="150"
+                                        alt="{{ $block_item_data->name ?? $block_item_media_id }}" />
+                                </div>
+                            @endif
+
+
+                            @if ($block_settings->use_star_rating ?? null)
+                                <div class="float-end ms-2">
+                                    @if ($block_item_data->rating == 1)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i
+                                            class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 1.5)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-half text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i
+                                            class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 2)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i
+                                            class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 2.5)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-half text-warning me-1"></i><i
+                                            class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 3)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
+                                            class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 3.5)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
+                                            class="bi bi-star-half text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 4)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
+                                            class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
+                                    @elseif($block_item_data->rating == 4.5)
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
+                                            class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-half text-warning me-1"></i>
+                                    @else
+                                        <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
+                                            class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i>
+                                    @endif
+                                </div>
+                            @endif
+
+
+                            <div class="title">
+                                {{ $block_item_data->name }}
                             </div>
-                        @endif
 
-                        <div class="fw-bold fs-6">{{ $item['name'] }}</div>
+                            @if ($block_item_data->subtitle ?? null)
+                                <div class="caption text-start p-0 mt-3 mb-2" style="font-size: 0.9rem">{{ $block_item_data->subtitle }}</div>
+                            @endif
 
-                        @if ($item['subtitle'] ?? null)
-                            <div class="light small mb-2">{{ $item['subtitle'] }}</div>
-                        @endif
 
-                        @if ($block_extra['use_star_rating'] ?? null)
-                            <div class="d-flex justify-content-center mb-2">
-                                @if ($item['rating'] == 1)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i
-                                        class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 1.5)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-half text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i
-                                        class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 2)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i><i
-                                        class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 2.5)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-half text-warning me-1"></i><i
-                                        class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 3)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
-                                        class="bi bi-star text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 3.5)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
-                                        class="bi bi-star-half text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 4)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
-                                        class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star text-warning me-1"></i>
-                                @elseif($item['rating'] == 4.5)
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
-                                        class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-half text-warning me-1"></i>
-                                @else
-                                    <i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i><i
-                                        class="bi bi-star-fill text-warning me-1"></i><i class="bi bi-star-fill text-warning me-1"></i>
-                                @endif
-                            </div>
-                        @endif
-
-                        <p class="px-xl-3">
-                            <i class="bi bi-quote pe-1"></i> {!! nl2br($item['testimonial']) !!}
-                        </p>
+                            <p>
+                                <i class="bi bi-quote pe-1"></i> {!! nl2br($block_item_data->content) !!}
+                            </p>
+                        </div>
 
                     </div>
                 @endforeach
 
-            @endif
-
+            </div>
         </div>
+
     </div>
 
     <div class="clearfix"></div>

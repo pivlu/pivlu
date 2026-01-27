@@ -125,6 +125,9 @@ class BlockController extends Controller
             $key_url = 'url_' . $lang->id ?? null;
             $key_icon = 'icon_' . $lang->id ?? null;
             $key_button_label = 'button_label_' . $lang->id ?? null;
+            $key_name = 'name_' . $lang->id ?? null;
+            $key_subtitle = 'subtitle_' . $lang->id ?? null;
+            $key_rating = 'rating_' . $lang->id ?? null;
 
             $block_item_content = BlockItemContent::create(['block_id' => $request->block_id, 'block_item_id' => $block_item->id, 'lang_id' => $lang->id]);
 
@@ -183,6 +186,15 @@ class BlockController extends Controller
                 );
             }
 
+            if ($request->type == 'testimonial') {
+                $data = array(
+                    'name' => $request->$key_name ?? null,
+                    'subtitle' => HelperFunctions::clean_text($request->$key_subtitle ?? null),
+                    'content' => HelperFunctions::clean_text($request->$key_content ?? null),
+                    'rating' => $request->$key_rating ?? null,
+                );
+            }
+
             $block_item_content->update(['data' => json_encode($data, JSON_UNESCAPED_UNICODE)]);
         }
 
@@ -221,6 +233,9 @@ class BlockController extends Controller
             $key_url = 'url_' . $lang->id ?? null;
             $key_icon = 'icon_' . $lang->id ?? null;
             $key_button_label = 'button_label_' . $lang->id ?? null;
+            $key_name = 'name_' . $lang->id ?? null;
+            $key_subtitle = 'subtitle_' . $lang->id ?? null;
+            $key_rating = 'rating_' . $lang->id ?? null;
 
             if ($request->type == 'gallery') {
                 $data = array(
@@ -258,6 +273,15 @@ class BlockController extends Controller
                 $data = array(
                     'title' => $request->$key_title ?? null,
                     'content' => HelperFunctions::clean_text($request->$key_content ?? null),
+                );
+            }
+
+            if ($request->type == 'testimonial') {
+                $data = array(
+                    'name' => $request->$key_name ?? null,
+                    'subtitle' => HelperFunctions::clean_text($request->$key_subtitle ?? null),
+                    'content' => HelperFunctions::clean_text($request->$key_content ?? null),
+                    'rating' => $request->$key_rating ?? null,
                 );
             }
 

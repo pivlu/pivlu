@@ -512,3 +512,20 @@ ul {
     font-size: 0.9em;
     color: rgb(155, 155, 155);
 }
+
+.navbar .nav-link {
+    padding: 0 !important;
+}
+
+@media (min-width: 992px) {
+    .navbar-expand-lg .navbar-nav .nav-item {
+        padding-right: 0.7rem;
+        padding-left: 0.7rem;
+    }
+}
+
+.no-decoration {
+    text-decoration: none !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}

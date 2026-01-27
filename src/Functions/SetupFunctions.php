@@ -529,6 +529,21 @@ class SetupFunctions
                 'allow_in_layout' => 0,
             ]
         );
+
+        BlockType::firstOrCreate(
+            ['type' => 'testimonial'],
+            [
+                'core' => 1,
+                'label' => 'Testimonials',
+                'description' => 'Customer testimonials (reviews)',
+                'position' => 17,
+                'icon' => '<i class="bi bi-star"></i>',
+                'allow_in_homepage' => 1,
+                'allow_in_posts' => 1,
+                'allow_in_footer' => 0,
+                'allow_in_layout' => 0,
+            ]
+        );
     }
 
 

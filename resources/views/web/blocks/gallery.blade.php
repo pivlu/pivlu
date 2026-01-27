@@ -21,7 +21,9 @@
     @endphp
 
     <div class="container-xxl">
+
         <div class="block text-center">
+        
             <div class="row">
 
                 @include('pivlu::web.includes.block-header')

@@ -44,7 +44,7 @@
 @endif
 
 
-@if ($block->block_type->type == 'gallery' || $block->block_type->type == 'card' || $block->block_type->type == 'slider' || $block->block_type->type == 'links' || $block->block_type->type == 'accordion')
+@if ($block->block_type->type == 'gallery' || $block->block_type->type == 'card' || $block->block_type->type == 'slider' || $block->block_type->type == 'links' || $block->block_type->type == 'accordion' || $block->block_type->type == 'testimonial')
     <div class="row">
 
         <div class="col-md-5">
@@ -177,6 +177,14 @@
     </div>
     <div class="col-md-7">
         @include('pivlu::admin.blocks.includes.items-accordion')
+    </div>
+    </div>
+@endif
+
+@if ($block->block_type->type == 'testimonial')
+    </div>
+    <div class="col-md-7">
+        @include('pivlu::admin.blocks.includes.items-testimonial')
     </div>
     </div>
 @endif
