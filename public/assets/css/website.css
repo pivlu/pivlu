@@ -1,0 +1,191 @@
+/*
+ * Pivlu - Open source Business Platform.
+ * Copyright (c) Iosif Gabriel Chimilevschi | AGPL-3.0 License
+ * https://pivlu.com
+ */
+
+/* -- Header & Navigation -- */
+
+.site-header.sticky-top,
+.site-header.fixed-top { z-index: 1030; }
+.site-nav-row { padding: 0; }
+.site-nav-row-inner { display: flex; align-items: center; min-height: 48px; gap: 1rem; }
+.site-nav-zone { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+.site-nav-zone--left { margin-right: auto; }
+.site-nav-zone--center { margin-left: auto; margin-right: auto; }
+.site-nav-zone--right { margin-left: auto; }
+.site-nav-zone--left + .site-nav-zone--center { margin-left: 0; }
+.site-nav-zone--center + .site-nav-zone--right { margin-right: 0; }
+.site-nav-item { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+.site-nav-link { color: inherit; text-decoration: none; padding: 0.5rem 0; transition: opacity 0.15s; }
+.site-nav-btn { padding: 0.35rem 0.85rem; border-radius: 0.375rem; border: 1px solid currentColor; background: transparent; color: inherit; text-decoration: none; font-size: inherit; transition: opacity 0.15s; }
+.site-nav-btn:hover { opacity: 0.8; }
+.site-nav-logo img { max-height: 36px; width: auto; }
+.site-nav-logo { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.125rem; }
+.site-nav-text { display: inline-flex; align-items: center; }
+.site-nav-auth { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+/* -- Block section - full-width background that breaks out of container -- */
+
+body { overflow-x: hidden; }
+.pv-block-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2rem 0;
+}
+
+/* -- Language dropdown - flush under nav -- */
+
+.site-nav-zone:has(.pv-lang-dd) { align-self: stretch; }
+.pv-lang-dd {
+    align-self: stretch;
+    margin-bottom: calc(-1 * var(--pv-nav-pad-b, 0px));
+    padding-bottom: var(--pv-nav-pad-b, 0px);
+}
+.pv-lang-dd .dropdown-toggle { height: 100%; display: inline-flex; align-items: center; }
+.pv-lang-dd .dropdown-menu { top: 100%; }
+
+/* -- Dropdown base resets -- */
+
+/* Custom dropdown toggle arrow */
+.pv-dd-toggle::after { display: none !important; }
+.pv-dd-arrow { font-size: 0.85em; transition: transform .3s ease; display: inline-block; }
+.pv-dd-toggle[aria-expanded="true"] .pv-dd-arrow { transform: rotate(180deg); }
+.pv-dd-toggle[aria-expanded="true"] .pv-dd-arrow.bi-plus { transform: rotate(45deg); }
+
+.dropdown-menu {
+    border: 1px solid transparent;
+}
+.dropdown-menu.pv-dd-catlinks,
+.dropdown-menu.pv-dd-showcase,
+.dropdown-menu.pv-mega-2,
+.dropdown-menu.pv-mega-3,
+.dropdown-menu.pv-mega-4,
+.dropdown-menu.pv-mega-5,
+.dropdown-menu.pv-mega-6 {
+    overflow: visible;
+    max-width: none;
+    width: auto;
+}
+.dropdown-menu.pv-dd-catlinks.show,
+.dropdown-menu.pv-dd-showcase.show {
+    display: grid !important;
+}
+.dropdown-item {
+    transition: color .2s ease, background .2s ease;
+}
+.dropdown-item i, .dropdown-item .bi {
+    opacity: 0.6;
+    margin-right: 4px;
+    transition: opacity .2s;
+}
+.dropdown-item:hover i, .dropdown-item:hover .bi,
+.dropdown-item:focus i, .dropdown-item:focus .bi {
+    opacity: 1;
+}
+.dropdown-divider {
+    margin: 0;
+    opacity: 0.15;
+}
+
+/* -- Hamburger toggle -- */
+
+.site-nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: inherit;
+    padding: 0.5rem;
+    margin-left: auto;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.site-nav-toggle-icon,
+.site-nav-toggle-icon::before,
+.site-nav-toggle-icon::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 1px;
+    transition: transform .25s ease, opacity .2s ease;
+}
+.site-nav-toggle-icon { position: relative; }
+.site-nav-toggle-icon::before,
+.site-nav-toggle-icon::after { content: ''; position: absolute; left: 0; }
+.site-nav-toggle-icon::before { top: -7px; }
+.site-nav-toggle-icon::after { top: 7px; }
+.site-nav-toggle[aria-expanded="true"] .site-nav-toggle-icon { background: transparent; }
+.site-nav-toggle[aria-expanded="true"] .site-nav-toggle-icon::before { top: 0; transform: rotate(45deg); }
+.site-nav-toggle[aria-expanded="true"] .site-nav-toggle-icon::after { top: 0; transform: rotate(-45deg); }
+
+/* -- Collapse area - desktop: flex row (transparent wrapper) -- */
+
+.site-nav-collapse {
+    display: contents;
+}
+
+/* -- Mobile: <= 768px -- */
+
+@media (max-width: 768px) {
+    .site-nav-toggle { display: block; order: 2; margin-left: auto; flex-shrink: 0; }
+
+    .site-nav-row { overflow-x: hidden; }
+    .site-nav-row-inner { flex-wrap: wrap; }
+    .site-nav-zone--left { flex: 1 1 0; min-width: 0; order: 1; }
+    .site-nav-zone--left .site-nav-logo img { max-height: 36px; width: auto; }
+    .site-nav-collapse { order: 3; }
+
+    .site-nav-collapse {
+        display: none;
+        flex-basis: 100%;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.5rem 0;
+    }
+    .site-nav-collapse.open { display: flex; }
+
+    .site-nav-zone {
+        flex-direction: column;
+        align-items: flex-start !important;
+        width: 100%;
+        gap: 0.25rem !important;
+    }
+    .site-nav-zone--center,
+    .site-nav-zone--right {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .site-nav-item { white-space: normal; }
+    .site-nav-link { padding: 0.4rem 0; }
+    .site-nav-auth { flex-direction: row; }
+
+    /* Dropdowns open inline on mobile */
+    .dropdown .dropdown-menu,
+    [id] .dropdown-menu {
+        position: static !important;
+        display: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+        padding: 0 0 0 1rem !important;
+        margin-top: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        clip-path: none !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+    .dropdown .dropdown-menu.show,
+    [id] .dropdown-menu.show {
+        display: block !important;
+    }
+    .dropdown .dropdown-item {
+        color: inherit;
+        padding: 0.35rem 0;
+    }
+}
